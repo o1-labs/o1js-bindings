@@ -9,6 +9,7 @@ export {
   GenericHashInput,
   primitiveTypes,
   primitiveTypeMap,
+  emptyType,
 };
 
 type GenericProvable<T, Field> = {
