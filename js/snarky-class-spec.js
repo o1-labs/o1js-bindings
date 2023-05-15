@@ -1,6 +1,7 @@
 export default [
   {
     name: 'Field',
+    props: [],
   },
   {
     name: 'Bool',

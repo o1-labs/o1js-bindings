@@ -1026,7 +1026,8 @@ module Snarky = struct
       in
       (less, less_or_equal)
 
-    let to_bits (length : int) x = Field.unpack ~length x |> Array.of_list
+    let to_bits (length : int) x =
+      Field.choose_preimage_var ~length x |> Array.of_list
 
     let from_bits bits = Array.to_list bits |> Field.project
 
