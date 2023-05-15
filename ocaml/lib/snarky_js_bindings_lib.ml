@@ -169,6 +169,12 @@ module As_field = struct
           constr.prototype.isConstant = function() {
             return this.value[0] === 0;
           };
+          constr.toJSON = function(value) {
+            return value.toJSON();
+          };
+          constr.fromJSON = function(value) {
+            return new constr(value);
+          };
           return constr;
         })
       |js}
