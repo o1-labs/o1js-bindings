@@ -142,21 +142,39 @@ module As_field = struct
           (Core_kernel.sprintf
              "Type \"%s\" cannot be converted to a field element" s )
 
+  let to_string (x : Impl.Field.t) =
+    (match x with Constant x -> x | x -> Impl.As_prover.read_var x)
+    |> Impl.Field.Constant.to_string |> Js.string
+
   let field_class : < .. > Js.t =
     let f =
       (* We could construct this using Js.wrap_meth_callback, but that returns a
          function that behaves weirdly (from the point-of-view of JS) when partially applied. *)
       Js.Unsafe.eval_string
         {js|
-        (function(asFieldValue) {
-          return function(x) {
+        (function(asFieldValue, toString) {
+          let constr = function(x) {
             this.value = asFieldValue(x);
             return this;
           };
+          constr.prototype.toString = function() {
+            return toString(this.value);
+          };
+          constr.prototype.toBigInt = function() {
+            return BigInt(toString(this.value));
+          };
+          constr.prototype.toJSON = function() {
+            return toString(this.value);
+          };
+          constr.prototype.isConstant = function() {
+            return this.value[0] === 0;
+          };
+          return constr;
         })
       |js}
     in
-    Js.Unsafe.(fun_call f [| inject (Js.wrap_callback value) |])
+    Js.Unsafe.(
+      fun_call f [| inject (Js.wrap_callback value); inject to_string |])
 
   let field_constr : (t -> field_class Js.t) Js.constr = Obj.magic field_class
 
