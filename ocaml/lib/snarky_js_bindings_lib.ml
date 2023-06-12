@@ -1347,6 +1347,13 @@ module Snarky = struct
 
     let xor left right length =
       Kimchi_gadgets.Bitwise.bxor (module Impl) left right length
+
+    let rot64 word rot_bits rotation_direction =
+      let mode =
+        if rotation_direction then Kimchi_gadgets.Bitwise.Left
+        else Kimchi_gadgets.Bitwise.Right
+      in
+      Kimchi_gadgets.Bitwise.rot64 (module Impl) word rot_bits mode
   end
 
   module Circuit = struct
@@ -1436,6 +1443,8 @@ let snarky =
         method toConstantAndTerms = Snarky.Field.to_constant_and_terms
 
         method xor = Snarky.Field.xor
+
+        method rot64 = Snarky.Field.rot64
       end
 
     val circuit =
