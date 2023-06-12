@@ -26,6 +26,7 @@
   kimchi_backend.pasta.constraint_system
   kimchi_backend.common
   kimchi_bindings
+  kimchi_gadgets
   kimchi_types
   pasta_bindings
   base58_check
