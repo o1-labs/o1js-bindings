@@ -1344,6 +1344,9 @@ module Snarky = struct
     let seal x = Pickles.Util.seal (module Impl) x
 
     let to_constant_and_terms x = Field.to_constant_and_terms x
+
+    let band left right length =
+      Kimchi_gadgets.Bitwise.band (module Impl) left right length
   end
 
   module Circuit = struct
@@ -1431,6 +1434,8 @@ let snarky =
         method seal = Snarky.Field.seal
 
         method toConstantAndTerms = Snarky.Field.to_constant_and_terms
+
+        method band = Snarky.Field.band
       end
 
     val circuit =
