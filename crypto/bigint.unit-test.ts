@@ -1,4 +1,5 @@
 import { expect } from 'expect';
+import { shutdown } from '../../snarky.js';
 import { bytesToBigInt, bigIntToBytes } from './bigint-helpers.js';
 import { Fp } from './finite_field.js';
 
@@ -27,3 +28,4 @@ expect(() => bigIntToBytes(4n * Fp.modulus, 32)).toThrow(
 );
 
 console.log('bigint unit tests are passing! 🎉');
+shutdown();
