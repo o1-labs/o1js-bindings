@@ -2930,19 +2930,210 @@ let test =
           in
           Signed_command.to_base58_check_v1 command |> Js.string
 
-        method examplePayment =
-          let kp = keypair () in
-          let payload : Signed_command_payload.t =
-            { Signed_command_payload.dummy with
-              common =
-                { Signed_command_payload.dummy.common with
-                  fee_payer_pk = Signature_lib.Public_key.compress kp.public_key
-                }
+  module Hash_input = struct
+    type random_oracle_input = Impl.field Random_oracle_input.Chunked.t
+
+    let pack_input (input : random_oracle_input) : Impl.field array =
+      Random_oracle.pack_input input
+
+    (* hash inputs for various account_update subtypes *)
+    let timing_input (json : Js.js_string Js.t) : random_oracle_input =
+      let deriver = Account_update.Update.Timing_info.deriver in
+      let json = json |> Js.to_string |> Yojson.Safe.from_string in
+      let value = Fields_derivers_zkapps.(of_json (deriver @@ o ()) json) in
+      let input = Account_update.Update.Timing_info.to_input value in
+      input
+
+    let permissions_input (json : Js.js_string Js.t) : random_oracle_input =
+      let deriver = Mina_base.Permissions.deriver in
+      let json = json |> Js.to_string |> Yojson.Safe.from_string in
+      let value = Fields_derivers_zkapps.(of_json (deriver @@ o ()) json) in
+      let input = Mina_base.Permissions.to_input value in
+      input
+
+    let update_input (json : Js.js_string Js.t) : random_oracle_input =
+      let deriver = Account_update.Update.deriver in
+      let json = json |> Js.to_string |> Yojson.Safe.from_string in
+      let value = Fields_derivers_zkapps.(of_json (deriver @@ o ()) json) in
+      let input = Account_update.Update.to_input value in
+      input
+
+    let account_precondition_input (json : Js.js_string Js.t) :
+        random_oracle_input =
+      let deriver = Mina_base.Zkapp_precondition.Account.deriver in
+      let json = json |> Js.to_string |> Yojson.Safe.from_string in
+      let value = Fields_derivers_zkapps.(of_json (deriver @@ o ()) json) in
+      let input = Mina_base.Zkapp_precondition.Account.to_input value in
+      input
+
+    let network_precondition_input (json : Js.js_string Js.t) :
+        random_oracle_input =
+      let deriver = Mina_base.Zkapp_precondition.Protocol_state.deriver in
+      let json = json |> Js.to_string |> Yojson.Safe.from_string in
+      let value = Fields_derivers_zkapps.(of_json (deriver @@ o ()) json) in
+      let input = Mina_base.Zkapp_precondition.Protocol_state.to_input value in
+      input
+
+    let body_input (json : Js.js_string Js.t) : random_oracle_input =
+      let json = json |> Js.to_string |> Yojson.Safe.from_string in
+      let value = body_of_json json in
+      let input = Account_update.Body.to_input value in
+      input
+  end
+
+  module Transaction_hash = struct
+    module Signed_command = Mina_base.Signed_command
+    module Signed_command_payload = Mina_base.Signed_command_payload
+
+    let ok_exn result =
+      let open Ppx_deriving_yojson_runtime.Result in
+      match result with Ok c -> c | Error e -> failwith ("not ok: " ^ e)
+
+    let keypair () = Signature_lib.Keypair.create ()
+
+    let hash_payment (command : Js.js_string Js.t) =
+      let command : Signed_command.t =
+        command |> Js.to_string |> Yojson.Safe.from_string
+        |> Signed_command.of_yojson |> ok_exn
+      in
+      Mina_transaction.Transaction_hash.(
+        command |> hash_signed_command |> to_base58_check |> Js.string)
+
+    let hash_payment_v1 (command : Js.js_string Js.t) =
+      let command : Signed_command.t_v1 =
+        command |> Js.to_string |> Yojson.Safe.from_string
+        |> Signed_command.Stable.V1.of_yojson |> ok_exn
+      in
+      let b58 = Signed_command.to_base58_check_v1 command in
+      Mina_transaction.Transaction_hash.(
+        b58 |> digest_string |> to_base58_check)
+      |> Js.string
+
+    let serialize_common (command : Js.js_string Js.t) =
+      let command : Signed_command_payload.Common.t =
+        command |> Js.to_string |> Yojson.Safe.from_string
+        |> Signed_command_payload.Common.of_yojson |> ok_exn
+      in
+      Binable.to_bigstring
+        (module Signed_command_payload.Common.Stable.Latest)
+        command
+
+    let serialize_payment (command : Js.js_string Js.t) =
+      let command : Signed_command.t =
+        command |> Js.to_string |> Yojson.Safe.from_string
+        |> Signed_command.of_yojson |> ok_exn
+      in
+      Binable.to_bigstring (module Signed_command.Stable.Latest) command
+
+    let serialize_payment_v1 (command : Js.js_string Js.t) =
+      let command : Signed_command.t_v1 =
+        command |> Js.to_string |> Yojson.Safe.from_string
+        |> Signed_command.Stable.V1.of_yojson |> ok_exn
+      in
+      Signed_command.to_base58_check_v1 command |> Js.string
+
+    let example_payment =
+      let kp = keypair () in
+      let payload : Signed_command_payload.t =
+        { Signed_command_payload.dummy with
+          common =
+            { Signed_command_payload.dummy.common with
+              fee_payer_pk = Signature_lib.Public_key.compress kp.public_key
             }
-          in
-          let payment = Signed_command.sign kp payload in
-          (payment :> Signed_command.t)
-          |> Signed_command.to_yojson |> Yojson.Safe.to_string |> Js.string
+        }
+      in
+      let payment = Signed_command.sign kp payload in
+      (payment :> Signed_command.t)
+      |> Signed_command.to_yojson |> Yojson.Safe.to_string |> Js.string
+  end
+end
+
+let test =
+  object%js
+    val encoding =
+      object%js
+        val toBase58 = Test.Encoding.binary_string_to_base58_check
+
+        val ofBase58 = Test.Encoding.binary_string_of_base58_check
+
+        method publicKeyToBase58 = Test.Encoding.public_key_to_base58
+
+        method publicKeyOfBase58 = Test.Encoding.public_key_of_base58
+
+        method privateKeyToBase58 = Test.Encoding.private_key_to_base58
+
+        method privateKeyOfBase58 = Test.Encoding.private_key_of_base58
+
+        method tokenIdToBase58 = Test.Encoding.token_id_to_base58
+
+        method tokenIdOfBase58 = Test.Encoding.token_id_of_base58
+
+        method memoToBase58 = Test.Encoding.memo_to_base58
+
+        method memoHashBase58 = Test.Encoding.memo_hash_base58
+      end
+
+    val tokenId =
+      object%js
+        method derive = Test.Token_id.derive
+
+        method deriveChecked = Test.Token_id.derive_checked
+      end
+
+    val signature =
+      object%js
+        method signFieldElement = Test.Signature.sign_field_element
+
+        val dummySignature = Test.Signature.dummy_signature
+      end
+
+    val fieldsFromJson =
+      object%js
+        method accountUpdate = Test.To_fields.account_update
+      end
+
+    val hashFromJson =
+      object%js
+        method accountUpdate = Test.Hash_from_json.account_update
+
+        method transactionCommitments =
+          Test.Hash_from_json.transaction_commitments
+
+        method zkappPublicInput = Test.Hash_from_json.zkapp_public_input
+      end
+
+    val hashInputFromJson =
+      let open Test.Hash_input in
+      object%js
+        val packInput = pack_input
+
+        val timing = timing_input
+
+        val permissions = permissions_input
+
+        val accountPrecondition = account_precondition_input
+
+        val networkPrecondition = network_precondition_input
+
+        val update = update_input
+
+        val body = body_input
+      end
+
+    val transactionHash =
+      let open Test.Transaction_hash in
+      object%js
+        method hashPayment = hash_payment
+
+        method hashPaymentV1 = hash_payment_v1
+
+        method serializeCommon = serialize_common
+
+        method serializePayment = serialize_payment
+
+        method serializePaymentV1 = serialize_payment_v1
+
+        method examplePayment = example_payment
       end
   end
 
