@@ -157,6 +157,9 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
     sqrt(x: bigint) {
       return sqrt(x, p, t, twoadicRoot);
     },
+    and(x: bigint, y: bigint) {
+      return x & y;
+    },
     power(x: bigint, n: bigint) {
       return power(x, n, p);
     },
