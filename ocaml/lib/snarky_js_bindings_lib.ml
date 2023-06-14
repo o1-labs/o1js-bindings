@@ -1345,7 +1345,7 @@ module Snarky = struct
 
     let to_constant_and_terms x = Field.to_constant_and_terms x
 
-    let band left right length =
+    let and_ left right length =
       Kimchi_gadgets.Bitwise.band (module Impl) left right length
   end
 
@@ -1435,7 +1435,7 @@ let snarky =
 
         method toConstantAndTerms = Snarky.Field.to_constant_and_terms
 
-        method band = Snarky.Field.band
+        method and_ = Snarky.Field.and_
       end
 
     val circuit =
