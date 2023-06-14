@@ -1353,7 +1353,7 @@ module Snarky = struct
         if rotation_direction then Kimchi_gadgets.Bitwise.Left
         else Kimchi_gadgets.Bitwise.Right
       in
-      Kimchi_gadgets.Bitwise.rot64 (module Impl) word rot_bits mode
+      Kimchi_gadgets.Bitwise.rot_64 (module Impl) word rot_bits mode
   end
 
   module Circuit = struct
