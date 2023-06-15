@@ -296,14 +296,20 @@ module Snarky = struct
   end
 
   module Sha = struct
-    let keccak message =
-      Kimchi_gadgets.Keccak.eth_keccak (module Impl) (Array.to_list message)
+    let create message nist length =
+      let message_array = Array.to_list message in
+      if Js.to_bool nist then
+        Kimchi_gadgets.Keccak.nist_sha3 (module Impl) length message_array
+      else Kimchi_gadgets.Keccak.eth_keccak (module Impl) message_array
 
     let field_bytes_of_hex hex =
-      Array.of_list
-        (Kimchi_gadgets.Common.field_bytes_of_hex
-           (module Impl)
-           (Js.to_string hex) )
+      let arr =
+        Array.of_list
+          (Kimchi_gadgets.Common.field_bytes_of_hex
+             (module Impl)
+             (Js.to_string hex) )
+      in
+      arr
   end
 end
 
@@ -412,7 +418,7 @@ let snarky =
 
     val sha =
       object%js
-        method keccak = Snarky.Sha.keccak
+        method create = Snarky.Sha.create
 
         method fieldBytesFromHex = Snarky.Sha.field_bytes_of_hex
       end
