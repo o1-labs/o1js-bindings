@@ -294,6 +294,17 @@ module Snarky = struct
       | Unchecked s ->
           Poseidon_sponge.squeeze s |> Impl.Field.constant
   end
+
+  module Sha = struct
+    let keccak message =
+      Kimchi_gadgets.Keccak.eth_keccak (module Impl) (Array.to_list message)
+
+    let field_bytes_of_hex hex =
+      Array.of_list
+        (Kimchi_gadgets.Common.field_bytes_of_hex
+           (module Impl)
+           (Js.to_string hex) )
+  end
 end
 
 let snarky =
@@ -397,6 +408,13 @@ let snarky =
 
             method squeeze = Snarky.Poseidon.sponge_squeeze
           end
+      end
+
+    val sha =
+      object%js
+        method keccak = Snarky.Sha.keccak
+
+        method fieldBytesFromHex = Snarky.Sha.field_bytes_of_hex
       end
   end
 

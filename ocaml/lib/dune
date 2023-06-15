@@ -27,6 +27,7 @@
   kimchi_backend.common
   kimchi_bindings
   kimchi_types
+  kimchi_gadgets
   pasta_bindings
   base58_check
   block_time
