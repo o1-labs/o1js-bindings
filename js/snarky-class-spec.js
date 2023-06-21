@@ -43,6 +43,10 @@ export default [
     ],
   },
   {
+    name: 'sha',
+    type: 'object',
+  },
+  {
     name: 'Ledger',
     props: [
       {
