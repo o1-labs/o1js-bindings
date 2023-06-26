@@ -5,7 +5,7 @@ import { derivedLeafTypes } from './derived-leaves.js';
 import { createEvents } from '../../lib/events.js';
 import {
   Poseidon,
-  Hash,
+  HashHelpers as Hash,
   packToFields,
   emptyHashWithPrefix,
 } from '../../lib/hash.js';
