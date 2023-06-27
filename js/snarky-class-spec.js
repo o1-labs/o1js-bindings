@@ -40,11 +40,11 @@ export default [
         name: 'poseidon',
         type: 'object',
       },
+      {
+        name: 'sha',
+        type: 'object',
+      },
     ],
-  },
-  {
-    name: 'sha',
-    type: 'object',
   },
   {
     name: 'Ledger',
