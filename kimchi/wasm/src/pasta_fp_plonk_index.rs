@@ -1,7 +1,9 @@
 use ark_poly::EvaluationDomain;
 
+use crate::arkworks::WasmPastaFp;
 use crate::gate_vector::fp::WasmGateVector;
 use crate::srs::fp::WasmFpSrs as WasmSrs;
+use crate::wasm_flat_vector::WasmFlatVector;
 use kimchi::circuits::{constraints::ConstraintSystem, gate::CircuitGate};
 use kimchi::linearization::expr_linearization;
 use kimchi::prover_index::ProverIndex;
@@ -27,9 +29,21 @@ pub struct WasmPastaFpPlonkIndex(#[wasm_bindgen(skip)] pub Box<ProverIndex<GAffi
 //
 
 #[wasm_bindgen]
+pub struct WasmLookupTable {
+    id: i32,
+    data: WasmFlatVector<WasmFlatVector<WasmPastaFp>>
+}
+
+#[wasm_bindgen]
 pub fn caml_pasta_fp_plonk_index_create(
     gates: &WasmGateVector,
     public_: i32,
+    lookup_tables: WasmLookupTable,
+    // RuntimeTableCfg
+    // IMPROVEME: Enum is not provided by ocaml-gen, therefore creating to
+    // separate arguments
+    // indexed_runtime_tables_cfg: Vec<(i32, usize)>,
+    // customed_runtime_tables_cfg: Vec<(i32, Vec<WasmPastaFp>)>,
     prev_challenges: i32,
     srs: &WasmSrs,
 ) -> Result<WasmPastaFpPlonkIndex, JsError> {
@@ -50,6 +64,7 @@ pub fn caml_pasta_fp_plonk_index_create(
         let cs = match ConstraintSystem::<Fp>::create(gates)
             .public(public_ as usize)
             .prev_challenges(prev_challenges as usize)
+            .lookup(lookup_tables)
             .build()
         {
             Err(_) => {
