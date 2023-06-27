@@ -7,6 +7,7 @@ use std::convert::TryInto;
 use wasm_bindgen::prelude::*;
 // use std::sync::Arc;
 // use poly_commitment::srs::SRS;
+use kimchi::circuits::lookup::runtime_tables::RuntimeTable;
 // use kimchi::index::{expr_linearization, VerifierIndex as DlogVerifierIndex};
 // use ark_poly::{EvaluationDomain, Radix2EvaluationDomain as Domain};
 use ark_ec::AffineCurve;
@@ -546,9 +547,16 @@ macro_rules! impl_proof {
             }
 
             #[wasm_bindgen]
+            pub struct WasmRuntimeTable {
+                id: i32,
+                data: Vec<$F>
+            }
+
+            #[wasm_bindgen]
             pub fn [<$name:snake _create>](
                 index: &$WasmIndex,
                 witness: WasmVecVecF,
+                runtime_tables: WasmVector<WasmRuntimeTable>,
                 prev_challenges: WasmFlatVector<$WasmF>,
                 prev_sgs: WasmVector<$WasmG>,
             ) -> Result<WasmProverProof, JsError> {
@@ -559,6 +567,13 @@ macro_rules! impl_proof {
                             unsafe { &mut *(std::sync::Arc::as_ptr(&index.0.as_ref().srs) as *mut _) };
                         ptr.add_lagrange_basis(index.0.as_ref().cs.domain.d1);
                     }
+                    let runtime_tables: Vec<RuntimeTable<$F>> = runtime_tables.into_iter().map(|rt| {
+                        let rust_rt = RuntimeTable {
+                            id: rt.id,
+                            data: rt.data.into(),
+                        };
+                        rust_rt
+                    }).collect();
                     let prev: Vec<RecursionChallenge<$G>> = {
                         if prev_challenges.is_empty() {
                             Vec::new()
@@ -597,7 +612,7 @@ macro_rules! impl_proof {
                     let maybe_proof = ProverProof::create_recursive::<
                         DefaultFqSponge<_, PlonkSpongeConstantsKimchi>,
                         DefaultFrSponge<_, PlonkSpongeConstantsKimchi>,
-                        >(&group_map, witness, &[], index, prev, None);
+                        >(&group_map, witness, &runtime_tables, index, prev, None);
                     (maybe_proof, public_input)
                 });
 
