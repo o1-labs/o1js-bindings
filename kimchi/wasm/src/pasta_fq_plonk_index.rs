@@ -2,6 +2,9 @@ use ark_poly::EvaluationDomain;
 
 use crate::gate_vector::fq::WasmGateVector;
 use crate::srs::fq::WasmFqSrs as WasmSrs;
+use crate::wasm_vector::fq::*;
+use crate::wasm_vector::WasmVector;
+use kimchi::circuits::lookup::tables::LookupTable;
 use kimchi::circuits::{constraints::ConstraintSystem, gate::CircuitGate};
 use kimchi::linearization::expr_linearization;
 use kimchi::prover_index::ProverIndex;
@@ -22,6 +25,32 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 pub struct WasmPastaFqPlonkIndex(#[wasm_bindgen(skip)] pub Box<ProverIndex<GAffine>>);
 
+#[wasm_bindgen]
+pub struct WasmPastaFqLookupTable {
+    #[wasm_bindgen(skip)]
+    pub id: i32,
+    #[wasm_bindgen(skip)]
+    pub data: WasmVecVecFq,
+}
+
+impl From<WasmPastaFqLookupTable> for LookupTable<Fq> {
+    fn from(wasm_lt: WasmPastaFqLookupTable) -> LookupTable<Fq> {
+        LookupTable {
+            id: wasm_lt.id.into(),
+            data: wasm_lt.data.0,
+        }
+    }
+}
+
+// JS constructor for js/bindings.js
+#[wasm_bindgen]
+impl WasmPastaFqLookupTable {
+    #[wasm_bindgen(constructor)]
+    pub fn new(id: i32, data: WasmVecVecFq) -> WasmPastaFqLookupTable {
+        WasmPastaFqLookupTable { id, data }
+    }
+}
+
 //
 // CamlPastaFqPlonkIndex methods
 //
@@ -30,6 +59,7 @@ pub struct WasmPastaFqPlonkIndex(#[wasm_bindgen(skip)] pub Box<ProverIndex<GAffi
 pub fn caml_pasta_fq_plonk_index_create(
     gates: &WasmGateVector,
     public_: i32,
+    lookup_tables: WasmVector<WasmPastaFqLookupTable>,
     prev_challenges: i32,
     srs: &WasmSrs,
 ) -> Result<WasmPastaFqPlonkIndex, JsError> {
@@ -46,10 +76,13 @@ pub fn caml_pasta_fq_plonk_index_create(
             })
             .collect();
 
+        let rust_lt = lookup_tables.into_iter().map(Into::into).collect();
+
         // create constraint system
         let cs = match ConstraintSystem::<Fq>::create(gates)
             .public(public_ as usize)
             .prev_challenges(prev_challenges as usize)
+            .lookup(rust_lt)
             .build()
         {
             Err(_) => {

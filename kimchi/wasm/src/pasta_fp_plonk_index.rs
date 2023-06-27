@@ -2,6 +2,9 @@ use ark_poly::EvaluationDomain;
 
 use crate::gate_vector::fp::WasmGateVector;
 use crate::srs::fp::WasmFpSrs as WasmSrs;
+use crate::wasm_vector::fp::*;
+use crate::wasm_vector::WasmVector;
+use kimchi::circuits::lookup::tables::LookupTable;
 use kimchi::circuits::{constraints::ConstraintSystem, gate::CircuitGate};
 use kimchi::linearization::expr_linearization;
 use kimchi::prover_index::ProverIndex;
@@ -22,6 +25,35 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 pub struct WasmPastaFpPlonkIndex(#[wasm_bindgen(skip)] pub Box<ProverIndex<GAffine>>);
 
+// This should mimic LookupTable structure
+#[wasm_bindgen]
+pub struct WasmPastaFpLookupTable {
+    #[wasm_bindgen(skip)]
+    pub id: i32,
+    #[wasm_bindgen(skip)]
+    pub data: WasmVecVecFp,
+}
+
+// Converter from WasmPastaFpLookupTable to LookupTable, used by the binding
+// below.
+impl From<WasmPastaFpLookupTable> for LookupTable<Fp> {
+    fn from(wasm_lt: WasmPastaFpLookupTable) -> LookupTable<Fp> {
+        LookupTable {
+            id: wasm_lt.id.into(),
+            data: wasm_lt.data.0,
+        }
+    }
+}
+
+// JS constructor for js/bindings.js
+#[wasm_bindgen]
+impl WasmPastaFpLookupTable {
+    #[wasm_bindgen(constructor)]
+    pub fn new(id: i32, data: WasmVecVecFp) -> WasmPastaFpLookupTable {
+        WasmPastaFpLookupTable { id, data }
+    }
+}
+
 //
 // CamlPastaFpPlonkIndex methods
 //
@@ -30,6 +62,12 @@ pub struct WasmPastaFpPlonkIndex(#[wasm_bindgen(skip)] pub Box<ProverIndex<GAffi
 pub fn caml_pasta_fp_plonk_index_create(
     gates: &WasmGateVector,
     public_: i32,
+    lookup_tables: WasmVector<WasmPastaFpLookupTable>,
+    // RuntimeTableCfg
+    // IMPROVEME: Enum is not provided by ocaml-gen, therefore creating to
+    // separate arguments
+    // indexed_runtime_tables_cfg: Vec<(i32, usize)>,
+    // customed_runtime_tables_cfg: Vec<(i32, Vec<WasmPastaFp>)>,
     prev_challenges: i32,
     srs: &WasmSrs,
 ) -> Result<WasmPastaFpPlonkIndex, JsError> {
@@ -46,10 +84,13 @@ pub fn caml_pasta_fp_plonk_index_create(
             })
             .collect();
 
+        let rust_lt = lookup_tables.into_iter().map(Into::into).collect();
+
         // create constraint system
         let cs = match ConstraintSystem::<Fp>::create(gates)
             .public(public_ as usize)
             .prev_challenges(prev_challenges as usize)
+            .lookup(rust_lt)
             .build()
         {
             Err(_) => {
