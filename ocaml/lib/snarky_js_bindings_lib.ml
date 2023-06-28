@@ -329,6 +329,8 @@ module Snarky = struct
       module Curve_params = Kimchi_gadgets.Curve_params
       module Affine = Kimchi_gadgets.Affine
 
+      type params = Curve_params.t
+
       type params_without_ia =
         { modulus : Bignum_bigint.t
         ; order : Bignum_bigint.t
@@ -337,18 +339,19 @@ module Snarky = struct
         ; gen : Affine.bignum_point
         }
 
-      type params = Impl.field Curve_params.InCircuit.t
+      type params_var = Impl.field Curve_params.InCircuit.t
 
       type t_point = Impl.field Affine.t
 
       let create ({ modulus; order; a; b; gen } : params_without_ia) : params =
         let params = { Curve_params.default with modulus; order; a; b; gen } in
-        _console_log "before" ;
         params.ia <- EC.compute_ia_points params ;
-        _console_log "after" ;
+        params
+
+      let params_to_vars (params : params) : params_var =
         Curve_params.to_circuit_constants (module Impl) params
 
-      let add (g : t_point) (h : t_point) (curve : params) : t_point =
+      let add (g : t_point) (h : t_point) (curve : params_var) : t_point =
         let external_checks = External_checks.create (module Impl) in
         let z = EC.add (module Impl) external_checks curve g h in
         FF.constrain_external_checks (module Impl) external_checks curve.modulus ;
@@ -474,6 +477,8 @@ let snarky =
         val curve =
           object%js
             val create = Curve.create
+
+            val paramsToVar = Curve.params_to_vars
 
             val add = Curve.add
           end
