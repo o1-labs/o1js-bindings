@@ -3214,15 +3214,15 @@ EndoMul:5,"5":"EndoMul",
 /**
 * Gate for computing the scalar corresponding to an endoscaling
 */
-EndoMulScalar:6,"6":"EndoMulScalar",Lookup:11,"11":"Lookup",
+EndoMulScalar:6,"6":"EndoMulScalar",Lookup:7,"7":"Lookup",
 /**
 * Cairo
 */
-CairoClaim:12,"12":"CairoClaim",CairoInstruction:13,"13":"CairoInstruction",CairoFlags:14,"14":"CairoFlags",CairoTransition:15,"15":"CairoTransition",
+CairoClaim:8,"8":"CairoClaim",CairoInstruction:9,"9":"CairoInstruction",CairoFlags:10,"10":"CairoFlags",CairoTransition:11,"11":"CairoTransition",
 /**
 * Range check
 */
-RangeCheck0:16,"16":"RangeCheck0",RangeCheck1:17,"17":"RangeCheck1",ForeignFieldAdd:18,"18":"ForeignFieldAdd",ForeignFieldMul:19,"19":"ForeignFieldMul",Xor16:20,"20":"Xor16",Rot64:21,"21":"Rot64", });
+RangeCheck0:12,"12":"RangeCheck0",RangeCheck1:13,"13":"RangeCheck1",ForeignFieldAdd:14,"14":"ForeignFieldAdd",ForeignFieldMul:15,"15":"ForeignFieldMul",Xor16:16,"16":"Xor16",Rot64:17,"17":"Rot64", });
 /**
 */
 export class PoolBuilder {
