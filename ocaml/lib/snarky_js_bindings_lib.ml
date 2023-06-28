@@ -155,6 +155,9 @@ module Snarky = struct
     let seal x = Pickles.Util.seal (module Impl) x
 
     let to_constant_and_terms x = Field.to_constant_and_terms x
+
+    let not left right length =
+      Kimchi_gadgets.Bitwise.bnot (module Impl) left right length    
   end
 
   module Bool = struct
@@ -339,6 +342,8 @@ let snarky =
         method seal = Snarky.Field.seal
 
         method toConstantAndTerms = Snarky.Field.to_constant_and_terms
+        
+        method not = Snarky.Field.not
       end
 
     val bool =
