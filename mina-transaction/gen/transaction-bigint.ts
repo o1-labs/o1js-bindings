@@ -2,8 +2,9 @@
 
 import {
   PublicKey,
-  UInt64,
+  UInt8,
   UInt32,
+  UInt64,
   TokenId,
   Field,
   Bool,
@@ -29,8 +30,9 @@ export { provableFromLayout, toJSONEssential, emptyValue, Layout, TypeMap };
 
 type TypeMap = {
   PublicKey: PublicKey;
-  UInt64: UInt64;
+  UInt8: UInt8;
   UInt32: UInt32;
+  UInt64: UInt64;
   TokenId: TokenId;
   Field: Field;
   Bool: Bool;
@@ -42,8 +44,9 @@ const TypeMap: {
   [K in keyof TypeMap]: ProvableExtended<TypeMap[K], Json.TypeMap[K]>;
 } = {
   PublicKey,
-  UInt64,
+  UInt8,
   UInt32,
+  UInt64,
   TokenId,
   Field,
   Bool,

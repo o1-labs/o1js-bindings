@@ -1,6 +1,7 @@
 import {
   Field,
   Bool,
+  UInt8,
   UInt32,
   UInt64,
   Sign,
@@ -14,7 +15,17 @@ import {
   packToFields,
 } from '../../provable/poseidon-bigint.js';
 
-export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
+export {
+  PublicKey,
+  Field,
+  Bool,
+  AuthRequired,
+  UInt8,
+  UInt32,
+  UInt64,
+  Sign,
+  TokenId,
+};
 
 export {
   Events,
