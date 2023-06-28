@@ -160,10 +160,13 @@ module Circuit = struct
     let pk = Impl.Keypair.pk keypair in
     let input_typ = typ public_input_size in
     let return_typ = Impl.Typ.unit in
-    Impl.generate_witness_conv ~input_typ ~return_typ
+    Impl.generate_witness_conv ~input_typ
+      ~return_typ
+        (* TODO(dw) add runtime table, make pickles/snarky more lookup friendly
+           (https://github.com/MinaProtocol/mina/issues/13476) *)
       ~f:(fun { Impl.Proof_inputs.auxiliary_inputs; public_inputs } () ->
         Backend.Proof.create pk ~auxiliary:auxiliary_inputs
-          ~primary:public_inputs )
+          ~primary:public_inputs ~runtime_tables:[||] )
       (Main.of_js main) public_input
 
   let verify public_input proof vk =
