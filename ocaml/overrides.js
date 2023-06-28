@@ -1,5 +1,12 @@
-/* global joo_global_object
+/* global joo_global_object, bigInt
  */
+
+//Provides: ml_z_of_bigint
+//Requires: bigInt
+function ml_z_of_bigint(x) {
+  // this implicitly uses zarith_stubs_js which has a pretty flexible constructor which isn't exposed
+  return bigInt(x);
+}
 
 //Provides: caml_raise_with_string (const, const)
 function caml_raise_with_string(tag, msg) {

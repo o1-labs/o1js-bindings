@@ -5,6 +5,7 @@
   core_kernel
   base
   base.caml
+  bignum.bigint
   integers
   sexplib0
   yojson

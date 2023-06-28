@@ -1,4 +1,4 @@
-import { FiniteField, Fp, inverse, mod, p, q } from "./finite_field.js";
+import { FiniteField, Fp, inverse, mod, p, q } from './finite_field.js';
 export { Pallas, Vesta, GroupAffine, GroupProjective, GroupMapPallas };
 
 // TODO: constants, like generator points and cube roots for endomorphisms, should be drawn from
@@ -153,7 +153,7 @@ function projectiveAdd(g: GroupProjective, h: GroupProjective, p: bigint) {
     if (S1 === S2) return projectiveDouble(g, p);
     // if S1 = -S2, the points are inverse, so return zero
     if (mod(S1 + S2, p) === 0n) return projectiveZero;
-    throw Error("projectiveAdd: invalid point");
+    throw Error('projectiveAdd: invalid point');
   }
   // I = (2*H)^2
   let I = mod((H * H) << 2n, p);

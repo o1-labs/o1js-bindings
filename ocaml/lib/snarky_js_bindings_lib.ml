@@ -7,6 +7,7 @@ module Sc =
   Pickles.Scalar_challenge.Make (Impl) (Pickles.Step_main_inputs.Inner_curve)
     (Challenge)
     (Pickles.Endo.Step_inner_curve)
+module Bignum_bigint = Snarky_backendless.Backend_extended.Bignum_bigint
 module Js = Js_of_ocaml.Js
 
 let _console_log_string s = Js_of_ocaml.Firebug.console##log (Js.string s)
@@ -319,6 +320,40 @@ module Snarky = struct
       let z = FF.mul (module Impl) external_checks x y p in
       FF.constrain_external_checks (module Impl) external_checks p ;
       z
+
+    external bigint_to_ml : Js.Unsafe.any Js.t -> Bignum_bigint.t
+      = "ml_z_of_bigint"
+
+    module Curve = struct
+      module EC = Kimchi_gadgets.Ec_group
+      module Curve_params = Kimchi_gadgets.Curve_params
+      module Affine = Kimchi_gadgets.Affine
+
+      type params_without_ia =
+        { modulus : Bignum_bigint.t
+        ; order : Bignum_bigint.t
+        ; a : Bignum_bigint.t
+        ; b : Bignum_bigint.t
+        ; gen : Affine.bignum_point
+        }
+
+      type params = Impl.field Curve_params.InCircuit.t
+
+      type t_point = Impl.field Affine.t
+
+      let create ({ modulus; order; a; b; gen } : params_without_ia) : params =
+        let params = { Curve_params.default with modulus; order; a; b; gen } in
+        _console_log "before" ;
+        params.ia <- EC.compute_ia_points params ;
+        _console_log "after" ;
+        Curve_params.to_circuit_constants (module Impl) params
+
+      let add (g : t_point) (h : t_point) (curve : params) : t_point =
+        let external_checks = External_checks.create (module Impl) in
+        let z = EC.add (module Impl) external_checks curve g h in
+        FF.constrain_external_checks (module Impl) external_checks curve.modulus ;
+        z
+    end
   end
 end
 
@@ -433,6 +468,15 @@ let snarky =
         val sumChain = sum_chain
 
         val mul = mul
+
+        val bigintToMl = bigint_to_ml
+
+        val curve =
+          object%js
+            val create = Curve.create
+
+            val add = Curve.add
+          end
       end
   end
 
