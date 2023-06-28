@@ -183,5 +183,8 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
     fromBigint(x: bigint) {
       return mod(x, p);
     },
+    not(x: bigint) {
+      return ~x;
+    },
   };
 }
