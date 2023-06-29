@@ -473,15 +473,16 @@ let snarky =
         val mul = mul
 
         val bigintToMl = bigint_to_ml
+      end
 
-        val curve =
-          object%js
-            val create = Curve.create
+    val foreignCurve =
+      let open Snarky.Foreign_field in
+      object%js
+        val create = Curve.create
 
-            val paramsToVar = Curve.params_to_vars
+        val paramsToVars = Curve.params_to_vars
 
-            val add = Curve.add
-          end
+        val add = Curve.add
       end
   end
 

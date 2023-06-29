@@ -44,6 +44,10 @@ export default [
         name: 'foreignField',
         type: 'object',
       },
+      {
+        name: 'foreignCurve',
+        type: 'object',
+      },
     ],
   },
   {
