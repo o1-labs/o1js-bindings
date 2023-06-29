@@ -16,6 +16,19 @@ The repo is included as a git submodule in the [SnarkyJS repo](https://github.co
 - `/scripts` - scripts which build parts of SnarkyJS from their OCaml and Rust sources, including the contents of `/compiled` and other generated TS files.
 - `MINA_COMMIT` - commit hash pointing to the commit of the [Mina repo](https://github.com/MinaProtocol/mina) that build artifacts in this repo where generated from.
 
+## Resources
+
+To understand the kimchi glue (located in the `kimchi` directory), it is
+important to understand how the WebAssembly and JavaScript memory layouts communicate.
+The [rustwasm
+book](https://rustwasm.github.io/docs/book/game-of-life/implementing.html) gives
+some recommandations about interfacing Rust and JavaScript.
+
+The [js_of_ocaml
+website](https://ocsigen.org/js_of_ocaml/latest/manual/overview) can be a good
+resource to understand the JavaScript stubs located in the directory
+`kimchi/js`.
+
 ## Building the SnarkyJS bindings
 
 To instrument the scripts and build the SnarkyJS bindings from source, you need to work from the [Mina monorepo](https://github.com/MinaProtocol/mina).
