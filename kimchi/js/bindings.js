@@ -1926,15 +1926,16 @@ var caml_pasta_fp_proof_of_rust = function (x) {
 
 // Provides: caml_pasta_fp_plonk_proof_create
 // Requires: plonk_wasm, caml_fp_vector_to_rust, caml_array_to_rust_vector, rust_affine_of_caml_affine, caml_pasta_fp_proof_of_rust
-var caml_pasta_fp_plonk_proof_create = function (index, witness_cols, prev_challenges, prev_sgs) {
+var caml_pasta_fp_plonk_proof_create = function (index, witness_cols, runtime_tables, prev_challenges, prev_sgs) {
     var w = new plonk_wasm.WasmVecVecFp(witness_cols.length - 1);
     for (var i = 1; i < witness_cols.length; i++) {
         w.push(caml_fp_vector_to_rust(witness_cols[i]));
     }
     witness_cols = w;
     prev_challenges = caml_fp_vector_to_rust(prev_challenges);
+    runtime_tables = caml_array_to_rust_vector(runtime_tables, )
     prev_sgs = caml_array_to_rust_vector(prev_sgs, rust_affine_of_caml_affine, plonk_wasm.caml_vesta_affine_one);
-    var res = plonk_wasm.caml_pasta_fp_plonk_proof_create(index, witness_cols, prev_challenges, prev_sgs);
+    var res = plonk_wasm.caml_pasta_fp_plonk_proof_create(index, witness_cols, runtime_tables, prev_challenges, prev_sgs);
     var proof = caml_pasta_fp_proof_of_rust(res);
     return proof;
 };
