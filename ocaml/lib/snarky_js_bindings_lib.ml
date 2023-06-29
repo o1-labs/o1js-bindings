@@ -356,6 +356,33 @@ module Snarky = struct
         let z = EC.add (module Impl) external_checks curve g h in
         FF.constrain_external_checks (module Impl) external_checks curve.modulus ;
         z
+
+      let double (g : t_point) (curve : params_var) : t_point =
+        let external_checks = External_checks.create (module Impl) in
+        let z = EC.double (module Impl) external_checks curve g in
+        FF.constrain_external_checks (module Impl) external_checks curve.modulus ;
+        z
+
+      let negate (g : t_point) (curve : params_var) : t_point =
+        EC.negate (module Impl) curve g
+
+      let assert_on_curve (g : t_point) (curve : params_var) : unit =
+        let external_checks = External_checks.create (module Impl) in
+        EC.is_on_curve (module Impl) external_checks curve g ;
+        FF.constrain_external_checks (module Impl) external_checks curve.modulus
+
+      let scale (g : t_point) (scalar : Boolean.var array) (curve : params_var)
+          : t_point =
+        let external_checks = External_checks.create (module Impl) in
+        let scalar = Array.to_list scalar in
+        let z = EC.scalar_mul (module Impl) external_checks curve scalar g in
+        FF.constrain_external_checks (module Impl) external_checks curve.modulus ;
+        z
+
+      let check_subgroup (g : t_point) (curve : params_var) : unit =
+        let external_checks = External_checks.create (module Impl) in
+        EC.check_subgroup (module Impl) external_checks curve g ;
+        FF.constrain_external_checks (module Impl) external_checks curve.modulus
     end
   end
 end
@@ -483,6 +510,16 @@ let snarky =
         val paramsToVars = Curve.params_to_vars
 
         val add = Curve.add
+
+        val double = Curve.double
+
+        val negate = Curve.negate
+
+        val assertOnCurve = Curve.assert_on_curve
+
+        val scale = Curve.scale
+
+        val checkSubgroup = Curve.check_subgroup
       end
   end
 
