@@ -289,9 +289,7 @@ module Transaction_hash = struct
 
   let example_payment =
     let kp = keypair () in
-    let payload : Signed_command_payload.t =
-      Signed_command_payload.dummy
-    in
+    let payload : Signed_command_payload.t = Signed_command_payload.dummy in
     let payment = Signed_command.sign kp payload in
     (payment :> Signed_command.t)
     |> Signed_command.to_yojson |> Yojson.Safe.to_string |> Js.string
