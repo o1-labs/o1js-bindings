@@ -1,7 +1,9 @@
 use ark_poly::EvaluationDomain;
 
+use crate::arkworks::WasmPastaFp;
 use crate::gate_vector::fp::WasmGateVector;
 use crate::srs::fp::WasmFpSrs as WasmSrs;
+use crate::wasm_flat_vector::WasmFlatVector;
 use crate::wasm_vector::WasmVector;
 use kimchi::circuits::lookup::tables::LookupTable;
 use kimchi::circuits::{constraints::ConstraintSystem, gate::CircuitGate};
@@ -15,6 +17,7 @@ use std::{
     io::{BufReader, BufWriter, Seek, SeekFrom::Start},
 };
 use wasm_bindgen::prelude::*;
+use crate::wasm_vector::fp::*;
 
 //
 // CamlPastaFpPlonkIndex (custom type)
@@ -30,7 +33,30 @@ pub struct WasmPastaFpLookupTable {
     #[wasm_bindgen(skip)]
     pub id: i32,
     #[wasm_bindgen(skip)]
-    pub data: Vec<Vec<Fp>>,
+    pub data: WasmVecVecFp,
+}
+
+// Converter from WasmPastaFpLookupTable to LookupTable, used by the binding
+// below.
+impl From<WasmPastaFpLookupTable> for LookupTable<Fp> {
+    fn from(wasm_lt: WasmPastaFpLookupTable) -> LookupTable<Fp> {
+        LookupTable {
+            id: wasm_lt.id.into(),
+            data: wasm_lt.data.0
+        }
+    }
+}
+
+// JS constructor for js/bindings.js
+#[wasm_bindgen]
+impl WasmPastaFpLookupTable {
+    #[wasm_bindgen(constructor)]
+    pub fn new(
+        id: i32,
+        data: WasmVecVecFp,
+    ) -> WasmPastaFpLookupTable {
+        WasmPastaFpLookupTable {id, data}
+    }
 }
 
 //
@@ -63,13 +89,7 @@ pub fn caml_pasta_fp_plonk_index_create(
             })
             .collect();
 
-        let rust_lt = lookup_tables
-            .into_iter()
-            .map(|lt| LookupTable {
-                id: lt.id.into(),
-                data: lt.data.into_iter().map(Into::into).collect(),
-            })
-            .collect();
+        let rust_lt = lookup_tables.into_iter().map(Into::into).collect();
 
         // create constraint system
         let cs = match ConstraintSystem::<Fp>::create(gates)

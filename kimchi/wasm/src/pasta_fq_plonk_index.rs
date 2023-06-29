@@ -1,5 +1,6 @@
 use ark_poly::EvaluationDomain;
 
+use crate::arkworks::WasmPastaFq;
 use crate::gate_vector::fq::WasmGateVector;
 use crate::srs::fq::WasmFqSrs as WasmSrs;
 use crate::wasm_vector::WasmVector;
@@ -15,6 +16,7 @@ use std::{
     io::{BufReader, BufWriter, Seek, SeekFrom::Start},
 };
 use wasm_bindgen::prelude::*;
+use crate::wasm_vector::fq::*;
 
 //
 // CamlPastaFqPlonkIndex (custom type)
@@ -24,13 +26,22 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 pub struct WasmPastaFqPlonkIndex(#[wasm_bindgen(skip)] pub Box<ProverIndex<GAffine>>);
 
-// This should mimic LookupTable structure
 #[wasm_bindgen]
 pub struct WasmPastaFqLookupTable {
     #[wasm_bindgen(skip)]
     pub id: i32,
     #[wasm_bindgen(skip)]
-    pub data: Vec<Vec<Fq>>,
+    pub data: WasmVecVecFq,
+}
+
+impl From<WasmPastaFqLookupTable> for LookupTable<Fq> {
+    fn from(wasm_lt: WasmPastaFqLookupTable) -> LookupTable<Fq> {
+        LookupTable {
+            id: wasm_lt.id.into(),
+            data: wasm_lt
+                .data.0
+        }
+    }
 }
 
 //
@@ -58,13 +69,7 @@ pub fn caml_pasta_fq_plonk_index_create(
             })
             .collect();
 
-        let rust_lt = lookup_tables
-            .into_iter()
-            .map(|lt| LookupTable {
-                id: lt.id.into(),
-                data: lt.data.into_iter().map(Into::into).collect(),
-            })
-            .collect();
+        let rust_lt = lookup_tables.into_iter().map(Into::into).collect();
 
         // create constraint system
         let cs = match ConstraintSystem::<Fq>::create(gates)
