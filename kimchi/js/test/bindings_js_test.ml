@@ -922,8 +922,18 @@ let _ =
            vec
          in
          let urs = Pasta_fp_urs.create 16 in
-         let index0 = create gate_vector 0 0 urs in
-         let index2 = create gate_vector 2 0 urs in
+         (* TODO(dw) write tests with non empty arrays for the next three values *)
+         let lookup_tables = [||] in
+         let indexed_runtime_table_cfg = [||] in
+         let customed_runtime_table_cfg = [||] in
+         let index0 =
+           create gate_vector 0 lookup_tables indexed_runtime_table_cfg
+             customed_runtime_table_cfg 0 urs
+         in
+         let index2 =
+           create gate_vector 2 lookup_tables indexed_runtime_table_cfg
+             customed_runtime_table_cfg 0 urs
+         in
          assert (max_degree index0 = 16) ;
          assert (max_degree index2 = 16) ;
          assert (public_inputs index0 = 0) ;
@@ -969,8 +979,18 @@ let _ =
            vec
          in
          let urs = Pasta_fq_urs.create 16 in
-         let index0 = create gate_vector 0 0 urs in
-         let index2 = create gate_vector 2 0 urs in
+         (* TODO(dw) write tests with non empty arrays for the next three values *)
+         let lookup_tables = [||] in
+         let indexed_runtime_table_cfg = [||] in
+         let customed_runtime_table_cfg = [||] in
+         let index0 =
+           create gate_vector 0 lookup_tables indexed_runtime_table_cfg
+             customed_runtime_table_cfg 0 urs
+         in
+         let index2 =
+           create gate_vector 2 lookup_tables indexed_runtime_table_cfg
+             customed_runtime_table_cfg 0 urs
+         in
          assert (max_degree index0 = 16) ;
          assert (max_degree index2 = 16) ;
          assert (public_inputs index0 = 0) ;
@@ -1062,8 +1082,18 @@ let _ =
              ~other_field_equal:Pasta_fq.equal
          in
          let urs = Pasta_fp_urs.create 16 in
-         let index0 = Pasta_fp_index.create gate_vector 0 0 urs in
-         let index2 = Pasta_fp_index.create gate_vector 2 0 urs in
+         (* TODO(dw) write tests with non empty arrays for the next three values *)
+         let lookup_tables = [||] in
+         let indexed_runtime_table_cfg = [||] in
+         let customed_runtime_table_cfg = [||] in
+         let index0 =
+           Pasta_fp_index.create gate_vector 0 lookup_tables
+             indexed_runtime_table_cfg customed_runtime_table_cfg 0 urs
+         in
+         let index2 =
+           Pasta_fp_index.create gate_vector 2 lookup_tables
+             indexed_runtime_table_cfg customed_runtime_table_cfg 0 urs
+         in
          let vindex0_0 = create index0 in
          let vindex0_1 = create index0 in
          assert (eq vindex0_0 vindex0_1) ;
@@ -1112,8 +1142,18 @@ let _ =
              ~other_field_equal:Pasta_fp.equal
          in
          let urs = Pasta_fq_urs.create 16 in
-         let index0 = Pasta_fq_index.create gate_vector 0 0 urs in
-         let index2 = Pasta_fq_index.create gate_vector 2 0 urs in
+         (* TODO(dw) write tests with non empty arrays for the next three values *)
+         let lookup_tables = [||] in
+         let indexed_runtime_table_cfg = [||] in
+         let customed_runtime_table_cfg = [||] in
+         let index0 =
+           Pasta_fq_index.create gate_vector 0 lookup_tables
+             indexed_runtime_table_cfg customed_runtime_table_cfg 0 urs
+         in
+         let index2 =
+           Pasta_fq_index.create gate_vector 2 lookup_tables
+             indexed_runtime_table_cfg customed_runtime_table_cfg 0 urs
+         in
          let vindex0_0 = create index0 in
          let vindex0_1 = create index0 in
          assert (eq vindex0_0 vindex0_1) ;
