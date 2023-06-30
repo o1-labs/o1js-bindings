@@ -48,6 +48,10 @@ export default [
         name: 'foreignCurve',
         type: 'object',
       },
+      {
+        name: 'ecdsa',
+        type: 'object',
+      },
     ],
   },
   {

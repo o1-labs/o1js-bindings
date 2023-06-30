@@ -384,6 +384,28 @@ module Snarky = struct
         EC.check_subgroup (module Impl) external_checks curve g ;
         FF.constrain_external_checks (module Impl) external_checks curve.modulus
     end
+
+    module Ecdsa = struct
+      type signature = t * t
+
+      let verify (signature : signature) (msg_hash : t)
+          (public_key : Curve.t_point) (curve : Curve.params_var) =
+        let base_checks = External_checks.create (module Impl) in
+        let scalar_checks = External_checks.create (module Impl) in
+        Kimchi_gadgets.Ecdsa.verify
+          (module Impl)
+          base_checks scalar_checks curve public_key signature msg_hash ;
+        FF.constrain_external_checks (module Impl) base_checks curve.modulus ;
+        FF.constrain_external_checks (module Impl) scalar_checks curve.order
+
+      let assert_valid_signature (signature : signature)
+          (curve : Curve.params_var) : unit =
+        let scalar_checks = External_checks.create (module Impl) in
+        Kimchi_gadgets.Ecdsa.signature_scalar_check
+          (module Impl)
+          scalar_checks curve signature ;
+        FF.constrain_external_checks (module Impl) scalar_checks curve.order
+    end
   end
 end
 
@@ -520,6 +542,14 @@ let snarky =
         val scale = Curve.scale
 
         val checkSubgroup = Curve.check_subgroup
+      end
+
+    val ecdsa =
+      let open Snarky.Foreign_field in
+      object%js
+        val verify = Ecdsa.verify
+
+        val assertValidSignature = Ecdsa.assert_valid_signature
       end
   end
 
