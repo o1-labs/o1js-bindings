@@ -156,8 +156,8 @@ module Snarky = struct
 
     let to_constant_and_terms x = Field.to_constant_and_terms x
 
-    let not left right length =
-      Kimchi_gadgets.Bitwise.bnot (module Impl) left right length    
+    let not left length =
+      Kimchi_gadgets.Bitwise.bnot (module Impl) left length    
   end
 
   module Bool = struct
