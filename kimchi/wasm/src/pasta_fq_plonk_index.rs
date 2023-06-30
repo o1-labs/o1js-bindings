@@ -1,7 +1,11 @@
 use ark_poly::EvaluationDomain;
+use kimchi::circuits::lookup::runtime_tables::RuntimeTableCfg;
+use kimchi::circuits::lookup::runtime_tables::RuntimeTableSpec;
 
+use crate::arkworks::WasmPastaFq;
 use crate::gate_vector::fq::WasmGateVector;
 use crate::srs::fq::WasmFqSrs as WasmSrs;
+use crate::wasm_flat_vector::WasmFlatVector;
 use crate::wasm_vector::fq::*;
 use crate::wasm_vector::WasmVector;
 use kimchi::circuits::lookup::tables::LookupTable;
@@ -60,6 +64,9 @@ pub fn caml_pasta_fq_plonk_index_create(
     gates: &WasmGateVector,
     public_: i32,
     lookup_tables: WasmVector<WasmPastaFqLookupTable>,
+    // second parameter should be usize
+    indexed_runtime_tables_cfg: WasmVector<(i32, i32)>,
+    customed_runtime_tables_cfg: WasmVector<(i32, WasmFlatVector<WasmPastaFq>)>,
     prev_challenges: i32,
     srs: &WasmSrs,
 ) -> Result<WasmPastaFqPlonkIndex, JsError> {
@@ -77,6 +84,23 @@ pub fn caml_pasta_fq_plonk_index_create(
             .collect();
 
         let rust_lt = lookup_tables.into_iter().map(Into::into).collect();
+
+        // Runtime tables
+        let mut runtime_tables: Vec<RuntimeTableCfg<Fq>> = indexed_runtime_tables_cfg
+            .into_iter()
+            .map(|(id, len)| RuntimeTableSpec { id, len })
+            .map(|s| RuntimeTableCfg::Indexed(s))
+            .collect();
+
+        runtime_tables.extend(
+            customed_runtime_tables_cfg
+                .into_iter()
+                .map(|(id, first_column)| {
+                    let first_column: Vec<Fq> = first_column.into_iter().map(Into::into).collect();
+                    RuntimeTableCfg::Custom { id, first_column }
+                }),
+        );
+
 
         // create constraint system
         let cs = match ConstraintSystem::<Fq>::create(gates)

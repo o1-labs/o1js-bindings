@@ -1,7 +1,12 @@
 use ark_poly::EvaluationDomain;
+use kimchi::circuits::lookup::runtime_tables;
+use kimchi::circuits::lookup::runtime_tables::RuntimeTableCfg;
+use kimchi::circuits::lookup::runtime_tables::RuntimeTableSpec;
 
+use crate::arkworks::WasmPastaFp;
 use crate::gate_vector::fp::WasmGateVector;
 use crate::srs::fp::WasmFpSrs as WasmSrs;
+use crate::wasm_flat_vector::WasmFlatVector;
 use crate::wasm_vector::fp::*;
 use crate::wasm_vector::WasmVector;
 use kimchi::circuits::lookup::tables::LookupTable;
@@ -63,11 +68,9 @@ pub fn caml_pasta_fp_plonk_index_create(
     gates: &WasmGateVector,
     public_: i32,
     lookup_tables: WasmVector<WasmPastaFpLookupTable>,
-    // RuntimeTableCfg
-    // IMPROVEME: Enum is not provided by ocaml-gen, therefore creating to
-    // separate arguments
-    // indexed_runtime_tables_cfg: Vec<(i32, usize)>,
-    // customed_runtime_tables_cfg: Vec<(i32, Vec<WasmPastaFp>)>,
+    // second parameter should be usize
+    indexed_runtime_tables_cfg: WasmVector<(i32, i32)>,
+    customed_runtime_tables_cfg: WasmVector<(i32, WasmFlatVector<WasmPastaFp>)>,
     prev_challenges: i32,
     srs: &WasmSrs,
 ) -> Result<WasmPastaFpPlonkIndex, JsError> {
@@ -86,11 +89,28 @@ pub fn caml_pasta_fp_plonk_index_create(
 
         let rust_lt = lookup_tables.into_iter().map(Into::into).collect();
 
+        // Runtime tables
+        let mut runtime_tables: Vec<RuntimeTableCfg<Fp>> = indexed_runtime_tables_cfg
+            .into_iter()
+            .map(|(id, len)| RuntimeTableSpec { id, len })
+            .map(|s| RuntimeTableCfg::Indexed(s))
+            .collect();
+
+        runtime_tables.extend(
+            customed_runtime_tables_cfg
+                .into_iter()
+                .map(|(id, first_column)| {
+                    let first_column: Vec<Fp> = first_column.into_iter().map(Into::into).collect();
+                    RuntimeTableCfg::Custom { id, first_column }
+                }),
+        );
+
         // create constraint system
         let cs = match ConstraintSystem::<Fp>::create(gates)
             .public(public_ as usize)
             .prev_challenges(prev_challenges as usize)
             .lookup(rust_lt)
+            .runtime_tables(runtime_tables)
             .build()
         {
             Err(_) => {
