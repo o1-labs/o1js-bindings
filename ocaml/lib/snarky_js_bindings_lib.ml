@@ -307,6 +307,9 @@ module Snarky = struct
         (Kimchi_gadgets.Common.field_bytes_of_hex
            (module Impl)
            (Js.to_string hex) )
+
+    let check_bits value bits =
+      Kimchi_gadgets.Lookup.less_than_bits (module Impl) ~bits value
   end
 end
 
@@ -418,6 +421,8 @@ let snarky =
         method create = Snarky.SHA.create
 
         method fieldBytesFromHex = Snarky.SHA.field_bytes_of_hex
+
+        method checkBits = Snarky.SHA.check_bits
       end
   end
 
