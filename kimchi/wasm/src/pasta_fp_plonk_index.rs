@@ -1,7 +1,5 @@
 use ark_poly::EvaluationDomain;
-use kimchi::circuits::lookup::runtime_tables;
 use kimchi::circuits::lookup::runtime_tables::RuntimeTableCfg;
-use kimchi::circuits::lookup::runtime_tables::RuntimeTableSpec;
 
 use crate::arkworks::WasmPastaFp;
 use crate::gate_vector::fp::WasmGateVector;
@@ -30,7 +28,8 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 pub struct WasmPastaFpPlonkIndex(#[wasm_bindgen(skip)] pub Box<ProverIndex<GAffine>>);
 
-// This should mimic LookupTable structure
+// Lookup tables
+// // This should mimic LookupTable structure
 #[wasm_bindgen]
 pub struct WasmPastaFpLookupTable {
     #[wasm_bindgen(skip)]
@@ -59,7 +58,39 @@ impl WasmPastaFpLookupTable {
     }
 }
 
-//
+// Runtime table config
+// //
+
+#[wasm_bindgen]
+pub struct WasmPastaFpRuntimeTableCfg {
+    #[wasm_bindgen(skip)]
+    pub id: i32,
+    #[wasm_bindgen(skip)]
+    pub first_column: WasmFlatVector<WasmPastaFp>,
+}
+
+// JS constructor for js/bindings.js
+#[wasm_bindgen]
+impl WasmPastaFpRuntimeTableCfg {
+    #[wasm_bindgen(constructor)]
+    pub fn new(id: i32, first_column: WasmFlatVector<WasmPastaFp>) -> Self {
+        Self { id, first_column }
+    }
+}
+
+impl From<WasmPastaFpRuntimeTableCfg> for RuntimeTableCfg<Fp> {
+    fn from(wasm_rt_table_cfg: WasmPastaFpRuntimeTableCfg) -> Self {
+        Self {
+            id: wasm_rt_table_cfg.id,
+            first_column: wasm_rt_table_cfg
+                .first_column
+                .into_iter()
+                .map(Into::into)
+                .collect(),
+        }
+    }
+}
+
 // CamlPastaFpPlonkIndex methods
 //
 
@@ -68,9 +99,7 @@ pub fn caml_pasta_fp_plonk_index_create(
     gates: &WasmGateVector,
     public_: i32,
     lookup_tables: WasmVector<WasmPastaFpLookupTable>,
-    // second parameter should be usize
-    indexed_runtime_tables_cfg: WasmVector<(i32, i32)>,
-    customed_runtime_tables_cfg: WasmVector<(i32, WasmFlatVector<WasmPastaFp>)>,
+    runtime_tables: WasmVector<WasmPastaFpRuntimeTableCfg>,
     prev_challenges: i32,
     srs: &WasmSrs,
 ) -> Result<WasmPastaFpPlonkIndex, JsError> {
@@ -90,27 +119,19 @@ pub fn caml_pasta_fp_plonk_index_create(
         let rust_lt = lookup_tables.into_iter().map(Into::into).collect();
 
         // Runtime tables
-        let mut runtime_tables: Vec<RuntimeTableCfg<Fp>> = indexed_runtime_tables_cfg
-            .into_iter()
-            .map(|(id, len)| RuntimeTableSpec { id, len })
-            .map(|s| RuntimeTableCfg::Indexed(s))
-            .collect();
-
-        runtime_tables.extend(
-            customed_runtime_tables_cfg
-                .into_iter()
-                .map(|(id, first_column)| {
-                    let first_column: Vec<Fp> = first_column.into_iter().map(Into::into).collect();
-                    RuntimeTableCfg::Custom { id, first_column }
-                }),
-        );
+        let rust_runtime_table_cfgs: Vec<RuntimeTableCfg<Fp>> =
+            runtime_tables.into_iter().map(Into::into).collect();
 
         // create constraint system
         let cs = match ConstraintSystem::<Fp>::create(gates)
             .public(public_ as usize)
             .prev_challenges(prev_challenges as usize)
             .lookup(rust_lt)
-            .runtime_tables(runtime_tables)
+            .runtime(if rust_runtime_table_cfgs.is_empty() {
+                None
+            } else {
+                Some(rust_runtime_table_cfgs)
+            })
             .build()
         {
             Err(_) => {

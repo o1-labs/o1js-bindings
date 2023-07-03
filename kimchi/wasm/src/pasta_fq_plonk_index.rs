@@ -1,6 +1,5 @@
 use ark_poly::EvaluationDomain;
 use kimchi::circuits::lookup::runtime_tables::RuntimeTableCfg;
-use kimchi::circuits::lookup::runtime_tables::RuntimeTableSpec;
 
 use crate::arkworks::WasmPastaFq;
 use crate::gate_vector::fq::WasmGateVector;
@@ -55,6 +54,42 @@ impl WasmPastaFqLookupTable {
     }
 }
 
+// Runtime table config
+// //
+
+// Runtime table config
+// //
+
+#[wasm_bindgen]
+pub struct WasmPastaFqRuntimeTableCfg {
+    #[wasm_bindgen(skip)]
+    pub id: i32,
+    #[wasm_bindgen(skip)]
+    pub first_column: WasmFlatVector<WasmPastaFq>,
+}
+
+impl From<WasmPastaFqRuntimeTableCfg> for RuntimeTableCfg<Fq> {
+    fn from(wasm_rt_cfg: WasmPastaFqRuntimeTableCfg) -> Self {
+        Self {
+            id: wasm_rt_cfg.id,
+            first_column: wasm_rt_cfg
+                .first_column
+                .into_iter()
+                .map(Into::into)
+                .collect(),
+        }
+    }
+}
+
+// JS constructor for js/bindings.js
+#[wasm_bindgen]
+impl WasmPastaFqRuntimeTableCfg {
+    #[wasm_bindgen(constructor)]
+    pub fn new(id: i32, first_column: WasmFlatVector<WasmPastaFq>) -> Self {
+        Self { id, first_column }
+    }
+}
+
 //
 // CamlPastaFqPlonkIndex methods
 //
@@ -64,9 +99,7 @@ pub fn caml_pasta_fq_plonk_index_create(
     gates: &WasmGateVector,
     public_: i32,
     lookup_tables: WasmVector<WasmPastaFqLookupTable>,
-    // second parameter should be usize
-    indexed_runtime_tables_cfg: WasmVector<(i32, i32)>,
-    customed_runtime_tables_cfg: WasmVector<(i32, WasmFlatVector<WasmPastaFq>)>,
+    runtime_tables: WasmVector<WasmPastaFqRuntimeTableCfg>,
     prev_challenges: i32,
     srs: &WasmSrs,
 ) -> Result<WasmPastaFqPlonkIndex, JsError> {
@@ -86,27 +119,19 @@ pub fn caml_pasta_fq_plonk_index_create(
         let rust_lt = lookup_tables.into_iter().map(Into::into).collect();
 
         // Runtime tables
-        let mut runtime_tables: Vec<RuntimeTableCfg<Fq>> = indexed_runtime_tables_cfg
-            .into_iter()
-            .map(|(id, len)| RuntimeTableSpec { id, len })
-            .map(|s| RuntimeTableCfg::Indexed(s))
-            .collect();
-
-        runtime_tables.extend(
-            customed_runtime_tables_cfg
-                .into_iter()
-                .map(|(id, first_column)| {
-                    let first_column: Vec<Fq> = first_column.into_iter().map(Into::into).collect();
-                    RuntimeTableCfg::Custom { id, first_column }
-                }),
-        );
-
+        let rust_runtime_table_cfgs: Vec<RuntimeTableCfg<Fq>> =
+            runtime_tables.into_iter().map(Into::into).collect();
 
         // create constraint system
         let cs = match ConstraintSystem::<Fq>::create(gates)
             .public(public_ as usize)
             .prev_challenges(prev_challenges as usize)
             .lookup(rust_lt)
+            .runtime(if rust_runtime_table_cfgs.is_empty() {
+                None
+            } else {
+                Some(rust_runtime_table_cfgs)
+            })
             .build()
         {
             Err(_) => {
