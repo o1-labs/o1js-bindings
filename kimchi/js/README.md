@@ -14,8 +14,8 @@ For example, to run the nodejs tests in the `test/nodejs` directory you will
 need to run
 
 ```
-dune build src/lib/marlin_plonk_bindings/js/test/nodejs/nodejs_test.bc.js
-src/lib/marlin_plonk_bindings/js/test/nodejs/copy_over.sh
+dune build src/lib/snarkyjs/src/bindings/kimchi/js/test/nodejs/nodejs_test.bc.js
+src/lib/snarkyjs/src/bindings/kimchi/js/test/nodejs/copy_over.sh
 ```
 
 Similarly, to run the web tests in `test/web`, you can run
