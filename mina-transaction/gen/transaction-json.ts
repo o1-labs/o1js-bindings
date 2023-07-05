@@ -2,9 +2,8 @@
 
 import {
   PublicKey,
-  UInt8,
-  UInt32,
   UInt64,
+  UInt32,
   TokenId,
   Field,
   Bool,
@@ -18,9 +17,8 @@ export { TypeMap };
 
 type TypeMap = {
   PublicKey: PublicKey;
-  UInt8: UInt8;
-  UInt32: UInt32;
   UInt64: UInt64;
+  UInt32: UInt32;
   TokenId: TokenId;
   Field: Field;
   Bool: Bool;
