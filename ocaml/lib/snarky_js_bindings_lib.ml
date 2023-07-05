@@ -309,7 +309,8 @@ module Snarky = struct
            (Js.to_string hex) )
 
     let check_bits value bits =
-      Kimchi_gadgets.Lookup.less_than_bits (module Impl) ~bits value
+      Kimchi_gadgets.Lookup.less_than_bits (module Impl) ~bits value ;
+      Kimchi_gadgets.Range_check.bits64 (module Impl) Impl.Field.zero
   end
 end
 
