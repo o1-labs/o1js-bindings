@@ -1351,6 +1351,19 @@ var caml_pasta_fq_plonk_circuit_serialize = function (
   );
 };
 
+// Provides: caml_fp_runtime_table_cfg_to_rust
+// Requires: plonk_wasm,caml_fp_vector_to_rust
+var caml_fp_runtime_table_cfg_to_rust = function (
+  caml_runtime_table_cfg,
+  mk_class
+) {
+  var res = new mk_class(
+    caml_runtime_table_cfg.id,
+    caml_fp_vector_to_rust(caml_runtime_table_cfg.first_column)
+  );
+  return res;
+};
+
 // Provides: caml_pasta_fp_plonk_index_create
 // Requires: plonk_wasm, free_on_finalize
 var caml_pasta_fp_plonk_index_create = function (
@@ -1421,6 +1434,19 @@ var caml_pasta_fp_plonk_index_write = function (append, t, path) {
     t,
     caml_jsstring_of_string(path)
   );
+};
+
+// Provides: caml_fq_runtime_table_cfg_to_rust
+// Requires: plonk_wasm,caml_fq_vector_to_rust
+var caml_fq_runtime_table_cfg_to_rust = function (
+  caml_runtime_table_cfg,
+  mk_class
+) {
+  var res = new mk_class(
+    caml_runtime_table_cfg.id,
+    caml_fq_vector_to_rust(caml_runtime_table_cfg.first_column)
+  );
+  return res;
 };
 
 // Provides: caml_pasta_fq_plonk_index_create
