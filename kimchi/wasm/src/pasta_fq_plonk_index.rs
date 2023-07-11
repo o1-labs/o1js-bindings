@@ -58,6 +58,7 @@ impl WasmPastaFqLookupTable {
 pub fn caml_pasta_fq_plonk_index_create(
     gates: &WasmGateVector,
     public_: i32,
+    lookup_tables: WasmVector<WasmPastaFqLookupTable>,
     prev_challenges: i32,
     srs: &WasmSrs,
 ) -> Result<WasmPastaFqPlonkIndex, JsError> {
@@ -74,10 +75,14 @@ pub fn caml_pasta_fq_plonk_index_create(
             })
             .collect();
 
+        let rust_lookup_tables: Vec<LookupTable<Fq>> =
+            lookup_tables.into_iter().map(Into::into).collect();
+
         // create constraint system
         let cs = match ConstraintSystem::<Fq>::create(gates)
             .public(public_ as usize)
             .prev_challenges(prev_challenges as usize)
+            .lookup(rust_lookup_tables)
             .build()
         {
             Err(_) => {
