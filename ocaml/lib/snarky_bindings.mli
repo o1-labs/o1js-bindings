@@ -3,6 +3,7 @@ module Backend = Kimchi_backend.Pasta.Vesta_based_plonk
 module Impl = Pickles.Impls.Step
 module Field = Impl.Field
 module Boolean = Impl.Boolean
+module Bignum_bigint = Snarky_backendless.Backend_extended.Bignum_bigint
 
 module Poseidon : sig
   type sponge
@@ -14,6 +15,18 @@ module Foreign_field : sig
   type t_const
 
   type op_mode
+
+  module Curve : sig
+    type t_point
+
+    type params_without_ia
+
+    type params_var
+  end
+
+  module Ecdsa : sig
+    type signature
+  end
 end
 
 val snarky :
@@ -146,6 +159,60 @@ val snarky :
            -> Foreign_field.op_mode array
            -> Foreign_field.t_const
            -> Foreign_field.t )
+          Js.readonly_prop
+      ; bigintToMl : (Js.Unsafe.any Js.t -> Bignum_bigint.t) Js.readonly_prop >
+      Js.t
+      Js.readonly_prop
+  ; foreignCurve :
+      < add :
+          (   Foreign_field.Curve.t_point
+           -> Foreign_field.Curve.t_point
+           -> Foreign_field.Curve.params_var
+           -> Foreign_field.Curve.t_point )
+          Js.readonly_prop
+      ; assertOnCurve :
+          (Foreign_field.Curve.t_point -> Foreign_field.Curve.params_var -> unit)
+          Js.readonly_prop
+      ; checkSubgroup :
+          (Foreign_field.Curve.t_point -> Foreign_field.Curve.params_var -> unit)
+          Js.readonly_prop
+      ; create :
+          (   Foreign_field.Curve.params_without_ia
+           -> Kimchi_gadgets.Curve_params.t )
+          Js.readonly_prop
+      ; double :
+          (   Foreign_field.Curve.t_point
+           -> Foreign_field.Curve.params_var
+           -> Foreign_field.Curve.t_point )
+          Js.readonly_prop
+      ; negate :
+          (   Foreign_field.Curve.t_point
+           -> Foreign_field.Curve.params_var
+           -> Foreign_field.Curve.t_point )
+          Js.readonly_prop
+      ; paramsToVars :
+          (Kimchi_gadgets.Curve_params.t -> Foreign_field.Curve.params_var)
+          Js.readonly_prop
+      ; scale :
+          (   Foreign_field.Curve.t_point
+           -> Boolean.var array
+           -> Foreign_field.Curve.params_var
+           -> Foreign_field.Curve.t_point )
+          Js.readonly_prop >
+      Js.t
+      Js.readonly_prop
+  ; ecdsa :
+      < assertValidSignature :
+          (   Foreign_field.Ecdsa.signature
+           -> Foreign_field.Curve.params_var
+           -> unit )
+          Js.readonly_prop
+      ; verify :
+          (   Foreign_field.Ecdsa.signature
+           -> Foreign_field.t
+           -> Foreign_field.Curve.t_point
+           -> Foreign_field.Curve.params_var
+           -> unit )
           Js.readonly_prop >
       Js.t
       Js.readonly_prop >
