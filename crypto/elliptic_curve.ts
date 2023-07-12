@@ -1,5 +1,12 @@
 import { FiniteField, Fp, inverse, mod, p, q } from './finite_field.js';
-export { Pallas, Vesta, GroupAffine, GroupProjective, GroupMapPallas };
+export {
+  Pallas,
+  Vesta,
+  GroupAffine,
+  GroupProjective,
+  createCurveProjective,
+  GroupMapPallas,
+};
 
 // TODO: constants, like generator points and cube roots for endomorphisms, should be drawn from
 // a common source, i.e. generated from the Rust code
@@ -50,13 +57,14 @@ type STuple = { u: bigint; v: bigint; y: bigint };
 const GroupMap = {
   create: (F: FiniteField, params: GroupMapParams) => {
     const { a, b } = params.spec;
+    if (a !== 0n) throw Error('GroupMap only supports a = 0');
     function tryDecode(x: bigint): { x: bigint; y: bigint } | undefined {
-      // a * a * a = a^3
+      // x^3
       const pow3 = F.power(x, 3n);
       // a * x - since a = 0, ax will be 0 as well
       // const ax = F.mul(a, x);
 
-      // a^3 + ax + b, but since ax = 0 we can write a^3 + b
+      // x^3 + ax + b, but since ax = 0 we can write x^3 + b
       const y = F.add(pow3, b);
 
       if (!F.isSquare(y)) return undefined;
@@ -258,6 +266,9 @@ function projectiveOnCurve({ x, y, z }: GroupProjective, p: bigint, b: bigint) {
   return mod(y2 - x3 - b * z6, p) === 0n;
 }
 
+/**
+ * Projective curve arithmetic in Jacobian coordinates
+ */
 function createCurveProjective(
   p: bigint,
   generator: GroupProjective,
@@ -266,6 +277,7 @@ function createCurveProjective(
   b: bigint,
   a: bigint
 ) {
+  if (a !== 0n) throw Error('createCurveProjective only supports a = 0');
   return {
     zero: projectiveZero,
     one: generator,
