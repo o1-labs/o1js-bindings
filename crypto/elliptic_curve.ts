@@ -22,8 +22,9 @@ const vestaEndoScalar =
 const pallasEndoScalar =
   26005156700822196841419187675678338661165322343552424574062261873906994770353n;
 
-// the b in y^2 = x^3 + b
+// the b and a in y^2 = x^3 + ax + b
 const b = 5n;
+const a = 0n;
 
 const projectiveZero = { x: 1n, y: 1n, z: 0n };
 
@@ -262,7 +263,8 @@ function createCurveProjective(
   generator: GroupProjective,
   endoBase: bigint,
   endoScalar: bigint,
-  b: bigint
+  b: bigint,
+  a: bigint
 ) {
   return {
     zero: projectiveZero,
@@ -270,6 +272,7 @@ function createCurveProjective(
     endoBase,
     endoScalar,
     b,
+    a,
 
     equal(g: GroupProjective, h: GroupProjective) {
       return projectiveEqual(g, h, p);
@@ -310,12 +313,14 @@ const Pallas = createCurveProjective(
   pallasGeneratorProjective,
   pallasEndoBase,
   pallasEndoScalar,
-  b
+  b,
+  a
 );
 const Vesta = createCurveProjective(
   q,
   vestaGeneratorProjective,
   vestaEndoBase,
   vestaEndoScalar,
-  b
+  b,
+  a
 );
