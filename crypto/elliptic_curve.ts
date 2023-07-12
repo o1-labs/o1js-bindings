@@ -14,12 +14,10 @@ export {
 const pallasGeneratorProjective = {
   x: 1n,
   y: 12418654782883325593414442427049395787963493412651469444558597405572177144507n,
-  z: 1n,
 };
 const vestaGeneratorProjective = {
   x: 1n,
   y: 11426906929455361843568202299992114520848200991084027513389447476559454104162n,
-  z: 1n,
 };
 const vestaEndoBase =
   2942865608506852014473558576493638302197734138389222805617480874486368177743n;
@@ -225,6 +223,15 @@ function projectiveScale(g: GroupProjective, x: bigint, p: bigint) {
   return h;
 }
 
+function projectiveFromAffine({
+  x,
+  y,
+  infinity,
+}: GroupAffine): GroupProjective {
+  if (infinity) return projectiveZero;
+  return { x, y, z: 1n };
+}
+
 function projectiveToAffine(g: GroupProjective, p: bigint): GroupAffine {
   let z = g.z;
   if (z === 0n) {
@@ -280,7 +287,7 @@ function createCurveProjective({
   endoScalar,
 }: {
   p: bigint;
-  generator: GroupProjective;
+  generator: { x: bigint; y: bigint };
   b: bigint;
   a: bigint;
   endoBase?: bigint;
@@ -289,7 +296,7 @@ function createCurveProjective({
   if (a !== 0n) throw Error('createCurveProjective only supports a = 0');
   return {
     zero: projectiveZero,
-    one: generator,
+    one: { x: generator.x, y: generator.y, z: 1n },
     get endoBase() {
       if (endoBase === undefined)
         throw Error('`endoBase` for this curve was not provided.');
@@ -332,9 +339,8 @@ function createCurveProjective({
     toAffine(g: GroupProjective) {
       return projectiveToAffine(g, p);
     },
-    fromAffine({ x, y, infinity }: GroupAffine) {
-      if (infinity) return projectiveZero;
-      return { x, y, z: 1n };
+    fromAffine(a: GroupAffine) {
+      return projectiveFromAffine(a);
     },
   };
 }
