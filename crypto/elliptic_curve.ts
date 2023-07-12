@@ -271,20 +271,35 @@ function projectiveOnCurve({ x, y, z }: GroupProjective, p: bigint, b: bigint) {
 /**
  * Projective curve arithmetic in Jacobian coordinates
  */
-function createCurveProjective(
-  p: bigint,
-  generator: GroupProjective,
-  endoBase: bigint,
-  endoScalar: bigint,
-  b: bigint,
-  a: bigint
-) {
+function createCurveProjective({
+  p,
+  generator,
+  b,
+  a,
+  endoBase,
+  endoScalar,
+}: {
+  p: bigint;
+  generator: GroupProjective;
+  b: bigint;
+  a: bigint;
+  endoBase?: bigint;
+  endoScalar?: bigint;
+}) {
   if (a !== 0n) throw Error('createCurveProjective only supports a = 0');
   return {
     zero: projectiveZero,
     one: generator,
-    endoBase,
-    endoScalar,
+    get endoBase() {
+      if (endoBase === undefined)
+        throw Error('`endoBase` for this curve was not provided.');
+      return endoBase;
+    },
+    get endoScalar() {
+      if (endoScalar === undefined)
+        throw Error('`endoScalar` for this curve was not provided.');
+      return endoScalar;
+    },
     b,
     a,
 
@@ -310,6 +325,8 @@ function createCurveProjective(
       return projectiveScale(g, s, p);
     },
     endomorphism({ x, y, z }: GroupProjective) {
+      if (endoBase === undefined)
+        throw Error('endomorphism needs `endoBase` parameter.');
       return { x: mod(endoBase * x, p), y, z };
     },
     toAffine(g: GroupProjective) {
@@ -324,19 +341,19 @@ function createCurveProjective(
 
 type ProjectiveCurve = ReturnType<typeof createCurveProjective>;
 
-const Pallas = createCurveProjective(
+const Pallas = createCurveProjective({
   p,
-  pallasGeneratorProjective,
-  pallasEndoBase,
-  pallasEndoScalar,
+  generator: pallasGeneratorProjective,
   b,
-  a
-);
-const Vesta = createCurveProjective(
-  q,
-  vestaGeneratorProjective,
-  vestaEndoBase,
-  vestaEndoScalar,
+  a,
+  endoBase: pallasEndoBase,
+  endoScalar: pallasEndoScalar,
+});
+const Vesta = createCurveProjective({
+  p,
+  generator: vestaGeneratorProjective,
   b,
-  a
-);
+  a,
+  endoBase: vestaEndoBase,
+  endoScalar: vestaEndoScalar,
+});
