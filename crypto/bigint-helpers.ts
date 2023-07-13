@@ -1,4 +1,10 @@
-export { changeBase, bytesToBigInt, bigIntToBytes, parseHexString };
+export {
+  changeBase,
+  bytesToBigInt,
+  bigIntToBytes,
+  bigIntToBits,
+  parseHexString,
+};
 
 function bytesToBigInt(bytes: Uint8Array | number[]) {
   let x = 0n;
@@ -14,7 +20,7 @@ function parseHexString(input: string) {
   // Parse the bytes explicitly, Bigint endianness is wrong
   let inputBytes = new Uint8Array(32);
   for (var j = 0; j < 32; j++) {
-      inputBytes[j] = parseInt(input[2*j] + input[2*j+1], 16);
+    inputBytes[j] = parseInt(input[2 * j] + input[2 * j + 1], 16);
   }
   return bytesToBigInt(inputBytes);
 }
@@ -35,6 +41,22 @@ function bigIntToBytes(x: bigint, length: number) {
     throw Error(`bigIntToBytes: input does not fit in ${length} bytes`);
   }
   return bytes;
+}
+
+/**
+ * Transforms bigint to little-endian array of bits (booleans).
+ * The length of the bit array is determined as needed.
+ */
+function bigIntToBits(x: bigint) {
+  if (x < 0n) {
+    throw Error(`bigIntToBits: negative numbers are not supported, got ${x}`);
+  }
+  let bits: boolean[] = [];
+  for (; x > 0n; x >>= 1n) {
+    let bit = !!(x & 1n);
+    bits.push(bit);
+  }
+  return bits;
 }
 
 function changeBase(digits: bigint[], base: bigint, newBase: bigint) {
