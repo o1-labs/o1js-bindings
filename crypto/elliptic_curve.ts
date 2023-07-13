@@ -382,11 +382,40 @@ function affineOnCurve(
 }
 
 function affineAdd(g: GroupAffine, h: GroupAffine, p: bigint): GroupAffine {
-  throw 'unimplemented';
+  if (g.infinity) return h;
+  if (h.infinity) return g;
+
+  let { x: x1, y: y1 } = g;
+  let { x: x2, y: y2 } = h;
+
+  if (x1 === x2) {
+    // g + g --> we double
+    if (y1 === y2) return affineDouble(g, p);
+    // g - g --> return zero
+    return affineZero;
+  }
+  // m = (y2 - y1)/(x2 - x1)
+  let d = inverse(x2 - x1, p);
+  if (d === undefined) throw Error('impossible');
+  let m = mod((y2 - y1) * d, p);
+  // x3 = m^2 - x1 - x2
+  let x3 = mod(m * m - x1 - x2, p);
+  // y3 = m*(x1 - x3) - y1
+  let y3 = mod(m * (x1 - x3) - y1, p);
+  return { x: x3, y: y3, infinity: false };
 }
 
-function affineDouble(g: GroupAffine, p: bigint): GroupAffine {
-  throw 'unimplemented';
+function affineDouble({ x, y, infinity }: GroupAffine, p: bigint): GroupAffine {
+  if (infinity) return affineZero;
+  // m = 3*x^2 / 2y
+  let d = inverse(2n * y, p);
+  if (d === undefined) throw Error('impossible');
+  let m = mod(3n * x * x * d, p);
+  // x2 = m^2 - 2x
+  let x2 = mod(m * m - 2n * x, p);
+  // y2 = m*(x - x2) - y
+  let y2 = mod(m * (x - x2) - y, p);
+  return { x: x2, y: y2, infinity: false };
 }
 
 function affineNegate({ x, y, infinity }: GroupAffine, p: bigint): GroupAffine {
