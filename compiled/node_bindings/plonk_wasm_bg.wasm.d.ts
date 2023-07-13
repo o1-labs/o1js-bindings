@@ -423,7 +423,7 @@ export function wasmfpproverproof_set_prev_challenges_comms(a: number, b: number
 export function wasmfpproverproof_serialize(a: number, b: number): void;
 export function __wbg_wasmfpruntimetable_free(a: number): void;
 export function wasmfpruntimetable_new(a: number, b: number, c: number): number;
-export function caml_pasta_fp_plonk_proof_create(a: number, b: number, c: number, d: number, e: number, f: number, g: number): void;
+export function caml_pasta_fp_plonk_proof_create(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number): void;
 export function caml_pasta_fp_plonk_proof_verify(a: number, b: number): number;
 export function __wbg_wasmvecvecfppolycomm_free(a: number): void;
 export function wasmvecvecfppolycomm_create(a: number): number;
@@ -456,7 +456,7 @@ export function wasmfqproverproof_set_public_(a: number, b: number, c: number): 
 export function wasmfqproverproof_set_prev_challenges_comms(a: number, b: number, c: number): void;
 export function wasmfqproverproof_serialize(a: number, b: number): void;
 export function wasmfqruntimetable_new(a: number, b: number, c: number): number;
-export function caml_pasta_fq_plonk_proof_create(a: number, b: number, c: number, d: number, e: number, f: number, g: number): void;
+export function caml_pasta_fq_plonk_proof_create(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number): void;
 export function caml_pasta_fq_plonk_proof_verify(a: number, b: number): number;
 export function wasmvecvecfqpolycomm_push(a: number, b: number, c: number): void;
 export function caml_pasta_fq_plonk_proof_batch_verify(a: number, b: number, c: number, d: number): number;
