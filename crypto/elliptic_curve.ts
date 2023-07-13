@@ -38,6 +38,16 @@ const projectiveZero = { x: 1n, y: 1n, z: 0n };
 type GroupProjective = { x: bigint; y: bigint; z: bigint };
 type GroupAffine = { x: bigint; y: bigint; infinity: boolean };
 
+type CurveParams = {
+  p: bigint; // base field modulus
+  order: bigint; // group order = scalar field modulus
+  generator: { x: bigint; y: bigint };
+  b: bigint;
+  a: bigint;
+  endoBase?: bigint;
+  endoScalar?: bigint;
+};
+
 type GroupMapParams = {
   u: bigint;
   u_over_2: bigint;
@@ -275,20 +285,18 @@ function projectiveOnCurve({ x, y, z }: GroupProjective, p: bigint, b: bigint) {
   return mod(y2 - x3 - b * z6, p) === 0n;
 }
 
-type CurveParams = {
-  p: bigint;
-  generator: { x: bigint; y: bigint };
-  b: bigint;
-  a: bigint;
-  endoBase?: bigint;
-  endoScalar?: bigint;
-};
+// checks whether the elliptic curve point g is in the subgroup defined by [order]g = 0
+function projectiveInSubgroup(g: GroupProjective, p: bigint, order: bigint) {
+  let orderTimesG = projectiveScale(g, order, p);
+  return projectiveEqual(orderTimesG, projectiveZero, p);
+}
 
 /**
  * Projective curve arithmetic in Jacobian coordinates
  */
 function createCurveProjective({
   p,
+  order,
   generator,
   b,
   a,
@@ -317,6 +325,9 @@ function createCurveProjective({
     },
     isOnCurve(g: GroupProjective) {
       return projectiveOnCurve(g, p, b);
+    },
+    isInSubgroup(g: GroupProjective) {
+      return projectiveInSubgroup(g, p, order);
     },
     add(g: GroupProjective, h: GroupProjective) {
       return projectiveAdd(g, h, p);
@@ -349,6 +360,7 @@ function createCurveProjective({
 
 const Pallas = createCurveProjective({
   p,
+  order: q,
   generator: pallasGeneratorProjective,
   b,
   a,
@@ -356,7 +368,8 @@ const Pallas = createCurveProjective({
   endoScalar: pallasEndoScalar,
 });
 const Vesta = createCurveProjective({
-  p,
+  p: q,
+  order: p,
   generator: vestaGeneratorProjective,
   b,
   a,
@@ -426,7 +439,7 @@ function affineScale(g: GroupAffine, s: bigint | boolean[], p: bigint) {
   return projectiveToAffine(sgProj, p);
 }
 
-function createCurveAffine({ p, generator }: CurveParams) {
+function createCurveAffine({ p, order, generator, a, b }: CurveParams) {
   return {
     zero: affineZero,
     one: { ...generator, infinity: false },
@@ -436,6 +449,9 @@ function createCurveAffine({ p, generator }: CurveParams) {
     },
     isOnCurve(g: GroupAffine) {
       return affineOnCurve(g, p, a, b);
+    },
+    isInSubgroup(g: GroupAffine) {
+      return projectiveInSubgroup(projectiveFromAffine(g), p, order);
     },
     add(g: GroupAffine, h: GroupAffine) {
       return affineAdd(g, h, p);
