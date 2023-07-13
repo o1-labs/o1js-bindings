@@ -1,7 +1,7 @@
 import { bytesToBigInt } from './bigint-helpers.js';
 import { randomBytes } from './random.js';
 
-export { Fp, Fq, FiniteField, p, q, mod, inverse };
+export { Fp, Fq, FiniteField, p, q, mod, inverse, createField };
 
 // CONSTANTS
 
@@ -127,7 +127,9 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
     sizeInBits: 255,
     t,
     twoadicRoot,
-
+    mod(x: bigint) {
+      return mod(x, p);
+    },
     add(x: bigint, y: bigint) {
       return mod(x + y, p);
     },
