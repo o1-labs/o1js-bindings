@@ -1,3 +1,4 @@
+import { bigIntToBits } from './bigint-helpers.js';
 import { FiniteField, Fp, inverse, mod, p, q } from './finite_field.js';
 export {
   Pallas,
@@ -212,12 +213,12 @@ function projectiveSub(g: GroupProjective, h: GroupProjective, p: bigint) {
   return projectiveAdd(g, projectiveNeg(h, p), p);
 }
 
-function projectiveScale(g: GroupProjective, x: bigint, p: bigint) {
+function projectiveScale(g: GroupProjective, x: bigint | boolean[], p: bigint) {
+  let bits = typeof x === 'bigint' ? bigIntToBits(x) : x;
   let h = projectiveZero;
-  while (x > 0n) {
-    if (x & 1n) h = projectiveAdd(h, g, p);
+  for (let bit of bits) {
+    if (bit) h = projectiveAdd(h, g, p);
     g = projectiveDouble(g, p);
-    x >>= 1n;
   }
   return h;
 }
@@ -419,7 +420,7 @@ function affineNegate({ x, y, infinity }: GroupAffine, p: bigint): GroupAffine {
   return { x, y: y === 0n ? 0n : p - y, infinity };
 }
 
-function affineScale(g: GroupAffine, s: bigint, p: bigint) {
+function affineScale(g: GroupAffine, s: bigint | boolean[], p: bigint) {
   let gProj = projectiveFromAffine(g);
   let sgProj = projectiveScale(gProj, s, p);
   return projectiveToAffine(sgProj, p);
@@ -448,7 +449,7 @@ function createCurveAffine({ p, generator }: CurveParams) {
     sub(g: GroupAffine, h: GroupAffine) {
       return affineAdd(g, affineNegate(h, p), p);
     },
-    scale(g: GroupAffine, s: bigint) {
+    scale(g: GroupAffine, s: bigint | boolean[]) {
       return affineScale(g, s, p);
     },
   };
