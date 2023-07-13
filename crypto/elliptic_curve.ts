@@ -42,6 +42,7 @@ type GroupAffine = { x: bigint; y: bigint; infinity: boolean };
 type CurveParams = {
   p: bigint; // base field modulus
   order: bigint; // group order = scalar field modulus
+  cofactor?: bigint;
   generator: { x: bigint; y: bigint };
   b: bigint;
   a: bigint;
@@ -298,6 +299,7 @@ function projectiveInSubgroup(g: GroupProjective, p: bigint, order: bigint) {
 function createCurveProjective({
   p,
   order,
+  cofactor,
   generator,
   b,
   a,
@@ -305,6 +307,7 @@ function createCurveProjective({
   endoScalar,
 }: CurveParams) {
   if (a !== 0n) throw Error('createCurveProjective only supports a = 0');
+  let hasCofactor = cofactor !== undefined && cofactor !== 1n;
   return {
     zero: projectiveZero,
     one: { ...generator, z: 1n },
@@ -320,6 +323,7 @@ function createCurveProjective({
     },
     b,
     a,
+    hasCofactor,
 
     equal(g: GroupProjective, h: GroupProjective) {
       return projectiveEqual(g, h, p);
@@ -442,12 +446,22 @@ function affineScale(g: GroupAffine, s: bigint | boolean[], p: bigint) {
 
 type CurveAffine = ReturnType<typeof createCurveAffine>;
 
-function createCurveAffine({ p, order, generator, a, b }: CurveParams) {
+function createCurveAffine({
+  p,
+  order,
+  cofactor,
+  generator,
+  a,
+  b,
+}: CurveParams) {
   // TODO: lift this limitation by using other formulas (in projectiveScale) for a != 0
   if (a !== 0n) throw Error('createCurveAffine only supports a = 0');
+  let hasCofactor = cofactor !== undefined && cofactor !== 1n;
   return {
     p,
     order,
+    hasCofactor,
+
     zero: affineZero,
     one: { ...generator, infinity: false },
 
