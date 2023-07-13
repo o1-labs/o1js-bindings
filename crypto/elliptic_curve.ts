@@ -8,6 +8,7 @@ export {
   GroupMapPallas,
   createCurveProjective,
   createCurveAffine,
+  CurveAffine,
   ProjectiveCurve,
 };
 
@@ -443,12 +444,20 @@ function affineScale(g: GroupAffine, s: bigint | boolean[], p: bigint) {
   return projectiveToAffine(sgProj, p);
 }
 
+type CurveAffine = ReturnType<typeof createCurveAffine>;
+
 function createCurveAffine({ p, order, generator, a, b }: CurveParams) {
   // TODO: lift this limitation by using other formulas (in projectiveScale) for a != 0
   if (a !== 0n) throw Error('createCurveAffine only supports a = 0');
   return {
+    p,
+    order,
     zero: affineZero,
     one: { ...generator, infinity: false },
+
+    fromNonzero(g: { x: bigint; y: bigint }): GroupAffine {
+      return { ...g, infinity: false };
+    },
 
     equal(g: GroupAffine, h: GroupAffine) {
       return mod(g.x - h.x, p) === 0n && mod(g.y - h.y, p) === 0n;
