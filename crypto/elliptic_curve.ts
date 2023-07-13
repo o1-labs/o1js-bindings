@@ -440,6 +440,8 @@ function affineScale(g: GroupAffine, s: bigint | boolean[], p: bigint) {
 }
 
 function createCurveAffine({ p, order, generator, a, b }: CurveParams) {
+  // TODO: lift this limitation by using other formulas (in projectiveScale) for a != 0
+  if (a !== 0n) throw Error('createCurveAffine only supports a = 0');
   return {
     zero: affineZero,
     one: { ...generator, infinity: false },
