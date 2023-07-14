@@ -13,92 +13,12 @@ This type definition is copy/pasted from the `snarkyjs_bindings.ml` using an LSP
 To add to this type, you can use an LSP to see the type definition of `snarky` in `snarkyjs_bindings.ml` and copy/paste the type definition here.
 *)
 val snarky :
-  < exists : (int -> (unit -> Impl.field array) -> Field.t array) Js.meth
-  ; existsVar : ((unit -> Impl.field) -> Field.t) Js.meth
-  ; run :
-      < asProver : ((unit -> unit) -> unit) Js.meth
-      ; constraintSystem :
-          (   (unit -> unit)
-           -> < digest : Js.js_string Js.t Js.readonly_prop
-              ; json : 'b Js.readonly_prop
-              ; rows : int Js.readonly_prop >
-              Js.t )
-          Js.meth
-      ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
-      ; runAndCheck : ((unit -> unit) -> unit) Js.meth
-      ; runUnchecked : ((unit -> unit) -> unit) Js.meth >
-      Js.t
-      Js.readonly_prop
-  ; field :
-      < add : (Field.t -> Field.t -> Field.t) Js.meth
-      ; assertBoolean : (Field.t -> unit) Js.meth
-      ; assertEqual : (Field.t -> Field.t -> unit) Js.meth
-      ; assertMul : (Field.t -> Field.t -> Field.t -> unit) Js.meth
-      ; assertSquare : (Field.t -> Field.t -> unit) Js.meth
-      ; compare :
-          (int -> Field.t -> Field.t -> Boolean.var * Boolean.var) Js.meth
-      ; fromBits : (Boolean.var array -> Field.t) Js.meth
-      ; mul : (Field.t -> Field.t -> Field.t) Js.meth
-      ; readVar : (Field.t -> Impl.field) Js.meth
-      ; scale : (Impl.field -> Field.t -> Field.t) Js.meth
-      ; seal :
-          (   Impl.field Snarky_backendless.Cvar.t
-           -> Impl.field Snarky_backendless.Cvar.t )
-          Js.meth
-      ; toBits : (int -> Field.t -> Boolean.var array) Js.meth
-      ; toConstantAndTerms :
-          (Field.t -> Impl.field option * (Impl.field * int) list) Js.meth
-      ; truncateToBits16 :
-          (   int
-           -> Impl.field Snarky_backendless.Cvar.t
-           -> Impl.field Snarky_backendless.Cvar.t )
-          Js.meth >
-      Js.t
-      Js.readonly_prop
-  ; bool :
+  < bool :
       < and_ : (Boolean.var -> Boolean.var -> Boolean.var) Js.meth
       ; assertEqual : (Boolean.var -> Boolean.var -> unit) Js.meth
       ; equals : (Boolean.var -> Boolean.var -> Boolean.var) Js.meth
       ; not : (Boolean.var -> Boolean.var) Js.meth
       ; or_ : (Boolean.var -> Boolean.var -> Boolean.var) Js.meth >
-      Js.t
-      Js.readonly_prop
-  ; group :
-      < ecadd :
-          (   Field.t * Field.t
-           -> Field.t * Field.t
-           -> Field.t * Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t * Field.t )
-          Js.meth
-      ; scale :
-          (   Impl.field Snarky_backendless.Cvar.t Tuple_lib.Double.t
-           -> Boolean.var array
-           -> Pickles.Step_main_inputs.Inner_curve.t )
-          Js.meth >
-      Js.t
-      Js.readonly_prop
-  ; poseidon :
-      < update :
-          (   Field.t Random_oracle.State.t
-           -> Field.t array
-           -> Field.t Random_oracle.State.t )
-          Js.meth
-      ; hashToGroup :
-          (   Field.t array
-           -> Impl.field Snarky_backendless.Cvar.t
-              * Impl.field Snarky_backendless.Cvar.t )
-          Js.meth
-      ; sponge :
-          < absorb : (Poseidon.sponge -> Field.t -> unit) Js.meth
-          ; create : (bool Js.t -> Poseidon.sponge) Js.meth
-          ; squeeze : (Poseidon.sponge -> Field.t) Js.meth >
-          Js.t
-          Js.readonly_prop >
       Js.t
       Js.readonly_prop
   ; circuit :
@@ -128,6 +48,86 @@ val snarky :
           Js.meth >
       Js.t
       Js.readonly_prop
+  ; exists : (int -> (unit -> Impl.field array) -> Field.t array) Js.meth
+  ; existsVar : ((unit -> Impl.field) -> Field.t) Js.meth
+  ; field :
+      < add : (Field.t -> Field.t -> Field.t) Js.meth
+      ; assertBoolean : (Field.t -> unit) Js.meth
+      ; assertEqual : (Field.t -> Field.t -> unit) Js.meth
+      ; assertMul : (Field.t -> Field.t -> Field.t -> unit) Js.meth
+      ; assertSquare : (Field.t -> Field.t -> unit) Js.meth
+      ; compare :
+          (int -> Field.t -> Field.t -> Boolean.var * Boolean.var) Js.meth
+      ; fromBits : (Boolean.var array -> Field.t) Js.meth
+      ; mul : (Field.t -> Field.t -> Field.t) Js.meth
+      ; readVar : (Field.t -> Impl.field) Js.meth
+      ; scale : (Impl.field -> Field.t -> Field.t) Js.meth
+      ; seal :
+          (   Impl.field Snarky_backendless.Cvar.t
+           -> Impl.field Snarky_backendless.Cvar.t )
+          Js.meth
+      ; toBits : (int -> Field.t -> Boolean.var array) Js.meth
+      ; toConstantAndTerms :
+          (Field.t -> Impl.field option * (Impl.field * int) list) Js.meth
+      ; truncateToBits16 :
+          (   int
+           -> Impl.field Snarky_backendless.Cvar.t
+           -> Impl.field Snarky_backendless.Cvar.t )
+          Js.meth >
+      Js.t
+      Js.readonly_prop
+  ; group :
+      < ecadd :
+          (   Field.t * Field.t
+           -> Field.t * Field.t
+           -> Field.t * Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t * Field.t )
+          Js.meth
+      ; scale :
+          (   Impl.field Snarky_backendless.Cvar.t Tuple_lib.Double.t
+           -> Boolean.var array
+           -> Pickles.Step_main_inputs.Inner_curve.t )
+          Js.meth >
+      Js.t
+      Js.readonly_prop
+  ; poseidon :
+      < hashToGroup :
+          (   Field.t array
+           -> Impl.field Snarky_backendless.Cvar.t
+              * Impl.field Snarky_backendless.Cvar.t )
+          Js.meth
+      ; sponge :
+          < absorb : (Poseidon.sponge -> Field.t -> unit) Js.meth
+          ; create : (bool Js.t -> Poseidon.sponge) Js.meth
+          ; squeeze : (Poseidon.sponge -> Field.t) Js.meth >
+          Js.t
+          Js.readonly_prop
+      ; update :
+          (   Field.t Random_oracle.State.t
+           -> Field.t array
+           -> Field.t Random_oracle.State.t )
+          Js.meth >
+      Js.t
+      Js.readonly_prop
+  ; run :
+      < asProver : ((unit -> unit) -> unit) Js.meth
+      ; constraintSystem :
+          (   (unit -> unit)
+           -> < digest : Js.js_string Js.t Js.readonly_prop
+              ; json : 'b Js.readonly_prop
+              ; rows : int Js.readonly_prop >
+              Js.t )
+          Js.meth
+      ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
+      ; runAndCheck : ((unit -> unit) -> unit) Js.meth
+      ; runUnchecked : ((unit -> unit) -> unit) Js.meth >
+      Js.t
+      Js.readonly_prop
   ; sha :
       < checkBits :
           (Impl.field Snarky_backendless.Cvar.t -> int -> unit) Js.meth
@@ -135,7 +135,7 @@ val snarky :
           (   Impl.field Snarky_backendless.Cvar.t array
            -> bool Js.t
            -> int
-           -> Impl.field Snarky_backendless.Cvar.t array )
+           -> Impl.field Snarky_backendless.Cvar.t list )
           Js.meth
       ; fieldBytesFromHex : (Js.js_string Js.t -> Impl.field array) Js.meth >
       Js.t
