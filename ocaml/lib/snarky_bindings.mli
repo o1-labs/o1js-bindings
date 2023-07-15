@@ -135,7 +135,7 @@ val snarky :
           (   Impl.field Snarky_backendless.Cvar.t array
            -> bool Js.t
            -> int
-           -> Impl.field Snarky_backendless.Cvar.t list )
+           -> Impl.field Snarky_backendless.Cvar.t array )
           Js.meth
       ; fieldBytesFromHex : (Js.js_string Js.t -> Impl.field array) Js.meth >
       Js.t

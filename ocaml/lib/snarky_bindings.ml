@@ -241,7 +241,10 @@ module SHA = struct
     let message_array = Array.to_list message in
     if Js.to_bool nist then
       Kimchi_gadgets.Keccak.nist_sha3 (module Impl) length message_array
-    else Kimchi_gadgets.Keccak.ethereum (module Impl) message_array
+      |> List.to_array
+    else
+      Kimchi_gadgets.Keccak.ethereum (module Impl) message_array
+      |> List.to_array
 
   let field_bytes_of_hex hex =
     Array.of_list
