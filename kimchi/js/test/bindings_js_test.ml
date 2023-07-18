@@ -649,10 +649,10 @@ let _ =
                   (https://github.com/MinaProtocol/mina/issues/13476) *)
                Impl.generate_witness_conv ~input_typ:Typ.field
                  ~return_typ:Typ.unit main
-                 ~f:(fun { Proof_inputs.auxiliary_inputs; public_inputs } () ->
+                 ~f:(fun { Proof_inputs.auxiliary_inputs; public_inputs; runtime_tables } () ->
                    time "create proof" (fun () ->
                        Backend.Proof.create pk ~auxiliary:auxiliary_inputs
-                         ~primary:public_inputs ~runtime_tables:[||] ) )
+                         ~primary:public_inputs ~runtime_tables ) )
                  x )
          in
          let vk = Backend.Keypair.vk pk in
