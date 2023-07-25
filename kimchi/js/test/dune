@@ -20,6 +20,7 @@
    mina_metrics.none
    run_in_thread.fake
    snarky.backendless
-   snarky.intf)
+   snarky.intf
+   key_cache.dummy)
  (instrumentation (backend bisect_ppx))
  (preprocess (pps ppx_version js_of_ocaml-ppx)))
