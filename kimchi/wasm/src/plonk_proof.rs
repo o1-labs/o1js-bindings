@@ -17,7 +17,6 @@ use ark_ff::One;
 use array_init::array_init;
 use kimchi::circuits::wires::COLUMNS;
 use kimchi::verifier::Context;
-use std::array;
 // use std::path::Path;
 use groupmap::GroupMap;
 use kimchi::proof::{
@@ -715,7 +714,7 @@ macro_rules! impl_proof {
                     rot_selector: None,
                     lookup_aggregation: None,
                     lookup_table: None,
-                    lookup_sorted: array::from_fn(|_| None),
+                    lookup_sorted: array_init(|_| None),
                     runtime_lookup_table: None,
                     runtime_lookup_table_selector: None,
                     xor_lookup_selector: None,
