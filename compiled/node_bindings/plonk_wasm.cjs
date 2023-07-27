@@ -39,6 +39,15 @@ function takeObject(idx) {
     return ret;
 }
 
+function addHeapObject(obj) {
+    if (heap_next === heap.length) heap.push(heap.length + 1);
+    const idx = heap_next;
+    heap_next = heap[idx];
+
+    heap[idx] = obj;
+    return idx;
+}
+
 let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
 
 cachedTextDecoder.decode();
@@ -54,15 +63,6 @@ function getUint8Memory0() {
 
 function getStringFromWasm0(ptr, len) {
     return cachedTextDecoder.decode(getUint8Memory0().slice(ptr, ptr + len));
-}
-
-function addHeapObject(obj) {
-    if (heap_next === heap.length) heap.push(heap.length + 1);
-    const idx = heap_next;
-    heap_next = heap[idx];
-
-    heap[idx] = obj;
-    return idx;
 }
 
 function debugString(val) {
@@ -214,6 +214,46 @@ module.exports.caml_pallas_affine_one = function() {
 module.exports.caml_vesta_affine_one = function() {
     const ret = wasm.caml_vesta_affine_one();
     return WasmGVesta.__wrap(ret);
+};
+
+/**
+* @param {Uint8Array} state
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_poseidon_block_cipher = function(state) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(state, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_poseidon_block_cipher(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} state
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_poseidon_block_cipher = function(state) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(state, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_poseidon_block_cipher(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
 };
 
 /**
@@ -542,7 +582,7 @@ module.exports.caml_vesta_of_affine_coordinates = function(x, y) {
 module.exports.caml_vesta_affine_deep_copy = function(x) {
     _assertClass(x, WasmGVesta);
     var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.caml_vesta_affine_deep_copy(ptr0);
+    const ret = wasm.caml_pallas_affine_deep_copy(ptr0);
     return WasmGVesta.__wrap(ret);
 };
 
@@ -853,46 +893,6 @@ module.exports.caml_pasta_fq_plonk_index_serialize = function(index) {
     } finally {
         wasm.__wbindgen_add_to_stack_pointer(16);
         wasm.__wbindgen_free(r0, r1);
-    }
-};
-
-/**
-* @param {Uint8Array} state
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_poseidon_block_cipher = function(state) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(state, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_poseidon_block_cipher(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} state
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_poseidon_block_cipher = function(state) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(state, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_poseidon_block_cipher(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
     }
 };
 
@@ -6000,7 +6000,7 @@ class WasmFqPolyComm {
     * @returns {WasmGPallas | undefined}
     */
     get shifted() {
-        const ret = wasm.__wbg_get_wasmfppolycomm_shifted(this.ptr);
+        const ret = wasm.__wbg_get_wasmfqpolycomm_shifted(this.ptr);
         return ret === 0 ? undefined : WasmGPallas.__wrap(ret);
     }
     /**
@@ -6012,7 +6012,7 @@ class WasmFqPolyComm {
             _assertClass(arg0, WasmGPallas);
             ptr0 = arg0.__destroy_into_raw();
         }
-        wasm.__wbg_set_wasmfppolycomm_shifted(this.ptr, ptr0);
+        wasm.__wbg_set_wasmfqpolycomm_shifted(this.ptr, ptr0);
     }
 }
 module.exports.WasmFqPolyComm = WasmFqPolyComm;
@@ -6073,14 +6073,14 @@ class WasmFqProverCommitments {
     * @returns {WasmFqPolyComm}
     */
     get z_comm() {
-        const ret = wasm.wasmfpprovercommitments_z_comm(this.ptr);
+        const ret = wasm.wasmfqprovercommitments_z_comm(this.ptr);
         return WasmFqPolyComm.__wrap(ret);
     }
     /**
     * @returns {WasmFqPolyComm}
     */
     get t_comm() {
-        const ret = wasm.wasmfpprovercommitments_t_comm(this.ptr);
+        const ret = wasm.wasmfqprovercommitments_t_comm(this.ptr);
         return WasmFqPolyComm.__wrap(ret);
     }
     /**
@@ -6097,7 +6097,7 @@ class WasmFqProverCommitments {
     set z_comm(x) {
         _assertClass(x, WasmFqPolyComm);
         var ptr0 = x.__destroy_into_raw();
-        wasm.wasmfpprovercommitments_set_z_comm(this.ptr, ptr0);
+        wasm.wasmfqprovercommitments_set_z_comm(this.ptr, ptr0);
     }
     /**
     * @param {WasmFqPolyComm} x
@@ -6105,7 +6105,7 @@ class WasmFqProverCommitments {
     set t_comm(x) {
         _assertClass(x, WasmFqPolyComm);
         var ptr0 = x.__destroy_into_raw();
-        wasm.wasmfpprovercommitments_set_t_comm(this.ptr, ptr0);
+        wasm.wasmfqprovercommitments_set_t_comm(this.ptr, ptr0);
     }
 }
 module.exports.WasmFqProverCommitments = WasmFqProverCommitments;
@@ -7734,15 +7734,6 @@ class Wire {
         wasm.__wbg_wire_free(ptr);
     }
     /**
-    * @param {number} row
-    * @param {number} col
-    * @returns {Wire}
-    */
-    static create(row, col) {
-        const ret = wasm.wire_create(row, col);
-        return Wire.__wrap(ret);
-    }
-    /**
     * @returns {number}
     */
     get row() {
@@ -7768,11 +7759,25 @@ class Wire {
     set col(arg0) {
         wasm.__wbg_set_wire_col(this.ptr, arg0);
     }
+    /**
+    * @param {number} row
+    * @param {number} col
+    * @returns {Wire}
+    */
+    static create(row, col) {
+        const ret = wasm.wire_create(row, col);
+        return Wire.__wrap(ret);
+    }
 }
 module.exports.Wire = Wire;
 
 module.exports.__wbindgen_object_drop_ref = function(arg0) {
     takeObject(arg0);
+};
+
+module.exports.__wbindgen_number_new = function(arg0) {
+    const ret = arg0;
+    return addHeapObject(ret);
 };
 
 module.exports.__wbindgen_error_new = function(arg0, arg1) {
@@ -7782,11 +7787,6 @@ module.exports.__wbindgen_error_new = function(arg0, arg1) {
 
 module.exports.__wbindgen_string_new = function(arg0, arg1) {
     const ret = getStringFromWasm0(arg0, arg1);
-    return addHeapObject(ret);
-};
-
-module.exports.__wbindgen_number_new = function(arg0) {
-    const ret = arg0;
     return addHeapObject(ret);
 };
 

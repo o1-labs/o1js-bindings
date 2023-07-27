@@ -9,6 +9,16 @@ export function caml_pallas_affine_one(): WasmGPallas;
 */
 export function caml_vesta_affine_one(): WasmGVesta;
 /**
+* @param {Uint8Array} state
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fp_poseidon_block_cipher(state: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} state
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_poseidon_block_cipher(state: Uint8Array): Uint8Array;
+/**
 * @returns {WasmPallasGProjective}
 */
 export function caml_pallas_one(): WasmPallasGProjective;
@@ -254,16 +264,6 @@ export function caml_pasta_fq_plonk_index_write(append: boolean | undefined, ind
 * @returns {string}
 */
 export function caml_pasta_fq_plonk_index_serialize(index: WasmPastaFqPlonkIndex): string;
-/**
-* @param {Uint8Array} state
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fp_poseidon_block_cipher(state: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} state
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_poseidon_block_cipher(state: Uint8Array): Uint8Array;
 /**
 * @returns {WasmFpGateVector}
 */
