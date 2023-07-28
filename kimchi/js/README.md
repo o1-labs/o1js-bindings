@@ -4,25 +4,10 @@ backend.
 
 The different versions of the backend are generated in subdirectories; e.g. the
 NodeJS backend is generated in `node_js/` and the Web backend is generated
-in `web/`. To use a backend, run `dune build backend/plonk_wasm.js` and copy
-`backend/plonk_wasm*` to the project directory.
+in `web/`. To generate the wrapper for the backend `node_js` (resp. `web`), run
+`dune build node_js/plonk_wasm.js` (resp. `dune build web/plonk_wasm.js`) and
+copy `node_js/plonk_wasm*` (resp. `web/plonk_wasm*`) to the project directory.
 
 Note that the backend code is not automatically compiled while linking against
 the backend library. You should always manually issue a build command for the
 `plonk_wasm.js` for the desired backend to ensure that it has been generated.
-For example, to run the nodejs tests in the `test/nodejs` directory you will
-need to run
-
-```
-dune build src/lib/marlin_plonk_bindings/js/test/nodejs/nodejs_test.bc.js
-src/lib/marlin_plonk_bindings/js/test/nodejs/copy_over.sh
-```
-
-Similarly, to run the web tests in `test/web`, you can run
-
-```
-dune build src/lib/marlin_plonk_bindings/js/test/web/web_test.bc.js
-src/lib/marlin_plonk_bindings/js/test/web/copy_over.sh
-```
-
-and then visit `http://localhost:8000` from a browser.
