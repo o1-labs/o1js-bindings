@@ -1,0 +1,45 @@
+(executable
+ (name node_wrapper)
+ (libraries unix)
+ (modules node_wrapper))
+
+(env
+ (_
+  ; We do not want to have the JavaScript tests executed when `dune build
+  ; @runtest` is called.
+  ; JavaScript tests can be run using `dune build @runtest-js`
+  (js_of_ocaml
+   (runtest_alias runtest-js))
+  ; wrapping node to load the wasm first before executing the JavaScript tests
+  (binaries
+   (%{workspace_root}/src/lib/snarkyjs/src/bindings/kimchi/js/test/node_wrapper.exe
+    as
+    node))))
+
+(rule
+ (targets
+  plonk_wasm_bg.wasm.d.ts
+  plonk_wasm_bg.wasm
+  plonk_wasm.d.ts
+  plonk_wasm.js)
+ (deps
+  ../../wasm/Cargo.toml
+  ../../wasm/Cargo.lock
+  (source_tree ../../wasm/src)
+  (source_tree ../../wasm/.cargo/config)
+  (source_tree ../../../../../../crypto/proof-systems))
+ (locks /cargo-lock) ; lock for rustup
+ (action
+  (progn
+   (run ./build.sh))))
+
+(tests
+ (names test_simple)
+ (modes native js)
+ (deps
+  plonk_wasm_bg.wasm.d.ts
+  plonk_wasm_bg.wasm
+  plonk_wasm.d.ts
+  plonk_wasm.js)
+ (modules test_simple)
+ (libraries alcotest))
