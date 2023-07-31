@@ -37,6 +37,18 @@ export default [
         name: 'create',
         type: 'function',
       },
+      {
+          name: 'addAccount',
+          type: 'function',
+      },
+      {
+          name: 'getAccount',
+          type: 'function',
+      },
+      {
+          name: 'applyJsonTransaction',
+          type: 'function',
+      },
     ],
   },
   {
