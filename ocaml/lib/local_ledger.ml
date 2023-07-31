@@ -10,9 +10,6 @@ type public_key = Signature_lib.Public_key.Compressed.t
 module Account_update = Mina_base.Account_update
 module Zkapp_command = Mina_base.Zkapp_command
 
-let ledger_class : < .. > Js.t =
-  Js.Unsafe.eval_string {js|(function(v) { this.value = v; return this })|js}
-
 module Ledger : Mina_base.Ledger_intf.S = struct
   module Account = Mina_base.Account
   module Account_id = Mina_base.Account_id
@@ -96,11 +93,6 @@ end
 
 module Transaction_logic = Mina_transaction_logic.Make (Ledger)
 
-type ledger_class = < value : Ledger.t Js.prop >
-
-let ledger_constr : (Ledger.t -> ledger_class Js.t) Js.constr =
-  Obj.magic ledger_class
-
 let create_new_account_exn (t : Ledger.t) account_id account =
   Ledger.create_new_account t account_id account |> Or_error.ok_exn
 
@@ -169,26 +161,27 @@ let add_account_exn (l : Ledger.t) pk (balance : string) =
   let a : Mina_base.Account.t = Mina_base.Account.create account_id balance in
   create_new_account_exn l account_id a
 
-let create () : ledger_class Js.t =
+let create () : Ledger.t =
   let l = Ledger.empty ~depth:20 () in
-  new%js ledger_constr l
+  l
 
 let account_to_json =
   let deriver = Mina_base.Account.deriver @@ Fields_derivers_zkapps.o () in
   let to_json' = Fields_derivers_zkapps.to_json deriver in
-  let to_json (account : Mina_base.Account.t) : Js.Unsafe.any =
-    account |> to_json' |> Yojson.Safe.to_string |> Js.string |> Util.json_parse
+  let to_json (account : Mina_base.Account.t) : Js.js_string Js.t =
+    account |> to_json' |> Yojson.Safe.to_string |> Js.string
   in
   to_json
 
-let get_account l (pk : public_key) (token : Impl.field) :
-    Js.Unsafe.any Js.optdef =
-  let loc = Ledger.location_of_account l##.value (account_id pk token) in
-  let account = Option.bind loc ~f:(Ledger.get l##.value) in
+let get_account (ledger : Ledger.t) (pk : public_key) (token : Impl.field) :
+    Js.js_string Js.t Js.optdef =
+  let loc = Ledger.location_of_account ledger (account_id pk token) in
+  let account = Option.bind loc ~f:(Ledger.get ledger) in
   To_js.option account_to_json account
 
-let add_account l (pk : public_key) (balance : Js.js_string Js.t) =
-  add_account_exn l##.value pk (Js.to_string balance)
+let add_account (ledger : Ledger.t) (pk : public_key)
+    (balance : Js.js_string Js.t) =
+  add_account_exn ledger pk (Js.to_string balance)
 
 let protocol_state_of_json =
   let deriver =
@@ -200,11 +193,10 @@ let protocol_state_of_json =
       Mina_base.Zkapp_precondition.Protocol_state.View.t ->
     json |> Js.to_string |> Yojson.Safe.from_string |> of_json
 
-let apply_zkapp_command_transaction l (txn : Zkapp_command.t)
+let apply_zkapp_command_transaction (ledger : Ledger.t) (txn : Zkapp_command.t)
     (account_creation_fee : string)
     (network_state : Mina_base.Zkapp_precondition.Protocol_state.View.t) =
   check_account_update_signatures txn ;
-  let ledger = l##.value in
   let application_result =
     Transaction_logic.apply_zkapp_command_unchecked
       ~global_slot:network_state.global_slot_since_genesis
@@ -230,28 +222,24 @@ let apply_zkapp_command_transaction l (txn : Zkapp_command.t)
         ( Mina_base.Transaction_status.Failure.Collection.to_yojson failures
         |> Yojson.Safe.to_string )
 
-let apply_json_transaction l (tx_json : Js.js_string Js.t)
+let apply_json_transaction (ledger : Ledger.t) (tx_json : Js.js_string Js.t)
     (account_creation_fee : Js.js_string Js.t) (network_json : Js.js_string Js.t)
     =
   let txn =
     Zkapp_command.of_json @@ Yojson.Safe.from_string @@ Js.to_string tx_json
   in
   let network_state = protocol_state_of_json network_json in
-  apply_zkapp_command_transaction l txn
+  apply_zkapp_command_transaction ledger txn
     (Js.to_string account_creation_fee)
     network_state
 
-let method_ class_ (name : string) (f : _ Js.t -> _) =
-  let prototype = Js.Unsafe.get class_ (Js.string "prototype") in
-  Js.Unsafe.set prototype (Js.string name) (Js.wrap_meth_callback f)
+let ledger =
+  object%js
+    val create = create
 
-let () =
-  let static_method name f =
-    Js.Unsafe.set ledger_class (Js.string name) (Js.wrap_callback f)
-  in
-  let method_ name (f : ledger_class Js.t -> _) = method_ ledger_class name f in
-  static_method "create" create ;
+    val getAccount = get_account
 
-  method_ "getAccount" get_account ;
-  method_ "addAccount" add_account ;
-  method_ "applyJsonTransaction" apply_json_transaction
+    val addAccount = add_account
+
+    val applyJsonTransaction = apply_json_transaction
+  end
