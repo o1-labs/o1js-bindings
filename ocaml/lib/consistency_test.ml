@@ -10,7 +10,7 @@ module Zkapp_command = Mina_base.Zkapp_command
 
 module Encoding = struct
   (* arbitrary base58_check encoding *)
-  let binary_string_to_base58_check bin_string (version_byte : int) :
+  let binary_string_to_base58_check (bin_string : string) (version_byte : int) :
       Js.js_string Js.t =
     let module T = struct
       let version_byte = Char.of_int_exn version_byte
@@ -21,7 +21,7 @@ module Encoding = struct
     bin_string |> B58.encode |> Js.string
 
   let binary_string_of_base58_check (base58 : Js.js_string Js.t)
-      (version_byte : int) =
+      (version_byte : int) : string =
     let module T = struct
       let version_byte = Char.of_int_exn version_byte
 

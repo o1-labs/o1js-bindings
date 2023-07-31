@@ -18,7 +18,7 @@
   (flags +toplevel.js +dynlink.js --pretty --source-map)
   (link_flags --source-map)
   (javascript_files overrides.js))
- (libraries snarky_js_bindings_lib node_backend)
+ (libraries snarky_js_bindings_lib node_backend digestif.ocaml)
  (link_deps
   ../kimchi/js/node_js/plonk_wasm.js
   ../kimchi/js/node_js/plonk_wasm_bg.wasm)
@@ -36,7 +36,7 @@
  (js_of_ocaml
   (flags +toplevel.js +dynlink.js --pretty)
   (javascript_files overrides.js))
- (libraries snarky_js_bindings_lib web_backend)
+ (libraries snarky_js_bindings_lib web_backend digestif.ocaml)
  (link_deps
   ../kimchi/js/web/plonk_wasm.js
   ../kimchi/js/web/plonk_wasm_bg.wasm)
@@ -51,7 +51,7 @@
  (modules snarky_js_types)
  (link_flags (-linkall))
  (modes native)
- (libraries mina_base fields_derivers_zkapps yojson)
+ (libraries mina_base fields_derivers_zkapps yojson digestif.ocaml)
  (instrumentation
   (backend bisect_ppx))
  (preprocess
@@ -78,6 +78,7 @@
   pickles
   random_oracle
   random_oracle.permutation.ocaml
+  digestif.ocaml
   yojson)
  (instrumentation
   (backend bisect_ppx))
