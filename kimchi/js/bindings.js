@@ -2833,6 +2833,11 @@ function integers_uint64_of_uint32(i) {
   return new UInt64(caml_int64_of_int32(i));
 }
 
+// Provides: caml_pasta_fp_plonk_proof_create_and_verify
+function caml_pasta_fp_plonk_proof_create_and_verify() {
+  throw new Error('Unimplemented caml_pasta_fp_plonk_proof_create_and_verify');
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // The *_example_* functions below are only used in the pickles unit tests //
 /////////////////////////////////////////////////////////////////////////////
