@@ -627,6 +627,7 @@ macro_rules! impl_verification_key {
                 srs: &$WasmSrs,
                 evals: &WasmPlonkVerificationEvals,
                 shifts: &WasmShifts,
+                lookup_index: Option<WasmLookupVerifierIndex>
             ) -> (DlogVerifierIndex<GAffine>, Arc<SRS<GAffine>>) {
                 /*
                 let urs_copy = Rc::clone(&*urs);
@@ -714,8 +715,7 @@ macro_rules! impl_verification_key {
                         },
                         linearization,
                         powers_of_alpha,
-                        // TODO
-                        lookup_index: None,
+                        lookup_index: lookup_index.map(Into::into),
                     };
                 (index, srs.0.clone())
             }
@@ -730,6 +730,7 @@ macro_rules! impl_verification_key {
                         &index.srs,
                         &index.evals,
                         &index.shifts,
+                        index.lookup_index
                     )
                     .0
                 }
