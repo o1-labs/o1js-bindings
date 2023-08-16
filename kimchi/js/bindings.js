@@ -1866,6 +1866,61 @@ function linearization_of_rust(linearization, affine_class) {
 // Provides: None
 var None = 0;
 
+// Provides: caml_map_of_rust_vector
+// Requires: js_class_vector_of_rust_vector
+var caml_map_of_rust_vector = function (v, klass, converter_to_rust) {
+  var a = js_class_vector_of_rust_vector(v, klass);
+  var res = [0];
+  for (var i = 0; i < a.length; ++i) {
+      // TODO Check this. Could be off by 1
+      res.push(converter_to_rust_rust(a[i]));
+  }
+  return res;
+};
+
+// Provides: caml_lookup_verifier_index_of_rust
+// Requires: plonk_wasm, caml_map_of_rust_vector
+var caml_lookup_verifier_index_of_rust = function(wasm_lookup_index, poly_comm_class, poly_comm_of_rust) {
+  // TODO
+  var caml_joint_lookup_used;
+  // lookup table
+  var caml_lookup_table = caml_map_of_rust_vector(
+      wasm_lookup_index.lookup_table,
+      poly_comm_class,
+      poly_comm_of_rust
+  );
+  // TODO
+  var caml_lookup_selectors;
+
+  var caml_table_ids;
+  var wasm_table_ids = wasm_lookup_index.table_ids;
+  if (wasm_table_ids === undefined) {
+    caml_table_ids = [0];
+  } else {
+    caml_table_ids = [0, poly_comm_of_rust(wasm_table_ids)];
+  }
+
+  // TODO
+  var caml_lookup_info;
+
+  var caml_runtime_tables_selector;
+  var wasm_runtime_tables_selector = wasm_lookup_index.runtime_tables_selector;
+  if (wasm_runtime_tables_selector === undefined) {
+    caml_runtime_tables_selector = [0];
+  } else {
+    caml_runtime_tables_selector = [0, poly_comm_of_rust(wasm_runtime_tables_selector)];
+  }
+
+  return [0,
+    caml_joint_lookup_used,
+    caml_lookup_table,
+    caml_lookup_selectors,
+    caml_table_ids,
+    caml_lookup_info,
+    caml_runtime_tables_selector,
+  ];
+}
+
 // Provides: caml_plonk_verifier_index_of_rust
 // Requires: linearization_of_rust, caml_plonk_domain_of_rust, caml_plonk_verification_evals_of_rust, caml_plonk_verification_shifts_of_rust, free_on_finalize, None
 var caml_plonk_verifier_index_of_rust = function (x, affine_class) {
@@ -1878,7 +1933,15 @@ var caml_plonk_verifier_index_of_rust = function (x, affine_class) {
   var shifts = caml_plonk_verification_shifts_of_rust(x.shifts);
   // TODO: Handle linearization correctly!
   // var linearization = linearization_of_rust(x.linearization, affine_class);
-  var lookup_index = None;
+  // TODO: converter
+  var caml_lookup_index;
+  var wasm_lookup_index = x.lookup_index;
+  if (wasm_lookup_index === undefined) {
+    caml_lookup_index = None;
+  } else {
+    caml_lookup_index = [0, caml_lookup_index_of_rust(wasm_lookup_index)];
+  }
+
   x.free();
   return [
     0,
@@ -1889,11 +1952,23 @@ var caml_plonk_verifier_index_of_rust = function (x, affine_class) {
     srs,
     evals,
     shifts,
-    None,
+    caml_lookup_index,
   ];
 };
+
+// Provides: caml_plonk_lookup_index_to_rust
+// Requires: plonk_wasm
+var caml_plonk_lookup_verifier_index_to_rust = function(caml_lookup_verifier_idx, poly_comm_class) {
+  // joint_lookup_used
+  // lookup_table
+  // lookup_selectors
+  // table_ids
+  // lookup_info
+  // runtime_tables_selector
+}
+
 // Provides: caml_plonk_verifier_index_to_rust
-// Requires: caml_plonk_domain_to_rust, caml_plonk_verification_evals_to_rust, caml_plonk_verification_shifts_to_rust, free_finalization_registry
+// Requires: caml_plonk_domain_to_rust, caml_plonk_verification_evals_to_rust, caml_plonk_verification_shifts_to_rust, free_finalization_registry, caml_plonk_lookup_verifier_index_to_rust
 var caml_plonk_verifier_index_to_rust = function (
   x,
   klass,
@@ -1918,6 +1993,13 @@ var caml_plonk_verifier_index_to_rust = function (
     x[7],
     verification_shifts_class
   );
+  var wasm_lookup_index;
+  var caml_lookup_index = x[7];
+  if (caml_lookup_index[0] === 0) {
+    wasm_lookup_index = undefined;
+  } else {
+    wasm_lookup_index = caml_plonk_lookup_verifier_index_to_rust(caml_lookup_index, poly_comm_class);
+  }
   return new klass(
     domain,
     max_poly_size,
@@ -1925,7 +2007,8 @@ var caml_plonk_verifier_index_to_rust = function (
     prev_challenges,
     srs,
     evals,
-    shifts
+    shifts,
+    wasm_lookup_index
   );
 };
 
