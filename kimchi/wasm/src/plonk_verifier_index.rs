@@ -6,7 +6,7 @@ use array_init::array_init;
 use kimchi::circuits::{
     constraints::FeatureFlags,
     lookup::index::LookupSelectors,
-    lookup::lookups::LookupInfo,
+    lookup::lookups::{LookupFeatures, LookupInfo, LookupPatterns},
     polynomials::permutation::Shifts,
     polynomials::permutation::{zk_polynomial, zk_w3},
     wires::{COLUMNS, PERMUTS},
