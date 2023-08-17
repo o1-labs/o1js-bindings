@@ -1889,7 +1889,7 @@ var caml_bool_of_rust = function (bool) {
   return bool;
 };
 
-// Provides:: caml_lookup_patterns_of_rust
+// Provides: caml_lookup_patterns_of_rust
 // Requires: plonk_wasm, caml_bool_of_rust
 var caml_lookup_patterns_of_rust = function (wasm_lookup_patterns) {
   return [
@@ -1901,7 +1901,7 @@ var caml_lookup_patterns_of_rust = function (wasm_lookup_patterns) {
   ];
 };
 
-// Provides:: caml_lookup_features_of_rust
+// Provides: caml_lookup_features_of_rust
 // Requires: plonk_wasm, caml_lookup_patterns_of_rust, caml_bool_of_rust
 var caml_lookup_features_of_rust = function (wasm_lookup_features) {
   var caml_lookup_patterns = caml_lookup_patterns_of_rust(
@@ -1922,7 +1922,7 @@ var caml_lookup_features_of_rust = function (wasm_lookup_features) {
   ];
 };
 
-// Provides:: caml_lookup_info_of_rust
+// Provides: caml_lookup_info_of_rust
 // Requires: plonk_wasm, caml_lookup_features_of_rust
 var caml_lookup_info_of_rust = function (wasm_lookup_info) {
   var caml_max_per_row = wasm_lookup_info.max_per_row;
@@ -2046,7 +2046,7 @@ var caml_opt_to_rust = function (caml_optional_value, to_rust) {
   }
 };
 
-// Provides:: caml_lookup_selectors_to_rust
+// Provides: caml_lookup_selectors_to_rust
 // Requires: plonk_wasm, caml_opt_to_rust
 var caml_lookup_selectors_to_rust = function (
   wasm_lookup_selectors,
@@ -2064,7 +2064,7 @@ var caml_lookup_selectors_to_rust = function (
   return new klass(xor, lookup, range_check, ffmul);
 };
 
-// Provides:: caml_lookup_table_to_rust
+// Provides: caml_lookup_table_to_rust
 // Requires: plonk_wasm, caml_array_to_rust_vector, rust_affine_of_caml_affine
 var caml_lookup_table_to_rust = function (wasm_lookup_table, mk_affine) {
   return caml_array_to_rust_vector(
@@ -2074,7 +2074,7 @@ var caml_lookup_table_to_rust = function (wasm_lookup_table, mk_affine) {
   );
 };
 
-// Provides:: caml_lookup_patterns_to_rust
+// Provides: caml_lookup_patterns_to_rust
 // Requires: plonk_wasm
 var caml_lookup_patterns_to_rust = function (wasm_lookup_patterns, klass) {
   var xor = wasm_lookup_patterns[1];
@@ -2090,7 +2090,7 @@ var caml_lookup_patterns_to_rust = function (wasm_lookup_patterns, klass) {
   );
 };
 
-// Provides:: caml_lookup_features_to_rust
+// Provides: caml_lookup_features_to_rust
 // Requires: plonk_wasm, caml_lookup_patterns_to_rust
 var caml_lookup_features_to_rust = function (wasm_lookup_features) {
   var patterns = caml_lookup_patterns_to_rust(wasm_lookup_features[1]);
@@ -2104,7 +2104,7 @@ var caml_lookup_features_to_rust = function (wasm_lookup_features) {
   );
 };
 
-// Provides:: caml_lookup_info_to_rust
+// Provides: caml_lookup_info_to_rust
 // Requires: plonk_wasm, caml_lookup_features_to_rust
 var caml_lookup_info_to_rust = function (wasm_lookup_info) {
   var max_per_row = wasm_lookup_info[1];
@@ -2114,13 +2114,14 @@ var caml_lookup_info_to_rust = function (wasm_lookup_info) {
   return new plonk_wasm.LookupInfo(max_per_row, max_poly_size, features);
 };
 
-// Provides: caml_plonk_lookup_index_to_rust
+// Provides: caml_plonk_lookup_verifier_index_to_rust
 // Requires: plonk_wasm, caml_lookup_table_to_rust, caml_lookup_selectors_to_rust, caml_lookup_info_to_rust, caml_opt_to_rust
 var caml_plonk_lookup_verifier_index_to_rust = function (
   caml_lookup_verifier_index,
   klass,
   poly_comm_to_rust,
-  lookup_selectors_class
+  lookup_selectors_class,
+  mk_affine
 ) {
   // joint_lookup_used
   var joint_lookup_used = caml_lookup_verifier_index[1];
@@ -2164,7 +2165,7 @@ var caml_plonk_lookup_verifier_index_to_rust = function (
 };
 
 // Provides: caml_plonk_verifier_index_to_rust
-// Requires: caml_plonk_domain_to_rust, caml_plonk_verification_evals_to_rust, caml_plonk_verification_shifts_to_rust, free_finalization_registry, caml_plonk_lookup_verifier_index_to_rust, caml_opt_to_rust
+// Requires: caml_plonk_domain_to_rust, caml_plonk_verification_evals_to_rust, caml_plonk_verification_shifts_to_rust, free_finalization_registry, caml_plonk_lookup_verifier_index_to_rust, caml_opt_to_rust, caml_poly_comm_to_rust_poly_comm
 var caml_plonk_verifier_index_to_rust = function (
   x,
   klass,
@@ -2214,7 +2215,8 @@ var caml_plonk_verifier_index_to_rust = function (
       lidx,
       lookup_verifier_index_class,
       poly_comm_to_rust,
-      lookup_selectors_class
+      lookup_selectors_class,
+      mk_affine
     );
   };
 
