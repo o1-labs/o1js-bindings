@@ -2003,7 +2003,7 @@ var caml_lookup_verifier_index_of_rust = function (
 };
 
 // Provides: caml_plonk_verifier_index_of_rust
-// Requires: linearization_of_rust, caml_plonk_domain_of_rust, caml_plonk_verification_evals_of_rust, caml_plonk_verification_shifts_of_rust, free_on_finalize, None, caml_opt_of_rust
+// Requires: linearization_of_rust, caml_plonk_domain_of_rust, caml_plonk_verification_evals_of_rust, caml_plonk_verification_shifts_of_rust, free_on_finalize, None, caml_opt_of_rust, caml_lookup_verifier_index_of_rust
 var caml_plonk_verifier_index_of_rust = function (x, affine_class) {
   var domain = caml_plonk_domain_of_rust(x.domain);
   var max_poly_size = x.max_poly_size;
@@ -2017,7 +2017,7 @@ var caml_plonk_verifier_index_of_rust = function (x, affine_class) {
 
   var caml_lookup_index = caml_opt_of_rust(
     x.lookup_index,
-    caml_lookup_index_of_rust
+    caml_lookup_verifier_index_of_rust
   );
 
   x.free();
