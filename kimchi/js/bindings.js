@@ -1714,22 +1714,13 @@ var caml_plonk_verification_evals_of_rust = function (x, affine_klass) {
 var caml_plonk_verification_evals_to_rust = function (
   x,
   klass,
-  poly_comm_class,
-  mk_affine
+  poly_comm_to_rust
 ) {
-  var convert = function (poly_comm) {
-    return caml_poly_comm_to_rust_poly_comm(
-      poly_comm,
-      poly_comm_class,
-      mk_affine
-    );
-  };
-
   var convertArray = function (comms) {
     var n = comms.length;
     var res = new Array(n - 1);
     for (var i = 1; i < n; i++) {
-      res[i - 1] = convert(comms[i]);
+      res[i - 1] = poly_comm_to_rust(comms[i]);
     }
     return js_class_vector_to_rust_vector(res);
   };
@@ -1866,52 +1857,143 @@ function linearization_of_rust(linearization, affine_class) {
 // Provides: None
 var None = 0;
 
+// Provides: caml_is_none
+// Requires: None
+var caml_is_none = function (v) {
+  return v === None;
+};
+
 // Provides: caml_map_of_rust_vector
 // Requires: js_class_vector_of_rust_vector
 var caml_map_of_rust_vector = function (v, klass, converter_to_rust) {
   var a = js_class_vector_of_rust_vector(v, klass);
   var res = [0];
   for (var i = 0; i < a.length; ++i) {
-      // TODO Check this. Could be off by 1
-      res.push(converter_to_rust_rust(a[i]));
+    // TODO Check this. Could be off by 1
+    res.push(converter_to_rust_rust(a[i]));
   }
   return res;
 };
 
+// Provides: caml_opt_of_rust
+// Requires: None
+var caml_opt_of_rust = function (value, value_of_rust) {
+  if (value == undefined) {
+    return None;
+  } else {
+    return [0, value_of_rust(value)];
+  }
+};
+
+// Provides: caml_bool_of_rust
+var caml_bool_of_rust = function (bool) {
+  return bool[1];
+};
+
+// Provides:: caml_lookup_patterns_of_rust
+// Requires: plonk_wasm, caml_bool_of_rust
+var caml_lookup_patterns_of_rust = function (wasm_lookup_patterns) {
+  return [
+    0,
+    caml_bool_of_rust(wasm_lookup_patterns.xor),
+    caml_bool_of_rust(wasm_lookup_patterns.lookup),
+    caml_bool_of_rust(wasm_lookup_patterns.range_check),
+    caml_bool_of_rust(wasm_lookup_patterns.foreign_field_mul),
+  ];
+};
+
+// Provides:: caml_lookup_features_of_rust
+// Requires: plonk_wasm, caml_lookup_patterns_of_rust, caml_bool_of_rust
+var caml_lookup_features_of_rust = function (wasm_lookup_features) {
+  var caml_lookup_patterns = caml_lookup_patterns_of_rust(
+    wasm_lookup_features.patterns
+  );
+  var caml_joint_lookup_used = caml_bool_of_rust(
+    wasm_lookup_features.joint_lookup_used
+  );
+  var caml_uses_runtime_tables = caml_bool_of_rust(
+    wasm_lookup_features.uses_runtime_tables
+  );
+
+  return [
+    0,
+    caml_lookup_patterns,
+    caml_joint_lookup_used,
+    caml_uses_runtime_tables,
+  ];
+};
+
+// Provides:: caml_lookup_info_of_rust
+// Requires: plonk_wasm, caml_lookup_features_of_rust
+var caml_lookup_info_of_rust = function (wasm_lookup_info) {
+  var caml_max_per_row = wasm_lookup_info.max_per_row;
+  var caml_max_joint_size = wasm_lookup_info.max_joint_size;
+  var caml_lookup_features = caml_lookup_features_of_rust(
+    wasm_lookup_info.features
+  );
+
+  return [0, caml_max_per_row, caml_max_joint_size, caml_lookup_features];
+};
+
+// Provides: caml_lookup_selectors_of_rust
+// Requires: plonk_wasm, caml_opt_of_rust
+var caml_lookup_selectors_of_rust = function (
+  wasm_lookup_selectors,
+  poly_comm_of_rust
+) {
+  var xor = caml_opt_of_rust(wasm_lookup_selectors.xor, poly_comm_of_rust);
+  var lookup = caml_opt_of_rust(
+    wasm_lookup_selectors.lookup,
+    poly_comm_of_rust
+  );
+  var range_check = caml_opt_of_rust(
+    wasm_lookup_selectors.range_check,
+    poly_comm_of_rust
+  );
+  var ffmul = caml_opt_of_rust(wasm_lookup_selectors.ffmul, poly_comm_of_rust);
+
+  return [0, xor, lookup, range_check, ffmul];
+};
+
 // Provides: caml_lookup_verifier_index_of_rust
-// Requires: plonk_wasm, caml_map_of_rust_vector
-var caml_lookup_verifier_index_of_rust = function(wasm_lookup_index, poly_comm_class, poly_comm_of_rust) {
-  // TODO
-  var caml_joint_lookup_used;
+// Requires: plonk_wasm, caml_map_of_rust_vector, caml_bool_of_rust, caml_lookup_selectors_of_rust, caml_opt_of_rust, caml_lookup_info_of_rust
+var caml_lookup_verifier_index_of_rust = function (
+  wasm_lookup_index,
+  poly_comm_class,
+  poly_comm_of_rust
+) {
+  var caml_joint_lookup_used = caml_bool_of_rust(
+    wasm_lookup_index.join_lookup_used
+  );
+
   // lookup table
   var caml_lookup_table = caml_map_of_rust_vector(
-      wasm_lookup_index.lookup_table,
-      poly_comm_class,
-      poly_comm_of_rust
+    wasm_lookup_index.lookup_table,
+    poly_comm_class,
+    poly_comm_of_rust
   );
-  // TODO
-  var caml_lookup_selectors;
 
-  var caml_table_ids;
-  var wasm_table_ids = wasm_lookup_index.table_ids;
-  if (wasm_table_ids === undefined) {
-    caml_table_ids = [0];
-  } else {
-    caml_table_ids = [0, poly_comm_of_rust(wasm_table_ids)];
-  }
+  var caml_lookup_selectors = caml_lookup_selectors_of_rust(
+    wasm_lookup_index.lookup_selectors,
+    poly_comm_of_rust
+  );
 
-  // TODO
-  var caml_lookup_info;
+  var caml_table_ids = caml_opt_of_rust(
+    wasm_lookup_index.table_ids,
+    poly_comm_of_rust
+  );
 
-  var caml_runtime_tables_selector;
-  var wasm_runtime_tables_selector = wasm_lookup_index.runtime_tables_selector;
-  if (wasm_runtime_tables_selector === undefined) {
-    caml_runtime_tables_selector = [0];
-  } else {
-    caml_runtime_tables_selector = [0, poly_comm_of_rust(wasm_runtime_tables_selector)];
-  }
+  var caml_lookup_info = caml_lookup_info_of_rust(
+    wasm_lookup_index.lookup_info
+  );
 
-  return [0,
+  var caml_runtime_tables_selector = caml_opt_of_rust(
+    wasm_lookup_index.runtime_tables_selector,
+    poly_comm_of_rust
+  );
+
+  return [
+    0,
     caml_joint_lookup_used,
     caml_lookup_table,
     caml_lookup_selectors,
@@ -1919,7 +2001,7 @@ var caml_lookup_verifier_index_of_rust = function(wasm_lookup_index, poly_comm_c
     caml_lookup_info,
     caml_runtime_tables_selector,
   ];
-}
+};
 
 // Provides: caml_plonk_verifier_index_of_rust
 // Requires: linearization_of_rust, caml_plonk_domain_of_rust, caml_plonk_verification_evals_of_rust, caml_plonk_verification_shifts_of_rust, free_on_finalize, None
@@ -1956,19 +2038,139 @@ var caml_plonk_verifier_index_of_rust = function (x, affine_class) {
   ];
 };
 
-// Provides: caml_plonk_lookup_index_to_rust
+// Provides: caml_opt_to_rust
+// Requires: caml_is_none, None
+var caml_opt_to_rust = function (caml_optional_value, to_rust) {
+  if (caml_is_none(caml_optional_value)) {
+    return undefined;
+  } else {
+    return to_rust(caml_optional_value);
+  }
+};
+
+// Provides:: caml_lookup_selectors_to_rust
+// Requires: plonk_wasm, caml_opt_to_rust
+var caml_lookup_selectors_to_rust = function (
+  wasm_lookup_selectors,
+  klass,
+  poly_comm_to_rust
+) {
+  var xor = caml_opt_to_rust(wasm_lookup_selectors[1], poly_comm_to_rust);
+  var lookup = caml_opt_to_rust(wasm_lookup_selectors[2], poly_comm_to_rust);
+  var range_check = caml_opt_to_rust(
+    wasm_lookup_selectors[3],
+    poly_comm_to_rust
+  );
+  var ffmul = caml_opt_to_rust(wasm_lookup_selectors[4], poly_comm_to_rust);
+
+  return new klass(xor, lookup, range_check, ffmul);
+};
+
+// Provides:: caml_lookup_table_to_rust
+// Requires: plonk_wasm, caml_array_to_rust_vector, rust_affine_of_caml_affine
+var caml_lookup_table_to_rust = function (wasm_lookup_table, mk_affine) {
+  return caml_array_to_rust_vector(
+    wasm_lookup_table,
+    rust_affine_of_caml_affine,
+    mk_affine
+  );
+};
+
+// Provides:: caml_table_ids_to_rust
 // Requires: plonk_wasm
-var caml_plonk_lookup_verifier_index_to_rust = function(caml_lookup_verifier_idx, poly_comm_class) {
+var caml_table_ids_to_rust = function (wasm_table_ids) {};
+
+// Provides:: caml_lookup_patterns_to_rust
+// Requires: plonk_wasm
+var caml_lookup_patterns_to_rust = function (wasm_lookup_patterns, klass) {
+  var xor = wasm_lookup_patterns[1];
+  var lookup = wasm_lookup_patterns[2];
+  var range_check = wasm_lookup_patterns[3];
+  var foreign_field_mul = wasm_lookup_patterns[4];
+
+  return new plonk_wasm.LookupPatterns(
+    xor,
+    lookup,
+    range_check,
+    foreign_field_mul
+  );
+};
+
+// Provides:: caml_lookup_features_to_rust
+// Requires: plonk_wasm, caml_lookup_patterns_to_rust
+var caml_lookup_features_to_rust = function (wasm_lookup_features) {
+  var patterns = caml_lookup_patterns_to_rust(wasm_lookup_features[1]);
+  var joint_lookup_used = wasm_lookup_features[2];
+  var uses_runtime_tables = wasm_lookup_features[3];
+
+  return new plonk_wasm.LookupFeatures(
+    patterns,
+    joint_lookup_used,
+    uses_runtime_tables
+  );
+};
+
+// Provides:: caml_lookup_info_to_rust
+// Requires: plonk_wasm, caml_lookup_features_to_rust
+var caml_lookup_info_to_rust = function (wasm_lookup_info) {
+  var max_per_row = wasm_lookup_info[1];
+  var max_poly_size = wasm_lookup_info[2];
+  var features = caml_lookup_features_to_rust(wasm_lookup_info[3]);
+
+  return new plonk_wasm.LookupInfo(max_per_row, max_poly_size, features);
+};
+
+// Provides: caml_plonk_lookup_index_to_rust
+// Requires: plonk_wasm, caml_lookup_table_to_rust, caml_lookup_selectors_to_rust, caml_lookup_info_to_rust, caml_opt_to_rust
+var caml_plonk_lookup_verifier_index_to_rust = function (
+  caml_lookup_verifier_index,
+  klass,
+  poly_comm_to_rust,
+  lookup_selectors_class
+) {
   // joint_lookup_used
+  var joint_lookup_used = caml_lookup_verifier_index[1];
+
   // lookup_table
+  var lookup_table = caml_lookup_table_to_rust(
+    caml_lookup_verifier_index[2],
+    mk_affine
+  );
+
   // lookup_selectors
+  var lookup_selectors = caml_lookup_selectors_to_rust(
+    caml_lookup_verifier_index[3],
+    lookup_selectors_class,
+    poly_comm_to_rust
+  );
+
   // table_ids
+  var table_ids = caml_opt_to_rust(
+    caml_lookup_verifier_index[4],
+    poly_comm_to_rust
+  );
+
   // lookup_info
+  var lookup_info = caml_lookup_info_to_rust(caml_lookup_verifier_index[5]);
+
   // runtime_tables_selector
-}
+  var runtime_tables_selector = caml_opt_to_rust(
+    caml_lookup_verifier_index[6],
+    poly_comm_to_rust
+  );
+
+  return new klass(
+    joint_lookup_used,
+    lookup_table,
+    lookup_selectors,
+    table_ids,
+    lookup_info,
+    runtime_tables_selector
+  );
+};
 
 // Provides: caml_plonk_verifier_index_to_rust
-// Requires: caml_plonk_domain_to_rust, caml_plonk_verification_evals_to_rust, caml_plonk_verification_shifts_to_rust, free_finalization_registry, caml_plonk_lookup_verifier_index_to_rust
+// Requires: caml_plonk_domain_to_rust, caml_plonk_verification_evals_to_rust, caml_plonk_verification_shifts_to_rust, free_finalization_registry, caml_plonk_lookup_verifier_index_to_rust, caml_opt_to_rust
 var caml_plonk_verifier_index_to_rust = function (
   x,
   klass,
@@ -1976,30 +2178,54 @@ var caml_plonk_verifier_index_to_rust = function (
   verification_evals_class,
   poly_comm_class,
   mk_affine,
-  verification_shifts_class
+  verification_shifts_class,
+  lookup_verifier_index_class,
+  lookup_selectors_class
 ) {
+  // Defining how to translate polynomial commitments from OCaml back to Rust
+  var poly_comm_to_rust = function (poly_comm) {
+    return caml_poly_comm_to_rust_poly_comm(
+      poly_comm,
+      poly_comm_class,
+      mk_affine
+    );
+  };
+
   var domain = caml_plonk_domain_to_rust(x[1], domain_class);
   var max_poly_size = x[2];
   var public_ = x[3];
   var prev_challenges = x[4];
   var srs = x[5];
+
   var evals = caml_plonk_verification_evals_to_rust(
     x[6],
     verification_evals_class,
-    poly_comm_class,
-    mk_affine
+    poly_comm_to_rust
   );
+
   var shifts = caml_plonk_verification_shifts_to_rust(
     x[7],
     verification_shifts_class
   );
-  var wasm_lookup_index;
-  var caml_lookup_index = x[7];
-  if (caml_lookup_index[0] === 0) {
-    wasm_lookup_index = undefined;
-  } else {
-    wasm_lookup_index = caml_plonk_lookup_verifier_index_to_rust(caml_lookup_index, poly_comm_class);
-  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // The lookup_index_to_rust function is defined only in order to be able to //
+  // use the generic caml_opt_to_rust function.                               //
+  //                                                                          //
+  // We could as well inline it but I preferred not having to think about     //
+  // internal representation of values yet again.                             //
+  //////////////////////////////////////////////////////////////////////////////
+  var lookup_index_to_rust = function (lidx) {
+    return caml_plonk_lookup_verifier_index_to_rust(
+      lidx,
+      lookup_verifier_index_class,
+      poly_comm_to_rust,
+      lookup_selectors_class
+    );
+  };
+
+  var wasm_lookup_index = caml_opt_to_rust(x[7], lookup_index_to_rust);
+
   return new klass(
     domain,
     max_poly_size,
@@ -2028,7 +2254,9 @@ var caml_pasta_fp_plonk_verifier_index_to_rust = function (x) {
     plonk_wasm.WasmFpPlonkVerificationEvals,
     plonk_wasm.WasmFpPolyComm,
     plonk_wasm.caml_vesta_affine_one,
-    plonk_wasm.WasmFpShifts
+    plonk_wasm.WasmFpShifts,
+    plonk_wasm.WasmFpLookupVerifierIndex,
+    plonk_wasm.WasmFpLookupSelectors
   );
 };
 
@@ -2114,7 +2342,9 @@ var caml_pasta_fq_plonk_verifier_index_to_rust = function (x) {
     plonk_wasm.WasmFqPlonkVerificationEvals,
     plonk_wasm.WasmFqPolyComm,
     plonk_wasm.caml_pallas_affine_one,
-    plonk_wasm.WasmFqShifts
+    plonk_wasm.WasmFqShifts,
+    plonk_wasm.WasmFqLookupVerifierIndex,
+    plonk_wasm.WasmFqLookupSelectors
   );
 };
 
