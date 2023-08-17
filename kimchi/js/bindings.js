@@ -2220,7 +2220,7 @@ var caml_plonk_verifier_index_to_rust = function (
     );
   };
 
-  var wasm_lookup_index = caml_opt_to_rust(x[7], lookup_index_to_rust);
+  var wasm_lookup_index = caml_opt_to_rust(x[8], lookup_index_to_rust);
 
   return new klass(
     domain,
