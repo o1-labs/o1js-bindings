@@ -6,19 +6,109 @@ use array_init::array_init;
 use kimchi::circuits::{
     constraints::FeatureFlags,
     lookup::index::LookupSelectors,
-    lookup::lookups::{LookupFeatures, LookupPatterns, LookupInfo},
+    lookup::lookups::{LookupFeatures, LookupInfo, LookupPatterns},
     polynomials::permutation::Shifts,
     polynomials::permutation::{zk_polynomial, zk_w3},
     wires::{COLUMNS, PERMUTS},
 };
-use poly_commitment::commitment::PolyComm;
 use kimchi::linearization::expr_linearization;
 use kimchi::verifier_index::{LookupVerifierIndex, VerifierIndex as DlogVerifierIndex};
 use paste::paste;
+use poly_commitment::commitment::PolyComm;
 use poly_commitment::srs::SRS;
 use std::path::Path;
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
+
+// TODO: Can we move this into proof-systems using a feature?
+#[wasm_bindgen]
+#[derive(Clone, Copy)]
+pub struct WasmLookupPatterns {
+    pub xor: bool,
+    pub lookup: bool,
+    pub range_check: bool,
+    pub foreign_field_mul: bool,
+}
+
+impl From<WasmLookupPatterns> for LookupPatterns {
+    fn from(x: WasmLookupPatterns) -> Self {
+        Self {
+            xor: x.xor,
+            lookup: x.lookup,
+            range_check: x.range_check,
+            foreign_field_mul: x.foreign_field_mul,
+        }
+    }
+}
+
+impl From<LookupPatterns> for WasmLookupPatterns {
+    fn from(x: LookupPatterns) -> Self {
+        Self {
+            xor: x.xor,
+            lookup: x.lookup,
+            range_check: x.range_check,
+            foreign_field_mul: x.foreign_field_mul,
+        }
+    }
+}
+
+// TODO: Can we move this into proof-systems using a feature?
+#[wasm_bindgen]
+#[derive(Clone, Copy)]
+pub struct WasmLookupFeatures {
+    pub patterns: WasmLookupPatterns,
+    pub joint_lookup_used: bool,
+    pub uses_runtime_tables: bool,
+}
+
+impl From<WasmLookupFeatures> for LookupFeatures {
+    fn from(x: WasmLookupFeatures) -> Self {
+        Self {
+            patterns: x.patterns.into(),
+            joint_lookup_used: x.joint_lookup_used,
+            uses_runtime_tables: x.uses_runtime_tables,
+        }
+    }
+}
+
+impl From<LookupFeatures> for WasmLookupFeatures {
+    fn from(x: LookupFeatures) -> Self {
+        Self {
+            patterns: x.patterns.into(),
+            joint_lookup_used: x.joint_lookup_used,
+            uses_runtime_tables: x.uses_runtime_tables,
+        }
+    }
+}
+
+// TODO: Can we move this into proof-systems using a feature?
+#[wasm_bindgen]
+#[derive(Clone)]
+pub struct WasmLookupInfo {
+    pub max_per_row: u32,
+    pub max_joint_size: u32,
+    pub features: WasmLookupFeatures,
+}
+
+impl From<LookupInfo> for WasmLookupInfo {
+    fn from(x: LookupInfo) -> Self {
+        Self {
+            max_per_row: x.max_per_row as u32,
+            max_joint_size: x.max_joint_size,
+            features: x.features.into(),
+        }
+    }
+}
+
+impl From<WasmLookupInfo> for LookupInfo {
+    fn from(x: WasmLookupInfo) -> Self {
+        Self {
+            max_per_row: x.max_per_row as usize,
+            max_joint_size: x.max_joint_size,
+            features: x.features.into(),
+        }
+    }
+}
 
 macro_rules! impl_verification_key {
     (
@@ -206,103 +296,6 @@ macro_rules! impl_verification_key {
                     s6: $WasmF
                 ) -> Self {
                     Self { s0, s1, s2, s3, s4, s5, s6}
-                }
-            }
-
-            // TODO: Can we move this into proof-systems using a feature?
-            #[wasm_bindgen]
-            #[derive(Clone, Copy)]
-            pub struct [<Wasm $field_name:camel LookupPatterns>] {
-                pub xor: bool,
-                pub lookup: bool,
-                pub range_check: bool,
-                pub foreign_field_mul: bool,
-            }
-
-            type WasmLookupPatterns = [<Wasm $field_name:camel LookupPatterns>];
-
-            impl From<WasmLookupPatterns> for LookupPatterns {
-                fn from(x: WasmLookupPatterns) -> Self {
-                    Self {
-                        xor: x.xor,
-                        lookup: x.lookup,
-                        range_check: x.range_check,
-                        foreign_field_mul: x.foreign_field_mul,
-                    }
-                }
-            }
-
-            impl From<LookupPatterns> for WasmLookupPatterns {
-                fn from(x: LookupPatterns) -> Self {
-                    Self {
-                        xor: x.xor,
-                        lookup: x.lookup,
-                        range_check: x.range_check,
-                        foreign_field_mul: x.foreign_field_mul,
-                    }
-                }
-            }
-
-            // TODO: Can we move this into proof-systems using a feature?
-            #[wasm_bindgen]
-            #[derive(Clone, Copy)]
-            pub struct [<Wasm $field_name:camel LookupFeatures>] {
-                pub patterns: WasmLookupPatterns,
-                pub joint_lookup_used: bool,
-                pub uses_runtime_tables: bool,
-            }
-
-            type WasmLookupFeatures = [<Wasm $field_name:camel LookupFeatures>];
-
-            impl From<WasmLookupFeatures> for LookupFeatures{
-                fn from(x: WasmLookupFeatures) -> Self {
-                    Self {
-                        patterns: x.patterns.into(),
-                        joint_lookup_used: x.joint_lookup_used,
-                        uses_runtime_tables: x.uses_runtime_tables,
-                    }
-                }
-            }
-
-            impl From<LookupFeatures> for WasmLookupFeatures{
-                fn from(x: LookupFeatures) -> Self {
-                    Self {
-                        patterns: x.patterns.into(),
-                        joint_lookup_used: x.joint_lookup_used,
-                        uses_runtime_tables: x.uses_runtime_tables,
-                    }
-                }
-            }
-
-            // TODO: Can we move this into proof-systems using a feature?
-            #[wasm_bindgen]
-            #[derive(Clone)]
-            pub struct [<Wasm $field_name:camel LookupInfo>] {
-                pub max_per_row: u32,
-                pub max_joint_size: u32,
-                pub features: WasmLookupFeatures,
-            }
-
-            type WasmLookupInfo = [<Wasm $field_name:camel LookupInfo>];
-
-            impl From<LookupInfo> for WasmLookupInfo {
-                fn from(x: LookupInfo) -> Self {
-                    Self {
-                        max_per_row: x.max_per_row as u32,
-                        max_joint_size: x.max_joint_size,
-                        features: x.features.into(),
-                    }
-                }
-            }
-
-
-            impl From<WasmLookupInfo> for LookupInfo {
-                fn from(x: WasmLookupInfo) -> Self {
-                    Self {
-                        max_per_row: x.max_per_row as usize,
-                        max_joint_size: x.max_joint_size,
-                        features: x.features.into(),
-                    }
                 }
             }
 
