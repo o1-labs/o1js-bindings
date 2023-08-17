@@ -1887,7 +1887,7 @@ var caml_opt_of_rust = function (value, value_of_rust) {
 
 // Provides: caml_bool_of_rust
 var caml_bool_of_rust = function (bool) {
-  return bool[1];
+  return bool;
 };
 
 // Provides:: caml_lookup_patterns_of_rust
