@@ -1727,12 +1727,12 @@ var caml_plonk_verification_evals_to_rust = function (
 
   var sigma_comm = convertArray(x[1]);
   var coefficients_comm = convertArray(x[2]);
-  var generic_comm = convert(x[3]);
-  var psm_comm = convert(x[4]);
-  var complete_add_comm = convert(x[5]);
-  var mul_comm = convert(x[6]);
-  var emul_comm = convert(x[7]);
-  var endomul_scalar_comm = convert(x[8]);
+  var generic_comm = poly_comm_to_rust(x[3]);
+  var psm_comm = poly_comm_to_rust(x[4]);
+  var complete_add_comm = poly_comm_to_rust(x[5]);
+  var mul_comm = poly_comm_to_rust(x[6]);
+  var emul_comm = poly_comm_to_rust(x[7]);
+  var endomul_scalar_comm = poly_comm_to_rust(x[8]);
 
   return new klass(
     sigma_comm,
