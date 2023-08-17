@@ -1869,7 +1869,6 @@ var caml_map_of_rust_vector = function (v, klass, converter_to_rust) {
   var a = js_class_vector_of_rust_vector(v, klass);
   var res = [0];
   for (var i = 0; i < a.length; ++i) {
-    // TODO Check this. Could be off by 1
     res.push(converter_to_rust_rust(a[i]));
   }
   return res;
