@@ -6,7 +6,7 @@ use array_init::array_init;
 use kimchi::circuits::{
     constraints::FeatureFlags,
     lookup::index::LookupSelectors,
-    lookup::lookups::{LookupFeatures, LookupInfo, LookupPatterns},
+    lookup::lookups::LookupInfo,
     polynomials::permutation::Shifts,
     polynomials::permutation::{zk_polynomial, zk_w3},
     wires::{COLUMNS, PERMUTS},
@@ -19,96 +19,6 @@ use poly_commitment::srs::SRS;
 use std::path::Path;
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
-
-// TODO: Can we move this into proof-systems using a feature?
-#[wasm_bindgen]
-#[derive(Clone, Copy)]
-pub struct WasmLookupPatterns {
-    pub xor: bool,
-    pub lookup: bool,
-    pub range_check: bool,
-    pub foreign_field_mul: bool,
-}
-
-impl From<WasmLookupPatterns> for LookupPatterns {
-    fn from(x: WasmLookupPatterns) -> Self {
-        Self {
-            xor: x.xor,
-            lookup: x.lookup,
-            range_check: x.range_check,
-            foreign_field_mul: x.foreign_field_mul,
-        }
-    }
-}
-
-impl From<LookupPatterns> for WasmLookupPatterns {
-    fn from(x: LookupPatterns) -> Self {
-        Self {
-            xor: x.xor,
-            lookup: x.lookup,
-            range_check: x.range_check,
-            foreign_field_mul: x.foreign_field_mul,
-        }
-    }
-}
-
-// TODO: Can we move this into proof-systems using a feature?
-#[wasm_bindgen]
-#[derive(Clone, Copy)]
-pub struct WasmLookupFeatures {
-    pub patterns: WasmLookupPatterns,
-    pub joint_lookup_used: bool,
-    pub uses_runtime_tables: bool,
-}
-
-impl From<WasmLookupFeatures> for LookupFeatures {
-    fn from(x: WasmLookupFeatures) -> Self {
-        Self {
-            patterns: x.patterns.into(),
-            joint_lookup_used: x.joint_lookup_used,
-            uses_runtime_tables: x.uses_runtime_tables,
-        }
-    }
-}
-
-impl From<LookupFeatures> for WasmLookupFeatures {
-    fn from(x: LookupFeatures) -> Self {
-        Self {
-            patterns: x.patterns.into(),
-            joint_lookup_used: x.joint_lookup_used,
-            uses_runtime_tables: x.uses_runtime_tables,
-        }
-    }
-}
-
-// TODO: Can we move this into proof-systems using a feature?
-#[wasm_bindgen]
-#[derive(Clone)]
-pub struct WasmLookupInfo {
-    pub max_per_row: u32,
-    pub max_joint_size: u32,
-    pub features: WasmLookupFeatures,
-}
-
-impl From<LookupInfo> for WasmLookupInfo {
-    fn from(x: LookupInfo) -> Self {
-        Self {
-            max_per_row: x.max_per_row as u32,
-            max_joint_size: x.max_joint_size,
-            features: x.features.into(),
-        }
-    }
-}
-
-impl From<WasmLookupInfo> for LookupInfo {
-    fn from(x: WasmLookupInfo) -> Self {
-        Self {
-            max_per_row: x.max_per_row as usize,
-            max_joint_size: x.max_joint_size,
-            features: x.features.into(),
-        }
-    }
-}
 
 macro_rules! impl_verification_key {
     (
@@ -431,7 +341,7 @@ macro_rules! impl_verification_key {
                 pub table_ids: Option<$WasmPolyComm>,
 
                 #[wasm_bindgen(skip)]
-                pub lookup_info: WasmLookupInfo,
+                pub lookup_info: LookupInfo,
 
                 #[wasm_bindgen(skip)]
                 pub runtime_tables_selector: Option<$WasmPolyComm>,
@@ -446,7 +356,7 @@ macro_rules! impl_verification_key {
                         lookup_table: x.lookup_table.clone().iter().map(Into::into).collect(),
                         lookup_selectors: x.lookup_selectors.clone().into(),
                         table_ids: x.table_ids.clone().map(Into::into),
-                        lookup_info: x.lookup_info.clone().into(),
+                        lookup_info: x.lookup_info.clone(),
                         runtime_tables_selector: x.runtime_tables_selector.clone().map(Into::into)
                     }
                 }
@@ -459,7 +369,7 @@ macro_rules! impl_verification_key {
                         lookup_table: x.lookup_table.iter().map(Into::into).collect(),
                         lookup_selectors: x.lookup_selectors.into(),
                         table_ids: x.table_ids.map(Into::into),
-                        lookup_info: x.lookup_info.into(),
+                        lookup_info: x.lookup_info,
                         runtime_tables_selector: x.runtime_tables_selector.map(Into::into)
                     }
                 }
@@ -473,7 +383,7 @@ macro_rules! impl_verification_key {
                         lookup_table: x.lookup_table.clone().iter().map(Into::into).collect(),
                         lookup_selectors: x.lookup_selectors.clone().into(),
                         table_ids: x.table_ids.clone().map(Into::into),
-                        lookup_info: x.lookup_info.clone().into(),
+                        lookup_info: x.lookup_info,
                         runtime_tables_selector: x.runtime_tables_selector.clone().map(Into::into)
                     }
                 }
@@ -486,7 +396,7 @@ macro_rules! impl_verification_key {
                         lookup_table: x.lookup_table.iter().map(Into::into).collect(),
                         lookup_selectors: x.lookup_selectors.into(),
                         table_ids: x.table_ids.map(Into::into),
-                        lookup_info: x.lookup_info.into(),
+                        lookup_info: x.lookup_info,
                         runtime_tables_selector: x.runtime_tables_selector.map(Into::into)
                     }
                 }
@@ -500,7 +410,7 @@ macro_rules! impl_verification_key {
                     lookup_table: WasmVector<$WasmPolyComm>,
                     lookup_selectors: WasmLookupSelectors,
                     table_ids: Option<$WasmPolyComm>,
-                    lookup_info: WasmLookupInfo,
+                    lookup_info: LookupInfo,
                     runtime_tables_selector: Option<$WasmPolyComm>
                 ) -> WasmLookupVerifierIndex {
                     WasmLookupVerifierIndex {
@@ -541,16 +451,6 @@ macro_rules! impl_verification_key {
                 #[wasm_bindgen(setter)]
                 pub fn set_table_ids(&mut self, x: Option<$WasmPolyComm>) {
                     self.table_ids = x
-                }
-
-                #[wasm_bindgen(getter)]
-                pub fn lookup_info(&self) -> WasmLookupInfo {
-                    self.lookup_info.clone()
-                }
-
-                #[wasm_bindgen(setter)]
-                pub fn set_lookup_info(&mut self, x: WasmLookupInfo) {
-                    self.lookup_info = x
                 }
 
                 #[wasm_bindgen(getter)]
