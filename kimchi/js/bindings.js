@@ -1877,7 +1877,7 @@ var caml_map_of_rust_vector = function (v, klass, converter_to_rust) {
 // Provides: caml_opt_of_rust
 // Requires: None
 var caml_opt_of_rust = function (value, value_of_rust) {
-  if (value == undefined) {
+  if (value === undefined) {
     return None;
   } else {
     return [0, value_of_rust(value)];
