@@ -2037,10 +2037,12 @@ var caml_plonk_verifier_index_of_rust = function (x, affine_class) {
 // Provides: caml_opt_to_rust
 // Requires: caml_is_none, None
 var caml_opt_to_rust = function (caml_optional_value, to_rust) {
+  // to_rust expects the parameters of the variant. A `Some vx` is represented
+  // as [0, vx]
   if (caml_is_none(caml_optional_value)) {
     return undefined;
   } else {
-    return to_rust(caml_optional_value);
+    return to_rust(caml_optional_value[1]);
   }
 };
 
