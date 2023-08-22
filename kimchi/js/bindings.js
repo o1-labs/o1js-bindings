@@ -1744,15 +1744,12 @@ var caml_plonk_verification_evals_to_rust = function (
   klass,
   poly_comm_to_rust
 ) {
-
   var convert_opt = function (poly_comm_opt) {
     // Borrowing from caml_option_to_maybe_undefined
     if (poly_comm_opt === 0) {
       return undefined;
     }
-    return poly_comm_to_rust(
-      poly_comm_opt[1]
-    );
+    return poly_comm_to_rust(poly_comm_opt[1]);
   };
 
   var convertArray = function (comms) {
