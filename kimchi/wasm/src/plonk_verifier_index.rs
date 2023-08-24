@@ -84,11 +84,7 @@ macro_rules! impl_verification_key {
                 #[wasm_bindgen(skip)]
                 pub foreign_field_mul_comm: Option<$WasmPolyComm>,
                 #[wasm_bindgen(skip)]
-                pub rot_comm: Option<$WasmPolyComm>,
-                #[wasm_bindgen(skip)]
-                pub lookup_gate_comm: Option<$WasmPolyComm>,
-                #[wasm_bindgen(skip)]
-                pub runtime_tables_comm: Option<$WasmPolyComm>,
+                pub rot_comm: Option<$WasmPolyComm>
             }
             type WasmPlonkVerificationEvals = [<Wasm $field_name:camel PlonkVerificationEvals>];
 
@@ -111,8 +107,6 @@ macro_rules! impl_verification_key {
                     foreign_field_add_comm: Option<$WasmPolyComm>,
                     foreign_field_mul_comm: Option<$WasmPolyComm>,
                     rot_comm: Option<$WasmPolyComm>,
-                    lookup_gate_comm: Option<$WasmPolyComm>,
-                    runtime_tables_comm: Option<$WasmPolyComm>,
                     ) -> Self {
                     WasmPlonkVerificationEvals {
                         sigma_comm: sigma_comm.clone(),
@@ -129,8 +123,6 @@ macro_rules! impl_verification_key {
                         foreign_field_mul_comm: foreign_field_mul_comm.clone(),
                         foreign_field_add_comm: foreign_field_add_comm.clone(),
                         rot_comm: rot_comm.clone(),
-                        lookup_gate_comm: lookup_gate_comm.clone(),
-                        runtime_tables_comm: runtime_tables_comm.clone(),
                     }
                 }
 
@@ -274,25 +266,7 @@ macro_rules! impl_verification_key {
                     self.foreign_field_mul_comm = x;
                 }
 
-                #[wasm_bindgen(getter)]
-                pub fn lookup_gate_comm(&self) -> Option<$WasmPolyComm> {
-                    self.lookup_gate_comm.clone()
-                }
 
-                #[wasm_bindgen(setter)]
-                pub fn set_lookup_gate_comm(&mut self, x: Option<$WasmPolyComm>) {
-                    self.lookup_gate_comm = x;
-                }
-
-                #[wasm_bindgen(getter)]
-                pub fn runtime_tables_comm(&self) -> Option<$WasmPolyComm> {
-                    self.runtime_tables_comm.clone()
-                }
-
-                #[wasm_bindgen(setter)]
-                pub fn set_runtime_tables_comm(&mut self, x: Option<$WasmPolyComm>) {
-                    self.runtime_tables_comm = x;
-                }
             }
 
             #[derive(Clone, Copy)]
@@ -770,16 +744,6 @@ macro_rules! impl_verification_key {
                 vi: DlogVerifierIndex<$G>,
             ) -> WasmPlonkVerifierIndex {
 
-                let runtime_tables_comm = vi.lookup_index.as_ref().map_or(None, |v| {
-                    v.runtime_tables_selector.as_ref().map(|v| v.into())
-                });
-
-                let lookup_gate_comm = vi
-                    .lookup_index
-                    .as_ref()
-                    .map(|v| v.lookup_selectors.as_ref().map(Into::into))
-                    .map_or(None, |v| v.lookup);
-
                 WasmPlonkVerifierIndex {
                     domain: WasmDomain {
                         log_size_of_group: vi.domain.log_size_of_group as i32,
@@ -803,9 +767,7 @@ macro_rules! impl_verification_key {
                         range_check1_comm: vi.range_check1_comm.map(|v| v.into()),
                         foreign_field_add_comm: vi.foreign_field_add_comm.map(|v| v.into()),
                         foreign_field_mul_comm: vi.foreign_field_mul_comm.map(|v| v.into()),
-                        rot_comm: vi.rot_comm.map(|v| v.into()),
-                        lookup_gate_comm,
-                        runtime_tables_comm,
+                        rot_comm: vi.rot_comm.map(|v| v.into())
                     },
                     shifts:
                         WasmShifts {
@@ -1134,8 +1096,6 @@ macro_rules! impl_verification_key {
                         foreign_field_add_comm: None,
                         foreign_field_mul_comm: None,
                         rot_comm: None,
-                        lookup_gate_comm: None,
-                        runtime_tables_comm: None,
                     },
                     shifts:
                         WasmShifts {

@@ -1711,8 +1711,6 @@ var caml_plonk_verification_evals_of_rust = function (x, affine_klass) {
   var foreign_field_add_comm = convert_opt(x.foreign_field_add_comm);
   var foreign_field_mul_comm = convert_opt(x.foreign_field_mul_comm);
   var rot_comm = convert_opt(x.rot_comm);
-  var lookup_gate_comm = convert_opt(x.lookup_gate_comm);
-  var runtime_tables_comm = convert_opt(x.runtime_tables_comm);
 
   x.free();
   return [
@@ -1731,8 +1729,6 @@ var caml_plonk_verification_evals_of_rust = function (x, affine_klass) {
     foreign_field_add_comm,
     foreign_field_mul_comm,
     rot_comm,
-    lookup_gate_comm,
-    runtime_tables_comm,
     0,
   ];
 };
@@ -1776,8 +1772,6 @@ var caml_plonk_verification_evals_to_rust = function (
   var foreign_field_add_comm = convert_opt(x[12]);
   var foreign_field_mul_comm = convert_opt(x[13]);
   var rot_comm = convert_opt(x[14]);
-  var lookup_gate_comm = convert_opt(x[15]);
-  var runtime_tables_comm = convert_opt(x[16]);
 
   return new klass(
     sigma_comm,
@@ -1794,8 +1788,6 @@ var caml_plonk_verification_evals_to_rust = function (
     foreign_field_add_comm,
     foreign_field_mul_comm,
     rot_comm,
-    lookup_gate_comm,
-    runtime_tables_comm
   );
 };
 
