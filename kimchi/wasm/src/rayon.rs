@@ -11,7 +11,9 @@
  * limitations under the License.
  */
 
+#[allow(unused_imports)]
 use js_sys::JsString;
+
 use js_sys::Promise;
 use spmc::{channel, Receiver, Sender};
 use wasm_bindgen::prelude::*;
