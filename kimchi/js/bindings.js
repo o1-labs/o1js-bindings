@@ -1734,6 +1734,25 @@ var caml_plonk_verification_evals_to_rust = function (
   var emul_comm = poly_comm_to_rust(x[7]);
   var endomul_scalar_comm = poly_comm_to_rust(x[8]);
 
+  var xor_comm = caml_opt_to_rust(x.xor_comm, poly_comm_to_rust);
+  var range_check0_comm = caml_opt_to_rust(
+    x.range_check0_comm,
+    poly_comm_to_rust
+  );
+  var range_check1_comm = caml_opt_to_rust(
+    x.range_check1_comm,
+    poly_comm_to_rust
+  );
+  var foreign_field_add_comm = caml_opt_to_rust(
+    x.foreign_field_add_comm,
+    poly_comm_to_rust
+  );
+  var foreign_field_mul_comm = caml_opt_to_rust(
+    x.foreign_field_mul_comm,
+    poly_comm_to_rust
+  );
+  var rot_comm = caml_opt_to_rust(x.rot_comm, poly_comm_to_rust);
+
   return new klass(
     sigma_comm,
     coefficients_comm,
@@ -1742,7 +1761,13 @@ var caml_plonk_verification_evals_to_rust = function (
     complete_add_comm,
     mul_comm,
     emul_comm,
-    endomul_scalar_comm
+    endomul_scalar_comm,
+    xor_comm,
+    range_check0_comm,
+    range_check1_comm,
+    foreign_field_add_comm,
+    foreign_field_mul_comm,
+    rot_comm
   );
 };
 
