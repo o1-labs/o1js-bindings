@@ -210,7 +210,10 @@ macro_rules! impl_oracles {
                     let (proof, public_input): (ProverProof<$G>, Vec<$F>) = proof.into();
 
                     let oracles_result =
-                        proof.oracles::<DefaultFqSponge<$curve_params, PlonkSpongeConstantsKimchi>, DefaultFrSponge<$F, PlonkSpongeConstantsKimchi>>(&index, &p_comm,&public_input);
+                        proof.oracles::<
+                            DefaultFqSponge<$curve_params, PlonkSpongeConstantsKimchi>,
+                            DefaultFrSponge<$F, PlonkSpongeConstantsKimchi>
+                        >(&index, &p_comm, Some(&public_input));
                     let oracles_result = match oracles_result {
                         Err(e) => {
                             return Err(format!("oracles_create: {}", e));
