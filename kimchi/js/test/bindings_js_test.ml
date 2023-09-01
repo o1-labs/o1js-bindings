@@ -643,7 +643,7 @@ let _ =
                |> Backend.Keypair.create ~prev_challenges:0 )
          in
          let x = Backend.Field.of_int 2 in
-         let (pi : Backend.Proof.t) =
+         let (pi : Backend.Proof.with_public_evals) =
            time "generate witness conv" (fun () ->
                (* TODO(dw) add runtime table, make pickles/snarky more lookup friendly
                   (https://github.com/MinaProtocol/mina/issues/13476) *)
