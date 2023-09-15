@@ -2644,9 +2644,17 @@ var caml_pasta_fp_commitments_of_rust = function (x) {
 // Provides: caml_pasta_fp_proof_to_rust
 // Requires: plonk_wasm, caml_pasta_fp_commitments_to_rust, caml_pasta_fp_opening_proof_to_rust, caml_pasta_fp_proof_evaluations_to_rust, caml_fp_vector_to_rust, caml_vesta_poly_comm_to_rust, js_class_vector_to_rust_vector
 var caml_pasta_fp_proof_to_rust = function (x) {
+  var public_evals = x[1];
+  x = x[2];
   var commitments = caml_pasta_fp_commitments_to_rust(x[1]);
   var proof = caml_pasta_fp_opening_proof_to_rust(x[2]);
   var evals = caml_pasta_fp_proof_evaluations_to_rust(x[3]);
+  var evals_actual = new Array(evals.length + 1);
+  evals_actual[0] = 0;
+  evals_actual[1] = public_evals;
+  for (var i = 2, l = evals_actual.length; i < l; i++) {
+      evals_actual[i] = evals[i-1];
+  }
   var ft_eval1 = x[4];
   var public_ = caml_fp_vector_to_rust(x[5]);
   var prev_challenges = x[6];
@@ -2663,7 +2671,7 @@ var caml_pasta_fp_proof_to_rust = function (x) {
   return new plonk_wasm.WasmFpProverProof(
     commitments,
     proof,
-    evals,
+    evals_actual,
     ft_eval1,
     public_,
     prev_challenges_scalars,
@@ -2677,6 +2685,12 @@ var caml_pasta_fp_proof_of_rust = function (x) {
   var messages = caml_pasta_fp_commitments_of_rust(x.commitments);
   var proof = caml_pasta_fp_opening_proof_of_rust(x.proof);
   var evals = caml_pasta_fp_proof_evaluations_of_rust(x.evals);
+  var public_evals = evals[1];
+  var evals_actual = new Array(evals.length - 1);
+  evals_actual[0] = 0;
+  for (var i = 2, l = evals.length; i < l; i++) {
+      evals_actual[i-1] = evals[i];
+  }
   var ft_eval1 = x.ft_eval1;
   var public_ = caml_fp_vector_of_rust(x.public_);
   var prev_challenges_scalars = x.prev_challenges_scalars;
@@ -2695,7 +2709,7 @@ var caml_pasta_fp_proof_of_rust = function (x) {
     res[2] = caml_vesta_poly_comm_of_rust(prev_challenges_comms[i]);
     prev_challenges[i] = res;
   }
-  return [0, messages, proof, evals, ft_eval1, public_, prev_challenges];
+  return [0, public_evals, [0, messages, proof, evals_actual, ft_eval1, public_, prev_challenges]];
 };
 
 // Provides: caml_fp_runtime_table_to_rust
@@ -2959,9 +2973,17 @@ var caml_pasta_fq_commitments_of_rust = function (x) {
 // Provides: caml_pasta_fq_proof_to_rust
 // Requires: plonk_wasm, caml_pasta_fq_commitments_to_rust, caml_pasta_fq_opening_proof_to_rust, caml_pasta_fq_proof_evaluations_to_rust, caml_fq_vector_to_rust, caml_pallas_poly_comm_to_rust, js_class_vector_to_rust_vector
 var caml_pasta_fq_proof_to_rust = function (x) {
+  var public_evals = x[1];
+  x = x[2];
   var messages = caml_pasta_fq_commitments_to_rust(x[1]);
   var proof = caml_pasta_fq_opening_proof_to_rust(x[2]);
   var evals = caml_pasta_fq_proof_evaluations_to_rust(x[3]);
+  var evals_actual = new Array(evals.length + 1);
+  evals_actual[0] = 0;
+  evals_actual[1] = public_evals;
+  for (var i = 2, l = evals_actual.length; i < l; i++) {
+      evals_actual[i] = evals[i-1];
+  }
   var ft_eval1 = x[4];
   var public_ = caml_fq_vector_to_rust(x[5]);
   var prev_challenges = x[6];
@@ -2978,7 +3000,7 @@ var caml_pasta_fq_proof_to_rust = function (x) {
   return new plonk_wasm.WasmFqProverProof(
     messages,
     proof,
-    evals,
+    evals_actual,
     ft_eval1,
     public_,
     prev_challenges_scalars,
@@ -2992,7 +3014,12 @@ var caml_pasta_fq_proof_of_rust = function (x) {
   var messages = caml_pasta_fq_commitments_of_rust(x.commitments);
   var proof = caml_pasta_fq_opening_proof_of_rust(x.proof);
   var evals = caml_pasta_fq_proof_evaluations_of_rust(x.evals);
-  var evals1 = caml_pasta_fq_proof_evaluations_of_rust(x.evals1);
+  var public_evals = evals[1];
+  var evals_actual = new Array(evals.length - 1);
+  evals_actual[0] = 0;
+  for (var i = 2, l = evals.length; i < l; i++) {
+      evals_actual[i-1] = evals[i];
+  }
   var ft_eval1 = x.ft_eval1;
   var public_ = caml_fq_vector_of_rust(x.public_);
   var prev_challenges_scalars = x.prev_challenges_scalars;
@@ -3010,7 +3037,7 @@ var caml_pasta_fq_proof_of_rust = function (x) {
     res[2] = caml_pallas_poly_comm_of_rust(prev_challenges_comms[i]);
     prev_challenges[i] = res;
   }
-  return [0, messages, proof, evals, ft_eval1, public_, prev_challenges];
+  return [0, public_evals, [0, messages, proof, evals_actual, ft_eval1, public_, prev_challenges]];
 };
 
 // Provides: caml_fq_runtime_table_to_rust
@@ -3192,6 +3219,12 @@ var fp_oracles_create = function (lgr_comm, verifier_index, proof) {
   );
 };
 
+// Provides: fp_oracles_create_no_public
+// Requires: fp_oracles_create
+var fp_oracles_create_no_public = function (lgr_comm, verifier_index, proof) {
+  return fp_oracles_create(lgr_comm, verifier_index, [0, 0, proof]);
+};
+
 // Provides: fp_oracles_dummy
 // Requires: plonk_wasm, caml_oracles_of_rust
 var fp_oracles_dummy = function () {
@@ -3222,6 +3255,12 @@ var fq_oracles_create = function (lgr_comm, verifier_index, proof) {
       caml_pasta_fq_proof_to_rust(proof)
     )
   );
+};
+
+// Provides: fq_oracles_create_no_public
+// Requires: fq_oracles_create
+var fq_oracles_create_no_public = function (lgr_comm, verifier_index, proof) {
+  return fq_oracles_create(lgr_comm, verifier_index, [0, 0, proof]);
 };
 
 // Provides: fq_oracles_dummy

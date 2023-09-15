@@ -643,7 +643,7 @@ let _ =
                |> Backend.Keypair.create ~prev_challenges:0 )
          in
          let x = Backend.Field.of_int 2 in
-         let (pi : Backend.Proof.t) =
+         let (pi : Backend.Proof.with_public_evals) =
            time "generate witness conv" (fun () ->
                Impl.generate_witness_conv ~input_typ:Typ.field
                  ~return_typ:Typ.unit main
