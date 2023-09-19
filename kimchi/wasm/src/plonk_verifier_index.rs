@@ -8,14 +8,14 @@ use kimchi::circuits::{
     lookup::index::LookupSelectors,
     lookup::lookups::{LookupFeatures, LookupInfo, LookupPatterns},
     polynomials::permutation::Shifts,
-    polynomials::permutation::{zk_polynomial, zk_w3},
+    polynomials::permutation::{permutation_vanishing_polynomial, zk_w},
     wires::{COLUMNS, PERMUTS},
 };
 use kimchi::linearization::expr_linearization;
 use kimchi::verifier_index::{LookupVerifierIndex, VerifierIndex as DlogVerifierIndex};
 use paste::paste;
-use poly_commitment::srs::SRS;
 use poly_commitment::commitment::PolyComm;
+use poly_commitment::srs::SRS;
 use std::path::Path;
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
@@ -71,11 +71,26 @@ macro_rules! impl_verification_key {
                 pub emul_comm: $WasmPolyComm,
                 #[wasm_bindgen(skip)]
                 pub endomul_scalar_comm: $WasmPolyComm,
+                #[wasm_bindgen(skip)]
+                pub xor_comm: Option<$WasmPolyComm>,
+                #[wasm_bindgen(skip)]
+                pub range_check0_comm: Option<$WasmPolyComm>,
+                #[wasm_bindgen(skip)]
+                pub range_check1_comm: Option<$WasmPolyComm>,
+                #[wasm_bindgen(skip)]
+                pub foreign_field_add_comm: Option<$WasmPolyComm>,
+                #[wasm_bindgen(skip)]
+                pub foreign_field_mul_comm: Option<$WasmPolyComm>,
+                #[wasm_bindgen(skip)]
+                pub rot_comm: Option<$WasmPolyComm>
             }
+
             type WasmPlonkVerificationEvals = [<Wasm $field_name:camel PlonkVerificationEvals>];
+
 
             #[wasm_bindgen]
             impl [<Wasm $field_name:camel PlonkVerificationEvals>] {
+                #[allow(clippy::too_many_arguments)]
                 #[wasm_bindgen(constructor)]
                 pub fn new(
                     sigma_comm: WasmVector<$WasmPolyComm>,
@@ -86,6 +101,12 @@ macro_rules! impl_verification_key {
                     mul_comm: &$WasmPolyComm,
                     emul_comm: &$WasmPolyComm,
                     endomul_scalar_comm: &$WasmPolyComm,
+                    xor_comm: Option<$WasmPolyComm>,
+                    range_check0_comm: Option<$WasmPolyComm>,
+                    range_check1_comm: Option<$WasmPolyComm>,
+                    foreign_field_add_comm: Option<$WasmPolyComm>,
+                    foreign_field_mul_comm: Option<$WasmPolyComm>,
+                    rot_comm: Option<$WasmPolyComm>,
                     ) -> Self {
                     WasmPlonkVerificationEvals {
                         sigma_comm: sigma_comm.clone(),
@@ -96,6 +117,12 @@ macro_rules! impl_verification_key {
                         mul_comm: mul_comm.clone(),
                         emul_comm: emul_comm.clone(),
                         endomul_scalar_comm: endomul_scalar_comm.clone(),
+                        xor_comm: xor_comm.clone(),
+                        range_check0_comm: range_check0_comm.clone(),
+                        range_check1_comm: range_check1_comm.clone(),
+                        foreign_field_mul_comm: foreign_field_mul_comm.clone(),
+                        foreign_field_add_comm: foreign_field_add_comm.clone(),
+                        rot_comm: rot_comm.clone(),
                     }
                 }
 
@@ -178,6 +205,67 @@ macro_rules! impl_verification_key {
                 pub fn set_endomul_scalar_comm(&mut self, x: $WasmPolyComm) {
                     self.endomul_scalar_comm = x;
                 }
+
+                #[wasm_bindgen(getter)]
+                pub fn xor_comm(&self) -> Option<$WasmPolyComm> {
+                    self.xor_comm.clone()
+                }
+
+                #[wasm_bindgen(setter)]
+                pub fn set_xor_comm(&mut self, x: Option<$WasmPolyComm>) {
+                    self.xor_comm = x;
+                }
+
+                #[wasm_bindgen(getter)]
+                pub fn rot_comm(&self) -> Option<$WasmPolyComm> {
+                    self.rot_comm.clone()
+                }
+
+                #[wasm_bindgen(setter)]
+                pub fn set_rot_comm(&mut self, x: Option<$WasmPolyComm>) {
+                    self.rot_comm = x;
+                }
+
+                #[wasm_bindgen(getter)]
+                pub fn range_check0_comm(&self) -> Option<$WasmPolyComm> {
+                    self.range_check0_comm.clone()
+                }
+
+                #[wasm_bindgen(setter)]
+                pub fn set_range_check0_comm(&mut self, x: Option<$WasmPolyComm>) {
+                    self.range_check0_comm = x;
+                }
+
+                #[wasm_bindgen(getter)]
+                pub fn range_check1_comm(&self) -> Option<$WasmPolyComm> {
+                    self.range_check1_comm.clone()
+                }
+
+                #[wasm_bindgen(setter)]
+                pub fn set_range_check1_comm(&mut self, x: Option<$WasmPolyComm>) {
+                    self.range_check1_comm = x;
+                }
+
+                #[wasm_bindgen(getter)]
+                pub fn foreign_field_add_comm(&self) -> Option<$WasmPolyComm> {
+                    self.foreign_field_add_comm.clone()
+                }
+
+                #[wasm_bindgen(setter)]
+                pub fn set_foreign_field_add_comm(&mut self, x: Option<$WasmPolyComm>) {
+                    self.foreign_field_add_comm = x;
+                }
+
+                #[wasm_bindgen(getter)]
+                pub fn foreign_field_mul_comm(&self) -> Option<$WasmPolyComm> {
+                    self.foreign_field_mul_comm.clone()
+                }
+
+                #[wasm_bindgen(setter)]
+                pub fn set_foreign_field_mul_comm(&mut self, x: Option<$WasmPolyComm>) {
+                    self.foreign_field_mul_comm = x;
+                }
+
             }
 
             #[derive(Clone, Copy)]
@@ -559,6 +647,12 @@ macro_rules! impl_verification_key {
                         mul_comm: vi.mul_comm.into(),
                         emul_comm: vi.emul_comm.into(),
                         endomul_scalar_comm: vi.endomul_scalar_comm.into(),
+                        xor_comm: vi.xor_comm.map(|v| v.into()),
+                        range_check0_comm: vi.range_check0_comm.map(|v| v.into()),
+                        range_check1_comm: vi.range_check1_comm.map(|v| v.into()),
+                        foreign_field_add_comm: vi.foreign_field_add_comm.map(|v| v.into()),
+                        foreign_field_mul_comm: vi.foreign_field_mul_comm.map(|v| v.into()),
+                        rot_comm: vi.rot_comm.map(|v| v.into())
                     },
                     shifts:
                         WasmShifts {
@@ -617,6 +711,7 @@ macro_rules! impl_verification_key {
                 srs: &$WasmSrs,
                 evals: &WasmPlonkVerificationEvals,
                 shifts: &WasmShifts,
+                lookup_index: Option<WasmLookupVerifierIndex>
             ) -> (DlogVerifierIndex<GAffine>, Arc<SRS<GAffine>>) {
                 /*
                 let urs_copy = Rc::clone(&*urs);
@@ -649,7 +744,7 @@ macro_rules! impl_verification_key {
                         },
                     };
 
-                let (linearization, powers_of_alpha) = expr_linearization(Some(&feature_flags), true);
+                let (linearization, powers_of_alpha) = expr_linearization(Some(&feature_flags), true, 3);
 
                 let index =
                     DlogVerifierIndex {
@@ -666,26 +761,25 @@ macro_rules! impl_verification_key {
                         emul_comm: (&evals.emul_comm).into(),
 
                         endomul_scalar_comm: (&evals.endomul_scalar_comm).into(),
-                        // TODO
-                        range_check0_comm: None,
-                        range_check1_comm: None,
-                        foreign_field_add_comm: None,
-                        foreign_field_mul_comm: None,
-                        rot_comm: None,
-                        xor_comm: None,
+                        xor_comm: (&evals.xor_comm).as_ref().map(Into::into),
+                        range_check0_comm: (&evals.range_check0_comm).as_ref().map(Into::into),
+                        range_check1_comm: (&evals.range_check1_comm).as_ref().map(Into::into),
+                        foreign_field_add_comm: (&evals.foreign_field_add_comm).as_ref().map(Into::into),
+                        foreign_field_mul_comm: (&evals.foreign_field_mul_comm).as_ref().map(Into::into),
+                        rot_comm: (&evals.rot_comm).as_ref().map(Into::into),
 
                         w: {
                             let res = once_cell::sync::OnceCell::new();
-                            res.set(zk_w3(domain)).unwrap();
+                            res.set(zk_w(domain, 3)).unwrap();
                             res
                         },
                         endo: endo_q,
                         max_poly_size: max_poly_size as usize,
                         public: public_ as usize,
                         prev_challenges: prev_challenges as usize,
-                        zkpm: {
+                        permutation_vanishing_polynomial_m: {
                             let res = once_cell::sync::OnceCell::new();
-                            res.set(zk_polynomial(domain)).unwrap();
+                            res.set(permutation_vanishing_polynomial(domain, 3)).unwrap();
                             res
                         },
                         shift: [
@@ -702,10 +796,12 @@ macro_rules! impl_verification_key {
                             res.set(srs.0.clone()).unwrap();
                             res
                         },
+
+                        zk_rows: 3,
+
                         linearization,
                         powers_of_alpha,
-                        // TODO
-                        lookup_index: None,
+                        lookup_index: lookup_index.map(Into::into),
                     };
                 (index, srs.0.clone())
             }
@@ -720,6 +816,7 @@ macro_rules! impl_verification_key {
                         &index.srs,
                         &index.evals,
                         &index.shifts,
+                        index.lookup_index
                     )
                     .0
                 }
@@ -861,6 +958,12 @@ macro_rules! impl_verification_key {
                         mul_comm: comm(),
                         emul_comm: comm(),
                         endomul_scalar_comm: comm(),
+                        xor_comm: None,
+                        range_check0_comm: None,
+                        range_check1_comm: None,
+                        foreign_field_add_comm: None,
+                        foreign_field_mul_comm: None,
+                        rot_comm: None,
                     },
                     shifts:
                         WasmShifts {
@@ -872,7 +975,7 @@ macro_rules! impl_verification_key {
                             s5: $F::one().into(),
                             s6: $F::one().into(),
                         },
-                    lookup_index: None,
+                    lookup_index: None
                 }
             }
 

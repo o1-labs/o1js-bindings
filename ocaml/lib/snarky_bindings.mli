@@ -110,11 +110,11 @@ val snarky :
            -> int
            -> Impl.field array
            -> Impl.Keypair.t
-           -> Backend.Proof.t )
+           -> Backend.Proof.with_public_evals )
           Js.meth
       ; verify :
           (   Impl.field array
-           -> Backend.Proof.t
+           -> Backend.Proof.with_public_evals
            -> ( Impl.field
               , Kimchi_bindings.Protocol.SRS.Fp.t
               , Pasta_bindings.Fq.t Kimchi_types.or_infinity
