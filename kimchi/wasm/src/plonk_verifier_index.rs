@@ -750,10 +750,9 @@ macro_rules! impl_verification_key {
                     DlogVerifierIndex {
                         domain,
                         max_poly_size: max_poly_size as usize,
+                        // Should we use clone?
                         srs: {
-                            let res = once_cell::sync::OnceCell::new();
-                            res.set(srs.0.clone()).unwrap();
-                            res
+                          Arc::clone(&srs.0)
                         },
                         public: public_ as usize,
                         prev_challenges: prev_challenges as usize,
