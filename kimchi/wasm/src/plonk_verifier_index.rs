@@ -822,7 +822,7 @@ macro_rules! impl_verification_key {
                 let path = Path::new(&path);
                 let (endo_q, _endo_r) = poly_commitment::srs::endos::<GAffineOther>();
                 DlogVerifierIndex::<$G, OpeningProof<$G>>::from_file(
-                    Some(srs.0.clone()),
+                    srs.0.clone(),
                     path,
                     offset.map(|x| x as u64),
                     endo_q,
