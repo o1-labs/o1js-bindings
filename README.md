@@ -51,3 +51,6 @@ This command will
 - update the `MINA_COMMIT` file
 
 > ℹ️ Use `npm run bindings` to update the source tree after you have finished a batch of work / a PR which touches the OCaml/Rust layers. SnarkyJS CI depends on these artifacts, so this is a required step before merging such changes.
+
+After submitting a patch updating the OCaml/Rust bindings, you might need to run
+`npm run clean` in `snarkyjs` before running the unit tests locally.
