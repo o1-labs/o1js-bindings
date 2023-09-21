@@ -7,8 +7,7 @@ use kimchi::circuits::{
     constraints::FeatureFlags,
     lookup::index::LookupSelectors,
     lookup::lookups::{LookupFeatures, LookupInfo, LookupPatterns},
-    polynomials::permutation::Shifts,
-    polynomials::permutation::{permutation_vanishing_polynomial, zk_w},
+    polynomials::permutation::{zk_w3, Shifts},
     wires::{COLUMNS, PERMUTS},
 };
 use kimchi::linearization::expr_linearization;
@@ -774,11 +773,6 @@ macro_rules! impl_verification_key {
                         rot_comm: (&evals.rot_comm).as_ref().map(Into::into),
                         foreign_field_add_comm: (&evals.foreign_field_add_comm).as_ref().map(Into::into),
                         foreign_field_mul_comm: (&evals.foreign_field_mul_comm).as_ref().map(Into::into),
-                        permutation_vanishing_polynomial_m: {
-                            let res = once_cell::sync::OnceCell::new();
-                            res.set(permutation_vanishing_polynomial(domain, 3)).unwrap();
-                            res
-                        },
                         shift: [
                             shifts.s0.into(),
                             shifts.s1.into(),
