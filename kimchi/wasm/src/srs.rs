@@ -3,9 +3,9 @@ use crate::wasm_vector::WasmVector;
 use ark_poly::UVPolynomial;
 use ark_poly::{univariate::DensePolynomial, EvaluationDomain, Evaluations};
 use paste::paste;
+use poly_commitment::SRS as ISRS;
 use poly_commitment::{commitment::b_poly_coefficients, srs::SRS};
 use serde::{Deserialize, Serialize};
-use poly_commitment::SRS as ISRS;
 use std::ops::Deref;
 use std::{
     fs::{File, OpenOptions},
@@ -22,7 +22,6 @@ macro_rules! impl_srs {
      $G: ty,
      $WasmPolyComm: ty,
      $field_name: ident) => {
-
         paste! {
             #[wasm_bindgen]
             #[derive(Clone)]
