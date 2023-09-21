@@ -7,7 +7,7 @@ use kimchi::circuits::{
     constraints::FeatureFlags,
     lookup::index::LookupSelectors,
     lookup::lookups::{LookupFeatures, LookupInfo, LookupPatterns},
-    polynomials::permutation::{zk_w3, Shifts},
+    polynomials::permutation::{zk_w3, zk_polynomial, Shifts},
     wires::{COLUMNS, PERMUTS},
 };
 use kimchi::linearization::expr_linearization;
@@ -744,7 +744,7 @@ macro_rules! impl_verification_key {
                         },
                     };
 
-                let (linearization, powers_of_alpha) = expr_linearization(Some(&feature_flags), true, 3);
+                let (linearization, powers_of_alpha) = expr_linearization(Some(&feature_flags), true);
 
                 let index =
                     DlogVerifierIndex {
@@ -782,8 +782,12 @@ macro_rules! impl_verification_key {
                             shifts.s5.into(),
                             shifts.s6.into()
                         ],
-                        // TODO(dw): zkpm?
-                        zk_rows: 3,
+
+                        zkpm: {
+                            let res = once_cell::sync::OnceCell::new();
+                            res.set(zk_polynomial(domain)).unwrap();
+                            res
+                        },
 
                         w: {
                             let res = once_cell::sync::OnceCell::new();
