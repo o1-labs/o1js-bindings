@@ -465,7 +465,7 @@ let pickles_compile (choices : pickles_rule_js array)
   let public_output_size = signature##.publicOutputSize in
   let override_wrap_domain =
     Js.Optdef.to_option signature##.overrideWrapDomain
-    |> Option.map ~f:Pickles_base.Proofs_verified.of_int
+    |> Option.map ~f:Pickles_base.Proofs_verified.of_int_exn
   in
   let (Choices choices) =
     Choices.of_js ~public_input_size ~public_output_size choices
