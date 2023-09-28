@@ -2,10 +2,11 @@
 
 set -e
 
-SNARKY_JS_PATH="src/lib/snarkyjs"
+SNARKY_JS_PATH="."
 DUNE_PATH="$SNARKY_JS_PATH/src/bindings/ocaml"
 BUILD_PATH="_build/default/$DUNE_PATH"
 KIMCHI_BINDINGS="$SNARKY_JS_PATH/src/bindings/kimchi"
+MINA_PATH="$SNARKY_JS_PATH/src/mina"
 
 pushd "$SNARKY_JS_PATH"
   [ -d node_modules ] || npm i
@@ -24,6 +25,10 @@ if [ -f "$BUILD_PATH/snarky_js_node.bc.js" ]; then
   fi
 fi
 
+# Copy mina config files, that is necessary for o1js to build
+cp "$MINA_PATH/src/config.mlh" "$SNARKY_JS_PATH/src" \
+&& cp -r "$MINA_PATH/src/config" "$SNARKY_JS_PATH/src/config" || exit 1
+
 dune b $KIMCHI_BINDINGS/js/node_js \
 && dune b $DUNE_PATH/snarky_js_node.bc.js || exit 1
 
@@ -37,6 +42,10 @@ dune b $SNARKY_JS_PATH/src/bindings/mina-transaction/gen/js-layout.ts \
 && dune b $SNARKY_JS_PATH/src/bindings/crypto/constants.ts \
  $SNARKY_JS_PATH/src/bindings/crypto/test_vectors/poseidonKimchi.ts \
 || exit 1
+
+# Cleanup mina config files
+rm -rf "$SNARKY_JS_PATH/src/config" \
+&& rm "$SNARKY_JS_PATH/src/config.mlh" || exit 1
 
 BINDINGS_PATH="$SNARKY_JS_PATH"/src/bindings/compiled/_node_bindings/
 mkdir -p "$BINDINGS_PATH"
