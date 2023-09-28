@@ -28,12 +28,12 @@ ark-ec = { version = "0.3.0", features = ["parallel"] }
 ark-poly = { version = "0.3.0", features = ["parallel"] }
 
 # proof-systems
-poly-commitment = { path = "../../../../../crypto/proof-systems/poly-commitment" }
-groupmap = { path = "../../../../../crypto/proof-systems/groupmap" }
-mina-curves = { path = "../../../../../crypto/proof-systems/curves" }
-o1-utils = { path = "../../../../../crypto/proof-systems/utils" }
-mina-poseidon = { path = "../../../../../crypto/proof-systems/poseidon" }
-kimchi = { path = "../../../../../crypto/proof-systems/kimchi", features = ["wasm_types"] }
+poly-commitment = { path = "../../../mina/src/lib/crypto/proof-systems/poly-commitment" }
+groupmap = { path = "../../../mina/src/lib/crypto/proof-systems/groupmap" }
+mina-curves = { path = "../../../mina/src/lib/crypto/proof-systems/curves" }
+o1-utils = { path = "../../../mina/src/lib/crypto/proof-systems/utils" }
+mina-poseidon = { path = "../../../mina/src/lib/crypto/proof-systems/poseidon" }
+kimchi = { path = "../../../mina/src/lib/crypto/proof-systems/kimchi", features = ["wasm_types"] }
 
 array-init = "2.0.0"
 base64 = "0.13.0"

@@ -51,7 +51,7 @@
  (modules snarky_js_types)
  (link_flags (-linkall))
  (modes native)
- (libraries mina_base fields_derivers_zkapps yojson)
+ (libraries mina_base fields_derivers.zkapps yojson)
  (instrumentation
   (backend bisect_ppx))
  (preprocess
