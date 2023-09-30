@@ -13,6 +13,10 @@ export default [
         type: 'object',
       },
       {
+        name: 'gates',
+        type: 'object',
+      },
+      {
         name: 'bool',
         type: 'object',
       },
