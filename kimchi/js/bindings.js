@@ -2653,7 +2653,7 @@ var caml_pasta_fp_proof_to_rust = function (x) {
   evals_actual[0] = 0;
   evals_actual[1] = public_evals;
   for (var i = 2, l = evals_actual.length; i < l; i++) {
-      evals_actual[i] = evals[i-1];
+    evals_actual[i] = evals[i - 1];
   }
   var ft_eval1 = x[4];
   var public_ = caml_fp_vector_to_rust(x[5]);
@@ -2689,7 +2689,7 @@ var caml_pasta_fp_proof_of_rust = function (x) {
   var evals_actual = new Array(evals.length - 1);
   evals_actual[0] = 0;
   for (var i = 2, l = evals.length; i < l; i++) {
-      evals_actual[i-1] = evals[i];
+    evals_actual[i - 1] = evals[i];
   }
   var ft_eval1 = x.ft_eval1;
   var public_ = caml_fp_vector_of_rust(x.public_);
@@ -2709,7 +2709,11 @@ var caml_pasta_fp_proof_of_rust = function (x) {
     res[2] = caml_vesta_poly_comm_of_rust(prev_challenges_comms[i]);
     prev_challenges[i] = res;
   }
-  return [0, public_evals, [0, messages, proof, evals_actual, ft_eval1, public_, prev_challenges]];
+  return [
+    0,
+    public_evals,
+    [0, messages, proof, evals_actual, ft_eval1, public_, prev_challenges],
+  ];
 };
 
 // Provides: caml_fp_runtime_table_to_rust
@@ -2982,7 +2986,7 @@ var caml_pasta_fq_proof_to_rust = function (x) {
   evals_actual[0] = 0;
   evals_actual[1] = public_evals;
   for (var i = 2, l = evals_actual.length; i < l; i++) {
-      evals_actual[i] = evals[i-1];
+    evals_actual[i] = evals[i - 1];
   }
   var ft_eval1 = x[4];
   var public_ = caml_fq_vector_to_rust(x[5]);
@@ -3018,7 +3022,7 @@ var caml_pasta_fq_proof_of_rust = function (x) {
   var evals_actual = new Array(evals.length - 1);
   evals_actual[0] = 0;
   for (var i = 2, l = evals.length; i < l; i++) {
-      evals_actual[i-1] = evals[i];
+    evals_actual[i - 1] = evals[i];
   }
   var ft_eval1 = x.ft_eval1;
   var public_ = caml_fq_vector_of_rust(x.public_);
@@ -3037,7 +3041,11 @@ var caml_pasta_fq_proof_of_rust = function (x) {
     res[2] = caml_pallas_poly_comm_of_rust(prev_challenges_comms[i]);
     prev_challenges[i] = res;
   }
-  return [0, public_evals, [0, messages, proof, evals_actual, ft_eval1, public_, prev_challenges]];
+  return [
+    0,
+    public_evals,
+    [0, messages, proof, evals_actual, ft_eval1, public_, prev_challenges],
+  ];
 };
 
 // Provides: caml_fq_runtime_table_to_rust
