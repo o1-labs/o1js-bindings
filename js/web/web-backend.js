@@ -84,14 +84,14 @@ async function mainWorker() {
       let specArg = specArgs[i];
       if (specArg && specArg.__wrap) {
         // Class info got lost on transfer, rebuild it.
-        resArgs[i] = specArg.__wrap(args[i].ptr);
+        resArgs[i] = specArg.__wrap(args[i].__wbg_ptr);
       } else {
         resArgs[i] = args[i];
       }
     }
     let res = wasm[name].apply(wasm, resArgs);
     if (functionSpec.res && functionSpec.res.__wrap) {
-      res = res.ptr;
+      res = res.__wbg_ptr;
     } else if (functionSpec.res && functionSpec.res.there) {
       res = functionSpec.res.there(res);
     }
