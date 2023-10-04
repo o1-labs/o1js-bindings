@@ -214,7 +214,7 @@ pub fn caml_pasta_fq_plonk_index_read(
     )
     .map_err(|err| JsValue::from_str(&format!("caml_pasta_fq_plonk_index_read: {err}")))?;
     t.srs = srs.0.clone();
-    let (linearization, powers_of_alpha) = expr_linearization(Some(&t.cs.feature_flags), true);
+    let (linearization, powers_of_alpha) = expr_linearization(Some(&t.cs.feature_flags), true, 3);
     t.linearization = linearization;
     t.powers_of_alpha = powers_of_alpha;
 
