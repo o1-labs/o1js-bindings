@@ -13,7 +13,7 @@ export { initSnarkyJS, withThreadPool };
 let wasm = plonkWasm();
 globalThis.plonk_wasm = wasm;
 
-let init = wasm.default;
+let __wbg_init = wasm.default;
 /**
  * @type {Promise<Worker>}
  */
@@ -25,9 +25,9 @@ let numWorkers = undefined;
 
 async function initSnarkyJS() {
   const memory = allocateWasmMemoryForUserAgent(navigator.userAgent);
-  await init(undefined, memory);
+  await __wbg_init(undefined, memory);
 
-  let module = init.__wbindgen_wasm_module;
+  let module = __wbg_init.__wbindgen_wasm_module;
 
   // we have two approaches to run the .bc.js code after its dependencies are ready, without fetching an additional script:
 
