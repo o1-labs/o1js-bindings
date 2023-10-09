@@ -1,12 +1,12 @@
-import plonkWasm from "../../../web_bindings/plonk_wasm.js";
-import { workerSpec } from "./worker-spec.js";
-import { getEfficientNumWorkers } from "./num-workers.js";
+import plonkWasm from '../../../web_bindings/plonk_wasm.js';
+import { workerSpec } from './worker-spec.js';
+import { getEfficientNumWorkers } from './num-workers.js';
 import {
   srcFromFunctionModule,
   inlineWorker,
   waitForMessage,
-} from "./worker-helpers.js";
-import o1jsWebSrc from "string:../../../web_bindings/snarky_js_web.bc.js";
+} from './worker-helpers.js';
+import o1jsWebSrc from 'string:../../../web_bindings/snarky_js_web.bc.js';
 
 export { initO1, withThreadPool };
 
@@ -44,7 +44,7 @@ async function initO1() {
   workerPromise = new Promise((resolve) => {
     setTimeout(async () => {
       let worker = inlineWorker(srcFromFunctionModule(mainWorker));
-      await workerCall(worker, "start", { memory, module });
+      await workerCall(worker, 'start', { memory, module });
       overrideBindings(globalThis.plonk_wasm, worker);
       resolve(worker);
     }, 0);
@@ -53,15 +53,15 @@ async function initO1() {
 
 async function withThreadPool(run) {
   if (workerPromise === undefined)
-    throw Error("need to initialize worker first");
+    throw Error('need to initialize worker first');
   let worker = await workerPromise;
   numWorkers ??= await getEfficientNumWorkers();
-  await workerCall(worker, "initThreadPool", numWorkers);
+  await workerCall(worker, 'initThreadPool', numWorkers);
   let result;
   try {
     result = await run();
   } finally {
-    await workerCall(worker, "exitThreadPool");
+    await workerCall(worker, 'exitThreadPool');
   }
   return result;
 }
@@ -73,10 +73,10 @@ async function mainWorker() {
   let spec = workerSpec(wasm);
 
   let isInitialized = false;
-  let data = await waitForMessage(self, "start");
+  let data = await waitForMessage(self, 'start');
   let { module, memory } = data.message;
 
-  onMessage(self, "run", ({ name, args, u32_ptr }) => {
+  onMessage(self, 'run', ({ name, args, u32_ptr }) => {
     let functionSpec = spec[name];
     let specArgs = functionSpec.args;
     let resArgs = args;
@@ -132,7 +132,7 @@ function overrideBindings(plonk_wasm, worker) {
     plonk_wasm[key] = (...args) => {
       let u32_ptr = wasm.create_zero_u32_ptr();
       worker.postMessage({
-        type: "run",
+        type: 'run',
         message: { name: key, args, u32_ptr },
       });
       /* Here be undefined behavior dragons. */
@@ -153,7 +153,7 @@ function overrideBindings(plonk_wasm, worker) {
 // helpers for main thread <-> worker communication
 
 function onMessage(worker, type, onMsg) {
-  worker.addEventListener("message", function ({ data }) {
+  worker.addEventListener('message', function ({ data }) {
     if (data?.type !== type) return;
     onMsg(data.message);
   });
@@ -161,7 +161,7 @@ function onMessage(worker, type, onMsg) {
 
 function workerExport(worker, exportObject) {
   for (let key in exportObject) {
-    worker.addEventListener("message", async function ({ data }) {
+    worker.addEventListener('message', async function ({ data }) {
       if (data?.type !== key) return;
       let result = await exportObject[key](data.message);
       postMessage({ type: data.id, result });
