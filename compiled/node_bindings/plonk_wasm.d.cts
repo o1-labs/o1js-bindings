@@ -65,21 +65,13 @@ export function caml_pasta_fp_plonk_gate_vector_digest(public_input_size: number
 */
 export function caml_pasta_fp_plonk_circuit_serialize(public_input_size: number, v: WasmFpGateVector): string;
 /**
-* @param {Uint32Array} lgr_comm
-* @param {WasmFqPlonkVerifierIndex} index
-* @param {WasmFqProverProof} proof
-* @returns {WasmFqOracles}
+* @returns {WasmGPallas}
 */
-export function fq_oracles_create(lgr_comm: Uint32Array, index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): WasmFqOracles;
+export function caml_pallas_affine_one(): WasmGPallas;
 /**
-* @returns {WasmFqOracles}
+* @returns {WasmGVesta}
 */
-export function fq_oracles_dummy(): WasmFqOracles;
-/**
-* @param {WasmFqProverProof} x
-* @returns {WasmFqProverProof}
-*/
-export function fq_oracles_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
+export function caml_vesta_affine_one(): WasmGVesta;
 /**
 * @returns {number}
 */
@@ -281,22 +273,6 @@ export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): 
 * @returns {WasmGVesta}
 */
 export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
-/**
-* @param {Uint32Array} lgr_comm
-* @param {WasmFpPlonkVerifierIndex} index
-* @param {WasmFpProverProof} proof
-* @returns {WasmFpOracles}
-*/
-export function fp_oracles_create(lgr_comm: Uint32Array, index: WasmFpPlonkVerifierIndex, proof: WasmFpProverProof): WasmFpOracles;
-/**
-* @returns {WasmFpOracles}
-*/
-export function fp_oracles_dummy(): WasmFpOracles;
-/**
-* @param {WasmFpProverProof} x
-* @returns {WasmFpProverProof}
-*/
-export function fp_oracles_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
 /**
 * @param {string} s
 * @param {number} _len
@@ -561,20 +537,6 @@ export function caml_pallas_of_affine_coordinates(x: Uint8Array, y: Uint8Array):
 */
 export function caml_pallas_affine_deep_copy(x: WasmGPallas): WasmGPallas;
 /**
-* @param {number} num_threads
-* @param {string} worker_source
-* @returns {Promise<any>}
-*/
-export function initThreadPool(num_threads: number, worker_source: string): Promise<any>;
-/**
-* @returns {Promise<any>}
-*/
-export function exitThreadPool(): Promise<any>;
-/**
-* @param {number} receiver
-*/
-export function wbg_rayon_start_worker(receiver: number): void;
-/**
 * @returns {WasmFqGateVector}
 */
 export function caml_pasta_fq_plonk_gate_vector_create(): WasmFqGateVector;
@@ -613,6 +575,22 @@ export function caml_pasta_fq_plonk_gate_vector_digest(public_input_size: number
 */
 export function caml_pasta_fq_plonk_circuit_serialize(public_input_size: number, v: WasmFqGateVector): string;
 /**
+* @param {Uint32Array} lgr_comm
+* @param {WasmFpPlonkVerifierIndex} index
+* @param {WasmFpProverProof} proof
+* @returns {WasmFpOracles}
+*/
+export function fp_oracles_create(lgr_comm: Uint32Array, index: WasmFpPlonkVerifierIndex, proof: WasmFpProverProof): WasmFpOracles;
+/**
+* @returns {WasmFpOracles}
+*/
+export function fp_oracles_dummy(): WasmFpOracles;
+/**
+* @param {WasmFpProverProof} x
+* @returns {WasmFpProverProof}
+*/
+export function fp_oracles_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
+/**
 * @param {WasmPastaFqPlonkIndex} index
 * @param {WasmVecVecFq} witness
 * @param {Uint32Array} wasm_runtime_tables
@@ -643,13 +621,21 @@ export function caml_pasta_fq_plonk_proof_dummy(): WasmFqProverProof;
 */
 export function caml_pasta_fq_plonk_proof_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
 /**
-* @returns {WasmGPallas}
+* @param {Uint32Array} lgr_comm
+* @param {WasmFqPlonkVerifierIndex} index
+* @param {WasmFqProverProof} proof
+* @returns {WasmFqOracles}
 */
-export function caml_pallas_affine_one(): WasmGPallas;
+export function fq_oracles_create(lgr_comm: Uint32Array, index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): WasmFqOracles;
 /**
-* @returns {WasmGVesta}
+* @returns {WasmFqOracles}
 */
-export function caml_vesta_affine_one(): WasmGVesta;
+export function fq_oracles_dummy(): WasmFqOracles;
+/**
+* @param {WasmFqProverProof} x
+* @returns {WasmFqProverProof}
+*/
+export function fq_oracles_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
 /**
 * @param {number} depth
 * @returns {WasmFpSrs}
@@ -1010,6 +996,20 @@ export function caml_pasta_fq_poseidon_block_cipher(state: Uint8Array): Uint8Arr
 */
 export function prover_to_json(prover_index: WasmPastaFpPlonkIndex): string;
 /**
+* @param {number} num_threads
+* @param {string} worker_source
+* @returns {Promise<any>}
+*/
+export function initThreadPool(num_threads: number, worker_source: string): Promise<any>;
+/**
+* @returns {Promise<any>}
+*/
+export function exitThreadPool(): Promise<any>;
+/**
+* @param {number} receiver
+*/
+export function wbg_rayon_start_worker(receiver: number): void;
+/**
 * A row accessible from a given row, corresponds to the fact that we open all polynomials
 * at `zeta` **and** `omega * zeta`.
 */
@@ -1076,6 +1076,12 @@ export enum GateType {
 export class LookupFeatures {
   free(): void;
 /**
+* @param {LookupPatterns} patterns
+* @param {boolean} joint_lookup_used
+* @param {boolean} uses_runtime_tables
+*/
+  constructor(patterns: LookupPatterns, joint_lookup_used: boolean, uses_runtime_tables: boolean);
+/**
 * Whether joint lookups are used
 */
   joint_lookup_used: boolean;
@@ -1094,6 +1100,12 @@ export class LookupFeatures {
 export class LookupInfo {
   free(): void;
 /**
+* @param {number} max_per_row
+* @param {number} max_joint_size
+* @param {LookupFeatures} features
+*/
+  constructor(max_per_row: number, max_joint_size: number, features: LookupFeatures);
+/**
 * The features enabled for this lookup configuration
 */
   features: LookupFeatures;
@@ -1111,6 +1123,13 @@ export class LookupInfo {
 */
 export class LookupPatterns {
   free(): void;
+/**
+* @param {boolean} xor
+* @param {boolean} lookup
+* @param {boolean} range_check
+* @param {boolean} foreign_field_mul
+*/
+  constructor(xor: boolean, lookup: boolean, range_check: boolean, foreign_field_mul: boolean);
 /**
 */
   foreign_field_mul: boolean;
@@ -1238,6 +1257,9 @@ export class WasmFpLookupVerifierIndex {
 /**
 */
   joint_lookup_used: boolean;
+/**
+*/
+  lookup_info: LookupInfo;
 /**
 */
   lookup_selectors: WasmFpLookupSelectors;
@@ -1700,6 +1722,9 @@ export class WasmFqLookupVerifierIndex {
 /**
 */
   joint_lookup_used: boolean;
+/**
+*/
+  lookup_info: LookupInfo;
 /**
 */
   lookup_selectors: WasmFqLookupSelectors;
