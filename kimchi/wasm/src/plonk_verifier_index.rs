@@ -498,7 +498,7 @@ macro_rules! impl_verification_key {
                     lookup_table: WasmVector<$WasmPolyComm>,
                     lookup_selectors: WasmLookupSelectors,
                     table_ids: Option<$WasmPolyComm>,
-                    lookup_info: LookupInfo,
+                    lookup_info: &LookupInfo,
                     runtime_tables_selector: Option<$WasmPolyComm>
                 ) -> WasmLookupVerifierIndex {
                     WasmLookupVerifierIndex {
@@ -506,7 +506,7 @@ macro_rules! impl_verification_key {
                         lookup_table,
                         lookup_selectors,
                         table_ids,
-                        lookup_info,
+                        lookup_info: lookup_info.clone(),
                         runtime_tables_selector
                     }
                 }
@@ -539,6 +539,16 @@ macro_rules! impl_verification_key {
                 #[wasm_bindgen(setter)]
                 pub fn set_table_ids(&mut self, x: Option<$WasmPolyComm>) {
                     self.table_ids = x
+                }
+
+                #[wasm_bindgen(getter)]
+                pub fn lookup_info(&self) -> LookupInfo {
+                    self.lookup_info.clone()
+                }
+
+                #[wasm_bindgen(setter)]
+                pub fn set_lookup_info(&mut self, x: LookupInfo) {
+                    self.lookup_info = x
                 }
 
                 #[wasm_bindgen(getter)]
