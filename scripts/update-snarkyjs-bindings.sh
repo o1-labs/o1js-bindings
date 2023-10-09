@@ -12,11 +12,14 @@ WEB_BINDINGS="$SNARKY_JS_PATH/src/bindings/compiled/web_bindings"
 
 # 1. node build
 
-$DIR_PATH/build-snarkyjs-node.sh
+$DIR_PATH/build-snarkyjs-node-artifacts.sh
+pushd $SNARKY_JS_PATH
+  node src/build/copy-to-dist.js
+popd
 
 chmod -R 777 "$NODE_BINDINGS"
 
-BINDINGS_PATH="$SNARKY_JS_PATH"/dist/node/bindings/compiled/_node_bindings/
+BINDINGS_PATH="$SNARKY_JS_PATH"/dist/node/bindings/compiled/_node_bindings
 cp "$BINDINGS_PATH"/snarky_js_node.bc.cjs "$NODE_BINDINGS"/snarky_js_node.bc.cjs
 cp "$BINDINGS_PATH"/snarky_js_node.bc.map "$NODE_BINDINGS"/snarky_js_node.bc.map
 cp "$BINDINGS_PATH"/plonk_wasm* "$NODE_BINDINGS"/
