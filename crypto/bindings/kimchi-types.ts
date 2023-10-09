@@ -29,6 +29,7 @@ export {
   ProofEvaluations,
   RecursionChallenge,
   ProverProof,
+  ProofWithPublic,
   LookupCommitments,
   RuntimeTableCfg,
   LookupTable,
@@ -175,6 +176,7 @@ type ProofEvaluations<Field> = [
   range_check_lookup_selector: MlOption<PointEvaluations<Field>>,
   foreign_field_mul_lookup_selector: MlOption<PointEvaluations<Field>>
 ];
+
 type RecursionChallenge = [_: 0, chals: MlArray<Field>, comm: PolyComm];
 
 type ProverProof = [
@@ -185,6 +187,12 @@ type ProverProof = [
   ft_eval1: Field,
   public_: MlArray<Field>,
   prev_challenges: MlArray<RecursionChallenge>
+];
+
+type ProofWithPublic = [
+  _: 0,
+  public_evals: MlOption<PointEvaluations<Field>>,
+  proof: ProverProof
 ];
 
 // tables
