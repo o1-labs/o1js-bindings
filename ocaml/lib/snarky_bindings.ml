@@ -267,6 +267,20 @@ module Foreign_field = struct
     z
 end
 
+module EC_group = struct
+  module FF = Kimchi_gadgets.Foreign_field
+  module ECG = Kimchi_gadgets.Ec_group
+  module External_checks = FF.External_checks
+
+  type t = Impl.field Kimchi_gadgets.Affine.t
+
+  type curve_t = Impl.field Kimchi_gadgets.Curve_params.InCircuit.t
+
+  let add (left_input : t) (right_input : t) (curve : curve_t) =
+    let external_checks = External_checks.create (module Impl) in
+    ECG.add (module Impl) external_checks curve left_input right_input
+end
+
 let snarky =
   object%js
     method exists = exists

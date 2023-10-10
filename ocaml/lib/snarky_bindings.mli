@@ -16,6 +16,12 @@ module Foreign_field : sig
   type op_mode
 end
 
+module EC_group : sig
+  type t
+
+  type curve_t
+end
+
 val snarky :
   < exists : (int -> (unit -> Impl.field array) -> Field.t array) Js.meth
   ; existsVar : ((unit -> Impl.field) -> Field.t) Js.meth
@@ -146,6 +152,12 @@ val snarky :
            -> Foreign_field.op_mode array
            -> Foreign_field.t_const
            -> Foreign_field.t )
+          Js.readonly_prop >
+      Js.t
+      Js.readonly_prop
+  ; foreignGroup :
+      < add :
+          (EC_group.t -> EC_group.t -> EC_group.curve_t -> EC_group.t)
           Js.readonly_prop >
       Js.t
       Js.readonly_prop >
