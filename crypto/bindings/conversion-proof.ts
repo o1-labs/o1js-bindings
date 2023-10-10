@@ -218,7 +218,6 @@ function proofConversionPerField(
     let n = data.length;
     let wasmData = new VecVec(n);
     for (let i = 0; i < n; i++) {
-      // TODO is .push() correct if we already initialized to the final length?
       wasmData.push(fieldsToRustFlat(data[i]));
     }
     return new LookupTable(id, wasmData);
@@ -240,7 +239,6 @@ function proofConversionPerField(
       let prevChallengeScalars = new VecVec(n);
       let prevChallengeCommsMl: MlArray<PolyComm> = [0];
       for (let [, scalars, comms] of prevChallenges) {
-        // TODO is .push() correct if we already initialized to the final length?
         prevChallengeScalars.push(fieldsToRustFlat(scalars));
         prevChallengeCommsMl.push(comms);
       }
