@@ -2,7 +2,7 @@ use ark_poly::EvaluationDomain;
 
 use crate::gate_vector::fp::WasmGateVector;
 use crate::srs::fp::WasmFpSrs as WasmSrs;
-use crate::wasm_vector::fp::*;
+use crate::wasm_vector::{fp::*, WasmVector};
 use kimchi::circuits::lookup::tables::LookupTable;
 use kimchi::circuits::{constraints::ConstraintSystem, gate::CircuitGate};
 use kimchi::linearization::expr_linearization;
