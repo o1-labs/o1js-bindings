@@ -394,4 +394,10 @@ let snarky =
 
         val mul = mul
       end
+
+    val foreignGroup =
+      let open EC_group in
+      object%js
+        val add = add
+      end
   end
