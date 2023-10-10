@@ -51,6 +51,23 @@ val snarky :
           Js.meth >
       Js.t
       Js.readonly_prop
+  ; gates :
+      < rangeCheck0 :
+          (   Field.t
+           -> Field.t * Field.t * Field.t * Field.t * Field.t * Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> Impl.field
+           -> unit )
+          Js.meth >
+      Js.t
+      Js.readonly_prop
   ; bool :
       < and_ : (Boolean.var -> Boolean.var -> Boolean.var) Js.meth
       ; assertEqual : (Boolean.var -> Boolean.var -> unit) Js.meth
