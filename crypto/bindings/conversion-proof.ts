@@ -1,11 +1,13 @@
 import type {
   WasmFpLookupCommitments,
+  WasmPastaFpLookupTable,
   WasmFpOpeningProof,
   WasmFpProverCommitments,
   WasmFpProverProof,
   WasmFqLookupCommitments,
   WasmFqOpeningProof,
   WasmFqProverCommitments,
+  WasmPastaFqLookupTable,
   WasmFqProverProof,
   WasmVecVecFp,
   WasmVecVecFq,
@@ -21,6 +23,7 @@ import type {
   OpeningProof,
   RecursionChallenge,
   LookupCommitments,
+  LookupTable,
 } from './kimchi-types.js';
 import { MlTupleN, mapMlTuple } from './util.js';
 import { MlArray, MlOption } from '../../../lib/ml/base.js';
@@ -30,7 +33,12 @@ import {
   fieldsToRustFlat,
   fieldsFromRustFlat,
 } from './conversion-base.js';
-import { ConversionCore, ConversionCores } from './conversion-core.js';
+import {
+  ConversionCore,
+  ConversionCores,
+  mapToUint32Array,
+  unwrap,
+} from './conversion-core.js';
 
 export { proofConversion };
 
@@ -43,6 +51,7 @@ type WasmProverCommitments = WasmFpProverCommitments | WasmFqProverCommitments;
 type WasmOpeningProof = WasmFpOpeningProof | WasmFqOpeningProof;
 type WasmProverProof = WasmFpProverProof | WasmFqProverProof;
 type WasmLookupCommitments = WasmFpLookupCommitments | WasmFqLookupCommitments;
+type WasmLookupTable = WasmPastaFpLookupTable | WasmPastaFqLookupTable;
 
 type WasmClasses = {
   ProverCommitments:
@@ -54,6 +63,7 @@ type WasmClasses = {
   LookupCommitments:
     | typeof WasmFpLookupCommitments
     | typeof WasmFqLookupCommitments;
+  LookupTable: typeof WasmPastaFpLookupTable | typeof WasmPastaFqLookupTable;
 };
 
 function proofConversion(wasm: wasm, core: ConversionCores) {
@@ -64,6 +74,7 @@ function proofConversion(wasm: wasm, core: ConversionCores) {
       VecVec: wasm.WasmVecVecFp,
       ProverProof: wasm.WasmFpProverProof,
       LookupCommitments: wasm.WasmFpLookupCommitments,
+      LookupTable: wasm.WasmPastaFpLookupTable,
     }),
     fq: proofConversionPerField(core.fq, {
       ProverCommitments: wasm.WasmFqProverCommitments,
@@ -71,6 +82,7 @@ function proofConversion(wasm: wasm, core: ConversionCores) {
       VecVec: wasm.WasmVecVecFq,
       ProverProof: wasm.WasmFqProverProof,
       LookupCommitments: wasm.WasmFqLookupCommitments,
+      LookupTable: wasm.WasmPastaFqLookupTable,
     }),
   };
 }
@@ -83,6 +95,7 @@ function proofConversionPerField(
     VecVec,
     ProverProof,
     LookupCommitments,
+    LookupTable,
   }: WasmClasses
 ) {
   function commitmentsToRust(
@@ -156,6 +169,20 @@ function proofConversionPerField(
     return [0, [0, ...lr], delta, z1, z2, sg];
   }
 
+  function lookupTableToRust([
+    ,
+    id,
+    [, ...data],
+  ]: LookupTable): WasmLookupTable {
+    let n = data.length;
+    let wasmData = new VecVec(n);
+    for (let i = 0; i < n; i++) {
+      // TODO is .push() correct if we already initialized to the final length?
+      wasmData.push(fieldsToRustFlat(data[i]));
+    }
+    return new LookupTable(id, wasmData);
+  }
+
   return {
     proofToRust(proof: ProverProof): WasmProverProof {
       let commitments = commitmentsToRust(proof[1]);
@@ -169,6 +196,7 @@ function proofConversionPerField(
       let prevChallengeScalars = new VecVec(n);
       let prevChallengeCommsMl: MlArray<PolyComm> = [0];
       for (let [, scalars, comms] of prevChallenges) {
+        // TODO is .push() correct if we already initialized to the final length?
         prevChallengeScalars.push(fieldsToRustFlat(scalars));
         prevChallengeCommsMl.push(comms);
       }
@@ -212,6 +240,12 @@ function proofConversionPerField(
         public_,
         [0, ...prevChallenges],
       ];
+    },
+
+    lookupTablesToRust([, ...tables]: MlArray<LookupTable>) {
+      return mapToUint32Array(tables, (table) =>
+        unwrap(lookupTableToRust(table))
+      );
     },
   };
 }
