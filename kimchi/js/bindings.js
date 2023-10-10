@@ -414,7 +414,7 @@ var caml_pasta_fq_plonk_circuit_serialize = function (
 };
 
 // Provides: caml_pasta_fp_plonk_index_create
-// Requires: plonk_wasm, tsRustConversion, free_on_finalize
+// Requires: plonk_wasm, free_on_finalize, tsRustConversion
 var caml_pasta_fp_plonk_index_create = function (
   gates,
   public_inputs,
@@ -516,7 +516,7 @@ var caml_pasta_fp_plonk_index_write = function (append, t, path) {
 };
 
 // Provides: caml_pasta_fq_plonk_index_create
-// Requires: plonk_wasm, tsRustConversion, free_on_finalize
+// Requires: plonk_wasm, free_on_finalize, tsRustConversion
 var caml_pasta_fq_plonk_index_create = function (
   gates,
   public_inputs,
