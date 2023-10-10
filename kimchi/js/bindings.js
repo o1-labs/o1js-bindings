@@ -418,12 +418,16 @@ var caml_pasta_fq_plonk_circuit_serialize = function (
 var caml_pasta_fp_plonk_index_create = function (
   gates,
   public_inputs,
+  caml_lookup_tables,
   prev_challenges,
   urs
 ) {
+  var wasm_lookup_tables =
+    tsRustConversion.fp.lookupTablesToRust(caml_lookup_tables);
   var t = plonk_wasm.caml_pasta_fp_plonk_index_create(
     gates,
     public_inputs,
+    wasm_lookup_tables,
     prev_challenges,
     urs
   );
@@ -490,13 +494,17 @@ var caml_pasta_fp_plonk_index_write = function (append, t, path) {
 var caml_pasta_fq_plonk_index_create = function (
   gates,
   public_inputs,
+  caml_lookup_tables,
   prev_challenges,
   urs
 ) {
+  var wasm_lookup_tables =
+  tsRustConversion.fp.lookupTablesToRust(caml_lookup_tables);
   return free_on_finalize(
     plonk_wasm.caml_pasta_fq_plonk_index_create(
       gates,
       public_inputs,
+      wasm_lookup_tables,
       prev_challenges,
       urs
     )
