@@ -141,6 +141,32 @@ module Gates = struct
                      compact
                    } )
           } )
+
+  let xor in1 in2 out in1_0 in1_1 in1_2 in1_3 in2_0 in2_1 in2_2 in2_3 out_0
+      out_1 out_2 out_3 =
+    Impl.with_label "xor_gate" (fun () ->
+        Impl.assert_
+          { annotation = Some __LOC__
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                (Xor
+                   { in1
+                   ; in2
+                   ; out
+                   ; in1_0
+                   ; in1_1
+                   ; in1_2
+                   ; in1_3
+                   ; in2_0
+                   ; in2_1
+                   ; in2_2
+                   ; in2_3
+                   ; out_0
+                   ; out_1
+                   ; out_2
+                   ; out_3
+                   } )
+          } )
 end
 
 module Bool = struct
@@ -317,6 +343,8 @@ let snarky =
     val gates =
       object%js
         method rangeCheck0 = Gates.range_check0
+
+        method xor = Gates.xor
       end
 
     val bool =
