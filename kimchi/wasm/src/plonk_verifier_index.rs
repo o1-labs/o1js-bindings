@@ -20,6 +20,41 @@ use std::path::Path;
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
 
+pub struct SimpleFeatureFlags {
+    pub range_check0: bool,
+    pub range_check1: bool,
+    pub foreign_field_add: bool,
+    pub foreign_field_mul: bool,
+    pub xor: bool,
+    pub rot: bool,
+    pub lookup: bool,
+    pub runtime_tables: bool,
+}
+
+impl From<SimpleFeatureFlags> for FeatureFlags {
+    fn from(flags: SimpleFeatureFlags) -> Self {
+        let patterns = LookupPatterns {
+            xor: flags.xor,
+            lookup: flags.lookup,
+            range_check: flags.range_check0 || flags.range_check1 || flags.rot,
+            foreign_field_mul: flags.foreign_field_mul,
+        };
+        FeatureFlags {
+            range_check0: flags.range_check0,
+            range_check1: flags.range_check1,
+            foreign_field_add: flags.foreign_field_add,
+            foreign_field_mul: flags.foreign_field_mul,
+            xor: flags.xor,
+            rot: flags.rot,
+            lookup_features: LookupFeatures {
+                patterns,
+                joint_lookup_used: patterns.joint_lookups_used(),
+                uses_runtime_tables: flags.runtime_tables,
+            },
+        }
+    }
+}
+
 macro_rules! impl_verification_key {
     (
      $name: ident,
@@ -713,16 +748,44 @@ macro_rules! impl_verification_key {
                 }
             } */
 
+            fn compute_feature_flags(index: &WasmPlonkVerifierIndex) -> FeatureFlags {
+                let xor = index.evals.xor_comm.is_some();
+                let range_check0 = index.evals.range_check0_comm.is_some();
+                let range_check1 = index.evals.range_check1_comm.is_some();
+                let foreign_field_add = index.evals.foreign_field_add_comm.is_some();
+                let foreign_field_mul = index.evals.foreign_field_mul_comm.is_some();
+                let rot = index.evals.rot_comm.is_some();
+
+                let lookup = index
+                    .lookup_index.as_ref()
+                    .map_or(false, |li| li.lookup_info.features.patterns.lookup);
+
+                // TODO
+                let runtime_tables = false;
+
+                FeatureFlags::from(SimpleFeatureFlags {
+                    range_check0,
+                    range_check1,
+                    foreign_field_add,
+                    foreign_field_mul,
+                    rot,
+                    xor,
+                    lookup,
+                    runtime_tables,
+                })
+            }
+
             pub fn of_wasm(
-                max_poly_size: i32,
-                public_: i32,
-                prev_challenges: i32,
-                log_size_of_group: i32,
-                srs: &$WasmSrs,
-                evals: &WasmPlonkVerificationEvals,
-                shifts: &WasmShifts,
-                lookup_index: Option<WasmLookupVerifierIndex>
+                index: WasmPlonkVerifierIndex,
             ) -> (DlogVerifierIndex<GAffine, OpeningProof<GAffine>>, Arc<SRS<GAffine>>) {
+                let max_poly_size = index.max_poly_size;
+                let public_ = index.public_;
+                let prev_challenges = index.prev_challenges;
+                let log_size_of_group = index.domain.log_size_of_group;
+                let srs = &index.srs;
+                let evals = &index.evals;
+                let shifts = &index.shifts;
+
                 /*
                 let urs_copy = Rc::clone(&*urs);
                 let urs_copy_outer = Rc::clone(&*urs);
@@ -734,26 +797,7 @@ macro_rules! impl_verification_key {
                 let (endo_q, _endo_r) = poly_commitment::srs::endos::<$GOther>();
                 let domain = Domain::<$F>::new(1 << log_size_of_group).unwrap();
 
-                let feature_flags =
-                    FeatureFlags {
-                        range_check0: false,
-                        range_check1: false,
-                        foreign_field_add: false,
-                        foreign_field_mul: false,
-                        rot: false,
-                        xor: false,
-                        lookup_features:
-                        LookupFeatures {
-                            patterns: LookupPatterns {
-                                xor: false,
-                                lookup: false,
-                                range_check: false,
-                                foreign_field_mul: false, },
-                            joint_lookup_used:false,
-                            uses_runtime_tables: false,
-                        },
-                    };
-
+                let feature_flags = compute_feature_flags(&index);
                 let (linearization, powers_of_alpha) = expr_linearization(Some(&feature_flags), true, 3);
 
                 let index =
@@ -809,24 +853,14 @@ macro_rules! impl_verification_key {
 
                         linearization,
                         powers_of_alpha,
-                        lookup_index: lookup_index.map(Into::into),
+                        lookup_index: index.lookup_index.map(Into::into),
                     };
                 (index, srs.0.clone())
             }
 
             impl From<WasmPlonkVerifierIndex> for DlogVerifierIndex<$G, OpeningProof<$G>> {
                 fn from(index: WasmPlonkVerifierIndex) -> Self {
-                    of_wasm(
-                        index.max_poly_size,
-                        index.public_,
-                        index.prev_challenges,
-                        index.domain.log_size_of_group,
-                        &index.srs,
-                        &index.evals,
-                        &index.shifts,
-                        index.lookup_index
-                    )
-                    .0
+                    of_wasm(index).0
                 }
             }
 
