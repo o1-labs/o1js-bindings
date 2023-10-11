@@ -280,6 +280,15 @@ module EC_group = struct
 
   exception ANotFoundInCurve
 
+  exception BNotFoundInCurve
+
+  exception ModulusNotFoundInCurve
+
+  exception GeneratorNotFoundInCurve
+
+  exception OrderNotFoundInCurve
+
+  (* curve = [a, b, modulus, gen_x, gen_y, order] *)
   let add (left_input : t) (right_input : t)
       (curve : Js.js_string Js.t Js.js_array Js.t) =
     let external_checks = External_checks.create (module Impl) in
@@ -288,7 +297,34 @@ module EC_group = struct
         (Js.Optdef.get (Js.array_get curve 0) (fun () ->
              raise ANotFoundInCurve ) )
     in
-    let ec = Curve_params.from_strings (module Impl) a in
+    let b =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 1) (fun () ->
+             raise BNotFoundInCurve ) )
+    in
+    let modulus =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 2) (fun () ->
+             raise ModulusNotFoundInCurve ) )
+    in
+    let gen_x =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 3) (fun () ->
+             raise GeneratorNotFoundInCurve ) )
+    in
+    let gen_y =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 4) (fun () ->
+             raise GeneratorNotFoundInCurve ) )
+    in
+    let order =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 5) (fun () ->
+             raise OrderNotFoundInCurve ) )
+    in
+    let ec =
+      Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order
+    in
     ECG.add (module Impl) external_checks ec left_input right_input
 end
 
