@@ -29,7 +29,6 @@ import {
   freeOnFinalize,
 } from './conversion-core.js';
 import { Lookup, LookupInfo, LookupSelectors } from './lookup.js';
-import type { FeatureFlags } from '../../../snarky.js';
 
 export { verifierIndexConversion };
 
@@ -293,7 +292,6 @@ function verifierIndexConversionPerField(
       let evals = verificationEvalsToRust(vk[6]);
       let shifts = self.shiftsToRust(vk[7]);
       let lookupIndex = MlOption.mapFrom(vk[8], lookupVerifierIndexToRust);
-      computeFeatureFlags(vk);
       return new VerifierIndex(
         domain,
         maxPolySize,
@@ -320,41 +318,7 @@ function verifierIndexConversionPerField(
       vk.free();
       return mlVk;
     },
-    computeFeatureFlags,
   };
 
   return self;
-}
-
-function computeFeatureFlags(vk: VerifierIndex): FeatureFlags {
-  // infer flags from evals
-  let evals = vk[6];
-  let xor = MlOption.isSome(evals[9]);
-  let rangeCheck0 = MlOption.isSome(evals[10]);
-  let rangeCheck1 = MlOption.isSome(evals[11]);
-  let foreignFieldAdd = MlOption.isSome(evals[12]);
-  let foreignFieldMul = MlOption.isSome(evals[13]);
-  let rot = MlOption.isSome(evals[14]);
-
-  // infer lookup
-  let lookup =
-    MlOption.mapFrom(vk[8], (lookupIndex) => {
-      let [, , , [, patterns]] = lookupIndex[5];
-      let [, , lookup] = patterns;
-      return MlBool.from(lookup);
-    }) ?? false;
-
-  let flags = {
-    xor,
-    rangeCheck0,
-    rangeCheck1,
-    foreignFieldAdd,
-    foreignFieldMul,
-    rot,
-    lookup,
-    // TODO
-    runtimeTables: false,
-  };
-  console.log('flags from vk', flags);
-  return flags;
 }
