@@ -271,14 +271,25 @@ module EC_group = struct
   module FF = Kimchi_gadgets.Foreign_field
   module ECG = Kimchi_gadgets.Ec_group
   module External_checks = FF.External_checks
+  module Curve_params = Kimchi_gadgets.Curve_params
+  module Bignum_bigint = Snarky_backendless.Backend_extended.Bignum_bigint
 
   type t = Impl.field Kimchi_gadgets.Affine.t
 
   type curve_t = Impl.field Kimchi_gadgets.Curve_params.InCircuit.t
 
-  let add (left_input : t) (right_input : t) (curve : curve_t) =
+  exception ANotFoundInCurve
+
+  let add (left_input : t) (right_input : t)
+      (curve : Js.js_string Js.t Js.js_array Js.t) =
     let external_checks = External_checks.create (module Impl) in
-    ECG.add (module Impl) external_checks curve left_input right_input
+    let a =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 0) (fun () ->
+             raise ANotFoundInCurve ) )
+    in
+    let ec = Curve_params.from_strings (module Impl) a in
+    ECG.add (module Impl) external_checks ec left_input right_input
 end
 
 let snarky =

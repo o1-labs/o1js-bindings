@@ -157,7 +157,10 @@ val snarky :
       Js.readonly_prop
   ; foreignGroup :
       < add :
-          (EC_group.t -> EC_group.t -> EC_group.curve_t -> EC_group.t)
+          (   EC_group.t
+           -> EC_group.t
+           -> Js.js_string Js.t Js.js_array Js.t
+           -> EC_group.t )
           Js.readonly_prop >
       Js.t
       Js.readonly_prop >
