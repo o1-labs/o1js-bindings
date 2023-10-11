@@ -6,9 +6,9 @@ import {
   inlineWorker,
   waitForMessage,
 } from './worker-helpers.js';
-import snarkyJsWebSrc from 'string:../../../web_bindings/snarky_js_web.bc.js';
+import o1jsWebSrc from 'string:../../../web_bindings/snarky_js_web.bc.js';
 
-export { initSnarkyJS, withThreadPool };
+export { initO1, withThreadPool };
 
 let wasm = plonkWasm();
 globalThis.plonk_wasm = wasm;
@@ -23,7 +23,7 @@ let workerPromise;
  */
 let numWorkers = undefined;
 
-async function initSnarkyJS() {
+async function initO1() {
   const memory = allocateWasmMemoryForUserAgent(navigator.userAgent);
   await init(undefined, memory);
 
@@ -39,7 +39,7 @@ async function initSnarkyJS() {
 
   // 2. include the code as string and eval it:
   // (this works because it breaks out of strict mode)
-  new Function(snarkyJsWebSrc)();
+  new Function(o1jsWebSrc)();
 
   workerPromise = new Promise((resolve) => {
     setTimeout(async () => {
@@ -84,14 +84,14 @@ async function mainWorker() {
       let specArg = specArgs[i];
       if (specArg && specArg.__wrap) {
         // Class info got lost on transfer, rebuild it.
-        resArgs[i] = specArg.__wrap(args[i].ptr);
+        resArgs[i] = specArg.__wrap(args[i].__wbg_ptr);
       } else {
         resArgs[i] = args[i];
       }
     }
     let res = wasm[name].apply(wasm, resArgs);
     if (functionSpec.res && functionSpec.res.__wrap) {
-      res = res.ptr;
+      res = res.__wbg_ptr;
     } else if (functionSpec.res && functionSpec.res.there) {
       res = functionSpec.res.there(res);
     }

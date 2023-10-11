@@ -9,6 +9,7 @@ use crate::wasm_vector::{fp::*, WasmVector};
 use kimchi::circuits::lookup::tables::LookupTable;
 use kimchi::circuits::{constraints::ConstraintSystem, gate::CircuitGate};
 use kimchi::linearization::expr_linearization;
+use kimchi::poly_commitment::evaluation_proof::OpeningProof;
 use kimchi::prover_index::ProverIndex;
 use mina_curves::pasta::{Fp, Pallas as GAffineOther, Vesta as GAffine, VestaParameters};
 use mina_poseidon::{constants::PlonkSpongeConstantsKimchi, sponge::DefaultFqSponge};
@@ -25,7 +26,9 @@ use wasm_bindgen::prelude::*;
 
 /// Boxed so that we don't store large proving indexes in the OCaml heap.
 #[wasm_bindgen]
-pub struct WasmPastaFpPlonkIndex(#[wasm_bindgen(skip)] pub Box<ProverIndex<GAffine>>);
+pub struct WasmPastaFpPlonkIndex(
+    #[wasm_bindgen(skip)] pub Box<ProverIndex<GAffine, OpeningProof<GAffine>>>,
+);
 
 // This should mimic LookupTable structure
 #[wasm_bindgen]
@@ -148,7 +151,8 @@ pub fn caml_pasta_fp_plonk_index_create(
             ptr.add_lagrange_basis(cs.domain.d1);
         }
 
-        let mut index = ProverIndex::<GAffine>::create(cs, endo_q, srs.0.clone());
+        let mut index =
+            ProverIndex::<GAffine, OpeningProof<GAffine>>::create(cs, endo_q, srs.0.clone());
         // Compute and cache the verifier index digest
         index.compute_verifier_index_digest::<DefaultFqSponge<VestaParameters, PlonkSpongeConstantsKimchi>>();
         Ok(index)
@@ -206,8 +210,10 @@ pub fn caml_pasta_fp_plonk_index_read(
     }
 
     // deserialize the index
-    let mut t = ProverIndex::<GAffine>::deserialize(&mut rmp_serde::Deserializer::new(r))
-        .map_err(|err| JsValue::from_str(&format!("caml_pasta_fp_plonk_index_read: {err}")))?;
+    let mut t = ProverIndex::<GAffine, OpeningProof<GAffine>>::deserialize(
+        &mut rmp_serde::Deserializer::new(r),
+    )
+    .map_err(|err| JsValue::from_str(&format!("caml_pasta_fp_plonk_index_read: {err}")))?;
     t.srs = srs.0.clone();
     let (linearization, powers_of_alpha) = expr_linearization(Some(&t.cs.feature_flags), true, 3);
     t.linearization = linearization;

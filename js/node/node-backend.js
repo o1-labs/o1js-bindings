@@ -6,7 +6,7 @@ let url = import.meta.url;
 let filename = url !== undefined ? fileURLToPath(url) : __filename;
 
 /**
- * @type {import("../../node_bindings/plonk_wasm")}
+ * @type {import("../../compiled/node_bindings/plonk_wasm.cjs")}
  */
 const wasm = wasm_;
 
@@ -142,6 +142,7 @@ function getEfficientNumWorkers() {
       'Apple M1 Max': 3,
       'Apple M1 Ultra': 7,
       'Apple M2': 2,
+      'Apple M2 Pro': 2,
     }[cpuModel] || numCpus - 1;
 
   return numWorkers;
