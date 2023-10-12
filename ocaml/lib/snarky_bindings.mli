@@ -66,24 +66,24 @@ val snarky :
           -> Impl.field
           -> unit
       ; xor :
-          (   Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> unit )
-          Js.meth >
+             Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> Field.t
+          -> unit
+      ; zeroCheck : (Field.t -> Field.t -> Field.t -> unit) Js.meth >
       Js.t
       Js.readonly_prop
   ; bool :
