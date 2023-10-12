@@ -53,36 +53,37 @@ val snarky :
       Js.readonly_prop
   ; gates :
       < rangeCheck0 :
-             Field.t
-          -> Field.t * Field.t * Field.t * Field.t * Field.t * Field.t
-          -> Field.t
-             * Field.t
-             * Field.t
-             * Field.t
-             * Field.t
-             * Field.t
-             * Field.t
-             * Field.t
-          -> Impl.field
-          -> unit
+          (   Field.t
+           -> Field.t * Field.t * Field.t * Field.t * Field.t * Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> Impl.field
+           -> unit )
+          Js.meth
       ; xor :
-             Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> Field.t
-          -> unit
+          (   Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> unit )
+          Js.meth
       ; zeroCheck : (Field.t -> Field.t -> Field.t -> unit) Js.meth >
       Js.t
       Js.readonly_prop
