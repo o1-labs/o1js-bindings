@@ -167,6 +167,17 @@ module Gates = struct
                    ; out_3
                    } )
           } )
+
+  let zero_check in1 in2 out =
+    Impl.with_label "zero_check" (fun () ->
+        Impl.assert_
+          { annotation = Some __LOC__
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                (Raw
+                   { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] }
+                )
+          } )
 end
 
 module Bool = struct
@@ -345,6 +356,8 @@ let snarky =
         method rangeCheck0 = Gates.range_check0
 
         method xor = Gates.xor
+
+        method zeroCheck = Gates.zero_check
       end
 
     val bool =
