@@ -17,6 +17,6 @@ function equivalentRecord<
   for (let key in specs) {
     let spec = specs[key];
     if (spec === undefined) continue;
-    equivalent(spec, t[key], s[key], key);
+    equivalent(spec as any)(t[key], s[key], key);
   }
 }
