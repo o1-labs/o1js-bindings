@@ -123,6 +123,9 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
     t,
     twoadicRoot,
 
+    xor(x: bigint, y: bigint) {
+      return y ^ x;
+    },
     add(x: bigint, y: bigint) {
       return mod(x + y, p);
     },
