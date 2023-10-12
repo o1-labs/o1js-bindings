@@ -65,6 +65,22 @@ val snarky :
               * Field.t
            -> Impl.field
            -> unit )
+          Js.meth
+      ; rot :
+          (   Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t * Field.t * Field.t * Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> Impl.field
+           -> unit )
           Js.meth >
       Js.t
       Js.readonly_prop

@@ -141,6 +141,41 @@ module Gates = struct
                      compact
                    } )
           } )
+
+  let rot word rotated excess
+      (bound_limb0, bound_limb1, bound_limb2, bound_limb3)
+      ( bound_crumb0
+      , bound_crumb1
+      , bound_crumb2
+      , bound_crumb3
+      , bound_crumb4
+      , bound_crumb5
+      , bound_crumb6
+      , bound_crumb7 ) two_to_rot =
+    Impl.with_label "rot64_gate" (fun () ->
+        Impl.assert_
+          { annotation = Some __LOC__
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                (Rot64
+                   { (* Current row *) word
+                   ; rotated
+                   ; excess
+                   ; bound_limb0
+                   ; bound_limb1
+                   ; bound_limb2
+                   ; bound_limb3
+                   ; bound_crumb0
+                   ; bound_crumb1
+                   ; bound_crumb2
+                   ; bound_crumb3
+                   ; bound_crumb4
+                   ; bound_crumb5
+                   ; bound_crumb6
+                   ; bound_crumb7 (* Coefficients *)
+                   ; two_to_rot (* Rotation scalar 2^rot *)
+                   } )
+          } )
 end
 
 module Bool = struct
@@ -317,6 +352,8 @@ let snarky =
     val gates =
       object%js
         method rangeCheck0 = Gates.range_check0
+
+        method rot = Gates.rot
       end
 
     val bool =
