@@ -178,5 +178,22 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
     fromBigint(x: bigint) {
       return mod(x, p);
     },
+    rot64(x: bigint, bits: number, direction: boolean = true) {
+      let bitArray = x.toString(2).split('').reverse().map(Number);
+      let binary: number[] =
+        bitArray.length >= 64
+          ? bitArray.splice(0, 64)
+          : [...bitArray, ...Array(64 - bitArray.length).fill(0)];
+      for (let j = 0; j < bits; j++) {
+        if (direction) {
+          let last = binary.pop()!;
+          binary.unshift(last);
+        } else {
+          let last = binary.shift()!;
+          binary.push(last);
+        }
+      }
+      return BigInt('0b' + binary.reverse().join(''));
+    },
   };
 }
