@@ -68,6 +68,7 @@ type pickles_rule_js =
           ; shouldVerify : Boolean.var array Js.prop >
           Js.t )
       Js.prop
+  ; featureFlags : bool Pickles_types.Plonk_types.Features.t Js.prop
   ; proofsToVerify :
       < isSelf : bool Js.t Js.prop ; tag : Js.Unsafe.any Js.t Js.prop > Js.t
       array
@@ -250,7 +251,7 @@ module Choices = struct
                 Pickles.Tag.t ) ->
           let prevs = prevs ~self in
           { Pickles.Inductive_rule.identifier = Js.to_string rule##.identifier
-          ; feature_flags = Pickles_types.Plonk_types.Features.none_bool
+          ; feature_flags = rule##.featureFlags
           ; prevs
           ; main =
               (fun { public_input } ->
