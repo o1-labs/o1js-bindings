@@ -592,6 +592,96 @@ let dummy_verification_key () =
   let hash = Mina_base.Zkapp_account.digest_vk vk in
   (data |> Js.string, hash)
 
+let create_tag name =
+  Pickles.Tag.(create ~kind:Compiled (Js.to_string name)) |> Obj.magic
+
+(* public input type *)
+type a_var = Field.t array
+
+type a_value = Field.Constant.t array
+
+(* public output type *)
+type ret_var = Field.t array
+
+type ret_value = Field.Constant.t array
+
+let step_circuit index self wrap_domains global_feature_flags rule_feature_flags
+    (max_proofs_verified : int) (branches : int) proofs_verifieds
+    public_input_size public_output_size js_rule =
+  let (module Max_proofs_verified) = nat_add_module max_proofs_verified in
+  let T = Max_proofs_verified.eq in
+  let (module Branches) = nat_module branches in
+
+  let public_input, public_output =
+    (public_input_typ public_input_size, public_input_typ public_output_size)
+  in
+  let (Typ input_typ) = public_input in
+
+  let module Arg_var = struct
+    type t = a_var
+
+    let to_field_elements x = fst (input_typ.var_to_fields x)
+  end in
+  let module Arg_value = struct
+    type t = a_value
+
+    let to_field_elements x = fst (input_typ.value_to_fields x)
+  end in
+  let module Ret_var = struct
+    type t = ret_var
+  end in
+  let module Ret_value = struct
+    type t = ret_value
+  end in
+  let module Auxiliary_var = struct
+    type t = unit
+  end in
+  let module Auxiliary_value = struct
+    type t = unit
+  end in
+  let module Branch_data = struct
+    type ('vars, 'vals, 'n, 'm) t =
+      ( Arg_var.t
+      , Arg_value.t
+      , Ret_var.t
+      , Ret_value.t
+      , Auxiliary_var.t
+      , Auxiliary_value.t
+      , Max_proofs_verified.n
+      , Branches.n
+      , 'vars
+      , 'vals
+      , 'n
+      , 'm )
+      Pickles.Step_branch_data.t
+  end in
+  let _var_to_field_elements, _value_to_field_elements = ((), ()) in
+  let (Rule rule) =
+    Choices.Inductive_rule.create ~public_input_size ~public_output_size js_rule
+  in
+  let rule = rule ~self in
+  let (Pickles.Step_branch_data.T branch_data : _ Branch_data.t) =
+    Pickles.Step_branch_data.create ~index ~self ~wrap_domains
+      ~feature_flags:global_feature_flags
+      ~actual_feature_flags:rule_feature_flags
+      ~max_proofs_verified:(Max_proofs_verified.n |> Obj.magic)
+      ~proofs_verifieds ~branches:(Branches.n |> Obj.magic)
+      ~public_input:(Input_and_output (public_input, public_output))
+      ~auxiliary_typ:Typ.unit Arg_var.to_field_elements
+      Arg_value.to_field_elements (Obj.magic rule)
+    |> Obj.magic
+  in
+
+  let (Composition_types.Spec.ETyp.T (_typ, _conv, conv_inv)) =
+    Impl.input ~proofs_verified:Max_proofs_verified.n
+      ~wrap_rounds:Pickles.Backend.Tock.Rounds.n
+  in
+  let main () () (step_domains : _ Pickles_types.Vector.vec) =
+    let res = branch_data.main ~step_domains () in
+    Impl.with_label "conv_inv" (fun () -> conv_inv res)
+  in
+  main |> Obj.magic
+
 let pickles =
   object%js
     val compile = pickles_compile
@@ -610,4 +700,8 @@ let pickles =
       fun (proof : proof) ->
         proof |> Pickles.Side_loaded.Proof.of_proof
         |> Pickles.Side_loaded.Proof.to_base64 |> Js.string
+
+    val createTag = create_tag
+
+    val stepCircuit = step_circuit |> Obj.magic
   end

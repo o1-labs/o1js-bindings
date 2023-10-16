@@ -19,6 +19,7 @@
   pickles.backend
   pickles_base
   pickles.limb_vector
+  pickles.composition_types
   pickles_types
   kimchi_backend
   kimchi_backend.pasta

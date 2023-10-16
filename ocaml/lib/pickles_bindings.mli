@@ -76,5 +76,20 @@ val pickles :
        -> proof
        -> Js.js_string Js.t
        -> bool Js.t Promise_js_helpers.js_promise )
+      Js.readonly_prop
+  ; createTag : (Js.js_string Js.t -> _ Pickles.Tag.t) Js.readonly_prop
+  ; stepCircuit :
+      (   int
+       -> _ Pickles.Tag.t
+       -> Pickles_base.Domains.t
+       -> Composition_types.Opt.Flag.t Pickles_types.Plonk_types.Features.Full.t
+       -> bool Pickles_types.Plonk_types.Features.t
+       -> int
+       -> int
+       -> (int, 'b) Pickles_types.Vector.vec
+       -> int
+       -> int
+       -> pickles_rule_js
+       -> 'c )
       Js.readonly_prop >
   Js.t
