@@ -1,12 +1,18 @@
 import type {
   WasmFpLookupCommitments,
+  WasmPastaFpLookupTable,
   WasmFpOpeningProof,
   WasmFpProverCommitments,
   WasmFpProverProof,
+  WasmFpRuntimeTable,
+  WasmPastaFpRuntimeTableCfg,
   WasmFqLookupCommitments,
   WasmFqOpeningProof,
   WasmFqProverCommitments,
+  WasmPastaFqLookupTable,
   WasmFqProverProof,
+  WasmFqRuntimeTable,
+  WasmPastaFqRuntimeTableCfg,
   WasmVecVecFp,
   WasmVecVecFq,
 } from '../../compiled/node_bindings/plonk_wasm.cjs';
@@ -16,11 +22,15 @@ import type {
   PointEvaluations,
   PolyComm,
   ProverProof,
+  ProofWithPublic,
   ProofEvaluations,
   ProverCommitments,
   OpeningProof,
   RecursionChallenge,
   LookupCommitments,
+  RuntimeTable,
+  RuntimeTableCfg,
+  LookupTable,
 } from './kimchi-types.js';
 import { MlTupleN, mapMlTuple } from './util.js';
 import { MlArray, MlOption } from '../../../lib/ml/base.js';
@@ -30,12 +40,25 @@ import {
   fieldsToRustFlat,
   fieldsFromRustFlat,
 } from './conversion-base.js';
-import { ConversionCore, ConversionCores } from './conversion-core.js';
+import {
+  ConversionCore,
+  ConversionCores,
+  mapToUint32Array,
+  unwrap,
+} from './conversion-core.js';
 
 export { proofConversion };
 
 const proofEvaluationsToRust = mapProofEvaluations(fieldToRust);
 const proofEvaluationsFromRust = mapProofEvaluations(fieldFromRust);
+const pointEvalsOptionToRust = mapPointEvalsOption(fieldToRust);
+const pointEvalsOptionFromRust = mapPointEvalsOption(fieldFromRust);
+
+type WasmProofEvaluations = [
+  0,
+  MlOption<PointEvaluations<Uint8Array>>,
+  ...RemoveLeadingZero<ProofEvaluations<Uint8Array>>
+];
 
 type wasm = typeof wasmNamespace;
 
@@ -43,6 +66,11 @@ type WasmProverCommitments = WasmFpProverCommitments | WasmFqProverCommitments;
 type WasmOpeningProof = WasmFpOpeningProof | WasmFqOpeningProof;
 type WasmProverProof = WasmFpProverProof | WasmFqProverProof;
 type WasmLookupCommitments = WasmFpLookupCommitments | WasmFqLookupCommitments;
+type WasmRuntimeTable = WasmFpRuntimeTable | WasmFqRuntimeTable;
+type WasmRuntimeTableCfg =
+  | WasmPastaFpRuntimeTableCfg
+  | WasmPastaFqRuntimeTableCfg;
+type WasmLookupTable = WasmPastaFpLookupTable | WasmPastaFqLookupTable;
 
 type WasmClasses = {
   ProverCommitments:
@@ -54,6 +82,11 @@ type WasmClasses = {
   LookupCommitments:
     | typeof WasmFpLookupCommitments
     | typeof WasmFqLookupCommitments;
+  RuntimeTable: typeof WasmFpRuntimeTable | typeof WasmFqRuntimeTable;
+  RuntimeTableCfg:
+    | typeof WasmPastaFpRuntimeTableCfg
+    | typeof WasmPastaFqRuntimeTableCfg;
+  LookupTable: typeof WasmPastaFpLookupTable | typeof WasmPastaFqLookupTable;
 };
 
 function proofConversion(wasm: wasm, core: ConversionCores) {
@@ -64,6 +97,9 @@ function proofConversion(wasm: wasm, core: ConversionCores) {
       VecVec: wasm.WasmVecVecFp,
       ProverProof: wasm.WasmFpProverProof,
       LookupCommitments: wasm.WasmFpLookupCommitments,
+      RuntimeTable: wasm.WasmFpRuntimeTable,
+      RuntimeTableCfg: wasm.WasmPastaFpRuntimeTableCfg,
+      LookupTable: wasm.WasmPastaFpLookupTable,
     }),
     fq: proofConversionPerField(core.fq, {
       ProverCommitments: wasm.WasmFqProverCommitments,
@@ -71,6 +107,9 @@ function proofConversion(wasm: wasm, core: ConversionCores) {
       VecVec: wasm.WasmVecVecFq,
       ProverProof: wasm.WasmFqProverProof,
       LookupCommitments: wasm.WasmFqLookupCommitments,
+      RuntimeTable: wasm.WasmFqRuntimeTable,
+      RuntimeTableCfg: wasm.WasmPastaFqRuntimeTableCfg,
+      LookupTable: wasm.WasmPastaFqLookupTable,
     }),
   };
 }
@@ -83,6 +122,9 @@ function proofConversionPerField(
     VecVec,
     ProverProof,
     LookupCommitments,
+    RuntimeTable,
+    RuntimeTableCfg,
+    LookupTable,
   }: WasmClasses
 ) {
   function commitmentsToRust(
@@ -156,12 +198,40 @@ function proofConversionPerField(
     return [0, [0, ...lr], delta, z1, z2, sg];
   }
 
+  function runtimeTableToRust([, id, data]: RuntimeTable): WasmRuntimeTable {
+    return new RuntimeTable(id, core.vectorToRust(data));
+  }
+
+  function runtimeTableCfgToRust([
+    ,
+    id,
+    firstColumn,
+  ]: RuntimeTableCfg): WasmRuntimeTableCfg {
+    return new RuntimeTableCfg(id, core.vectorToRust(firstColumn));
+  }
+
+  function lookupTableToRust([
+    ,
+    id,
+    [, ...data],
+  ]: LookupTable): WasmLookupTable {
+    let n = data.length;
+    let wasmData = new VecVec(n);
+    for (let i = 0; i < n; i++) {
+      wasmData.push(fieldsToRustFlat(data[i]));
+    }
+    return new LookupTable(id, wasmData);
+  }
+
   return {
-    proofToRust(proof: ProverProof): WasmProverProof {
+    proofToRust([, public_evals, proof]: ProofWithPublic): WasmProverProof {
       let commitments = commitmentsToRust(proof[1]);
       let openingProof = openingProofToRust(proof[2]);
+      let [, ...evals] = proofEvaluationsToRust(proof[3]);
+      let publicEvals = pointEvalsOptionToRust(public_evals);
       // TODO typed as `any` in wasm-bindgen, this has the correct type
-      let evals = proofEvaluationsToRust(proof[3]);
+      let evalsActual: WasmProofEvaluations = [0, publicEvals, ...evals];
+
       let ftEval1 = fieldToRust(proof[4]);
       let public_ = fieldsToRustFlat(proof[5]);
       let [, ...prevChallenges] = proof[6];
@@ -176,25 +246,27 @@ function proofConversionPerField(
       return new ProverProof(
         commitments,
         openingProof,
-        evals,
+        evalsActual,
         ftEval1,
         public_,
         prevChallengeScalars,
         prevChallengeComms
       );
     },
-    proofFromRust(proof: WasmProverProof): ProverProof {
-      let commitments = commitmentsFromRust(proof.commitments);
-      let openingProof = openingProofFromRust(proof.proof);
-      let evals = proofEvaluationsFromRust(
-        // TODO typed as `any` in wasm-bindgen, this is the correct type
-        proof.evals satisfies ProofEvaluations<Uint8Array>
-      );
-      let ftEval1 = fieldFromRust(proof.ft_eval1);
-      let public_ = fieldsFromRustFlat(proof.public_);
-      let prevChallengeScalars = proof.prev_challenges_scalars;
+    proofFromRust(wasmProof: WasmProverProof): ProofWithPublic {
+      let commitments = commitmentsFromRust(wasmProof.commitments);
+      let openingProof = openingProofFromRust(wasmProof.proof);
+      // TODO typed as `any` in wasm-bindgen, this is the correct type
+      let [, wasmPublicEvals, ...wasmEvals]: WasmProofEvaluations =
+        wasmProof.evals;
+      let publicEvals = pointEvalsOptionFromRust(wasmPublicEvals);
+      let evals = proofEvaluationsFromRust([0, ...wasmEvals]);
+
+      let ftEval1 = fieldFromRust(wasmProof.ft_eval1);
+      let public_ = fieldsFromRustFlat(wasmProof.public_);
+      let prevChallengeScalars = wasmProof.prev_challenges_scalars;
       let [, ...prevChallengeComms] = core.polyCommsFromRust(
-        proof.prev_challenges_comms
+        wasmProof.prev_challenges_comms
       );
       let prevChallenges = prevChallengeComms.map<RecursionChallenge>(
         (comms, i) => {
@@ -202,8 +274,8 @@ function proofConversionPerField(
           return [0, scalars, comms];
         }
       );
-      proof.free();
-      return [
+      wasmProof.free();
+      let proof: ProverProof = [
         0,
         commitments,
         openingProof,
@@ -212,17 +284,46 @@ function proofConversionPerField(
         public_,
         [0, ...prevChallenges],
       ];
+      return [0, publicEvals, proof];
+    },
+
+    runtimeTablesToRust([, ...tables]: MlArray<RuntimeTable>): Uint32Array {
+      return mapToUint32Array(tables, (table) =>
+        unwrap(runtimeTableToRust(table))
+      );
+    },
+
+    runtimeTableCfgsToRust([
+      ,
+      ...tableCfgs
+    ]: MlArray<RuntimeTableCfg>): Uint32Array {
+      return mapToUint32Array(tableCfgs, (tableCfg) =>
+        unwrap(runtimeTableCfgToRust(tableCfg))
+      );
+    },
+
+    lookupTablesToRust([, ...tables]: MlArray<LookupTable>) {
+      return mapToUint32Array(tables, (table) =>
+        unwrap(lookupTableToRust(table))
+      );
     },
   };
 }
 
-function mapProofEvaluations<Field1, Field2>(map: (x: Field1) => Field2) {
-  const mapPointEvals = (
-    evals: PointEvaluations<Field1>
-  ): PointEvaluations<Field2> => {
+function createMapPointEvals<Field1, Field2>(map: (x: Field1) => Field2) {
+  return (evals: PointEvaluations<Field1>): PointEvaluations<Field2> => {
     let [, zeta, zeta_omega] = evals;
     return [0, MlArray.map(zeta, map), MlArray.map(zeta_omega, map)];
   };
+}
+
+function mapPointEvalsOption<Field1, Field2>(map: (x: Field1) => Field2) {
+  return (evals: MlOption<PointEvaluations<Field1>>) =>
+    MlOption.map(evals, createMapPointEvals(map));
+}
+
+function mapProofEvaluations<Field1, Field2>(map: (x: Field1) => Field2) {
+  const mapPointEvals = createMapPointEvals(map);
 
   const mapPointEvalsOption = (
     evals: MlOption<PointEvaluations<Field1>>
@@ -289,3 +390,9 @@ function mapProofEvaluations<Field1, Field2>(map: (x: Field1) => Field2) {
     ];
   };
 }
+
+// helper
+
+type RemoveLeadingZero<T extends [0, ...any]> = T extends [0, ...infer U]
+  ? U
+  : never;

@@ -29,7 +29,11 @@ export {
   ProofEvaluations,
   RecursionChallenge,
   ProverProof,
+  ProofWithPublic,
   LookupCommitments,
+  RuntimeTableCfg,
+  LookupTable,
+  RuntimeTable,
 };
 
 // wasm types
@@ -66,7 +70,13 @@ type VerificationEvals = [
   complete_add_comm: PolyComm,
   mul_comm: PolyComm,
   emul_comm: PolyComm,
-  endomul_scalar_comm: PolyComm
+  endomul_scalar_comm: PolyComm,
+  xor_comm: MlOption<PolyComm>,
+  range_check0_comm: MlOption<PolyComm>,
+  range_check1_comm: MlOption<PolyComm>,
+  foreign_field_add_comm: MlOption<PolyComm>,
+  foreign_field_mul_comm: MlOption<PolyComm>,
+  rot_comm: MlOption<PolyComm>
 ];
 
 type VerifierIndex = [
@@ -166,6 +176,7 @@ type ProofEvaluations<Field> = [
   range_check_lookup_selector: MlOption<PointEvaluations<Field>>,
   foreign_field_mul_lookup_selector: MlOption<PointEvaluations<Field>>
 ];
+
 type RecursionChallenge = [_: 0, chals: MlArray<Field>, comm: PolyComm];
 
 type ProverProof = [
@@ -177,3 +188,17 @@ type ProverProof = [
   public_: MlArray<Field>,
   prev_challenges: MlArray<RecursionChallenge>
 ];
+
+type ProofWithPublic = [
+  _: 0,
+  public_evals: MlOption<PointEvaluations<Field>>,
+  proof: ProverProof
+];
+
+// tables
+
+type RuntimeTableCfg = [_: 0, id: number, first_column: MlArray<Field>];
+
+type LookupTable = [_: 0, id: number, data: MlArray<MlArray<Field>>];
+
+type RuntimeTable = [_: 0, id: number, data: MlArray<Field>];
