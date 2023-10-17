@@ -178,7 +178,7 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
     fromBigint(x: bigint) {
       return mod(x, p);
     },
-    rot64(x: bigint, bits: number, direction: boolean = true) {
+    rot(x: bigint, bits: number, direction: boolean = true) {
       let bitArray = x.toString(2).split('').reverse().map(Number);
       let binary: number[] =
         bitArray.length >= 64
