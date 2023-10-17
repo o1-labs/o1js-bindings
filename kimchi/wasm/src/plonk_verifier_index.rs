@@ -20,41 +20,6 @@ use std::path::Path;
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
 
-pub struct SimpleFeatureFlags {
-    pub range_check0: bool,
-    pub range_check1: bool,
-    pub foreign_field_add: bool,
-    pub foreign_field_mul: bool,
-    pub xor: bool,
-    pub rot: bool,
-    pub lookup: bool,
-    pub runtime_tables: bool,
-}
-
-impl From<SimpleFeatureFlags> for FeatureFlags {
-    fn from(flags: SimpleFeatureFlags) -> Self {
-        let patterns = LookupPatterns {
-            xor: flags.xor,
-            lookup: flags.lookup,
-            range_check: flags.range_check0 || flags.range_check1 || flags.rot,
-            foreign_field_mul: flags.foreign_field_mul,
-        };
-        FeatureFlags {
-            range_check0: flags.range_check0,
-            range_check1: flags.range_check1,
-            foreign_field_add: flags.foreign_field_add,
-            foreign_field_mul: flags.foreign_field_mul,
-            xor: flags.xor,
-            rot: flags.rot,
-            lookup_features: LookupFeatures {
-                patterns,
-                joint_lookup_used: patterns.joint_lookups_used(),
-                uses_runtime_tables: flags.runtime_tables,
-            },
-        }
-    }
-}
-
 macro_rules! impl_verification_key {
     (
      $name: ident,
@@ -763,16 +728,26 @@ macro_rules! impl_verification_key {
                 // TODO
                 let runtime_tables = false;
 
-                FeatureFlags::from(SimpleFeatureFlags {
+                let patterns = LookupPatterns {
+                    xor,
+                    lookup,
+                    range_check: range_check0 || range_check1 || rot,
+                    foreign_field_mul: foreign_field_mul,
+                };
+
+                FeatureFlags {
                     range_check0,
                     range_check1,
                     foreign_field_add,
                     foreign_field_mul,
-                    rot,
                     xor,
-                    lookup,
-                    runtime_tables,
-                })
+                    rot,
+                    lookup_features: LookupFeatures {
+                        patterns,
+                        joint_lookup_used: patterns.joint_lookups_used(),
+                        uses_runtime_tables: runtime_tables,
+                    },
+                }
             }
 
             pub fn of_wasm(
