@@ -379,102 +379,40 @@ function getArrayU32FromWasm0(ptr, len) {
     return getUint32Memory0().subarray(ptr / 4, ptr / 4 + len);
 }
 /**
-* @returns {WasmGPallas}
+* @param {number} num_threads
+* @param {string} worker_source
+* @returns {Promise<any>}
 */
-module.exports.caml_pallas_affine_one = function() {
-    const ret = wasm.caml_pallas_affine_one();
-    return WasmGPallas.__wrap(ret);
+module.exports.initThreadPool = function(num_threads, worker_source) {
+    const ret = wasm.initThreadPool(num_threads, addHeapObject(worker_source));
+    return takeObject(ret);
 };
 
 /**
-* @returns {WasmGVesta}
+* @returns {Promise<any>}
 */
-module.exports.caml_vesta_affine_one = function() {
-    const ret = wasm.caml_vesta_affine_one();
-    return WasmGVesta.__wrap(ret);
+module.exports.exitThreadPool = function() {
+    const ret = wasm.exitThreadPool();
+    return takeObject(ret);
 };
 
 /**
-* @returns {number}
+* @param {number} receiver
 */
-module.exports.caml_pasta_fq_size_in_bits = function() {
-    const ret = wasm.caml_pasta_fq_size_in_bits();
-    return ret;
+module.exports.wbg_rayon_start_worker = function(receiver) {
+    wasm.wbg_rayon_start_worker(receiver);
 };
 
 /**
+* @param {Uint8Array} state
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_size = function() {
+module.exports.caml_pasta_fp_poseidon_block_cipher = function(state) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pasta_fq_size(retptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_add = function(x, y) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const ptr0 = passArray8ToWasm0(state, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-        const len1 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_add(retptr, ptr0, len0, ptr1, len1);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v3 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v3;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_sub = function(x, y) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-        const len1 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_sub(retptr, ptr0, len0, ptr1, len1);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v3 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v3;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_negate = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_negate(retptr, ptr0, len0);
+        wasm.caml_pasta_fp_poseidon_block_cipher(retptr, ptr0, len0);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         var v2 = getArrayU8FromWasm0(r0, r1).slice();
@@ -486,84 +424,15 @@ module.exports.caml_pasta_fq_negate = function(x) {
 };
 
 /**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
+* @param {Uint8Array} state
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_mul = function(x, y) {
+module.exports.caml_pasta_fq_poseidon_block_cipher = function(state) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const ptr0 = passArray8ToWasm0(state, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-        const len1 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_mul(retptr, ptr0, len0, ptr1, len1);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v3 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v3;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_div = function(x, y) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-        const len1 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_div(retptr, ptr0, len0, ptr1, len1);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v3 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v3;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array | undefined}
-*/
-module.exports.caml_pasta_fq_inv = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_inv(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        let v2;
-        if (r0 !== 0) {
-            v2 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
-        }
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_square = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_square(retptr, ptr0, len0);
+        wasm.caml_pasta_fq_poseidon_block_cipher(retptr, ptr0, len0);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         var v2 = getArrayU8FromWasm0(r0, r1).slice();
@@ -572,1604 +441,6 @@ module.exports.caml_pasta_fq_square = function(x) {
     } finally {
         wasm.__wbindgen_add_to_stack_pointer(16);
     }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {boolean}
-*/
-module.exports.caml_pasta_fq_is_square = function(x) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_pasta_fq_is_square(ptr0, len0);
-    return ret !== 0;
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array | undefined}
-*/
-module.exports.caml_pasta_fq_sqrt = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_sqrt(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        let v2;
-        if (r0 !== 0) {
-            v2 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
-        }
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {number} i
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_of_int = function(i) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pasta_fq_of_int(retptr, i);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {string}
-*/
-module.exports.caml_pasta_fq_to_string = function(x) {
-    let deferred2_0;
-    let deferred2_1;
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_to_string(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        deferred2_0 = r0;
-        deferred2_1 = r1;
-        return getStringFromWasm0(r0, r1);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-        wasm.__wbindgen_free(deferred2_0, deferred2_1);
-    }
-};
-
-/**
-* @param {string} s
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_of_string = function(s) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_of_string(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var r2 = getInt32Memory0()[retptr / 4 + 2];
-        var r3 = getInt32Memory0()[retptr / 4 + 3];
-        if (r3) {
-            throw takeObject(r2);
-        }
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-*/
-module.exports.caml_pasta_fq_print = function(x) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    wasm.caml_pasta_fq_print(ptr0, len0);
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {number}
-*/
-module.exports.caml_pasta_fq_compare = function(x, y) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_pasta_fq_compare(ptr0, len0, ptr1, len1);
-    return ret;
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {boolean}
-*/
-module.exports.caml_pasta_fq_equal = function(x, y) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_pasta_fq_equal(ptr0, len0, ptr1, len1);
-    return ret !== 0;
-};
-
-/**
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_random = function() {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pasta_fq_random(retptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {number} i
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_rng = function(i) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pasta_fq_rng(retptr, i);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_to_bigint = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_to_bigint(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_of_bigint = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_of_bigint(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var r2 = getInt32Memory0()[retptr / 4 + 2];
-        var r3 = getInt32Memory0()[retptr / 4 + 3];
-        if (r3) {
-            throw takeObject(r2);
-        }
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_two_adic_root_of_unity = function() {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pasta_fq_two_adic_root_of_unity(retptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {number} log2_size
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_domain_generator = function(log2_size) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pasta_fq_domain_generator(retptr, log2_size);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_to_bytes = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_to_bytes(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_of_bytes = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_of_bytes(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_deep_copy = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_deep_copy(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @returns {WasmVestaGProjective}
-*/
-module.exports.caml_vesta_one = function() {
-    const ret = wasm.caml_vesta_one();
-    return WasmVestaGProjective.__wrap(ret);
-};
-
-/**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
-*/
-module.exports.caml_vesta_add = function(x, y) {
-    _assertClass(x, WasmVestaGProjective);
-    _assertClass(y, WasmVestaGProjective);
-    const ret = wasm.caml_vesta_add(x.__wbg_ptr, y.__wbg_ptr);
-    return WasmVestaGProjective.__wrap(ret);
-};
-
-/**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
-*/
-module.exports.caml_vesta_sub = function(x, y) {
-    _assertClass(x, WasmVestaGProjective);
-    _assertClass(y, WasmVestaGProjective);
-    const ret = wasm.caml_vesta_sub(x.__wbg_ptr, y.__wbg_ptr);
-    return WasmVestaGProjective.__wrap(ret);
-};
-
-/**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
-*/
-module.exports.caml_vesta_negate = function(x) {
-    _assertClass(x, WasmVestaGProjective);
-    const ret = wasm.caml_vesta_negate(x.__wbg_ptr);
-    return WasmVestaGProjective.__wrap(ret);
-};
-
-/**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
-*/
-module.exports.caml_vesta_double = function(x) {
-    _assertClass(x, WasmVestaGProjective);
-    const ret = wasm.caml_vesta_double(x.__wbg_ptr);
-    return WasmVestaGProjective.__wrap(ret);
-};
-
-/**
-* @param {WasmVestaGProjective} x
-* @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
-*/
-module.exports.caml_vesta_scale = function(x, y) {
-    _assertClass(x, WasmVestaGProjective);
-    const ptr0 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_vesta_scale(x.__wbg_ptr, ptr0, len0);
-    return WasmVestaGProjective.__wrap(ret);
-};
-
-/**
-* @returns {WasmVestaGProjective}
-*/
-module.exports.caml_vesta_random = function() {
-    const ret = wasm.caml_vesta_random();
-    return WasmVestaGProjective.__wrap(ret);
-};
-
-/**
-* @param {number} i
-* @returns {WasmVestaGProjective}
-*/
-module.exports.caml_vesta_rng = function(i) {
-    const ret = wasm.caml_vesta_rng(i);
-    return WasmVestaGProjective.__wrap(ret);
-};
-
-/**
-* @returns {Uint8Array}
-*/
-module.exports.caml_vesta_endo_base = function() {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_vesta_endo_base(retptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @returns {Uint8Array}
-*/
-module.exports.caml_vesta_endo_scalar = function() {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_vesta_endo_scalar(retptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {WasmVestaGProjective} x
-* @returns {WasmGVesta}
-*/
-module.exports.caml_vesta_to_affine = function(x) {
-    _assertClass(x, WasmVestaGProjective);
-    const ret = wasm.caml_vesta_to_affine(x.__wbg_ptr);
-    return WasmGVesta.__wrap(ret);
-};
-
-/**
-* @param {WasmGVesta} x
-* @returns {WasmVestaGProjective}
-*/
-module.exports.caml_vesta_of_affine = function(x) {
-    _assertClass(x, WasmGVesta);
-    var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.caml_vesta_of_affine(ptr0);
-    return WasmVestaGProjective.__wrap(ret);
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
-*/
-module.exports.caml_vesta_of_affine_coordinates = function(x, y) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_vesta_of_affine_coordinates(ptr0, len0, ptr1, len1);
-    return WasmVestaGProjective.__wrap(ret);
-};
-
-/**
-* @param {WasmGVesta} x
-* @returns {WasmGVesta}
-*/
-module.exports.caml_vesta_affine_deep_copy = function(x) {
-    _assertClass(x, WasmGVesta);
-    var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.caml_vesta_affine_deep_copy(ptr0);
-    return WasmGVesta.__wrap(ret);
-};
-
-/**
-* @param {string} s
-* @param {number} _len
-* @param {number} base
-* @returns {Uint8Array}
-*/
-module.exports.caml_bigint_256_of_numeral = function(s, _len, base) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_bigint_256_of_numeral(retptr, ptr0, len0, _len, base);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {string} s
-* @returns {Uint8Array}
-*/
-module.exports.caml_bigint_256_of_decimal_string = function(s) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_bigint_256_of_decimal_string(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @returns {number}
-*/
-module.exports.caml_bigint_256_num_limbs = function() {
-    const ret = wasm.caml_bigint_256_num_limbs();
-    return ret;
-};
-
-/**
-* @returns {number}
-*/
-module.exports.caml_bigint_256_bytes_per_limb = function() {
-    const ret = wasm.caml_bigint_256_bytes_per_limb();
-    return ret;
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-module.exports.caml_bigint_256_div = function(x, y) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-        const len1 = WASM_VECTOR_LEN;
-        wasm.caml_bigint_256_div(retptr, ptr0, len0, ptr1, len1);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v3 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v3;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {number}
-*/
-module.exports.caml_bigint_256_compare = function(x, y) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_bigint_256_compare(ptr0, len0, ptr1, len1);
-    return ret;
-};
-
-/**
-* @param {Uint8Array} x
-*/
-module.exports.caml_bigint_256_print = function(x) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    wasm.caml_bigint_256_print(ptr0, len0);
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {string}
-*/
-module.exports.caml_bigint_256_to_string = function(x) {
-    let deferred2_0;
-    let deferred2_1;
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_bigint_256_to_string(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        deferred2_0 = r0;
-        deferred2_1 = r1;
-        return getStringFromWasm0(r0, r1);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-        wasm.__wbindgen_free(deferred2_0, deferred2_1);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @param {number} i
-* @returns {boolean}
-*/
-module.exports.caml_bigint_256_test_bit = function(x, i) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_bigint_256_test_bit(ptr0, len0, i);
-    return ret !== 0;
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_bigint_256_to_bytes = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_bigint_256_to_bytes(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_bigint_256_of_bytes = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_bigint_256_of_bytes(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_bigint_256_deep_copy = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_bigint_256_deep_copy(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @returns {number}
-*/
-module.exports.caml_pasta_fp_size_in_bits = function() {
-    const ret = wasm.caml_pasta_fp_size_in_bits();
-    return ret;
-};
-
-/**
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_size = function() {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pasta_fp_size(retptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_add = function(x, y) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-        const len1 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_add(retptr, ptr0, len0, ptr1, len1);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v3 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v3;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_sub = function(x, y) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-        const len1 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_sub(retptr, ptr0, len0, ptr1, len1);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v3 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v3;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_negate = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_negate(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_mul = function(x, y) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-        const len1 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_mul(retptr, ptr0, len0, ptr1, len1);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v3 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v3;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_div = function(x, y) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-        const len1 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_div(retptr, ptr0, len0, ptr1, len1);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v3 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v3;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array | undefined}
-*/
-module.exports.caml_pasta_fp_inv = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_inv(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        let v2;
-        if (r0 !== 0) {
-            v2 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
-        }
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_square = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_square(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {boolean}
-*/
-module.exports.caml_pasta_fp_is_square = function(x) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_pasta_fp_is_square(ptr0, len0);
-    return ret !== 0;
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array | undefined}
-*/
-module.exports.caml_pasta_fp_sqrt = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_sqrt(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        let v2;
-        if (r0 !== 0) {
-            v2 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
-        }
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {number} i
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_of_int = function(i) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pasta_fp_of_int(retptr, i);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {string}
-*/
-module.exports.caml_pasta_fp_to_string = function(x) {
-    let deferred2_0;
-    let deferred2_1;
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_to_string(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        deferred2_0 = r0;
-        deferred2_1 = r1;
-        return getStringFromWasm0(r0, r1);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-        wasm.__wbindgen_free(deferred2_0, deferred2_1);
-    }
-};
-
-/**
-* @param {string} s
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_of_string = function(s) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_of_string(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var r2 = getInt32Memory0()[retptr / 4 + 2];
-        var r3 = getInt32Memory0()[retptr / 4 + 3];
-        if (r3) {
-            throw takeObject(r2);
-        }
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-*/
-module.exports.caml_pasta_fp_print = function(x) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    wasm.caml_pasta_fp_print(ptr0, len0);
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {number}
-*/
-module.exports.caml_pasta_fp_compare = function(x, y) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_pasta_fp_compare(ptr0, len0, ptr1, len1);
-    return ret;
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {boolean}
-*/
-module.exports.caml_pasta_fp_equal = function(x, y) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_pasta_fp_equal(ptr0, len0, ptr1, len1);
-    return ret !== 0;
-};
-
-/**
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_random = function() {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pasta_fp_random(retptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {number} i
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_rng = function(i) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pasta_fp_rng(retptr, i);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_to_bigint = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_to_bigint(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_of_bigint = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_of_bigint(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var r2 = getInt32Memory0()[retptr / 4 + 2];
-        var r3 = getInt32Memory0()[retptr / 4 + 3];
-        if (r3) {
-            throw takeObject(r2);
-        }
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_two_adic_root_of_unity = function() {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pasta_fp_two_adic_root_of_unity(retptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {number} log2_size
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_domain_generator = function(log2_size) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pasta_fp_domain_generator(retptr, log2_size);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_to_bytes = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_to_bytes(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_of_bytes = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_of_bytes(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fp_deep_copy = function(x) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_deep_copy(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @returns {WasmPallasGProjective}
-*/
-module.exports.caml_pallas_one = function() {
-    const ret = wasm.caml_pallas_one();
-    return WasmPallasGProjective.__wrap(ret);
-};
-
-/**
-* @param {WasmPallasGProjective} x
-* @param {WasmPallasGProjective} y
-* @returns {WasmPallasGProjective}
-*/
-module.exports.caml_pallas_add = function(x, y) {
-    _assertClass(x, WasmPallasGProjective);
-    _assertClass(y, WasmPallasGProjective);
-    const ret = wasm.caml_pallas_add(x.__wbg_ptr, y.__wbg_ptr);
-    return WasmPallasGProjective.__wrap(ret);
-};
-
-/**
-* @param {WasmPallasGProjective} x
-* @param {WasmPallasGProjective} y
-* @returns {WasmPallasGProjective}
-*/
-module.exports.caml_pallas_sub = function(x, y) {
-    _assertClass(x, WasmPallasGProjective);
-    _assertClass(y, WasmPallasGProjective);
-    const ret = wasm.caml_pallas_sub(x.__wbg_ptr, y.__wbg_ptr);
-    return WasmPallasGProjective.__wrap(ret);
-};
-
-/**
-* @param {WasmPallasGProjective} x
-* @returns {WasmPallasGProjective}
-*/
-module.exports.caml_pallas_negate = function(x) {
-    _assertClass(x, WasmPallasGProjective);
-    const ret = wasm.caml_pallas_negate(x.__wbg_ptr);
-    return WasmPallasGProjective.__wrap(ret);
-};
-
-/**
-* @param {WasmPallasGProjective} x
-* @returns {WasmPallasGProjective}
-*/
-module.exports.caml_pallas_double = function(x) {
-    _assertClass(x, WasmPallasGProjective);
-    const ret = wasm.caml_pallas_double(x.__wbg_ptr);
-    return WasmPallasGProjective.__wrap(ret);
-};
-
-/**
-* @param {WasmPallasGProjective} x
-* @param {Uint8Array} y
-* @returns {WasmPallasGProjective}
-*/
-module.exports.caml_pallas_scale = function(x, y) {
-    _assertClass(x, WasmPallasGProjective);
-    const ptr0 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_pallas_scale(x.__wbg_ptr, ptr0, len0);
-    return WasmPallasGProjective.__wrap(ret);
-};
-
-/**
-* @returns {WasmPallasGProjective}
-*/
-module.exports.caml_pallas_random = function() {
-    const ret = wasm.caml_pallas_random();
-    return WasmPallasGProjective.__wrap(ret);
-};
-
-/**
-* @param {number} i
-* @returns {WasmPallasGProjective}
-*/
-module.exports.caml_pallas_rng = function(i) {
-    const ret = wasm.caml_pallas_rng(i);
-    return WasmPallasGProjective.__wrap(ret);
-};
-
-/**
-* @returns {Uint8Array}
-*/
-module.exports.caml_pallas_endo_base = function() {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pallas_endo_base(retptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @returns {Uint8Array}
-*/
-module.exports.caml_pallas_endo_scalar = function() {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pallas_endo_scalar(retptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {WasmPallasGProjective} x
-* @returns {WasmGPallas}
-*/
-module.exports.caml_pallas_to_affine = function(x) {
-    _assertClass(x, WasmPallasGProjective);
-    const ret = wasm.caml_pallas_to_affine(x.__wbg_ptr);
-    return WasmGPallas.__wrap(ret);
-};
-
-/**
-* @param {WasmGPallas} x
-* @returns {WasmPallasGProjective}
-*/
-module.exports.caml_pallas_of_affine = function(x) {
-    _assertClass(x, WasmGPallas);
-    var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.caml_pallas_of_affine(ptr0);
-    return WasmPallasGProjective.__wrap(ret);
-};
-
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {WasmPallasGProjective}
-*/
-module.exports.caml_pallas_of_affine_coordinates = function(x, y) {
-    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_pallas_of_affine_coordinates(ptr0, len0, ptr1, len1);
-    return WasmPallasGProjective.__wrap(ret);
-};
-
-/**
-* @param {WasmGPallas} x
-* @returns {WasmGPallas}
-*/
-module.exports.caml_pallas_affine_deep_copy = function(x) {
-    _assertClass(x, WasmGPallas);
-    var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.caml_pallas_affine_deep_copy(ptr0);
-    return WasmGPallas.__wrap(ret);
-};
-
-/**
-* @returns {WasmFqGateVector}
-*/
-module.exports.caml_pasta_fq_plonk_gate_vector_create = function() {
-    const ret = wasm.caml_pasta_fq_plonk_gate_vector_create();
-    return WasmFqGateVector.__wrap(ret);
-};
-
-/**
-* @param {WasmFqGateVector} v
-* @param {WasmFqGate} gate
-*/
-module.exports.caml_pasta_fq_plonk_gate_vector_add = function(v, gate) {
-    _assertClass(v, WasmFqGateVector);
-    _assertClass(gate, WasmFqGate);
-    var ptr0 = gate.__destroy_into_raw();
-    wasm.caml_pasta_fq_plonk_gate_vector_add(v.__wbg_ptr, ptr0);
-};
-
-/**
-* @param {WasmFqGateVector} v
-* @param {number} i
-* @returns {WasmFqGate}
-*/
-module.exports.caml_pasta_fq_plonk_gate_vector_get = function(v, i) {
-    _assertClass(v, WasmFqGateVector);
-    const ret = wasm.caml_pasta_fq_plonk_gate_vector_get(v.__wbg_ptr, i);
-    return WasmFqGate.__wrap(ret);
-};
-
-/**
-* @param {WasmFqGateVector} v
-* @returns {number}
-*/
-module.exports.caml_pasta_fq_plonk_gate_vector_len = function(v) {
-    _assertClass(v, WasmFqGateVector);
-    const ret = wasm.caml_pasta_fq_plonk_gate_vector_len(v.__wbg_ptr);
-    return ret >>> 0;
-};
-
-/**
-* @param {WasmFqGateVector} v
-* @param {Wire} t
-* @param {Wire} h
-*/
-module.exports.caml_pasta_fq_plonk_gate_vector_wrap = function(v, t, h) {
-    _assertClass(v, WasmFqGateVector);
-    _assertClass(t, Wire);
-    var ptr0 = t.__destroy_into_raw();
-    _assertClass(h, Wire);
-    var ptr1 = h.__destroy_into_raw();
-    wasm.caml_pasta_fq_plonk_gate_vector_wrap(v.__wbg_ptr, ptr0, ptr1);
-};
-
-/**
-* @param {number} public_input_size
-* @param {WasmFqGateVector} v
-* @returns {Uint8Array}
-*/
-module.exports.caml_pasta_fq_plonk_gate_vector_digest = function(public_input_size, v) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        _assertClass(v, WasmFqGateVector);
-        wasm.caml_pasta_fq_plonk_gate_vector_digest(retptr, public_input_size, v.__wbg_ptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {number} public_input_size
-* @param {WasmFqGateVector} v
-* @returns {string}
-*/
-module.exports.caml_pasta_fq_plonk_circuit_serialize = function(public_input_size, v) {
-    let deferred1_0;
-    let deferred1_1;
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        _assertClass(v, WasmFqGateVector);
-        wasm.caml_pasta_fq_plonk_circuit_serialize(retptr, public_input_size, v.__wbg_ptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        deferred1_0 = r0;
-        deferred1_1 = r1;
-        return getStringFromWasm0(r0, r1);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-        wasm.__wbindgen_free(deferred1_0, deferred1_1);
-    }
-};
-
-/**
-* @param {Uint32Array} lgr_comm
-* @param {WasmFpPlonkVerifierIndex} index
-* @param {WasmFpProverProof} proof
-* @returns {WasmFpOracles}
-*/
-module.exports.fp_oracles_create = function(lgr_comm, index, proof) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray32ToWasm0(lgr_comm, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        _assertClass(index, WasmFpPlonkVerifierIndex);
-        var ptr1 = index.__destroy_into_raw();
-        _assertClass(proof, WasmFpProverProof);
-        var ptr2 = proof.__destroy_into_raw();
-        wasm.fp_oracles_create(retptr, ptr0, len0, ptr1, ptr2);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var r2 = getInt32Memory0()[retptr / 4 + 2];
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return WasmFpOracles.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @returns {WasmFpOracles}
-*/
-module.exports.fp_oracles_dummy = function() {
-    const ret = wasm.fp_oracles_dummy();
-    return WasmFpOracles.__wrap(ret);
-};
-
-/**
-* @param {WasmFpProverProof} x
-* @returns {WasmFpProverProof}
-*/
-module.exports.fp_oracles_deep_copy = function(x) {
-    _assertClass(x, WasmFpProverProof);
-    var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.fp_oracles_deep_copy(ptr0);
-    return WasmFpProverProof.__wrap(ret);
-};
-
-/**
-* @param {WasmPastaFqPlonkIndex} index
-* @param {WasmVecVecFq} witness
-* @param {Uint32Array} wasm_runtime_tables
-* @param {Uint8Array} prev_challenges
-* @param {Uint32Array} prev_sgs
-* @returns {WasmFqProverProof}
-*/
-module.exports.caml_pasta_fq_plonk_proof_create = function(index, witness, wasm_runtime_tables, prev_challenges, prev_sgs) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        _assertClass(index, WasmPastaFqPlonkIndex);
-        _assertClass(witness, WasmVecVecFq);
-        var ptr0 = witness.__destroy_into_raw();
-        const ptr1 = passArray32ToWasm0(wasm_runtime_tables, wasm.__wbindgen_malloc);
-        const len1 = WASM_VECTOR_LEN;
-        const ptr2 = passArray8ToWasm0(prev_challenges, wasm.__wbindgen_malloc);
-        const len2 = WASM_VECTOR_LEN;
-        const ptr3 = passArray32ToWasm0(prev_sgs, wasm.__wbindgen_malloc);
-        const len3 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_plonk_proof_create(retptr, index.__wbg_ptr, ptr0, ptr1, len1, ptr2, len2, ptr3, len3);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var r2 = getInt32Memory0()[retptr / 4 + 2];
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return WasmFqProverProof.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @param {WasmFqPlonkVerifierIndex} index
-* @param {WasmFqProverProof} proof
-* @returns {boolean}
-*/
-module.exports.caml_pasta_fq_plonk_proof_verify = function(index, proof) {
-    _assertClass(index, WasmFqPlonkVerifierIndex);
-    var ptr0 = index.__destroy_into_raw();
-    _assertClass(proof, WasmFqProverProof);
-    var ptr1 = proof.__destroy_into_raw();
-    const ret = wasm.caml_pasta_fq_plonk_proof_verify(ptr0, ptr1);
-    return ret !== 0;
-};
-
-/**
-* @param {Uint32Array} indexes
-* @param {Uint32Array} proofs
-* @returns {boolean}
-*/
-module.exports.caml_pasta_fq_plonk_proof_batch_verify = function(indexes, proofs) {
-    const ptr0 = passArray32ToWasm0(indexes, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passArray32ToWasm0(proofs, wasm.__wbindgen_malloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_pasta_fq_plonk_proof_batch_verify(ptr0, len0, ptr1, len1);
-    return ret !== 0;
-};
-
-/**
-* @returns {WasmFqProverProof}
-*/
-module.exports.caml_pasta_fq_plonk_proof_dummy = function() {
-    const ret = wasm.caml_pasta_fq_plonk_proof_dummy();
-    return WasmFqProverProof.__wrap(ret);
-};
-
-/**
-* @param {WasmFqProverProof} x
-* @returns {WasmFqProverProof}
-*/
-module.exports.caml_pasta_fq_plonk_proof_deep_copy = function(x) {
-    _assertClass(x, WasmFqProverProof);
-    var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.caml_pasta_fq_plonk_proof_deep_copy(ptr0);
-    return WasmFqProverProof.__wrap(ret);
-};
-
-/**
-* @param {Uint32Array} lgr_comm
-* @param {WasmFqPlonkVerifierIndex} index
-* @param {WasmFqProverProof} proof
-* @returns {WasmFqOracles}
-*/
-module.exports.fq_oracles_create = function(lgr_comm, index, proof) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray32ToWasm0(lgr_comm, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        _assertClass(index, WasmFqPlonkVerifierIndex);
-        var ptr1 = index.__destroy_into_raw();
-        _assertClass(proof, WasmFqProverProof);
-        var ptr2 = proof.__destroy_into_raw();
-        wasm.fq_oracles_create(retptr, ptr0, len0, ptr1, ptr2);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var r2 = getInt32Memory0()[retptr / 4 + 2];
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return WasmFqOracles.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @returns {WasmFqOracles}
-*/
-module.exports.fq_oracles_dummy = function() {
-    const ret = wasm.fq_oracles_dummy();
-    return WasmFqOracles.__wrap(ret);
-};
-
-/**
-* @param {WasmFqProverProof} x
-* @returns {WasmFqProverProof}
-*/
-module.exports.fq_oracles_deep_copy = function(x) {
-    _assertClass(x, WasmFqProverProof);
-    var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.fq_oracles_deep_copy(ptr0);
-    return WasmFqProverProof.__wrap(ret);
 };
 
 /**
@@ -3163,15 +1434,33 @@ module.exports.caml_pasta_fp_plonk_proof_deep_copy = function(x) {
 };
 
 /**
-* @param {Uint8Array} state
+* @returns {WasmGPallas}
+*/
+module.exports.caml_pallas_affine_one = function() {
+    const ret = wasm.caml_pallas_affine_one();
+    return WasmGPallas.__wrap(ret);
+};
+
+/**
+* @returns {WasmGVesta}
+*/
+module.exports.caml_vesta_affine_one = function() {
+    const ret = wasm.caml_vesta_affine_one();
+    return WasmGVesta.__wrap(ret);
+};
+
+/**
+* @param {string} s
+* @param {number} _len
+* @param {number} base
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_poseidon_block_cipher = function(state) {
+module.exports.caml_bigint_256_of_numeral = function(s, _len, base) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(state, wasm.__wbindgen_malloc);
+        const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fp_poseidon_block_cipher(retptr, ptr0, len0);
+        wasm.caml_bigint_256_of_numeral(retptr, ptr0, len0, _len, base);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         var v2 = getArrayU8FromWasm0(r0, r1).slice();
@@ -3183,15 +1472,15 @@ module.exports.caml_pasta_fp_poseidon_block_cipher = function(state) {
 };
 
 /**
-* @param {Uint8Array} state
+* @param {string} s
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_poseidon_block_cipher = function(state) {
+module.exports.caml_bigint_256_of_decimal_string = function(s) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(state, wasm.__wbindgen_malloc);
+        const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        wasm.caml_pasta_fq_poseidon_block_cipher(retptr, ptr0, len0);
+        wasm.caml_bigint_256_of_decimal_string(retptr, ptr0, len0);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         var v2 = getArrayU8FromWasm0(r0, r1).slice();
@@ -3200,6 +1489,1742 @@ module.exports.caml_pasta_fq_poseidon_block_cipher = function(state) {
     } finally {
         wasm.__wbindgen_add_to_stack_pointer(16);
     }
+};
+
+/**
+* @returns {number}
+*/
+module.exports.caml_bigint_256_num_limbs = function() {
+    const ret = wasm.caml_bigint_256_num_limbs();
+    return ret;
+};
+
+/**
+* @returns {number}
+*/
+module.exports.caml_bigint_256_bytes_per_limb = function() {
+    const ret = wasm.caml_bigint_256_bytes_per_limb();
+    return ret;
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+module.exports.caml_bigint_256_div = function(x, y) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.caml_bigint_256_div(retptr, ptr0, len0, ptr1, len1);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v3 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v3;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {number}
+*/
+module.exports.caml_bigint_256_compare = function(x, y) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_bigint_256_compare(ptr0, len0, ptr1, len1);
+    return ret;
+};
+
+/**
+* @param {Uint8Array} x
+*/
+module.exports.caml_bigint_256_print = function(x) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.caml_bigint_256_print(ptr0, len0);
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {string}
+*/
+module.exports.caml_bigint_256_to_string = function(x) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_bigint_256_to_string(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        deferred2_0 = r0;
+        deferred2_1 = r1;
+        return getStringFromWasm0(r0, r1);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+        wasm.__wbindgen_free(deferred2_0, deferred2_1);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @param {number} i
+* @returns {boolean}
+*/
+module.exports.caml_bigint_256_test_bit = function(x, i) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_bigint_256_test_bit(ptr0, len0, i);
+    return ret !== 0;
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_bigint_256_to_bytes = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_bigint_256_to_bytes(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_bigint_256_of_bytes = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_bigint_256_of_bytes(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_bigint_256_deep_copy = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_bigint_256_deep_copy(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @returns {number}
+*/
+module.exports.caml_pasta_fp_size_in_bits = function() {
+    const ret = wasm.caml_pasta_fp_size_in_bits();
+    return ret;
+};
+
+/**
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_size = function() {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pasta_fp_size(retptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_add = function(x, y) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_add(retptr, ptr0, len0, ptr1, len1);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v3 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v3;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_sub = function(x, y) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_sub(retptr, ptr0, len0, ptr1, len1);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v3 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v3;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_negate = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_negate(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_mul = function(x, y) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_mul(retptr, ptr0, len0, ptr1, len1);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v3 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v3;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_div = function(x, y) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_div(retptr, ptr0, len0, ptr1, len1);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v3 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v3;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array | undefined}
+*/
+module.exports.caml_pasta_fp_inv = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_inv(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        let v2;
+        if (r0 !== 0) {
+            v2 = getArrayU8FromWasm0(r0, r1).slice();
+            wasm.__wbindgen_free(r0, r1 * 1);
+        }
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_square = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_square(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {boolean}
+*/
+module.exports.caml_pasta_fp_is_square = function(x) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_pasta_fp_is_square(ptr0, len0);
+    return ret !== 0;
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array | undefined}
+*/
+module.exports.caml_pasta_fp_sqrt = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_sqrt(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        let v2;
+        if (r0 !== 0) {
+            v2 = getArrayU8FromWasm0(r0, r1).slice();
+            wasm.__wbindgen_free(r0, r1 * 1);
+        }
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {number} i
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_of_int = function(i) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pasta_fp_of_int(retptr, i);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {string}
+*/
+module.exports.caml_pasta_fp_to_string = function(x) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_to_string(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        deferred2_0 = r0;
+        deferred2_1 = r1;
+        return getStringFromWasm0(r0, r1);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+        wasm.__wbindgen_free(deferred2_0, deferred2_1);
+    }
+};
+
+/**
+* @param {string} s
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_of_string = function(s) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_of_string(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var r2 = getInt32Memory0()[retptr / 4 + 2];
+        var r3 = getInt32Memory0()[retptr / 4 + 3];
+        if (r3) {
+            throw takeObject(r2);
+        }
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+*/
+module.exports.caml_pasta_fp_print = function(x) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.caml_pasta_fp_print(ptr0, len0);
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {number}
+*/
+module.exports.caml_pasta_fp_compare = function(x, y) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_pasta_fp_compare(ptr0, len0, ptr1, len1);
+    return ret;
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {boolean}
+*/
+module.exports.caml_pasta_fp_equal = function(x, y) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_pasta_fp_equal(ptr0, len0, ptr1, len1);
+    return ret !== 0;
+};
+
+/**
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_random = function() {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pasta_fp_random(retptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {number} i
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_rng = function(i) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pasta_fp_rng(retptr, i);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_to_bigint = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_to_bigint(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_of_bigint = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_of_bigint(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var r2 = getInt32Memory0()[retptr / 4 + 2];
+        var r3 = getInt32Memory0()[retptr / 4 + 3];
+        if (r3) {
+            throw takeObject(r2);
+        }
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_two_adic_root_of_unity = function() {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pasta_fp_two_adic_root_of_unity(retptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {number} log2_size
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_domain_generator = function(log2_size) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pasta_fp_domain_generator(retptr, log2_size);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_to_bytes = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_to_bytes(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_of_bytes = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_of_bytes(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fp_deep_copy = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fp_deep_copy(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @returns {WasmPallasGProjective}
+*/
+module.exports.caml_pallas_one = function() {
+    const ret = wasm.caml_pallas_one();
+    return WasmPallasGProjective.__wrap(ret);
+};
+
+/**
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
+*/
+module.exports.caml_pallas_add = function(x, y) {
+    _assertClass(x, WasmPallasGProjective);
+    _assertClass(y, WasmPallasGProjective);
+    const ret = wasm.caml_pallas_add(x.__wbg_ptr, y.__wbg_ptr);
+    return WasmPallasGProjective.__wrap(ret);
+};
+
+/**
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
+*/
+module.exports.caml_pallas_sub = function(x, y) {
+    _assertClass(x, WasmPallasGProjective);
+    _assertClass(y, WasmPallasGProjective);
+    const ret = wasm.caml_pallas_sub(x.__wbg_ptr, y.__wbg_ptr);
+    return WasmPallasGProjective.__wrap(ret);
+};
+
+/**
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
+*/
+module.exports.caml_pallas_negate = function(x) {
+    _assertClass(x, WasmPallasGProjective);
+    const ret = wasm.caml_pallas_negate(x.__wbg_ptr);
+    return WasmPallasGProjective.__wrap(ret);
+};
+
+/**
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
+*/
+module.exports.caml_pallas_double = function(x) {
+    _assertClass(x, WasmPallasGProjective);
+    const ret = wasm.caml_pallas_double(x.__wbg_ptr);
+    return WasmPallasGProjective.__wrap(ret);
+};
+
+/**
+* @param {WasmPallasGProjective} x
+* @param {Uint8Array} y
+* @returns {WasmPallasGProjective}
+*/
+module.exports.caml_pallas_scale = function(x, y) {
+    _assertClass(x, WasmPallasGProjective);
+    const ptr0 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_pallas_scale(x.__wbg_ptr, ptr0, len0);
+    return WasmPallasGProjective.__wrap(ret);
+};
+
+/**
+* @returns {WasmPallasGProjective}
+*/
+module.exports.caml_pallas_random = function() {
+    const ret = wasm.caml_pallas_random();
+    return WasmPallasGProjective.__wrap(ret);
+};
+
+/**
+* @param {number} i
+* @returns {WasmPallasGProjective}
+*/
+module.exports.caml_pallas_rng = function(i) {
+    const ret = wasm.caml_pallas_rng(i);
+    return WasmPallasGProjective.__wrap(ret);
+};
+
+/**
+* @returns {Uint8Array}
+*/
+module.exports.caml_pallas_endo_base = function() {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pallas_endo_base(retptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @returns {Uint8Array}
+*/
+module.exports.caml_pallas_endo_scalar = function() {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pallas_endo_scalar(retptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {WasmPallasGProjective} x
+* @returns {WasmGPallas}
+*/
+module.exports.caml_pallas_to_affine = function(x) {
+    _assertClass(x, WasmPallasGProjective);
+    const ret = wasm.caml_pallas_to_affine(x.__wbg_ptr);
+    return WasmGPallas.__wrap(ret);
+};
+
+/**
+* @param {WasmGPallas} x
+* @returns {WasmPallasGProjective}
+*/
+module.exports.caml_pallas_of_affine = function(x) {
+    _assertClass(x, WasmGPallas);
+    var ptr0 = x.__destroy_into_raw();
+    const ret = wasm.caml_pallas_of_affine(ptr0);
+    return WasmPallasGProjective.__wrap(ret);
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {WasmPallasGProjective}
+*/
+module.exports.caml_pallas_of_affine_coordinates = function(x, y) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_pallas_of_affine_coordinates(ptr0, len0, ptr1, len1);
+    return WasmPallasGProjective.__wrap(ret);
+};
+
+/**
+* @param {WasmGPallas} x
+* @returns {WasmGPallas}
+*/
+module.exports.caml_pallas_affine_deep_copy = function(x) {
+    _assertClass(x, WasmGPallas);
+    var ptr0 = x.__destroy_into_raw();
+    const ret = wasm.caml_pallas_affine_deep_copy(ptr0);
+    return WasmGPallas.__wrap(ret);
+};
+
+/**
+* @returns {number}
+*/
+module.exports.caml_pasta_fq_size_in_bits = function() {
+    const ret = wasm.caml_pasta_fq_size_in_bits();
+    return ret;
+};
+
+/**
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_size = function() {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pasta_fq_size(retptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_add = function(x, y) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_add(retptr, ptr0, len0, ptr1, len1);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v3 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v3;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_sub = function(x, y) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_sub(retptr, ptr0, len0, ptr1, len1);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v3 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v3;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_negate = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_negate(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_mul = function(x, y) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_mul(retptr, ptr0, len0, ptr1, len1);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v3 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v3;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_div = function(x, y) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_div(retptr, ptr0, len0, ptr1, len1);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v3 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v3;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array | undefined}
+*/
+module.exports.caml_pasta_fq_inv = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_inv(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        let v2;
+        if (r0 !== 0) {
+            v2 = getArrayU8FromWasm0(r0, r1).slice();
+            wasm.__wbindgen_free(r0, r1 * 1);
+        }
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_square = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_square(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {boolean}
+*/
+module.exports.caml_pasta_fq_is_square = function(x) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_pasta_fq_is_square(ptr0, len0);
+    return ret !== 0;
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array | undefined}
+*/
+module.exports.caml_pasta_fq_sqrt = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_sqrt(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        let v2;
+        if (r0 !== 0) {
+            v2 = getArrayU8FromWasm0(r0, r1).slice();
+            wasm.__wbindgen_free(r0, r1 * 1);
+        }
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {number} i
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_of_int = function(i) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pasta_fq_of_int(retptr, i);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {string}
+*/
+module.exports.caml_pasta_fq_to_string = function(x) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_to_string(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        deferred2_0 = r0;
+        deferred2_1 = r1;
+        return getStringFromWasm0(r0, r1);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+        wasm.__wbindgen_free(deferred2_0, deferred2_1);
+    }
+};
+
+/**
+* @param {string} s
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_of_string = function(s) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_of_string(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var r2 = getInt32Memory0()[retptr / 4 + 2];
+        var r3 = getInt32Memory0()[retptr / 4 + 3];
+        if (r3) {
+            throw takeObject(r2);
+        }
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+*/
+module.exports.caml_pasta_fq_print = function(x) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.caml_pasta_fq_print(ptr0, len0);
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {number}
+*/
+module.exports.caml_pasta_fq_compare = function(x, y) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_pasta_fq_compare(ptr0, len0, ptr1, len1);
+    return ret;
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {boolean}
+*/
+module.exports.caml_pasta_fq_equal = function(x, y) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_pasta_fq_equal(ptr0, len0, ptr1, len1);
+    return ret !== 0;
+};
+
+/**
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_random = function() {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pasta_fq_random(retptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {number} i
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_rng = function(i) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pasta_fq_rng(retptr, i);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_to_bigint = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_to_bigint(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_of_bigint = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_of_bigint(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var r2 = getInt32Memory0()[retptr / 4 + 2];
+        var r3 = getInt32Memory0()[retptr / 4 + 3];
+        if (r3) {
+            throw takeObject(r2);
+        }
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_two_adic_root_of_unity = function() {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pasta_fq_two_adic_root_of_unity(retptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {number} log2_size
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_domain_generator = function(log2_size) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_pasta_fq_domain_generator(retptr, log2_size);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_to_bytes = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_to_bytes(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_of_bytes = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_of_bytes(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_deep_copy = function(x) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_deep_copy(retptr, ptr0, len0);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @returns {WasmVestaGProjective}
+*/
+module.exports.caml_vesta_one = function() {
+    const ret = wasm.caml_vesta_one();
+    return WasmVestaGProjective.__wrap(ret);
+};
+
+/**
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
+*/
+module.exports.caml_vesta_add = function(x, y) {
+    _assertClass(x, WasmVestaGProjective);
+    _assertClass(y, WasmVestaGProjective);
+    const ret = wasm.caml_vesta_add(x.__wbg_ptr, y.__wbg_ptr);
+    return WasmVestaGProjective.__wrap(ret);
+};
+
+/**
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
+*/
+module.exports.caml_vesta_sub = function(x, y) {
+    _assertClass(x, WasmVestaGProjective);
+    _assertClass(y, WasmVestaGProjective);
+    const ret = wasm.caml_vesta_sub(x.__wbg_ptr, y.__wbg_ptr);
+    return WasmVestaGProjective.__wrap(ret);
+};
+
+/**
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
+*/
+module.exports.caml_vesta_negate = function(x) {
+    _assertClass(x, WasmVestaGProjective);
+    const ret = wasm.caml_vesta_negate(x.__wbg_ptr);
+    return WasmVestaGProjective.__wrap(ret);
+};
+
+/**
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
+*/
+module.exports.caml_vesta_double = function(x) {
+    _assertClass(x, WasmVestaGProjective);
+    const ret = wasm.caml_vesta_double(x.__wbg_ptr);
+    return WasmVestaGProjective.__wrap(ret);
+};
+
+/**
+* @param {WasmVestaGProjective} x
+* @param {Uint8Array} y
+* @returns {WasmVestaGProjective}
+*/
+module.exports.caml_vesta_scale = function(x, y) {
+    _assertClass(x, WasmVestaGProjective);
+    const ptr0 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_vesta_scale(x.__wbg_ptr, ptr0, len0);
+    return WasmVestaGProjective.__wrap(ret);
+};
+
+/**
+* @returns {WasmVestaGProjective}
+*/
+module.exports.caml_vesta_random = function() {
+    const ret = wasm.caml_vesta_random();
+    return WasmVestaGProjective.__wrap(ret);
+};
+
+/**
+* @param {number} i
+* @returns {WasmVestaGProjective}
+*/
+module.exports.caml_vesta_rng = function(i) {
+    const ret = wasm.caml_vesta_rng(i);
+    return WasmVestaGProjective.__wrap(ret);
+};
+
+/**
+* @returns {Uint8Array}
+*/
+module.exports.caml_vesta_endo_base = function() {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_vesta_endo_base(retptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @returns {Uint8Array}
+*/
+module.exports.caml_vesta_endo_scalar = function() {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_vesta_endo_scalar(retptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {WasmVestaGProjective} x
+* @returns {WasmGVesta}
+*/
+module.exports.caml_vesta_to_affine = function(x) {
+    _assertClass(x, WasmVestaGProjective);
+    const ret = wasm.caml_vesta_to_affine(x.__wbg_ptr);
+    return WasmGVesta.__wrap(ret);
+};
+
+/**
+* @param {WasmGVesta} x
+* @returns {WasmVestaGProjective}
+*/
+module.exports.caml_vesta_of_affine = function(x) {
+    _assertClass(x, WasmGVesta);
+    var ptr0 = x.__destroy_into_raw();
+    const ret = wasm.caml_vesta_of_affine(ptr0);
+    return WasmVestaGProjective.__wrap(ret);
+};
+
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {WasmVestaGProjective}
+*/
+module.exports.caml_vesta_of_affine_coordinates = function(x, y) {
+    const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_vesta_of_affine_coordinates(ptr0, len0, ptr1, len1);
+    return WasmVestaGProjective.__wrap(ret);
+};
+
+/**
+* @param {WasmGVesta} x
+* @returns {WasmGVesta}
+*/
+module.exports.caml_vesta_affine_deep_copy = function(x) {
+    _assertClass(x, WasmGVesta);
+    var ptr0 = x.__destroy_into_raw();
+    const ret = wasm.caml_vesta_affine_deep_copy(ptr0);
+    return WasmGVesta.__wrap(ret);
+};
+
+/**
+* @param {Uint32Array} lgr_comm
+* @param {WasmFpPlonkVerifierIndex} index
+* @param {WasmFpProverProof} proof
+* @returns {WasmFpOracles}
+*/
+module.exports.fp_oracles_create = function(lgr_comm, index, proof) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray32ToWasm0(lgr_comm, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        _assertClass(index, WasmFpPlonkVerifierIndex);
+        var ptr1 = index.__destroy_into_raw();
+        _assertClass(proof, WasmFpProverProof);
+        var ptr2 = proof.__destroy_into_raw();
+        wasm.fp_oracles_create(retptr, ptr0, len0, ptr1, ptr2);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var r2 = getInt32Memory0()[retptr / 4 + 2];
+        if (r2) {
+            throw takeObject(r1);
+        }
+        return WasmFpOracles.__wrap(r0);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @returns {WasmFpOracles}
+*/
+module.exports.fp_oracles_dummy = function() {
+    const ret = wasm.fp_oracles_dummy();
+    return WasmFpOracles.__wrap(ret);
+};
+
+/**
+* @param {WasmFpProverProof} x
+* @returns {WasmFpProverProof}
+*/
+module.exports.fp_oracles_deep_copy = function(x) {
+    _assertClass(x, WasmFpProverProof);
+    var ptr0 = x.__destroy_into_raw();
+    const ret = wasm.fp_oracles_deep_copy(ptr0);
+    return WasmFpProverProof.__wrap(ret);
+};
+
+/**
+* @returns {WasmFqGateVector}
+*/
+module.exports.caml_pasta_fq_plonk_gate_vector_create = function() {
+    const ret = wasm.caml_pasta_fq_plonk_gate_vector_create();
+    return WasmFqGateVector.__wrap(ret);
+};
+
+/**
+* @param {WasmFqGateVector} v
+* @param {WasmFqGate} gate
+*/
+module.exports.caml_pasta_fq_plonk_gate_vector_add = function(v, gate) {
+    _assertClass(v, WasmFqGateVector);
+    _assertClass(gate, WasmFqGate);
+    var ptr0 = gate.__destroy_into_raw();
+    wasm.caml_pasta_fq_plonk_gate_vector_add(v.__wbg_ptr, ptr0);
+};
+
+/**
+* @param {WasmFqGateVector} v
+* @param {number} i
+* @returns {WasmFqGate}
+*/
+module.exports.caml_pasta_fq_plonk_gate_vector_get = function(v, i) {
+    _assertClass(v, WasmFqGateVector);
+    const ret = wasm.caml_pasta_fq_plonk_gate_vector_get(v.__wbg_ptr, i);
+    return WasmFqGate.__wrap(ret);
+};
+
+/**
+* @param {WasmFqGateVector} v
+* @returns {number}
+*/
+module.exports.caml_pasta_fq_plonk_gate_vector_len = function(v) {
+    _assertClass(v, WasmFqGateVector);
+    const ret = wasm.caml_pasta_fq_plonk_gate_vector_len(v.__wbg_ptr);
+    return ret >>> 0;
+};
+
+/**
+* @param {WasmFqGateVector} v
+* @param {Wire} t
+* @param {Wire} h
+*/
+module.exports.caml_pasta_fq_plonk_gate_vector_wrap = function(v, t, h) {
+    _assertClass(v, WasmFqGateVector);
+    _assertClass(t, Wire);
+    var ptr0 = t.__destroy_into_raw();
+    _assertClass(h, Wire);
+    var ptr1 = h.__destroy_into_raw();
+    wasm.caml_pasta_fq_plonk_gate_vector_wrap(v.__wbg_ptr, ptr0, ptr1);
+};
+
+/**
+* @param {number} public_input_size
+* @param {WasmFqGateVector} v
+* @returns {Uint8Array}
+*/
+module.exports.caml_pasta_fq_plonk_gate_vector_digest = function(public_input_size, v) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        _assertClass(v, WasmFqGateVector);
+        wasm.caml_pasta_fq_plonk_gate_vector_digest(retptr, public_input_size, v.__wbg_ptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {number} public_input_size
+* @param {WasmFqGateVector} v
+* @returns {string}
+*/
+module.exports.caml_pasta_fq_plonk_circuit_serialize = function(public_input_size, v) {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        _assertClass(v, WasmFqGateVector);
+        wasm.caml_pasta_fq_plonk_circuit_serialize(retptr, public_input_size, v.__wbg_ptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        deferred1_0 = r0;
+        deferred1_1 = r1;
+        return getStringFromWasm0(r0, r1);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+        wasm.__wbindgen_free(deferred1_0, deferred1_1);
+    }
+};
+
+/**
+* @param {Uint32Array} lgr_comm
+* @param {WasmFqPlonkVerifierIndex} index
+* @param {WasmFqProverProof} proof
+* @returns {WasmFqOracles}
+*/
+module.exports.fq_oracles_create = function(lgr_comm, index, proof) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray32ToWasm0(lgr_comm, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        _assertClass(index, WasmFqPlonkVerifierIndex);
+        var ptr1 = index.__destroy_into_raw();
+        _assertClass(proof, WasmFqProverProof);
+        var ptr2 = proof.__destroy_into_raw();
+        wasm.fq_oracles_create(retptr, ptr0, len0, ptr1, ptr2);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var r2 = getInt32Memory0()[retptr / 4 + 2];
+        if (r2) {
+            throw takeObject(r1);
+        }
+        return WasmFqOracles.__wrap(r0);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @returns {WasmFqOracles}
+*/
+module.exports.fq_oracles_dummy = function() {
+    const ret = wasm.fq_oracles_dummy();
+    return WasmFqOracles.__wrap(ret);
+};
+
+/**
+* @param {WasmFqProverProof} x
+* @returns {WasmFqProverProof}
+*/
+module.exports.fq_oracles_deep_copy = function(x) {
+    _assertClass(x, WasmFqProverProof);
+    var ptr0 = x.__destroy_into_raw();
+    const ret = wasm.caml_pasta_fq_plonk_proof_deep_copy(ptr0);
+    return WasmFqProverProof.__wrap(ret);
+};
+
+/**
+* @param {WasmPastaFqPlonkIndex} index
+* @param {WasmVecVecFq} witness
+* @param {Uint32Array} wasm_runtime_tables
+* @param {Uint8Array} prev_challenges
+* @param {Uint32Array} prev_sgs
+* @returns {WasmFqProverProof}
+*/
+module.exports.caml_pasta_fq_plonk_proof_create = function(index, witness, wasm_runtime_tables, prev_challenges, prev_sgs) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        _assertClass(index, WasmPastaFqPlonkIndex);
+        _assertClass(witness, WasmVecVecFq);
+        var ptr0 = witness.__destroy_into_raw();
+        const ptr1 = passArray32ToWasm0(wasm_runtime_tables, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        const ptr2 = passArray8ToWasm0(prev_challenges, wasm.__wbindgen_malloc);
+        const len2 = WASM_VECTOR_LEN;
+        const ptr3 = passArray32ToWasm0(prev_sgs, wasm.__wbindgen_malloc);
+        const len3 = WASM_VECTOR_LEN;
+        wasm.caml_pasta_fq_plonk_proof_create(retptr, index.__wbg_ptr, ptr0, ptr1, len1, ptr2, len2, ptr3, len3);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var r2 = getInt32Memory0()[retptr / 4 + 2];
+        if (r2) {
+            throw takeObject(r1);
+        }
+        return WasmFqProverProof.__wrap(r0);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {WasmFqPlonkVerifierIndex} index
+* @param {WasmFqProverProof} proof
+* @returns {boolean}
+*/
+module.exports.caml_pasta_fq_plonk_proof_verify = function(index, proof) {
+    _assertClass(index, WasmFqPlonkVerifierIndex);
+    var ptr0 = index.__destroy_into_raw();
+    _assertClass(proof, WasmFqProverProof);
+    var ptr1 = proof.__destroy_into_raw();
+    const ret = wasm.caml_pasta_fq_plonk_proof_verify(ptr0, ptr1);
+    return ret !== 0;
+};
+
+/**
+* @param {Uint32Array} indexes
+* @param {Uint32Array} proofs
+* @returns {boolean}
+*/
+module.exports.caml_pasta_fq_plonk_proof_batch_verify = function(indexes, proofs) {
+    const ptr0 = passArray32ToWasm0(indexes, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passArray32ToWasm0(proofs, wasm.__wbindgen_malloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.caml_pasta_fq_plonk_proof_batch_verify(ptr0, len0, ptr1, len1);
+    return ret !== 0;
+};
+
+/**
+* @returns {WasmFqProverProof}
+*/
+module.exports.caml_pasta_fq_plonk_proof_dummy = function() {
+    const ret = wasm.caml_pasta_fq_plonk_proof_dummy();
+    return WasmFqProverProof.__wrap(ret);
+};
+
+/**
+* @param {WasmFqProverProof} x
+* @returns {WasmFqProverProof}
+*/
+module.exports.caml_pasta_fq_plonk_proof_deep_copy = function(x) {
+    _assertClass(x, WasmFqProverProof);
+    var ptr0 = x.__destroy_into_raw();
+    const ret = wasm.caml_pasta_fq_plonk_proof_deep_copy(ptr0);
+    return WasmFqProverProof.__wrap(ret);
 };
 
 /**
@@ -3222,31 +3247,6 @@ module.exports.prover_to_json = function(prover_index) {
         wasm.__wbindgen_add_to_stack_pointer(16);
         wasm.__wbindgen_free(deferred1_0, deferred1_1);
     }
-};
-
-/**
-* @param {number} num_threads
-* @param {string} worker_source
-* @returns {Promise<any>}
-*/
-module.exports.initThreadPool = function(num_threads, worker_source) {
-    const ret = wasm.initThreadPool(num_threads, addHeapObject(worker_source));
-    return takeObject(ret);
-};
-
-/**
-* @returns {Promise<any>}
-*/
-module.exports.exitThreadPool = function() {
-    const ret = wasm.exitThreadPool();
-    return takeObject(ret);
-};
-
-/**
-* @param {number} receiver
-*/
-module.exports.wbg_rayon_start_worker = function(receiver) {
-    wasm.wbg_rayon_start_worker(receiver);
 };
 
 function handleError(f, args) {
@@ -4905,6 +4905,19 @@ class WasmFpPlonkVerifierIndex {
         wasm.__wbg_set_wasmfpplonkverifierindex_shifts(this.__wbg_ptr, ptr0);
     }
     /**
+    * @returns {number}
+    */
+    get zk_rows() {
+        const ret = wasm.__wbg_get_wasmfpplonkverifierindex_zk_rows(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+    * @param {number} arg0
+    */
+    set zk_rows(arg0) {
+        wasm.__wbg_set_wasmfpplonkverifierindex_zk_rows(this.__wbg_ptr, arg0);
+    }
+    /**
     * @param {WasmFpDomain} domain
     * @param {number} max_poly_size
     * @param {number} public_
@@ -4913,8 +4926,9 @@ class WasmFpPlonkVerifierIndex {
     * @param {WasmFpPlonkVerificationEvals} evals
     * @param {WasmFpShifts} shifts
     * @param {WasmFpLookupVerifierIndex | undefined} lookup_index
+    * @param {number} zk_rows
     */
-    constructor(domain, max_poly_size, public_, prev_challenges, srs, evals, shifts, lookup_index) {
+    constructor(domain, max_poly_size, public_, prev_challenges, srs, evals, shifts, lookup_index, zk_rows) {
         _assertClass(domain, WasmFpDomain);
         _assertClass(srs, WasmFpSrs);
         _assertClass(evals, WasmFpPlonkVerificationEvals);
@@ -4924,7 +4938,7 @@ class WasmFpPlonkVerifierIndex {
             _assertClass(lookup_index, WasmFpLookupVerifierIndex);
             ptr0 = lookup_index.__destroy_into_raw();
         }
-        const ret = wasm.wasmfpplonkverifierindex_new(domain.__wbg_ptr, max_poly_size, public_, prev_challenges, srs.__wbg_ptr, evals.__wbg_ptr, shifts.__wbg_ptr, ptr0);
+        const ret = wasm.wasmfpplonkverifierindex_new(domain.__wbg_ptr, max_poly_size, public_, prev_challenges, srs.__wbg_ptr, evals.__wbg_ptr, shifts.__wbg_ptr, ptr0, zk_rows);
         return WasmFpPlonkVerifierIndex.__wrap(ret);
     }
     /**
@@ -7318,6 +7332,19 @@ class WasmFqPlonkVerifierIndex {
         wasm.__wbg_set_wasmfpplonkverifierindex_shifts(this.__wbg_ptr, ptr0);
     }
     /**
+    * @returns {number}
+    */
+    get zk_rows() {
+        const ret = wasm.__wbg_get_wasmfpplonkverifierindex_zk_rows(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+    * @param {number} arg0
+    */
+    set zk_rows(arg0) {
+        wasm.__wbg_set_wasmfpplonkverifierindex_zk_rows(this.__wbg_ptr, arg0);
+    }
+    /**
     * @param {WasmFqDomain} domain
     * @param {number} max_poly_size
     * @param {number} public_
@@ -7326,8 +7353,9 @@ class WasmFqPlonkVerifierIndex {
     * @param {WasmFqPlonkVerificationEvals} evals
     * @param {WasmFqShifts} shifts
     * @param {WasmFqLookupVerifierIndex | undefined} lookup_index
+    * @param {number} zk_rows
     */
-    constructor(domain, max_poly_size, public_, prev_challenges, srs, evals, shifts, lookup_index) {
+    constructor(domain, max_poly_size, public_, prev_challenges, srs, evals, shifts, lookup_index, zk_rows) {
         _assertClass(domain, WasmFqDomain);
         _assertClass(srs, WasmFqSrs);
         _assertClass(evals, WasmFqPlonkVerificationEvals);
@@ -7337,7 +7365,7 @@ class WasmFqPlonkVerifierIndex {
             _assertClass(lookup_index, WasmFqLookupVerifierIndex);
             ptr0 = lookup_index.__destroy_into_raw();
         }
-        const ret = wasm.wasmfqplonkverifierindex_new(domain.__wbg_ptr, max_poly_size, public_, prev_challenges, srs.__wbg_ptr, evals.__wbg_ptr, shifts.__wbg_ptr, ptr0);
+        const ret = wasm.wasmfqplonkverifierindex_new(domain.__wbg_ptr, max_poly_size, public_, prev_challenges, srs.__wbg_ptr, evals.__wbg_ptr, shifts.__wbg_ptr, ptr0, zk_rows);
         return WasmFqPlonkVerifierIndex.__wrap(ret);
     }
     /**
@@ -9252,20 +9280,20 @@ class Wire {
     * @returns {number}
     */
     get row() {
-        const ret = wasm.__wbg_get_wire_row(this.__wbg_ptr);
+        const ret = wasm.__wbg_get_lookupinfo_max_per_row(this.__wbg_ptr);
         return ret >>> 0;
     }
     /**
     * @param {number} arg0
     */
     set row(arg0) {
-        wasm.__wbg_set_wire_row(this.__wbg_ptr, arg0);
+        wasm.__wbg_set_lookupinfo_max_per_row(this.__wbg_ptr, arg0);
     }
     /**
     * @returns {number}
     */
     get col() {
-        const ret = wasm.__wbg_get_wire_col(this.__wbg_ptr);
+        const ret = wasm.__wbg_get_lookupinfo_max_joint_size(this.__wbg_ptr);
         return ret >>> 0;
     }
     /**
@@ -9299,11 +9327,6 @@ module.exports.__wbindgen_number_new = function(arg0) {
     return addHeapObject(ret);
 };
 
-module.exports.__wbindgen_string_new = function(arg0, arg1) {
-    const ret = getStringFromWasm0(arg0, arg1);
-    return addHeapObject(ret);
-};
-
 module.exports.__wbg_startWorkers_f430e3766320935f = function(arg0, arg1, arg2) {
     const ret = startWorkers(takeObject(arg0), takeObject(arg1), PoolBuilder.__wrap(arg2));
     return addHeapObject(ret);
@@ -9311,6 +9334,11 @@ module.exports.__wbg_startWorkers_f430e3766320935f = function(arg0, arg1, arg2) 
 
 module.exports.__wbg_terminateWorkers_bf82de78d64704cb = function() {
     const ret = terminateWorkers();
+    return addHeapObject(ret);
+};
+
+module.exports.__wbindgen_string_new = function(arg0, arg1) {
+    const ret = getStringFromWasm0(arg0, arg1);
     return addHeapObject(ret);
 };
 
