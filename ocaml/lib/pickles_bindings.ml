@@ -227,7 +227,10 @@ module Choices = struct
         statements
 
     type _ Snarky_backendless.Request.t +=
-      | Get_prev_proof : int -> _ Pickles.Proof.t Snarky_backendless.Request.t
+      | Get_prev_proof :
+          int
+          -> (unit, _, _) Mina_wire_types.Pickles.Concrete_.Proof.with_data
+             Snarky_backendless.Request.t
 
     let create ~public_input_size ~public_output_size (rule : pickles_rule_js) :
         ( _
@@ -606,11 +609,15 @@ type ret_var = Field.t array
 
 type ret_value = Field.Constant.t array
 
-let step_circuit index self wrap_domains global_feature_flags rule_feature_flags
+(* auxiliary var type *)
+type auxiliary_var = unit
+
+type auxiliary_value = unit
+
+let step_circuits self wrap_domains global_feature_flags
     (max_proofs_verified : int) (branches : int) proofs_verifieds
-    public_input_size public_output_size js_rule =
+    public_input_size public_output_size js_rules =
   let (module Max_proofs_verified) = nat_add_module max_proofs_verified in
-  let T = Max_proofs_verified.eq in
   let (module Branches) = nat_module branches in
 
   let public_input, public_output =
@@ -635,11 +642,18 @@ let step_circuit index self wrap_domains global_feature_flags rule_feature_flags
     type t = ret_value
   end in
   let module Auxiliary_var = struct
-    type t = unit
+    type t = auxiliary_var
   end in
   let module Auxiliary_value = struct
-    type t = unit
+    type t = auxiliary_value
   end in
+  let module IR =
+    Pickles.Inductive_rule.T (Arg_var) (Arg_value) (Ret_var) (Ret_value)
+      (Auxiliary_var)
+      (Auxiliary_value)
+  in
+  let module H4 = Pickles_types.Hlist.H4 in
+  let module HIR = H4.T (IR) in
   let module Branch_data = struct
     type ('vars, 'vals, 'n, 'm) t =
       ( Arg_var.t
@@ -656,21 +670,65 @@ let step_circuit index self wrap_domains global_feature_flags rule_feature_flags
       , 'm )
       Pickles.Step_branch_data.t
   end in
-  let _var_to_field_elements, _value_to_field_elements = ((), ()) in
-  let (Rule rule) =
-    Choices.Inductive_rule.create ~public_input_size ~public_output_size js_rule
+  let (Choices choices) =
+    Choices.of_js ~public_input_size ~public_output_size js_rules
   in
-  let rule = rule ~self in
-  let (Pickles.Step_branch_data.T branch_data : _ Branch_data.t) =
-    Pickles.Step_branch_data.create ~index ~self ~wrap_domains
-      ~feature_flags:global_feature_flags
-      ~actual_feature_flags:rule_feature_flags
-      ~max_proofs_verified:(Max_proofs_verified.n |> Obj.magic)
-      ~proofs_verifieds ~branches:(Branches.n |> Obj.magic)
-      ~public_input:(Input_and_output (public_input, public_output))
-      ~auxiliary_typ:Typ.unit Arg_var.to_field_elements
-      Arg_value.to_field_elements (Obj.magic rule)
-    |> Obj.magic
+  let rec conv_irs :
+      type v1ss v2ss wss hss.
+         ( v1ss
+         , v2ss
+         , wss
+         , hss
+         , a_var
+         , a_value
+         , ret_var
+         , ret_value
+         , auxiliary_var
+         , auxiliary_value )
+         Pickles_types.Hlist.H4_6.T(Pickles.Inductive_rule).t
+      -> (v1ss, v2ss, wss, hss) H4.T(IR).t = function
+    | [] ->
+        []
+    | r :: rs ->
+        r :: conv_irs rs
+  in
+  let choices = conv_irs (choices ~self) in
+  let (T (prev_varss_n, prev_varss_length)) = HIR.length choices in
+  let T = Pickles_types.Nat.eq_exn prev_varss_n Branches.n in
+  let step_data =
+    let i = ref 0 in
+    let rec f :
+        type a b c d.
+        (a, b, c, d) H4.T(IR).t -> (a, b, c, d) H4.T(Branch_data).t = function
+      | [] ->
+          []
+      | rule :: rules ->
+          let first =
+            let res =
+              Pickles.Step_branch_data.create ~index:!i
+                ~feature_flags:global_feature_flags
+                ~actual_feature_flags:rule.feature_flags
+                ~max_proofs_verified:Max_proofs_verified.n ~branches:Branches.n
+                ~self
+                ~public_input:(Input_and_output (public_input, public_output))
+                ~auxiliary_typ:Impl.Typ.unit Arg_var.to_field_elements
+                Arg_value.to_field_elements rule ~wrap_domains ~proofs_verifieds
+            in
+            incr i ; res
+          in
+          first :: f rules
+    in
+    f choices
+  in
+  let step_domains =
+    let module M =
+      H4.Map (Branch_data) (Pickles_types.Hlist.E04 (Pickles_base.Domains))
+        (struct
+          let f (T b : _ Branch_data.t) = b.domains
+        end)
+    in
+    let module V = H4.To_vector (Pickles_base.Domains) in
+    V.f prev_varss_length (M.f step_data)
   in
 
   let (Composition_types.Spec.ETyp.T (_typ, _conv, conv_inv)) =
@@ -704,5 +762,5 @@ let pickles =
 
     val createTag = create_tag
 
-    val stepCircuit = step_circuit |> Obj.magic
+    val stepCircuits = step_circuits |> Obj.magic
   end
