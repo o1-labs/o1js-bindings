@@ -30,6 +30,7 @@ type pickles_rule_js =
           ; shouldVerify : Boolean.var array Js.prop >
           Js.t )
       Js.prop
+  ; featureFlags : bool Pickles_types.Plonk_types.Features.t Js.prop
   ; proofsToVerify :
       < isSelf : bool Js.t Js.prop ; tag : Js.Unsafe.any Js.t Js.prop > Js.t
       array

@@ -113,6 +113,36 @@ module Field' = struct
   let to_constant_and_terms x = Field.to_constant_and_terms x
 end
 
+module Gates = struct
+  let range_check0 v0 (v0p0, v0p1, v0p2, v0p3, v0p4, v0p5)
+      (v0c0, v0c1, v0c2, v0c3, v0c4, v0c5, v0c6, v0c7) compact =
+    Impl.with_label "range_check0" (fun () ->
+        Impl.assert_
+          { annotation = Some __LOC__
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                (RangeCheck0
+                   { (* Current row *) v0
+                   ; v0p0
+                   ; v0p1
+                   ; v0p2
+                   ; v0p3
+                   ; v0p4
+                   ; v0p5
+                   ; v0c0
+                   ; v0c1
+                   ; v0c2
+                   ; v0c3
+                   ; v0c4
+                   ; v0c5
+                   ; v0c6
+                   ; v0c7
+                   ; (* Coefficients *)
+                     compact
+                   } )
+          } )
+end
+
 module Bool = struct
   let not x = Boolean.not x
 
@@ -282,6 +312,11 @@ let snarky =
         method seal = seal
 
         method toConstantAndTerms = to_constant_and_terms
+      end
+
+    val gates =
+      object%js
+        method rangeCheck0 = Gates.range_check0
       end
 
     val bool =
