@@ -168,8 +168,8 @@ module Gates = struct
                    } )
           } )
 
-  let zero_check in1 in2 out =
-    Impl.with_label "zero_check" (fun () ->
+  let zero in1 in2 out =
+    Impl.with_label "zero" (fun () ->
         Impl.assert_
           { annotation = Some __LOC__
           ; basic =
@@ -357,7 +357,7 @@ let snarky =
 
         method xor = Gates.xor
 
-        method zeroCheck = Gates.zero_check
+        method zero = Gates.zero
       end
 
     val bool =
