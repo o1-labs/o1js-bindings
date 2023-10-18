@@ -385,8 +385,8 @@ module Cache = struct
       Or_error.find_map_ok spec ~f:(fun s ->
           let res, cache_hit =
             match s with
-            | Spec.On_disk { directory; should_write } ->
-                let path = directory ^ to_string key in
+            | Spec.On_disk { should_write; _ } ->
+                let path = to_string key in
                 ( read ~path key
                 , if should_write then `Locally_generated else `Cache_hit )
             | S3 _ ->
@@ -399,10 +399,8 @@ module Cache = struct
         List.filter_map spec ~f:(fun s ->
             let res =
               match s with
-              | Spec.On_disk { directory; should_write } ->
-                  if should_write then
-                    let path = directory ^ to_string key in
-                    write key value path
+              | Spec.On_disk { should_write; _ } ->
+                  if should_write then write key value (to_string key)
                   else Or_error.return ()
               | S3 _ ->
                   Or_error.return ()
@@ -444,13 +442,14 @@ module Cache = struct
   type js_storable =
     { read : any_key -> Js.js_string Js.t -> (any_value, unit) result
     ; write : any_key -> any_value -> Js.js_string Js.t -> (unit, unit) result
+    ; can_write : bool
     }
 
   let or_error f = function Ok v -> f v | _ -> Or_error.errorf "failed"
 
   let map_error = function Ok v -> Ok v | _ -> Or_error.errorf "failed"
 
-  let step_storable { read; write } : Step.storable =
+  let step_storable { read; write; _ } : Step.storable =
     let read key ~path =
       read (Step_pk key) (Js.string path) |> or_error step_pk
     in
@@ -459,7 +458,7 @@ module Cache = struct
     in
     Sync.Disk_storable.simple Step.Key.Proving.to_string read write
 
-  let step_vk_storable { read; write } : Step.vk_storable =
+  let step_vk_storable { read; write; _ } : Step.vk_storable =
     let read key ~path =
       read (Step_vk key) (Js.string path) |> or_error step_vk
     in
@@ -468,7 +467,7 @@ module Cache = struct
     in
     Sync.Disk_storable.simple Step.Key.Verification.to_string read write
 
-  let wrap_storable { read; write } : Wrap.storable =
+  let wrap_storable { read; write; _ } : Wrap.storable =
     let read key ~path =
       read (Wrap_pk key) (Js.string path) |> or_error wrap_pk
     in
@@ -477,7 +476,7 @@ module Cache = struct
     in
     Sync.Disk_storable.simple Wrap.Key.Proving.to_string read write
 
-  let wrap_vk_storable { read; write } : Wrap.vk_storable =
+  let wrap_vk_storable { read; write; _ } : Wrap.vk_storable =
     let read key ~path =
       read (Wrap_vk key) (Js.string path) |> or_error wrap_vk
     in
@@ -495,8 +494,11 @@ module Cache = struct
     ; wrap_vk_storable = wrap_vk_storable s
     }
 
-  let key_cache_dir directory : Key_cache.Spec.t =
-    On_disk { directory; should_write = true }
+  let cache_dir { can_write; _ } : Key_cache.Spec.t list =
+    let d : Key_cache.Spec.t =
+      On_disk { directory = ""; should_write = can_write }
+    in
+    [ d ]
 end
 
 type proof = (Pickles_types.Nat.N0.n, Pickles_types.Nat.N0.n) Pickles.Proof.t
@@ -581,7 +583,6 @@ let pickles_compile (choices : pickles_rule_js array)
       < publicInputSize : int Js.prop
       ; publicOutputSize : int Js.prop
       ; storable : Cache.js_storable Js.optdef_prop
-      ; cacheDir : Js.js_string Js.t Js.optdef_prop
       ; overrideWrapDomain : int Js.optdef_prop >
       Js.t ) =
   (* translate number of branches and recursively verified proofs from JS *)
@@ -610,8 +611,7 @@ let pickles_compile (choices : pickles_rule_js array)
     Js.Optdef.to_option config##.storable |> Option.map ~f:Cache.storables
   in
   let cache =
-    Js.Optdef.to_option config##.cacheDir
-    |> Option.map ~f:(fun d -> [ Cache.key_cache_dir (Js.to_string d) ])
+    Js.Optdef.to_option config##.storable |> Option.map ~f:Cache.cache_dir
   in
 
   (* call into Pickles *)
