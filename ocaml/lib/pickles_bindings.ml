@@ -368,6 +368,102 @@ module Choices = struct
     get_rules (Choices (fun ~self:_ -> [])) (Array.length js_rules - 1)
 end
 
+module Cache = struct
+  module Sync : Key_cache.Sync = struct
+    open Key_cache
+    include T (Or_error)
+
+    module Disk_storable = struct
+      include Disk_storable (Or_error)
+
+      let of_binable = Trivial.Disk_storable.of_binable
+
+      let simple to_string read write = { to_string; read; write }
+    end
+
+    let read spec { Disk_storable.to_string; read; write = _ } key =
+      Or_error.find_map_ok spec ~f:(fun s ->
+          let res, cache_hit =
+            match s with
+            | Spec.On_disk { directory; should_write } ->
+                let path = directory ^ to_string key in
+                ( read ~path key
+                , if should_write then `Locally_generated else `Cache_hit )
+            | S3 _ ->
+                (Or_error.errorf "Downloading from S3 is disabled", `Cache_hit)
+          in
+          Or_error.map res ~f:(fun res -> (res, cache_hit)) )
+
+    let write spec { Disk_storable.to_string; read = _; write } key value =
+      let errs =
+        List.filter_map spec ~f:(fun s ->
+            let res =
+              match s with
+              | Spec.On_disk { directory; should_write } ->
+                  if should_write then
+                    let path = directory ^ to_string key in
+                    write key value path
+                  else Or_error.return ()
+              | S3 _ ->
+                  Or_error.return ()
+            in
+            match res with Error e -> Some e | Ok () -> None )
+      in
+      match errs with [] -> Ok () | errs -> Error (Error.of_list errs)
+  end
+
+  let () =
+    match Util.Js_environment.value with
+    | Node ->
+        Key_cache.set_sync_implementation (module Sync)
+    | _ ->
+        ()
+
+  open Pickles.Cache
+
+  let log_and_fail s = print_endline s ; Or_error.error_string s
+
+  let step_storable : Step.storable =
+    let read _key ~path:_path = log_and_fail "step pk storable read" in
+    let write _key _value _path = log_and_fail "step pk storable write" in
+    Key_cache.Sync.Disk_storable.simple Step.Key.Proving.to_string read write
+
+  let step_vk_storable : Step.vk_storable =
+    let read _key ~path:_path = log_and_fail "step vk storable read" in
+    let write _key _value _path = log_and_fail "step vk storable write" in
+    Key_cache.Sync.Disk_storable.simple Step.Key.Verification.to_string read
+      write
+
+  let wrap_storable : Wrap.storable =
+    let read _key ~path:_path = log_and_fail "wrap pk storable read" in
+    let write _key _value _path = log_and_fail "wrap pk storable write" in
+    Key_cache.Sync.Disk_storable.simple Wrap.Key.Proving.to_string read write
+
+  let wrap_vk_storable : Wrap.vk_storable =
+    let read _key ~path:_path = log_and_fail "wrap vk storable read" in
+    let write _key _value _path = log_and_fail "wrap vk storable write" in
+    Key_cache.Sync.Disk_storable.simple Wrap.Key.Verification.to_string read
+      write
+
+  let storables : Storables.t option =
+    match Util.Js_environment.value with
+    | Node ->
+        Some
+          { step_storable; step_vk_storable; wrap_storable; wrap_vk_storable }
+    | _ ->
+        None
+
+  let key_cache_dir directory : Key_cache.Spec.t =
+    On_disk { directory; should_write = true }
+
+  let key_cache =
+    match Util.Js_environment.value with
+    | Node ->
+        [ key_cache_dir "/tmp/pickles" ]
+    | _ ->
+        []
+end
+
 type proof = (Pickles_types.Nat.N0.n, Pickles_types.Nat.N0.n) Pickles.Proof.t
 
 module Public_inputs_with_proofs =
@@ -482,7 +578,8 @@ let pickles_compile (choices : pickles_rule_js array)
       ~auxiliary_typ:Typ.unit
       ~branches:(module Branches)
       ~max_proofs_verified:(module Max_proofs_verified)
-      ~name ~constraint_constants
+      ~name ~constraint_constants ?storables:Cache.storables
+      ~cache:Cache.key_cache
   in
 
   (* translate returned prover and verify functions to JS *)
