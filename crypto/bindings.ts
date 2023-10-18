@@ -17,8 +17,10 @@ import { proofConversion } from './bindings/conversion-proof.js';
 import { conversionCore } from './bindings/conversion-core.js';
 import { verifierIndexConversion } from './bindings/conversion-verifier-index.js';
 import { oraclesConversion } from './bindings/conversion-oracles.js';
+import { jsEnvironment } from './bindings/env.js';
 
 const tsBindings = {
+  jsEnvironment,
   prefixHashes,
   prefixHashesLegacy,
   ...Bigint256Bindings,
