@@ -37,6 +37,10 @@ type pickles_rule_js =
       Js.prop >
   Js.t
 
+module Cache : sig
+  type js_storable
+end
+
 type proof = (Pickles_types.Nat.N0.n, Pickles_types.Nat.N0.n) Pickles.Proof.t
 
 module Proof0 : sig
@@ -58,6 +62,8 @@ val pickles :
       (   pickles_rule_js array
        -> < publicInputSize : int Js.prop
           ; publicOutputSize : int Js.prop
+          ; storable : Cache.js_storable Js.optdef_prop
+          ; cacheDir : Js.js_string Js.t Js.optdef_prop
           ; overrideWrapDomain : int Js.optdef_prop >
           Js.t
        -> < getVerificationKey : (Js.js_string Js.t * Impl.field) Js.meth

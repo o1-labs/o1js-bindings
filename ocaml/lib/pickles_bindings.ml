@@ -421,47 +421,82 @@ module Cache = struct
 
   open Pickles.Cache
 
-  let log_and_fail s = print_endline s ; Or_error.error_string s
+  type any_key =
+    | Step_pk of Step.Key.Proving.t
+    | Step_vk of Step.Key.Verification.t
+    | Wrap_pk of Wrap.Key.Proving.t
+    | Wrap_vk of Wrap.Key.Verification.t
 
-  let step_storable : Step.storable =
-    let read _key ~path:_path = log_and_fail "step pk storable read" in
-    let write _key _value _path = log_and_fail "step pk storable write" in
-    Key_cache.Sync.Disk_storable.simple Step.Key.Proving.to_string read write
+  type any_value =
+    | Step_pk of Backend.Tick.Keypair.t
+    | Step_vk of Kimchi_bindings.Protocol.VerifierIndex.Fp.t
+    | Wrap_pk of Backend.Tock.Keypair.t
+    | Wrap_vk of Pickles.Verification_key.t
 
-  let step_vk_storable : Step.vk_storable =
-    let read _key ~path:_path = log_and_fail "step vk storable read" in
-    let write _key _value _path = log_and_fail "step vk storable write" in
-    Key_cache.Sync.Disk_storable.simple Step.Key.Verification.to_string read
-      write
+  let step_pk = function Step_pk v -> Ok v | _ -> Or_error.errorf "step_pk"
 
-  let wrap_storable : Wrap.storable =
-    let read _key ~path:_path = log_and_fail "wrap pk storable read" in
-    let write _key _value _path = log_and_fail "wrap pk storable write" in
-    Key_cache.Sync.Disk_storable.simple Wrap.Key.Proving.to_string read write
+  let step_vk = function Step_vk v -> Ok v | _ -> Or_error.errorf "step_vk"
 
-  let wrap_vk_storable : Wrap.vk_storable =
-    let read _key ~path:_path = log_and_fail "wrap vk storable read" in
-    let write _key _value _path = log_and_fail "wrap vk storable write" in
-    Key_cache.Sync.Disk_storable.simple Wrap.Key.Verification.to_string read
-      write
+  let wrap_pk = function Wrap_pk v -> Ok v | _ -> Or_error.errorf "wrap_pk"
 
-  let storables : Storables.t option =
-    match Util.Js_environment.value with
-    | Node ->
-        Some
-          { step_storable; step_vk_storable; wrap_storable; wrap_vk_storable }
-    | _ ->
-        None
+  let wrap_vk = function Wrap_vk v -> Ok v | _ -> Or_error.errorf "wrap_vk"
+
+  type js_storable =
+    { read : any_key -> Js.js_string Js.t -> (any_value, unit) result
+    ; write : any_key -> any_value -> Js.js_string Js.t -> (unit, unit) result
+    }
+
+  let or_error f = function Ok v -> f v | _ -> Or_error.errorf "failed"
+
+  let map_error = function Ok v -> Ok v | _ -> Or_error.errorf "failed"
+
+  let step_storable { read; write } : Step.storable =
+    let read key ~path =
+      read (Step_pk key) (Js.string path) |> or_error step_pk
+    in
+    let write key value path =
+      write (Step_pk key) (Step_pk value) (Js.string path) |> map_error
+    in
+    Sync.Disk_storable.simple Step.Key.Proving.to_string read write
+
+  let step_vk_storable { read; write } : Step.vk_storable =
+    let read key ~path =
+      read (Step_vk key) (Js.string path) |> or_error step_vk
+    in
+    let write key value path =
+      write (Step_vk key) (Step_vk value) (Js.string path) |> map_error
+    in
+    Sync.Disk_storable.simple Step.Key.Verification.to_string read write
+
+  let wrap_storable { read; write } : Wrap.storable =
+    let read key ~path =
+      read (Wrap_pk key) (Js.string path) |> or_error wrap_pk
+    in
+    let write key value path =
+      write (Wrap_pk key) (Wrap_pk value) (Js.string path) |> map_error
+    in
+    Sync.Disk_storable.simple Wrap.Key.Proving.to_string read write
+
+  let wrap_vk_storable { read; write } : Wrap.vk_storable =
+    let read key ~path =
+      read (Wrap_vk key) (Js.string path) |> or_error wrap_vk
+    in
+    let write key value path =
+      write (Wrap_vk key) (Wrap_vk value) (Js.string path) |> map_error
+    in
+    Sync.Disk_storable.simple Wrap.Key.Verification.to_string read write
+    (* TODO get this code to understand equivalence of versions of Pickles.Verification_key.t *)
+    |> Obj.magic
+
+  let storables s : Storables.t =
+    { step_storable = step_storable s
+    ; step_vk_storable = step_vk_storable s
+    ; wrap_storable = wrap_storable s
+    ; wrap_vk_storable = wrap_vk_storable s
+    }
 
   let key_cache_dir directory : Key_cache.Spec.t =
     On_disk { directory; should_write = true }
-
-  let key_cache =
-    match Util.Js_environment.value with
-    | Node ->
-        [ key_cache_dir "/tmp/pickles" ]
-    | _ ->
-        []
 end
 
 type proof = (Pickles_types.Nat.N0.n, Pickles_types.Nat.N0.n) Pickles.Proof.t
@@ -542,9 +577,11 @@ let constraint_constants =
   }
 
 let pickles_compile (choices : pickles_rule_js array)
-    (signature :
+    (config :
       < publicInputSize : int Js.prop
       ; publicOutputSize : int Js.prop
+      ; storable : Cache.js_storable Js.optdef_prop
+      ; cacheDir : Js.js_string Js.t Js.optdef_prop
       ; overrideWrapDomain : int Js.optdef_prop >
       Js.t ) =
   (* translate number of branches and recursively verified proofs from JS *)
@@ -558,14 +595,23 @@ let pickles_compile (choices : pickles_rule_js array)
   let (module Max_proofs_verified) = nat_add_module max_proofs in
 
   (* translate method circuits from JS *)
-  let public_input_size = signature##.publicInputSize in
-  let public_output_size = signature##.publicOutputSize in
+  let public_input_size = config##.publicInputSize in
+  let public_output_size = config##.publicOutputSize in
   let override_wrap_domain =
-    Js.Optdef.to_option signature##.overrideWrapDomain
+    Js.Optdef.to_option config##.overrideWrapDomain
     |> Option.map ~f:Pickles_base.Proofs_verified.of_int
   in
   let (Choices choices) =
     Choices.of_js ~public_input_size ~public_output_size choices
+  in
+
+  (* parse caching configuration *)
+  let storables =
+    Js.Optdef.to_option config##.storable |> Option.map ~f:Cache.storables
+  in
+  let cache =
+    Js.Optdef.to_option config##.cacheDir
+    |> Option.map ~f:(fun d -> [ Cache.key_cache_dir (Js.to_string d) ])
   in
 
   (* call into Pickles *)
@@ -578,8 +624,7 @@ let pickles_compile (choices : pickles_rule_js array)
       ~auxiliary_typ:Typ.unit
       ~branches:(module Branches)
       ~max_proofs_verified:(module Max_proofs_verified)
-      ~name ~constraint_constants ?storables:Cache.storables
-      ~cache:Cache.key_cache
+      ~name ~constraint_constants ?storables ?cache
   in
 
   (* translate returned prover and verify functions to JS *)
