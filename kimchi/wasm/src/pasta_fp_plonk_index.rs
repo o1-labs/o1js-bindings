@@ -210,6 +210,17 @@ pub fn caml_pasta_fp_plonk_index_decode(
 }
 
 #[wasm_bindgen]
+pub fn caml_pasta_fp_plonk_index_encode(index: &WasmPastaFpPlonkIndex) -> Result<Vec<u8>, JsError> {
+    let mut buffer = Vec::new();
+    let mut serializer = rmp_serde::Serializer::new(&mut buffer);
+    index
+        .0
+        .serialize(&mut serializer)
+        .map_err(|e| JsError::new(&format!("caml_pasta_fp_plonk_index_encode: {}", e)))?;
+    Ok(buffer)
+}
+
+#[wasm_bindgen]
 pub fn caml_pasta_fp_plonk_index_read(
     offset: Option<i32>,
     srs: &WasmSrs,
@@ -240,17 +251,6 @@ pub fn caml_pasta_fp_plonk_index_read(
 
     //
     Ok(WasmPastaFpPlonkIndex(Box::new(t)))
-}
-
-#[wasm_bindgen]
-pub fn caml_pasta_fp_plonk_index_encode(index: &WasmPastaFpPlonkIndex) -> Result<Vec<u8>, JsError> {
-    let mut buffer = Vec::new();
-    let mut serializer = rmp_serde::Serializer::new(&mut buffer);
-    index
-        .0
-        .serialize(&mut serializer)
-        .map_err(|e| JsError::new(&format!("caml_pasta_fp_plonk_index_encode: {}", e)))?;
-    Ok(buffer)
 }
 
 #[wasm_bindgen]
