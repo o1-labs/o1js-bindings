@@ -196,11 +196,17 @@ pub fn caml_pasta_fp_plonk_index_decode(
     srs: &WasmSrs,
 ) -> Result<WasmPastaFpPlonkIndex, JsError> {
     let mut deserializer = rmp_serde::Deserializer::new(bytes);
-    let index = ProverIndex::<GAffine, OpeningProof<GAffine>>::deserialize(&mut deserializer)
-        .map_err(|e| JsError::new(&format!("caml_pasta_fp_plonk_index_decode: {}", e)))?;
-    let mut index = WasmPastaFpPlonkIndex(Box::new(index));
-    index.0.srs = srs.0.clone();
-    Ok(index)
+    let mut index =
+        ProverIndex::<GAffine, OpeningProof<GAffine>>::deserialize(&mut deserializer)
+            .map_err(|e| JsError::new(&format!("caml_pasta_fp_plonk_index_decode: {}", e)))?;
+
+    index.srs = srs.0.clone();
+    let (linearization, powers_of_alpha) =
+        expr_linearization(Some(&index.cs.feature_flags), true, 3);
+    index.linearization = linearization;
+    index.powers_of_alpha = powers_of_alpha;
+
+    Ok(WasmPastaFpPlonkIndex(Box::new(index)))
 }
 
 #[wasm_bindgen]
