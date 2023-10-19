@@ -55,6 +55,14 @@ export default [
         type: 'function',
       },
       {
+        name: 'loadSrsFp',
+        type: 'function',
+      },
+      {
+        name: 'loadSrsFq',
+        type: 'function',
+      },
+      {
         name: 'dummyBase64Proof',
         type: 'function',
       },

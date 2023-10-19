@@ -725,9 +725,9 @@ let verify (statement : Statement.Constant.t) (proof : proof)
   |> Promise.map ~f:(fun x -> Js.bool (Or_error.is_ok x))
   |> Promise_js_helpers.to_js
 
-let load_urs_fp () = Backend.Tick.Keypair.load_urs ()
+let load_srs_fp () = Backend.Tick.Keypair.load_urs ()
 
-let load_urs_fq () = Backend.Tock.Keypair.load_urs ()
+let load_srs_fq () = Backend.Tock.Keypair.load_urs ()
 
 let dummy_base64_proof () =
   let n2 = Pickles_types.Nat.N2.n in
@@ -746,9 +746,9 @@ let pickles =
 
     val verify = verify
 
-    val loadUrsFp = load_urs_fp
+    val loadSrsFp = load_srs_fp
 
-    val loadUrsFq = load_urs_fq
+    val loadSrsFq = load_srs_fq
 
     val dummyBase64Proof = dummy_base64_proof
 

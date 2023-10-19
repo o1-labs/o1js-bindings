@@ -77,8 +77,8 @@ val pickles :
        -> Js.js_string Js.t
        -> bool Js.t Promise_js_helpers.js_promise )
       Js.readonly_prop
-  ; loadUrsFp : unit -> Kimchi_bindings.Protocol.SRS.Fp.t Js.readonly_prop
-  ; loadUrsFq : unit -> Kimchi_bindings.Protocol.SRS.Fq.t Js.readonly_prop
+  ; loadSrsFp : unit -> Kimchi_bindings.Protocol.SRS.Fp.t Js.readonly_prop
+  ; loadSrsFq : unit -> Kimchi_bindings.Protocol.SRS.Fq.t Js.readonly_prop
   ; dummyBase64Proof : (unit -> Js.js_string Js.t) Js.readonly_prop
   ; dummyVerificationKey :
       (unit -> Js.js_string Js.t * Impl.field) Js.readonly_prop
