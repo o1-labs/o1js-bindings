@@ -4,6 +4,7 @@ module Impl = Pickles.Impls.Step
 module Field = Impl.Field
 module Boolean = Impl.Boolean
 module Typ = Impl.Typ
+module Backend = Pickles.Backend
 
 module Public_input = struct
   type t = Field.t array
@@ -724,6 +725,10 @@ let verify (statement : Statement.Constant.t) (proof : proof)
   |> Promise.map ~f:(fun x -> Js.bool (Or_error.is_ok x))
   |> Promise_js_helpers.to_js
 
+let load_urs_fp () = Backend.Tick.Keypair.load_urs ()
+
+let load_urs_fq () = Backend.Tock.Keypair.load_urs ()
+
 let dummy_base64_proof () =
   let n2 = Pickles_types.Nat.N2.n in
   let proof = Pickles.Proof.dummy n2 n2 n2 ~domain_log2:15 in
@@ -740,6 +745,10 @@ let pickles =
     val compile = pickles_compile
 
     val verify = verify
+
+    val loadUrsFp = load_urs_fp
+
+    val loadUrsFq = load_urs_fq
 
     val dummyBase64Proof = dummy_base64_proof
 
