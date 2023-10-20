@@ -66,7 +66,7 @@ val pickles :
           ; verify : 'c Js.readonly_prop >
           Js.t )
       Js.readonly_prop
-  ; dummyProof : (int -> some_proof) Js.readonly_prop
+  ; dummyProof : (int -> int -> some_proof) Js.readonly_prop
   ; dummyVerificationKey :
       (unit -> Js.js_string Js.t * Impl.field) Js.readonly_prop
   ; proofOfBase64 : (Js.js_string Js.t -> int -> some_proof) Js.readonly_prop
