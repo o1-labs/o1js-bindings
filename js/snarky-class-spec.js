@@ -71,6 +71,14 @@ export default [
         type: 'function',
       },
       {
+        name: 'encodeVerificationKey',
+        type: 'function',
+      },
+      {
+        name: 'decodeVerificationKey',
+        type: 'function',
+      },
+      {
         name: 'proofToBase64',
         type: 'function',
       },

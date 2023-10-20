@@ -740,6 +740,13 @@ let dummy_verification_key () =
   let hash = Mina_base.Zkapp_account.digest_vk vk in
   (data |> Js.string, hash)
 
+let encode_verification_key (vk : Pickles.Verification_key.t) =
+  Pickles.Verification_key.to_yojson vk |> Yojson.Safe.to_string |> Js.string
+
+let decode_verification_key (bytes : Js.js_string Js.t) =
+  Pickles.Verification_key.of_yojson @@ Yojson.Safe.from_string
+  @@ Js.to_string bytes
+
 let pickles =
   object%js
     val compile = pickles_compile
@@ -762,4 +769,8 @@ let pickles =
       fun (proof : proof) ->
         proof |> Pickles.Side_loaded.Proof.of_proof
         |> Pickles.Side_loaded.Proof.to_base64 |> Js.string
+
+    val encodeVerificationKey = encode_verification_key
+
+    val decodeVerificationKey = decode_verification_key
   end
