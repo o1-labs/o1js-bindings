@@ -19,6 +19,8 @@ import { verifierIndexConversion } from './bindings/conversion-verifier-index.js
 import { oraclesConversion } from './bindings/conversion-oracles.js';
 import { jsEnvironment } from './bindings/env.js';
 
+export { getRustConversion };
+
 const tsBindings = {
   jsEnvironment,
   prefixHashes,
@@ -52,4 +54,10 @@ function createRustConversion(wasm: wasm) {
     wireToRust: core.wireToRust,
     mapMlArrayToRustVector: core.mapMlArrayToRustVector,
   };
+}
+
+let rustConversion: ReturnType<typeof createRustConversion> | undefined;
+
+function getRustConversion(wasm: wasm) {
+  return rustConversion ?? (rustConversion = createRustConversion(wasm));
 }
