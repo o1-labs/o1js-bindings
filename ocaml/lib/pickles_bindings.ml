@@ -729,10 +729,19 @@ let load_srs_fp () = Backend.Tick.Keypair.load_urs ()
 
 let load_srs_fq () = Backend.Tock.Keypair.load_urs ()
 
-let dummy_base64_proof () =
-  let n2 = Pickles_types.Nat.N2.n in
-  let proof = Pickles.Proof.dummy n2 n2 n2 ~domain_log2:15 in
-  Proof2.to_base64 proof |> Js.string
+let dummy_proof (max_proofs_verified : int) (domain_log2 : int) : some_proof =
+  match max_proofs_verified with
+  | 0 ->
+      let n = Pickles_types.Nat.N0.n in
+      Proof0 (Pickles.Proof.dummy n n n ~domain_log2)
+  | 1 ->
+      let n = Pickles_types.Nat.N1.n in
+      Proof1 (Pickles.Proof.dummy n n n ~domain_log2)
+  | 2 ->
+      let n = Pickles_types.Nat.N2.n in
+      Proof2 (Pickles.Proof.dummy n n n ~domain_log2)
+  | _ ->
+      failwith "invalid"
 
 let dummy_verification_key () =
   let vk = Pickles.Side_loaded.Verification_key.dummy in
@@ -765,7 +774,7 @@ let pickles =
 
     val loadSrsFq = load_srs_fq
 
-    val dummyBase64Proof = dummy_base64_proof
+    val dummyProof = dummy_proof
 
     val dummyVerificationKey = dummy_verification_key
 
