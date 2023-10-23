@@ -195,5 +195,11 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
       }
       return BigInt('0b' + binary.reverse().join(''));
     },
+    leftShift(x: bigint, bits: number) {
+      return this.rot(x, bits, 'left');
+    },
+    rightShift(x: bigint, bits: number) {
+      return this.rot(x, bits, 'right');
+    },
   };
 }
