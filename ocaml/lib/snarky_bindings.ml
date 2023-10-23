@@ -178,6 +178,15 @@ module Gates = struct
                    { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] }
                 )
           } )
+
+  let basic sl l sr r so o sm sc =
+    Impl.with_label "generic_gate" (fun () ->
+        Impl.assert_
+          { annotation = Some __LOC__
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                (Basic { l = (sl, l); r = (sr, r); o = (so, o); m = sm; c = sc })
+          } )
 end
 
 module Bool = struct
@@ -358,6 +367,8 @@ let snarky =
         method xor = Gates.xor
 
         method zero = Gates.zero
+
+        method basic = Gates.basic
       end
 
     val bool =

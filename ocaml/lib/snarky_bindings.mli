@@ -84,7 +84,18 @@ val snarky :
            -> Field.t
            -> unit )
           Js.meth
-      ; zero : (Field.t -> Field.t -> Field.t -> unit) Js.meth >
+      ; zero : (Field.t -> Field.t -> Field.t -> unit) Js.meth
+      ; basic :
+          (   Impl.field
+           -> Field.t
+           -> Impl.field
+           -> Field.t
+           -> Impl.field
+           -> Field.t
+           -> Impl.field
+           -> Impl.field
+           -> unit )
+          Js.meth >
       Js.t
       Js.readonly_prop
   ; bool :
