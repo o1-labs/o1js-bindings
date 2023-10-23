@@ -197,13 +197,13 @@ module Circuit = struct
       (Main.of_js main) public_input
 
   let prove_kzg main public_input_size public_input keypair =
-    let pk = Impl.Keypair.pk keypair in
+    let pk = Kimchi_backend.Pasta.Bn254_based_plonk.Keypair.pk keypair in
     let input_typ = typ public_input_size in
     let return_typ = Impl.Typ.unit in
     Impl.generate_witness_conv ~input_typ ~return_typ
       ~f:(fun { Impl.Proof_inputs.auxiliary_inputs; public_inputs } () ->
-        Backend.Proof.create pk ~auxiliary:auxiliary_inputs
-          ~primary:public_inputs )
+        Kimchi_backend.Pasta.Bn254_based_plonk.Proof.create pk
+          ~auxiliary:auxiliary_inputs ~primary:public_inputs )
       (Main.of_js main) public_input
 
   let verify public_input proof vk =
