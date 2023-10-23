@@ -178,14 +178,14 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
     fromBigint(x: bigint) {
       return mod(x, p);
     },
-    rot(x: bigint, bits: number, direction: boolean = true) {
+    rot(x: bigint, bits: number, direction: 'left' | 'right' = 'left') {
       let bitArray = x.toString(2).split('').reverse().map(Number);
       let binary: number[] =
         bitArray.length >= 64
           ? bitArray.splice(0, 64)
           : [...bitArray, ...Array(64 - bitArray.length).fill(0)];
       for (let j = 0; j < bits; j++) {
-        if (direction) {
+        if (direction === 'left') {
           let last = binary.pop()!;
           binary.unshift(last);
         } else {
