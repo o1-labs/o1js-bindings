@@ -744,8 +744,16 @@ let encode_verification_key (vk : Pickles.Verification_key.t) =
   Pickles.Verification_key.to_yojson vk |> Yojson.Safe.to_string |> Js.string
 
 let decode_verification_key (bytes : Js.js_string Js.t) =
-  Pickles.Verification_key.of_yojson @@ Yojson.Safe.from_string
-  @@ Js.to_string bytes
+  let vk_or_error =
+    Pickles.Verification_key.of_yojson @@ Yojson.Safe.from_string
+    @@ Js.to_string bytes
+  in
+  let open Ppx_deriving_yojson_runtime.Result in
+  match vk_or_error with
+  | Ok vk ->
+      vk
+  | Error err ->
+      failwithf "Could not decode verification key: %s" err ()
 
 let pickles =
   object%js
