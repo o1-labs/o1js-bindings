@@ -133,8 +133,8 @@ val snarky :
           (   (Field.t array -> unit)
            -> int
            -> Impl.field array
-           -> Kimchi_backend.Pasta.Bn254_based_plonk.Keypair.t
-           -> Kimchi_backend.Pasta.Bn254_based_plonk.Proof.with_public_evals )
+           -> Impl.Keypair.t
+           -> Backend.Proof.with_public_evals )
           Js.meth
       ; verify :
           (   Impl.field array
