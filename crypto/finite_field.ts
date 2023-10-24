@@ -196,10 +196,28 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
       return BigInt('0b' + binary.reverse().join(''));
     },
     leftShift(x: bigint, bits: number) {
-      return mod(x << BigInt(bits), p);
+      let bitArray = x.toString(2).split('').reverse().map(Number);
+      let binary: number[] =
+        bitArray.length >= 64
+          ? bitArray.splice(0, 64)
+          : [...bitArray, ...Array(64 - bitArray.length).fill(0)];
+      for (let j = 0; j < bits; j++) {
+        binary.pop();
+        binary.unshift(0);
+      }
+      return BigInt('0b' + binary.reverse().join(''));
     },
     rightShift(x: bigint, bits: number) {
-      return mod(x >> BigInt(bits), p);
+      let bitArray = x.toString(2).split('').reverse().map(Number);
+      let binary: number[] =
+        bitArray.length >= 64
+          ? bitArray.splice(0, 64)
+          : [...bitArray, ...Array(64 - bitArray.length).fill(0)];
+      for (let j = 0; j < bits; j++) {
+        binary.shift();
+        binary.push(0);
+      }
+      return BigInt('0b' + binary.reverse().join(''));
     },
   };
 }
