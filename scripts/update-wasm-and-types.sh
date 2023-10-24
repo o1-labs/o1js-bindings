@@ -27,5 +27,5 @@ pushd ../../..
   chmod 777 "$_NODE_BINDINGS"/*
   node "$SNARKY_JS_PATH/src/build/fix-wasm-bindings-node.js" "$_NODE_BINDINGS/plonk_wasm.cjs"
 
-  cp $_NODE_BINDINGS/plonk_wasm*d.{cts,ts} $NODE_BINDINGS/
+  cp $_NODE_BINDINGS/plonk_wasm.d.cts $NODE_BINDINGS/
 popd
