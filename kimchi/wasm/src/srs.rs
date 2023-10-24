@@ -227,21 +227,33 @@ pub mod fp {
         WasmPolyComm,
         Fp
     );
+
+    #[wasm_bindgen]
+    pub fn caml_fp_srs_create_parallel(depth: i32) -> WasmFpSrs {
+        crate::rayon::run_in_pool(|| Arc::new(SRS::<Vesta>::create_parallel(depth as usize)).into())
+    }
 }
 
 pub mod fq {
     use super::*;
     use crate::arkworks::{WasmGPallas, WasmPastaFq};
     use crate::poly_comm::pallas::WasmFqPolyComm as WasmPolyComm;
-    use mina_curves::pasta::{Fq, Pallas as GAffine};
+    use mina_curves::pasta::{Fq, Pallas};
 
     impl_srs!(
         caml_fq_srs,
         WasmPastaFq,
         WasmGPallas,
         Fq,
-        GAffine,
+        Pallas,
         WasmPolyComm,
         Fq
     );
+
+    #[wasm_bindgen]
+    pub fn caml_fq_srs_create_parallel(depth: i32) -> WasmFqSrs {
+        crate::rayon::run_in_pool(|| {
+            Arc::new(SRS::<Pallas>::create_parallel(depth as usize)).into()
+        })
+    }
 }
