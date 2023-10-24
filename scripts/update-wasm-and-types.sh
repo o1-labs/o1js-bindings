@@ -1,5 +1,8 @@
 #!/bin/env bash
 
+# this script updates the wasm artifacts used for node,
+# as well as auto-generated wasm types checked into git
+
 set -e
 
 SNARKY_JS_PATH="src/lib/snarkyjs"
