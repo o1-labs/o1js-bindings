@@ -75,10 +75,12 @@ macro_rules! impl_srs {
                 srs: &[<Wasm $field_name:camel Srs>],
                 log2_size: i32,
             ) {
-                let ptr: &mut poly_commitment::srs::SRS<$G> =
-                    unsafe { &mut *(std::sync::Arc::as_ptr(&srs) as *mut _) };
-                let domain = EvaluationDomain::<$F>::new(1 << (log2_size as usize)).expect("invalid domain size");
-                ptr.add_lagrange_basis(domain);
+                crate::rayon::run_in_pool(|| {
+                    let ptr: &mut poly_commitment::srs::SRS<$G> =
+                        unsafe { &mut *(std::sync::Arc::as_ptr(&srs) as *mut _) };
+                    let domain = EvaluationDomain::<$F>::new(1 << (log2_size as usize)).expect("invalid domain size");
+                    ptr.add_lagrange_basis(domain);
+                });
             }
 
             #[wasm_bindgen]
