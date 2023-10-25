@@ -219,6 +219,7 @@ pub mod fp {
     use crate::arkworks::{WasmGVesta, WasmPastaFp};
     use crate::poly_comm::vesta::WasmFpPolyComm as WasmPolyComm;
     use mina_curves::pasta::{Fp, Vesta};
+    use poly_commitment::PolyComm;
 
     impl_srs!(
         caml_fp_srs,
@@ -234,6 +235,50 @@ pub mod fp {
     pub fn caml_fp_srs_create_parallel(depth: i32) -> WasmFpSrs {
         crate::rayon::run_in_pool(|| Arc::new(SRS::<Vesta>::create_parallel(depth as usize)).into())
     }
+
+    // maybe get lagrange commitment
+    #[wasm_bindgen]
+    pub fn caml_fp_srs_maybe_lagrange_commitment(
+        srs: &WasmFpSrs,
+        domain_size: i32,
+        i: i32,
+    ) -> Option<WasmPolyComm> {
+        let bases = srs.0.lagrange_bases.get(&(domain_size as usize));
+        bases.map(|bases| bases[i as usize].clone().into())
+    }
+
+    // set entire lagrange basis from input
+    #[wasm_bindgen]
+    pub fn caml_fp_srs_set_lagrange_basis(
+        srs: &WasmFpSrs,
+        domain_size: i32,
+        input_bases: WasmVector<WasmPolyComm>,
+    ) {
+        let bases: Vec<PolyComm<Vesta>> = input_bases.into_iter().map(Into::into).collect();
+
+        // add to srs
+        let ptr: &mut poly_commitment::srs::SRS<Vesta> =
+            unsafe { &mut *(std::sync::Arc::as_ptr(&srs) as *mut _) };
+        ptr.lagrange_bases.insert(domain_size as usize, bases);
+    }
+
+    // compute & add lagrange basis internally, return the entire basis
+    #[wasm_bindgen]
+    pub fn caml_fp_srs_get_lagrange_basis(
+        srs: &WasmFpSrs,
+        domain_size: i32,
+    ) -> WasmVector<WasmPolyComm> {
+        // compute lagrange basis
+        crate::rayon::run_in_pool(|| {
+            let ptr: &mut poly_commitment::srs::SRS<Vesta> =
+                unsafe { &mut *(std::sync::Arc::as_ptr(&srs) as *mut _) };
+            let domain =
+                EvaluationDomain::<Fp>::new(domain_size as usize).expect("invalid domain size");
+            ptr.add_lagrange_basis(domain);
+        });
+        let bases = &srs.0.lagrange_bases[&(domain_size as usize)];
+        bases.into_iter().map(Into::into).collect()
+    }
 }
 
 pub mod fq {
@@ -241,6 +286,7 @@ pub mod fq {
     use crate::arkworks::{WasmGPallas, WasmPastaFq};
     use crate::poly_comm::pallas::WasmFqPolyComm as WasmPolyComm;
     use mina_curves::pasta::{Fq, Pallas};
+    use poly_commitment::PolyComm;
 
     impl_srs!(
         caml_fq_srs,
@@ -257,5 +303,49 @@ pub mod fq {
         crate::rayon::run_in_pool(|| {
             Arc::new(SRS::<Pallas>::create_parallel(depth as usize)).into()
         })
+    }
+
+    // maybe get lagrange commitment
+    #[wasm_bindgen]
+    pub fn caml_fq_srs_maybe_lagrange_commitment(
+        srs: &WasmFqSrs,
+        domain_size: i32,
+        i: i32,
+    ) -> Option<WasmPolyComm> {
+        let bases = srs.0.lagrange_bases.get(&(domain_size as usize));
+        bases.map(|bases| bases[i as usize].clone().into())
+    }
+
+    // set entire lagrange basis from input
+    #[wasm_bindgen]
+    pub fn caml_fq_srs_set_lagrange_basis(
+        srs: &WasmFqSrs,
+        domain_size: i32,
+        input_bases: WasmVector<WasmPolyComm>,
+    ) {
+        let bases: Vec<PolyComm<Pallas>> = input_bases.into_iter().map(Into::into).collect();
+
+        // add to srs
+        let ptr: &mut poly_commitment::srs::SRS<Pallas> =
+            unsafe { &mut *(std::sync::Arc::as_ptr(&srs) as *mut _) };
+        ptr.lagrange_bases.insert(domain_size as usize, bases);
+    }
+
+    // compute & add lagrange basis internally, return the entire basis
+    #[wasm_bindgen]
+    pub fn caml_fq_srs_get_lagrange_basis(
+        srs: &WasmFqSrs,
+        domain_size: i32,
+    ) -> WasmVector<WasmPolyComm> {
+        // compute lagrange basis
+        crate::rayon::run_in_pool(|| {
+            let ptr: &mut poly_commitment::srs::SRS<Pallas> =
+                unsafe { &mut *(std::sync::Arc::as_ptr(&srs) as *mut _) };
+            let domain =
+                EvaluationDomain::<Fq>::new(domain_size as usize).expect("invalid domain size");
+            ptr.add_lagrange_basis(domain);
+        });
+        let bases = &srs.0.lagrange_bases[&(domain_size as usize)];
+        bases.into_iter().map(Into::into).collect()
     }
 }
