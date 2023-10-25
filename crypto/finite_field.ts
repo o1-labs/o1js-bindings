@@ -122,7 +122,9 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
     sizeInBits: 255,
     t,
     twoadicRoot,
-
+    not(x: bigint) {
+      return ~x
+    },
     xor(x: bigint, y: bigint) {
       return x ^ y;
     },
