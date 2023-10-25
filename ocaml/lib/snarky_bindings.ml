@@ -202,8 +202,7 @@ module Circuit = struct
     let return_typ = Impl.Typ.unit in
     Impl.generate_witness_conv ~input_typ ~return_typ
       ~f:(fun { Impl.Proof_inputs.auxiliary_inputs; public_inputs } () ->
-        (* TODO: Change this to Backend.KZG_Proof *)
-        Backend.Proof.create pk ~auxiliary:auxiliary_inputs
+        Backend.KZG_Proof.Backend.create pk ~auxiliary:auxiliary_inputs
           ~primary:public_inputs )
       (Main.of_js main) public_input
 
