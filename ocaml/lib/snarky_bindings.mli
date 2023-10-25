@@ -134,7 +134,7 @@ val snarky :
            -> int
            -> Impl.field array
            -> Impl.Keypair.t
-           -> char array )
+           -> char Js.js_array Js.t )
           Js.meth
       ; verify :
           (   Impl.field array
