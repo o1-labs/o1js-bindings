@@ -142,7 +142,7 @@ module Gates = struct
                    } )
           } )
 
-  let rot word rotated excess
+  let rotate word rotated excess
       (bound_limb0, bound_limb1, bound_limb2, bound_limb3)
       ( bound_crumb0
       , bound_crumb1
@@ -390,7 +390,7 @@ let snarky =
       object%js
         method rangeCheck0 = Gates.range_check0
 
-        method rot = Gates.rot
+        method rotate = Gates.rotate
 
         method xor = Gates.xor
 

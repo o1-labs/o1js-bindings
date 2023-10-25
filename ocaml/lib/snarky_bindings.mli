@@ -84,7 +84,7 @@ val snarky :
            -> Field.t
            -> unit )
           Js.meth
-      ; rot :
+      ; rotate :
           (   Field.t
            -> Field.t
            -> Field.t
