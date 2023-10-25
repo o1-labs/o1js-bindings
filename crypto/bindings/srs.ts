@@ -52,28 +52,20 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
   let getLagrangeBasis = wasm[`caml_${f}_srs_get_lagrange_basis`];
 
   return {
-    // returns existing stored SRS or falls back to creating a new one
-    // TODO caching
+    /**
+     * returns existing stored SRS or falls back to creating a new one
+     */
     create(size: number): WasmSrs {
+      // TODO caching
       let srs = (srsStore[f][size] ??=
         wasm[`caml_${f}_srs_create_parallel`](size));
       // should we do call freeOnFinalize() and expose a function to clean the SRS cache?
       return srs;
     },
 
-    // adds Lagrange basis for a given domain size
-    // TODO caching
-    addLagrangeBasis(srs: WasmSrs, logSize: number) {
-      // figure out if domain is already on `srs`
-      // if yes, do nothing
-      // if no, try to load from cache
-      // if in cache, decode lagrange basis and add to srs
-      // if not in cache, call Rust function to compute it and add to srs
-      // encode lagrange basis and write to cache
-      return wasm[`caml_${f}_srs_add_lagrange_basis`](srs, logSize);
-    },
-
-    // returns ith Lagrange basis commitment for a given domain size
+    /**
+     * returns ith Lagrange basis commitment for a given domain size
+     */
     lagrangeCommitment(srs: WasmSrs, domainSize: number, i: number): PolyComm {
       // happy, fast case: if basis is already stored on the srs, return the ith commitment
       let commitment = maybeLagrangeCommitment(srs, domainSize, i);
@@ -117,6 +109,14 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
         }
       }
       return conversion[f].polyCommFromRust(commitment);
+    },
+
+    /**
+     * adds Lagrange basis for a given domain size
+     */
+    addLagrangeBasis(srs: WasmSrs, logSize: number) {
+      // this ensures that basis is stored on the srs, no need to duplicate caching logic
+      this.lagrangeCommitment(srs, 1 << logSize, 0);
     },
   };
 }
