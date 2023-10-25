@@ -134,9 +134,7 @@ val snarky :
            -> int
            -> Impl.field array
            -> Impl.Keypair.t
-           -> ( Pasta_bindings.BN254Fq.t Kimchi_types.or_infinity
-              , Pasta_bindings.BN254Fp.t )
-              Kimchi_types.proof_with_public )
+           -> char array )
           Js.meth
       ; verify :
           (   Impl.field array
