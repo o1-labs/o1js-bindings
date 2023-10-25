@@ -176,6 +176,43 @@ module Gates = struct
                    ; two_to_rot (* Rotation scalar 2^rot *)
                    } )
           } )
+
+  let xor in1 in2 out in1_0 in1_1 in1_2 in1_3 in2_0 in2_1 in2_2 in2_3 out_0
+      out_1 out_2 out_3 =
+    Impl.with_label "xor_gate" (fun () ->
+        Impl.assert_
+          { annotation = Some __LOC__
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                (Xor
+                   { in1
+                   ; in2
+                   ; out
+                   ; in1_0
+                   ; in1_1
+                   ; in1_2
+                   ; in1_3
+                   ; in2_0
+                   ; in2_1
+                   ; in2_2
+                   ; in2_3
+                   ; out_0
+                   ; out_1
+                   ; out_2
+                   ; out_3
+                   } )
+          } )
+
+  let zero in1 in2 out =
+    Impl.with_label "zero" (fun () ->
+        Impl.assert_
+          { annotation = Some __LOC__
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                (Raw
+                   { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] }
+                )
+          } )
 end
 
 module Bool = struct
@@ -354,6 +391,10 @@ let snarky =
         method rangeCheck0 = Gates.range_check0
 
         method rot = Gates.rot
+
+        method xor = Gates.xor
+
+        method zero = Gates.zero
       end
 
     val bool =
