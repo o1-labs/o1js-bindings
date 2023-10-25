@@ -206,7 +206,8 @@ module Circuit = struct
           Backend.KZG_Proof.Backend.create pk ~auxiliary:auxiliary_inputs
             ~primary:public_inputs
         in
-        Js.array res )
+        let res_ints = Array.map ~f:(fun x -> int_of_char x) res in
+        Js.array res_ints )
       (Main.of_js main) public_input
 
   let verify public_input proof vk =
