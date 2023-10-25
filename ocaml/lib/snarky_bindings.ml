@@ -114,6 +114,15 @@ module Field' = struct
 end
 
 module Gates = struct
+  let generic sl l sr r so o sm sc =
+    Impl.with_label "generic_gate" (fun () ->
+        Impl.assert_
+          { annotation = Some __LOC__
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                (Basic { l = (sl, l); r = (sr, r); o = (so, o); m = sm; c = sc })
+          } )
+
   let range_check0 v0 (v0p0, v0p1, v0p2, v0p3, v0p4, v0p5)
       (v0c0, v0c1, v0c2, v0c3, v0c4, v0c5, v0c6, v0c7) compact =
     Impl.with_label "range_check0" (fun () ->
@@ -177,15 +186,6 @@ module Gates = struct
                 (Raw
                    { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] }
                 )
-          } )
-
-  let basic sl l sr r so o sm sc =
-    Impl.with_label "generic_gate" (fun () ->
-        Impl.assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (Basic { l = (sl, l); r = (sr, r); o = (so, o); m = sm; c = sc })
           } )
 end
 
@@ -362,13 +362,13 @@ let snarky =
 
     val gates =
       object%js
+        method generic = Gates.generic
+
         method rangeCheck0 = Gates.range_check0
 
         method xor = Gates.xor
 
         method zero = Gates.zero
-
-        method basic = Gates.basic
       end
 
     val bool =
