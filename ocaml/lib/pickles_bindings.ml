@@ -488,7 +488,7 @@ module Cache = struct
     (* TODO get this code to understand equivalence of versions of Pickles.Verification_key.t *)
     |> Obj.magic
 
-  let storables s : Storables.t =
+  let storables s : Pickles.Storables.t =
     { step_storable = step_storable s
     ; step_vk_storable = step_vk_storable s
     ; wrap_storable = wrap_storable s
