@@ -13,6 +13,10 @@ export default [
         type: 'object',
       },
       {
+        name: 'gates',
+        type: 'object',
+      },
+      {
         name: 'bool',
         type: 'object',
       },
@@ -51,7 +55,7 @@ export default [
         type: 'function',
       },
       {
-        name: 'dummyBase64Proof',
+        name: 'dummyProof',
         type: 'function',
       },
       {

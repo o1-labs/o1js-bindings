@@ -69,7 +69,7 @@ let prefix_hashes =
        ; (side_loaded_vk :> string)
        ; (zkapp_account :> string)
        ; (zkapp_payload :> string)
-       ; (zkapp_body ~chain:Testnet :> string)
+       ; (zkapp_body ?chain:None :> string)
        ; (zkapp_precondition :> string)
        ; (zkapp_precondition_account :> string)
        ; (zkapp_precondition_protocol_state :> string)

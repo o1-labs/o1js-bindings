@@ -51,6 +51,58 @@ val snarky :
           Js.meth >
       Js.t
       Js.readonly_prop
+  ; gates :
+      < rangeCheck0 :
+          (   Field.t
+           -> Field.t * Field.t * Field.t * Field.t * Field.t * Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> Impl.field
+           -> unit )
+          Js.meth
+      ; xor :
+          (   Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> unit )
+          Js.meth
+      ; rotate :
+          (   Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t * Field.t * Field.t * Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> Impl.field
+           -> unit )
+          Js.meth
+      ; zero : (Field.t -> Field.t -> Field.t -> unit) Js.meth >
+      Js.t
+      Js.readonly_prop
   ; bool :
       < and_ : (Boolean.var -> Boolean.var -> Boolean.var) Js.meth
       ; assertEqual : (Boolean.var -> Boolean.var -> unit) Js.meth
@@ -110,11 +162,11 @@ val snarky :
            -> int
            -> Impl.field array
            -> Impl.Keypair.t
-           -> Backend.Proof.t )
+           -> Backend.Proof.with_public_evals )
           Js.meth
       ; verify :
           (   Impl.field array
-           -> Backend.Proof.t
+           -> Backend.Proof.with_public_evals
            -> ( Impl.field
               , Kimchi_bindings.Protocol.SRS.Fp.t
               , Pasta_bindings.Fq.t Kimchi_types.or_infinity
