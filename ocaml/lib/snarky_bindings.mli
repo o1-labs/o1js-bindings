@@ -66,7 +66,25 @@ val snarky :
            -> Impl.field
            -> unit )
           Js.meth
-      ; rot :
+      ; xor :
+          (   Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> unit )
+          Js.meth
+      ; rotate :
           (   Field.t
            -> Field.t
            -> Field.t
@@ -81,7 +99,8 @@ val snarky :
               * Field.t
            -> Impl.field
            -> unit )
-          Js.meth >
+          Js.meth
+      ; zero : (Field.t -> Field.t -> Field.t -> unit) Js.meth >
       Js.t
       Js.readonly_prop
   ; bool :
