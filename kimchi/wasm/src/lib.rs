@@ -105,6 +105,8 @@ pub mod oracles;
 /// Proofs
 pub mod plonk_proof;
 
+pub mod bn254_plonk_proof;
+
 /// Poseidon
 pub mod poseidon;
 

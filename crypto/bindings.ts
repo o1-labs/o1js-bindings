@@ -28,7 +28,7 @@ const tsBindings = {
   ...PallasBindings,
   ...FpVectorBindings,
   ...FqVectorBindings,
-  rustConversion: createRustConversion,
+  rustConversion: createRustConversion
 };
 
 // this is put in a global variable so that ../kimchi/js/bindings.js finds it

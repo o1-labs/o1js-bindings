@@ -772,6 +772,10 @@ var caml_pasta_fq_plonk_verifier_index_deep_copy = function (x) {
 
 // proof
 
+var wasm_bn254_plonk_proof_create = function () {
+  return plonk_wasm.wasm_bn254_plonk_proof_create();
+}
+
 // Provides: caml_pasta_fp_plonk_proof_create
 // Requires: plonk_wasm, tsRustConversion
 var caml_pasta_fp_plonk_proof_create = function (

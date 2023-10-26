@@ -35,7 +35,7 @@ groupmap = { path = "../../../../../crypto/proof-systems/groupmap" }
 mina-curves = { path = "../../../../../crypto/proof-systems/curves" }
 o1-utils = { path = "../../../../../crypto/proof-systems/utils" }
 mina-poseidon = { path = "../../../../../crypto/proof-systems/poseidon" }
-kimchi = { path = "../../../../../crypto/proof-systems/kimchi", features = ["wasm_types"] }
+kimchi = { path = "../../../../../crypto/proof-systems/kimchi", features = ["wasm_types", "bn254"] }
 
 array-init = "2.0.0"
 base64 = "0.13.0"
