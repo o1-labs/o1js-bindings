@@ -129,13 +129,6 @@ val snarky :
            -> Impl.Keypair.t
            -> Backend.Proof.with_public_evals )
           Js.meth
-      ; proveKZG :
-          (   (Field.t array -> unit)
-           -> int
-           -> Impl.field array
-           -> Impl.Keypair.t
-           -> int Js.js_array Js.t )
-          Js.meth
       ; verify :
           (   Impl.field array
            -> Backend.Proof.with_public_evals

@@ -196,20 +196,6 @@ module Circuit = struct
           ~primary:public_inputs )
       (Main.of_js main) public_input
 
-  let prove_kzg main public_input_size public_input keypair =
-    let pk = Impl.Keypair.pk keypair in
-    let input_typ = typ public_input_size in
-    let return_typ = Impl.Typ.unit in
-    Impl.generate_witness_conv ~input_typ ~return_typ
-      ~f:(fun { Impl.Proof_inputs.auxiliary_inputs; public_inputs } () ->
-        let res =
-          Backend.KZG_Proof.Backend.create pk ~auxiliary:auxiliary_inputs
-            ~primary:public_inputs
-        in
-        let res_ints = Array.map ~f:(fun x -> int_of_char x) res in
-        Js.array res_ints )
-      (Main.of_js main) public_input
-
   let verify public_input proof vk =
     let public_input_vec = Backend.Field.Vector.create () in
     Array.iter public_input ~f:(fun x ->
@@ -358,8 +344,6 @@ let snarky =
         method compile = Circuit.compile
 
         method prove = Circuit.prove
-
-        method proveKZG = Circuit.prove_kzg
 
         method verify = Circuit.verify
 

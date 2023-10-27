@@ -60,8 +60,9 @@ pub fn wasm_bn254_plonk_proof_create() -> Result<Uint8Array, JsError> {
     )
     .map_err(|_| JsError::new("Could not create KZG proof"))?;
 
-    let rmp_proof =
-        rmp_serde::to_vec(&proof).map_err(|_| JsError::new("Could not serialize KZG proof"))?;
+    let verifier_index = prover.verifier_index();
+    let srs = (**verifier_index.srs()).clone();
+    let rmp_srs = rmp_serde::to_vec(&srs).map_err(|_| JsError::new("Could not serialize SRS"))?;
 
-    Ok(rmp_proof.as_slice().into())
+    Ok(rmp_srs.as_slice().into())
 }
