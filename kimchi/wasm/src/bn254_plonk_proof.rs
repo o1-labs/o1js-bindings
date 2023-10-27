@@ -27,7 +27,7 @@ pub fn wasm_bn254_plonk_proof_create() -> Result<Uint8Array, JsError> {
     fill_in_witness(0, &mut witness, &[]);
 
     let prover =
-        new_index_for_test_with_lookups::<BN254>(gates, 0, 0, vec![], Some(vec![]), false, None);
+        new_index_for_test_with_lookups::<BN254>(gates, 0, 0, vec![], Some(vec![]), false, Some(0));
     let public_inputs = vec![];
 
     prover.verify(&witness, &public_inputs).unwrap();
