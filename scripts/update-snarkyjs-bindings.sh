@@ -2,7 +2,7 @@
 
 set -e
 
-SNARKY_JS_PATH="src/lib/snarkyjs"
+SNARKY_JS_PATH="."
 DUNE_PATH="$SNARKY_JS_PATH/src/bindings/ocaml"
 BUILD_PATH="_build/default/$DUNE_PATH"
 DIR_PATH=$(dirname "$0")
