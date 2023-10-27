@@ -20,14 +20,15 @@ type EFrSponge = DefaultFrSponge<Fp, PlonkSpongeConstantsKimchi>;
 
 #[wasm_bindgen]
 pub fn wasm_bn254_plonk_proof_create() -> Result<Uint8Array, JsError> {
-    let gates = create_circuit(0, 0);
+    const TEST_CIRCUIT_PUBLIC_INPUTS: usize = 10;
+    let gates = create_circuit(0, TEST_CIRCUIT_PUBLIC_INPUTS);
 
     // create witness
     let mut witness: [Vec<Fp>; COLUMNS] = array::from_fn(|_| vec![Fp::zero(); gates.len()]);
     fill_in_witness(0, &mut witness, &[]);
 
     let prover =
-        new_index_for_test_with_lookups::<BN254>(gates, 0, 0, vec![], Some(vec![]), false, Some(0));
+        new_index_for_test_with_lookups::<BN254>(gates, 0, 0, vec![], Some(vec![]), false, None);
     let public_inputs = vec![];
 
     prover.verify(&witness, &public_inputs).unwrap();
