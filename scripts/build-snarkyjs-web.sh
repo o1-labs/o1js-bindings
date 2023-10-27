@@ -2,11 +2,11 @@
 
 set -e
 
-SNARKY_JS_PATH="src/lib/snarkyjs"
-DUNE_PATH="$SNARKY_JS_PATH/src/bindings/ocaml"
+MINA_PATH="src/mina"
+DUNE_PATH="src/bindings/ocaml"
 BUILD_PATH="_build/default/$DUNE_PATH"
-KIMCHI_BINDINGS="$SNARKY_JS_PATH/src/bindings/kimchi"
-WEB_BINDINGS="$SNARKY_JS_PATH/src/bindings/compiled/web_bindings"
+KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
+WEB_BINDINGS="src/bindings/compiled/web_bindings"
 
 dune b $DUNE_PATH/snarky_js_web.bc.js
 cp _build/default/$KIMCHI_BINDINGS/js/web/plonk_wasm* $WEB_BINDINGS/
@@ -24,4 +24,4 @@ pushd $WEB_BINDINGS
   mv plonk_wasm_bg.wasm.opt plonk_wasm_bg.wasm
 popd
 
-npm run build:web --prefix="$SNARKY_JS_PATH"
+npm run build:web
