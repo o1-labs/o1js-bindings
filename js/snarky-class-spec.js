@@ -90,6 +90,10 @@ export default [
         name: 'proofToBase64Transaction',
         type: 'function',
       },
+      {
+        name: 'util',
+        type: 'object',
+      },
     ],
   },
   {

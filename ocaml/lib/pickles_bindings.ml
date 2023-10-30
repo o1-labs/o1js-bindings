@@ -764,6 +764,12 @@ let decode_verification_key (bytes : Js.js_string Js.t) =
   | Error err ->
       failwithf "Could not decode verification key: %s" err ()
 
+module Util = struct
+  let to_ml_string s = Js.to_string s
+
+  let from_ml_string s = Js.string s
+end
+
 let pickles =
   object%js
     val compile = pickles_compile
@@ -790,4 +796,11 @@ let pickles =
     val encodeVerificationKey = encode_verification_key
 
     val decodeVerificationKey = decode_verification_key
+
+    val util =
+      object%js
+        val toMlString = Util.to_ml_string
+
+        val fromMlString = Util.from_ml_string
+      end
   end
