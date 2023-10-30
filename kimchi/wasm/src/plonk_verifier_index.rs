@@ -576,6 +576,7 @@ macro_rules! impl_verification_key {
                 pub shifts: WasmShifts,
                 #[wasm_bindgen(skip)]
                 pub lookup_index: Option<WasmLookupVerifierIndex>,
+                pub zk_rows: isize,
             }
             type WasmPlonkVerifierIndex = [<Wasm $field_name:camel PlonkVerifierIndex>];
 
@@ -591,6 +592,7 @@ macro_rules! impl_verification_key {
                     evals: &WasmPlonkVerificationEvals,
                     shifts: &WasmShifts,
                     lookup_index: Option<WasmLookupVerifierIndex>,
+                    zk_rows: isize,
                 ) -> Self {
                     WasmPlonkVerifierIndex {
                         domain: domain.clone(),
@@ -601,6 +603,7 @@ macro_rules! impl_verification_key {
                         evals: evals.clone(),
                         shifts: shifts.clone(),
                         lookup_index: lookup_index.clone(),
+                        zk_rows: zk_rows,
                     }
                 }
 
@@ -675,6 +678,7 @@ macro_rules! impl_verification_key {
                             s6: vi.shift[6].into(),
                         },
                     lookup_index: vi.lookup_index.map(Into::into),
+                    zk_rows: vi.zk_rows as isize,
                 }
             }
 
@@ -721,7 +725,8 @@ macro_rules! impl_verification_key {
                 srs: &$WasmSrs,
                 evals: &WasmPlonkVerificationEvals,
                 shifts: &WasmShifts,
-                lookup_index: Option<WasmLookupVerifierIndex>
+                lookup_index: Option<WasmLookupVerifierIndex>,
+                zk_rows: isize,
             ) -> (DlogVerifierIndex<GAffine, OpeningProof<GAffine>>, Arc<SRS<GAffine>>) {
                 /*
                 let urs_copy = Rc::clone(&*urs);
@@ -754,7 +759,7 @@ macro_rules! impl_verification_key {
                         },
                     };
 
-                let (linearization, powers_of_alpha) = expr_linearization(Some(&feature_flags), true, 3);
+                let (linearization, powers_of_alpha) = expr_linearization(Some(&feature_flags), true);
 
                 let index =
                     DlogVerifierIndex {
@@ -805,7 +810,7 @@ macro_rules! impl_verification_key {
                           Arc::clone(&srs.0)
                         },
 
-                        zk_rows: 3,
+                        zk_rows: zk_rows as u64,
 
                         linearization,
                         powers_of_alpha,
@@ -824,7 +829,8 @@ macro_rules! impl_verification_key {
                         &index.srs,
                         &index.evals,
                         &index.shifts,
-                        index.lookup_index
+                        index.lookup_index,
+                        index.zk_rows
                     )
                     .0
                 }
@@ -983,7 +989,8 @@ macro_rules! impl_verification_key {
                             s5: $F::one().into(),
                             s6: $F::one().into(),
                         },
-                    lookup_index: None
+                    lookup_index: None,
+                    zk_rows: 3,
                 }
             }
 
