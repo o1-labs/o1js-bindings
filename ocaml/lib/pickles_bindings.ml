@@ -411,12 +411,7 @@ module Cache = struct
       match errs with [] -> Ok () | errs -> Error (Error.of_list errs)
   end
 
-  let () =
-    match Util.Js_environment.value with
-    | Node ->
-        Key_cache.set_sync_implementation (module Sync)
-    | _ ->
-        ()
+  let () = Key_cache.set_sync_implementation (module Sync)
 
   open Pickles.Cache
 
