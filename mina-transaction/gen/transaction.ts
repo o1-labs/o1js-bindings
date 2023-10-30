@@ -9,6 +9,7 @@ import {
   Bool,
   AuthRequired,
   Sign,
+  TransactionVersion,
   ZkappUri,
   TokenSymbol,
   StateHash,
@@ -56,6 +57,7 @@ type ProvableExtended<T, TJson> = GenericProvableExtended<T, TJson, Field>;
 type Layout = GenericLayout<TypeMap>;
 
 type CustomTypes = {
+  TransactionVersion: ProvableExtended<UInt32, Json.TypeMap['UInt32']>;
   ZkappUri: ProvableExtended<
     {
       data: string;
@@ -90,6 +92,7 @@ type CustomTypes = {
   ReceiptChainHash: ProvableExtended<Field, Json.TypeMap['Field']>;
 };
 let customTypes: CustomTypes = {
+  TransactionVersion,
   ZkappUri,
   TokenSymbol,
   StateHash,

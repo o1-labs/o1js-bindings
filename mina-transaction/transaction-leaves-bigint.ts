@@ -13,7 +13,7 @@ import {
   Hash,
   packToFields,
 } from '../../provable/poseidon-bigint.js';
-import { mocks } from '../crypto/constants.js';
+import { mocks, protocolVersions } from '../crypto/constants.js';
 
 export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
 
@@ -26,6 +26,7 @@ export {
   VerificationKeyHash,
   ReceiptChainHash,
   StateHash,
+  TransactionVersion,
 };
 
 type AuthRequired = {
@@ -65,4 +66,10 @@ type ReceiptChainHash = Field;
 const ReceiptChainHash = {
   ...Field,
   emptyValue: () => Hash.emptyHashWithPrefix('CodaReceiptEmpty'),
+};
+
+type TransactionVersion = Field;
+const TransactionVersion = {
+  ...UInt32,
+  emptyValue: () => UInt32(protocolVersions.txnVersion),
 };

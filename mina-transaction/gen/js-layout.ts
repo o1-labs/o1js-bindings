@@ -151,7 +151,11 @@ let jsLayout = {
                             keys: ['auth', 'txnVersion'],
                             entries: {
                               auth: { type: 'AuthRequired' },
-                              txnVersion: { type: 'UInt32' },
+                              txnVersion: {
+                                type: 'UInt32',
+                                checkedType: { type: 'UInt32' },
+                                checkedTypeName: 'TransactionVersion',
+                              },
                             },
                             docEntries: { auth: null, txnVersion: null },
                           },
@@ -926,7 +930,11 @@ let jsLayout = {
                       keys: ['auth', 'txnVersion'],
                       entries: {
                         auth: { type: 'AuthRequired' },
-                        txnVersion: { type: 'UInt32' },
+                        txnVersion: {
+                          type: 'UInt32',
+                          checkedType: { type: 'UInt32' },
+                          checkedTypeName: 'TransactionVersion',
+                        },
                       },
                       docEntries: { auth: null, txnVersion: null },
                     },
@@ -1672,7 +1680,11 @@ let jsLayout = {
             keys: ['auth', 'txnVersion'],
             entries: {
               auth: { type: 'AuthRequired' },
-              txnVersion: { type: 'UInt32' },
+              txnVersion: {
+                type: 'UInt32',
+                checkedType: { type: 'UInt32' },
+                checkedTypeName: 'TransactionVersion',
+              },
             },
             docEntries: { auth: null, txnVersion: null },
           },
