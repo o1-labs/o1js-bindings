@@ -110,7 +110,10 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
             let wasmSrs = conversion[f].pointsToRust(mlSrs);
 
             srs = setSrs(wasmSrs);
-          } catch (e) {
+          } catch (e: any) {
+            if (cache.debug && e.message !== 'cache miss')
+              console.log('Failed to read cache', e);
+
             // not in cache
             srs = createSrs(size);
 
@@ -159,7 +162,10 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
             let wasmComms = conversion[f].polyCommsToRust(mlComms);
 
             setLagrangeBasis(srs, domainSize, wasmComms);
-          } catch (e) {
+          } catch (e: any) {
+            if (cache.debug && e.message !== 'cache miss')
+              console.log('Failed to read cache', e);
+
             // not in cache
             let wasmComms = getLagrangeBasis(srs, domainSize);
 
