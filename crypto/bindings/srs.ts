@@ -97,10 +97,7 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
           let header = cacheHeaderSrs(f, size);
 
           // try to read SRS from cache / recompute and write if not found
-          try {
-            let bytes = readCache(cache, header);
-            if (bytes === undefined) throw Error('cache miss');
-
+          srs = readCache(cache, header, (bytes) => {
             // TODO: this takes a bit too long, about 300ms for 2^16
             // `pointsToRust` is the clear bottleneck
             let jsonSrs: OrInfinityJson[] = JSON.parse(
@@ -108,18 +105,15 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
             );
             let mlSrs = MlArray.mapTo(jsonSrs, OrInfinity.fromJSON);
             let wasmSrs = conversion[f].pointsToRust(mlSrs);
+            return setSrs(wasmSrs);
+          });
 
-            srs = setSrs(wasmSrs);
-          } catch (e: any) {
-            if (cache.debug && e.message !== 'cache miss')
-              console.log('Failed to read cache', e);
-
+          if (srs === undefined) {
             // not in cache
             srs = createSrs(size);
 
             if (cache.canWrite) {
               let wasmSrs = getSrs(srs);
-
               let mlSrs = conversion[f].pointsFromRust(wasmSrs);
               let jsonSrs = MlArray.mapFrom(mlSrs, OrInfinity.toJSON);
               let bytes = new TextEncoder().encode(JSON.stringify(jsonSrs));
@@ -151,10 +145,7 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
           // try to read lagrange basis from cache / recompute and write if not found
           let header = cacheHeaderLagrange(f, domainSize);
 
-          try {
-            let bytes = readCache(cache, header);
-            if (bytes === undefined) throw Error('cache miss');
-
+          let didRead = readCache(cache, header, (bytes) => {
             let comms: PolyCommJson[] = JSON.parse(
               new TextDecoder().decode(bytes)
             );
@@ -162,10 +153,10 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
             let wasmComms = conversion[f].polyCommsToRust(mlComms);
 
             setLagrangeBasis(srs, domainSize, wasmComms);
-          } catch (e: any) {
-            if (cache.debug && e.message !== 'cache miss')
-              console.log('Failed to read cache', e);
+            return true;
+          });
 
+          if (didRead !== true) {
             // not in cache
             let wasmComms = getLagrangeBasis(srs, domainSize);
 
