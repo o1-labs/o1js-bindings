@@ -95,6 +95,22 @@ val snarky :
            -> Field.t
            -> unit )
           Js.meth
+      ; rotate :
+          (   Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t * Field.t * Field.t * Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> Impl.field
+           -> unit )
+          Js.meth
       ; zero : (Field.t -> Field.t -> Field.t -> unit) Js.meth >
       Js.t
       Js.readonly_prop

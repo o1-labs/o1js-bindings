@@ -151,6 +151,41 @@ module Gates = struct
                    } )
           } )
 
+  let rotate word rotated excess
+      (bound_limb0, bound_limb1, bound_limb2, bound_limb3)
+      ( bound_crumb0
+      , bound_crumb1
+      , bound_crumb2
+      , bound_crumb3
+      , bound_crumb4
+      , bound_crumb5
+      , bound_crumb6
+      , bound_crumb7 ) two_to_rot =
+    Impl.with_label "rot64_gate" (fun () ->
+        Impl.assert_
+          { annotation = Some __LOC__
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                (Rot64
+                   { (* Current row *) word
+                   ; rotated
+                   ; excess
+                   ; bound_limb0
+                   ; bound_limb1
+                   ; bound_limb2
+                   ; bound_limb3
+                   ; bound_crumb0
+                   ; bound_crumb1
+                   ; bound_crumb2
+                   ; bound_crumb3
+                   ; bound_crumb4
+                   ; bound_crumb5
+                   ; bound_crumb6
+                   ; bound_crumb7 (* Coefficients *)
+                   ; two_to_rot (* Rotation scalar 2^rot *)
+                   } )
+          } )
+
   let xor in1 in2 out in1_0 in1_1 in1_2 in1_3 in2_0 in2_1 in2_2 in2_3 out_0
       out_1 out_2 out_3 =
     Impl.with_label "xor_gate" (fun () ->
@@ -365,6 +400,8 @@ let snarky =
         method generic = Gates.generic
 
         method rangeCheck0 = Gates.range_check0
+
+        method rotate = Gates.rotate
 
         method xor = Gates.xor
 
