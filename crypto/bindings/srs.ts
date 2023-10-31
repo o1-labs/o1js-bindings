@@ -4,7 +4,11 @@ import type {
   WasmFqSrs,
 } from '../../compiled/node_bindings/plonk_wasm.cjs';
 import { PolyComm } from './kimchi-types.js';
-import type { Storable } from '../../../lib/storable.js';
+import {
+  withVersion,
+  type Cache,
+  type CacheHeader,
+} from '../../../lib/proof-system/cache.js';
 import { assert } from '../../../lib/errors.js';
 import { MlArray, MlOption } from '../../../lib/ml/base.js';
 import { OrInfinity, OrInfinityJson } from './curve.js';
@@ -21,20 +25,40 @@ function empty(): SrsStore {
 
 const srsStore = { fp: empty(), fq: empty() };
 
-let cache: Storable | undefined;
+let cache: Cache | undefined;
 
-function setSrsCache(c: Storable) {
+function setSrsCache(c: Cache) {
   cache = c;
 }
 function unsetSrsCache() {
   cache = undefined;
 }
 
-function cacheKeyLagrange(f: 'fp' | 'fq', domainSize: number) {
-  return `srs_${f}_${domainSize}_lagrange_basis`;
+const srsVersion = 1;
+
+function cacheHeaderLagrange(f: 'fp' | 'fq', domainSize: number): CacheHeader {
+  let id = `lagrange-basis-${f}-${domainSize}`;
+  return withVersion(
+    {
+      kind: 'lagrange-basis',
+      persistentId: id,
+      uniqueId: id,
+      dataType: 'string',
+    },
+    srsVersion
+  );
 }
-function cacheKeySrs(f: 'fp' | 'fq', domainSize: number) {
-  return `srs_${f}_${domainSize}_srs`;
+function cacheHeaderSrs(f: 'fp' | 'fq', domainSize: number): CacheHeader {
+  let id = `srs-${f}-${domainSize}`;
+  return withVersion(
+    {
+      kind: 'srs',
+      persistentId: id,
+      uniqueId: id,
+      dataType: 'string',
+    },
+    srsVersion
+  );
 }
 
 function srs(wasm: Wasm, conversion: RustConversion) {
@@ -67,11 +91,11 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
           // if there is no cache, create SRS in memory
           srs = createSrs(size);
         } else {
-          let key = cacheKeySrs(f, size);
+          let header = cacheHeaderSrs(f, size);
 
           // try to read SRS from cache / recompute and write if not found
           try {
-            let bytes = cache.read(key, 'string');
+            let bytes = cache.read(header);
 
             // TODO: this takes a bit to long, about 300ms for 2^16
             // `pointsToRust` is the clear bottleneck
@@ -84,17 +108,19 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
             srs = setSrs(wasmSrs);
           } catch (e) {
             // not in cache
-            // TODO we need `canWrite` boolean on cache to avoid expensive write preparation
             srs = createSrs(size);
-            let wasmSrs = getSrs(srs);
 
-            let mlSrs = conversion[f].pointsFromRust(wasmSrs);
-            let jsonSrs = MlArray.mapFrom(mlSrs, OrInfinity.toJSON);
-            let bytes = new TextEncoder().encode(JSON.stringify(jsonSrs));
+            if (cache.canWrite) {
+              let wasmSrs = getSrs(srs);
 
-            try {
-              cache.write(key, bytes, 'string');
-            } catch (e) {}
+              let mlSrs = conversion[f].pointsFromRust(wasmSrs);
+              let jsonSrs = MlArray.mapFrom(mlSrs, OrInfinity.toJSON);
+              let bytes = new TextEncoder().encode(JSON.stringify(jsonSrs));
+
+              try {
+                cache.write(header, bytes);
+              } catch (e) {}
+            }
           }
         }
 
@@ -118,10 +144,10 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
           commitment = lagrangeCommitment(srs, domainSize, i);
         } else {
           // try to read lagrange basis from cache / recompute and write if not found
-          let key = cacheKeyLagrange(f, domainSize);
+          let header = cacheHeaderLagrange(f, domainSize);
 
           try {
-            let bytes = cache.read(key, 'string');
+            let bytes = cache.read(header);
 
             let comms: PolyCommJson[] = JSON.parse(
               new TextDecoder().decode(bytes)
@@ -132,16 +158,17 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
             setLagrangeBasis(srs, domainSize, wasmComms);
           } catch (e) {
             // not in cache
-            // TODO we need `canWrite` boolean on cache to avoid expensive write preparation
             let wasmComms = getLagrangeBasis(srs, domainSize);
 
-            let mlComms = conversion[f].polyCommsFromRust(wasmComms);
-            let comms = polyCommsToJSON(mlComms);
-            let bytes = new TextEncoder().encode(JSON.stringify(comms));
+            if (cache.canWrite) {
+              let mlComms = conversion[f].polyCommsFromRust(wasmComms);
+              let comms = polyCommsToJSON(mlComms);
+              let bytes = new TextEncoder().encode(JSON.stringify(comms));
 
-            try {
-              cache.write(key, bytes, 'string');
-            } catch (e) {}
+              try {
+                cache.write(header, bytes);
+              } catch (e) {}
+            }
           }
 
           // here, basis is definitely stored on the srs
