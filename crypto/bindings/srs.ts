@@ -70,14 +70,15 @@ function srs(wasm: Wasm, conversion: RustConversion) {
 
 function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
   // note: these functions are properly typed, thanks to TS template literal types
-  let createSrs = wasm[`caml_${f}_srs_create_parallel`];
+  let createSrs = (s: number) => wasm[`caml_${f}_srs_create_parallel`](s);
   let getSrs = wasm[`caml_${f}_srs_get`];
   let setSrs = wasm[`caml_${f}_srs_set`];
 
   let maybeLagrangeCommitment = wasm[`caml_${f}_srs_maybe_lagrange_commitment`];
   let lagrangeCommitment = wasm[`caml_${f}_srs_lagrange_commitment`];
   let setLagrangeBasis = wasm[`caml_${f}_srs_set_lagrange_basis`];
-  let getLagrangeBasis = wasm[`caml_${f}_srs_get_lagrange_basis`];
+  let getLagrangeBasis = (srs: WasmSrs, n: number) =>
+    wasm[`caml_${f}_srs_get_lagrange_basis`](srs, n);
 
   return {
     /**
