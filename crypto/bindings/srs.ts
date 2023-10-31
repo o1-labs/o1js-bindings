@@ -5,9 +5,11 @@ import type {
 } from '../../compiled/node_bindings/plonk_wasm.cjs';
 import { PolyComm } from './kimchi-types.js';
 import {
-  withVersion,
-  type Cache,
   type CacheHeader,
+  type Cache,
+  withVersion,
+  writeCache,
+  readCache,
 } from '../../../lib/proof-system/cache.js';
 import { assert } from '../../../lib/errors.js';
 import { MlArray, MlOption } from '../../../lib/ml/base.js';
@@ -96,7 +98,7 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
 
           // try to read SRS from cache / recompute and write if not found
           try {
-            let bytes = cache.read(header);
+            let bytes = readCache(cache, header);
             if (bytes === undefined) throw Error('cache miss');
 
             // TODO: this takes a bit too long, about 300ms for 2^16
@@ -119,9 +121,7 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
               let jsonSrs = MlArray.mapFrom(mlSrs, OrInfinity.toJSON);
               let bytes = new TextEncoder().encode(JSON.stringify(jsonSrs));
 
-              try {
-                cache.write(header, bytes);
-              } catch (e) {}
+              writeCache(cache, header, bytes);
             }
           }
         }
@@ -149,7 +149,7 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
           let header = cacheHeaderLagrange(f, domainSize);
 
           try {
-            let bytes = cache.read(header);
+            let bytes = readCache(cache, header);
             if (bytes === undefined) throw Error('cache miss');
 
             let comms: PolyCommJson[] = JSON.parse(
@@ -168,9 +168,7 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
               let comms = polyCommsToJSON(mlComms);
               let bytes = new TextEncoder().encode(JSON.stringify(comms));
 
-              try {
-                cache.write(header, bytes);
-              } catch (e) {}
+              writeCache(cache, header, bytes);
             }
           }
 
