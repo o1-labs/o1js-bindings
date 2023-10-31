@@ -55,11 +55,27 @@ export default [
         type: 'function',
       },
       {
+        name: 'loadSrsFp',
+        type: 'function',
+      },
+      {
+        name: 'loadSrsFq',
+        type: 'function',
+      },
+      {
         name: 'dummyProof',
         type: 'function',
       },
       {
         name: 'dummyVerificationKey',
+        type: 'function',
+      },
+      {
+        name: 'encodeVerificationKey',
+        type: 'function',
+      },
+      {
+        name: 'decodeVerificationKey',
         type: 'function',
       },
       {
@@ -73,6 +89,10 @@ export default [
       {
         name: 'proofToBase64Transaction',
         type: 'function',
+      },
+      {
+        name: 'util',
+        type: 'object',
       },
     ],
   },
