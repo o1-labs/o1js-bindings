@@ -85,7 +85,7 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
      * returns existing stored SRS or falls back to creating a new one
      */
     create(size: number): WasmSrs {
-      let srs = srsStore[f][size] as WasmSrs | undefined;
+      let srs = srsStore[f][size] satisfies WasmSrs as WasmSrs | undefined;
 
       if (srs === undefined) {
         if (cache === undefined) {
@@ -97,8 +97,9 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
           // try to read SRS from cache / recompute and write if not found
           try {
             let bytes = cache.read(header);
+            if (bytes === undefined) throw Error('cache miss');
 
-            // TODO: this takes a bit to long, about 300ms for 2^16
+            // TODO: this takes a bit too long, about 300ms for 2^16
             // `pointsToRust` is the clear bottleneck
             let jsonSrs: OrInfinityJson[] = JSON.parse(
               new TextDecoder().decode(bytes)
@@ -128,7 +129,7 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
         srsStore[f][size] = srs;
       }
 
-      // should we do call freeOnFinalize() and expose a function to clean the SRS cache?
+      // TODO should we call freeOnFinalize() and expose a function to clean the SRS cache?
       return srsStore[f][size];
     },
 
@@ -149,6 +150,7 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
 
           try {
             let bytes = cache.read(header);
+            if (bytes === undefined) throw Error('cache miss');
 
             let comms: PolyCommJson[] = JSON.parse(
               new TextDecoder().decode(bytes)
