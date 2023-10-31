@@ -88,5 +88,10 @@ val pickles :
       (Js.js_string Js.t -> Pickles.Verification_key.t) Js.readonly_prop
   ; proofOfBase64 : (Js.js_string Js.t -> int -> some_proof) Js.readonly_prop
   ; proofToBase64 : (some_proof -> Js.js_string Js.t) Js.readonly_prop
-  ; proofToBase64Transaction : (proof -> Js.js_string Js.t) Js.readonly_prop >
+  ; proofToBase64Transaction : (proof -> Js.js_string Js.t) Js.readonly_prop
+  ; util :
+      < fromMlString : (string -> Js.js_string Js.t) Js.readonly_prop
+      ; toMlString : (Js.js_string Js.t -> string) Js.readonly_prop >
+      Js.t
+      Js.readonly_prop >
   Js.t
