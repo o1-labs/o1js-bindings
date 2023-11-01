@@ -130,7 +130,7 @@ module Gates = struct
       (Raw { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] })
 
   let generic sl l sr r so o sm sc =
-    add_gate "generic_gate"
+    add_gate "generic"
       (Basic { l = (sl, l); r = (sr, r); o = (so, o); m = sm; c = sc })
 
   let poseidon state = add_gate "poseidon" (Poseidon { state })
