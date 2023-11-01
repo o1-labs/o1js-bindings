@@ -131,11 +131,21 @@ module Gates = struct
     add_gate "generic_gate"
       (Basic { l = (sl, l); r = (sr, r); o = (so, o); m = sm; c = sc })
 
+  let poseidon state = add_gate "poseidon" (Poseidon { state })
+
   let ec_add p1 p2 p3 inf same_x slope inf_z x21_inv =
     add_gate "ec_add"
       (EC_add_complete { p1; p2; p3; inf; same_x; slope; inf_z; x21_inv }) ;
     (* TODO: do we need this? *)
     p3
+
+  let ec_scale state = add_gate "ec_scale" (EC_scale { state })
+
+  let ec_endoscale state xs ys n_acc =
+    add_gate "ec_endoscale" (EC_endoscale { state; xs; ys; n_acc })
+
+  let lookup w0 w1 w2 w3 w4 w5 w6 =
+    add_gate "lookup" (Lookup { w0; w1; w2; w3; w4; w5; w6 })
 
   let range_check0 v0 (v0p0, v0p1, v0p2, v0p3, v0p4, v0p5)
       (v0c0, v0c1, v0c2, v0c3, v0c4, v0c5, v0c6, v0c7) compact =
@@ -215,6 +225,97 @@ module Gates = struct
          ; v2c19
          } )
 
+  let xor in1 in2 out in1_0 in1_1 in1_2 in1_3 in2_0 in2_1 in2_2 in2_3 out_0
+      out_1 out_2 out_3 =
+    add_gate "xor"
+      (Xor
+         { in1
+         ; in2
+         ; out
+         ; in1_0
+         ; in1_1
+         ; in1_2
+         ; in1_3
+         ; in2_0
+         ; in2_1
+         ; in2_2
+         ; in2_3
+         ; out_0
+         ; out_1
+         ; out_2
+         ; out_3
+         } )
+
+  let foreign_field_add (left_input_lo, left_input_mi, left_input_hi)
+      (right_input_lo, right_input_mi, right_input_hi) field_overflow carry
+      (foreign_field_modulus0, foreign_field_modulus1, foreign_field_modulus2)
+      sign =
+    add_gate "foreign_field_add"
+      (ForeignFieldAdd
+         { left_input_lo
+         ; left_input_mi
+         ; left_input_hi
+         ; right_input_lo
+         ; right_input_mi
+         ; right_input_hi
+         ; field_overflow
+         ; carry
+         ; foreign_field_modulus0
+         ; foreign_field_modulus1
+         ; foreign_field_modulus2
+         ; sign
+         } )
+
+  let foreign_field_mul (left_input0, left_input1, left_input2)
+      (right_input0, right_input1, right_input2) (remainder01, remainder2)
+      (quotient0, quotient1, quotient2) quotient_hi_bound
+      (product1_lo, product1_hi_0, product1_hi_1) carry0
+      ( carry1_0
+      , carry1_12
+      , carry1_24
+      , carry1_36
+      , carry1_48
+      , carry1_60
+      , carry1_72 ) (carry1_84, carry1_86, carry1_88, carry1_90)
+      foreign_field_modulus2
+      ( neg_foreign_field_modulus0
+      , neg_foreign_field_modulus1
+      , neg_foreign_field_modulus2 ) =
+    add_gate "foreign_field_mul"
+      (ForeignFieldMul
+         { left_input0
+         ; left_input1
+         ; left_input2
+         ; right_input0
+         ; right_input1
+         ; right_input2
+         ; remainder01
+         ; remainder2
+         ; quotient0
+         ; quotient1
+         ; quotient2
+         ; quotient_hi_bound
+         ; product1_lo
+         ; product1_hi_0
+         ; product1_hi_1
+         ; carry0
+         ; carry1_0
+         ; carry1_12
+         ; carry1_24
+         ; carry1_36
+         ; carry1_48
+         ; carry1_60
+         ; carry1_72
+         ; carry1_84
+         ; carry1_86
+         ; carry1_88
+         ; carry1_90
+         ; foreign_field_modulus2
+         ; neg_foreign_field_modulus0
+         ; neg_foreign_field_modulus1
+         ; neg_foreign_field_modulus2
+         } )
+
   let rotate word rotated excess
       (bound_limb0, bound_limb1, bound_limb2, bound_limb3)
       ( bound_crumb0
@@ -245,26 +346,13 @@ module Gates = struct
          ; two_to_rot (* Rotation scalar 2^rot *)
          } )
 
-  let xor in1 in2 out in1_0 in1_1 in1_2 in1_3 in2_0 in2_1 in2_2 in2_3 out_0
-      out_1 out_2 out_3 =
-    add_gate "xor"
-      (Xor
-         { in1
-         ; in2
-         ; out
-         ; in1_0
-         ; in1_1
-         ; in1_2
-         ; in1_3
-         ; in2_0
-         ; in2_1
-         ; in2_2
-         ; in2_3
-         ; out_0
-         ; out_1
-         ; out_2
-         ; out_3
-         } )
+  let add_fixed_lookup_table id data =
+    add_gate "add_fixed_lookup_table" (AddFixedLookupTable { id; data })
+
+  let add_runtime_table_config id first_column =
+    add_gate "add_runtime_table_config" (AddRuntimeTableCfg { id; first_column })
+
+  let raw kind values coeffs = add_gate "raw" (Raw { kind; values; coeffs })
 end
 
 module Bool = struct
@@ -432,15 +520,33 @@ let snarky =
 
         method generic = Gates.generic
 
+        method poseidon = Gates.poseidon
+
         method ecAdd = Gates.ec_add
+
+        method ecScale = Gates.ec_scale
+
+        method ecEndoscale = Gates.ec_endoscale
+
+        method lookup = Gates.lookup
 
         method rangeCheck0 = Gates.range_check0
 
         method rangeCheck1 = Gates.range_check1
 
+        method xor = Gates.xor
+
+        method foreignFieldAdd = Gates.foreign_field_add
+
+        method foreignFieldMul = Gates.foreign_field_mul
+
         method rotate = Gates.rotate
 
-        method xor = Gates.xor
+        method addFixedLookupTable = Gates.add_fixed_lookup_table
+
+        method addRuntimeTableConfig = Gates.add_runtime_table_config
+
+        method raw = Gates.raw
       end
 
     val bool =

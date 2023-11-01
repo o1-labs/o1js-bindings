@@ -64,6 +64,7 @@ val snarky :
            -> Impl.field
            -> unit )
           Js.meth
+      ; poseidon : (Field.t array array -> unit) Js.meth
       ; ecAdd :
           (   Field.t * Field.t
            -> Field.t * Field.t
@@ -74,6 +75,25 @@ val snarky :
            -> Field.t
            -> Field.t
            -> Field.t * Field.t )
+          Js.meth
+      ; ecScale :
+          (Field.t Kimchi_backend_common.Scale_round.t array -> unit) Js.meth
+      ; ecEndoscale :
+          (   Field.t Kimchi_backend_common.Endoscale_round.t array
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> unit )
+          Js.meth
+      ; lookup :
+          (   Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> unit )
           Js.meth
       ; rangeCheck0 :
           (   Field.t
@@ -135,6 +155,35 @@ val snarky :
            -> Field.t
            -> unit )
           Js.meth
+      ; foreignFieldAdd :
+          (   Field.t * Field.t * Field.t
+           -> Field.t * Field.t * Field.t
+           -> Field.t
+           -> Field.t
+           -> Impl.field * Impl.field * Impl.field
+           -> Impl.field
+           -> unit )
+          Js.meth
+      ; foreignFieldMul :
+          (   Field.t * Field.t * Field.t
+           -> Field.t * Field.t * Field.t
+           -> Field.t * Field.t
+           -> Field.t * Field.t * Field.t
+           -> Field.t
+           -> Field.t * Field.t * Field.t
+           -> Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> Field.t * Field.t * Field.t * Field.t
+           -> Impl.field
+           -> Impl.field * Impl.field * Impl.field
+           -> unit )
+          Js.meth
       ; rotate :
           (   Field.t
            -> Field.t
@@ -150,6 +199,11 @@ val snarky :
               * Field.t
            -> Impl.field
            -> unit )
+          Js.meth
+      ; addFixedLookupTable : (int32 -> Impl.field array array -> unit) Js.meth
+      ; addRuntimeTableConfig : (int32 -> Impl.field array -> unit) Js.meth
+      ; raw :
+          (Kimchi_types.gate_type -> Field.t array -> Impl.field array -> unit)
           Js.meth >
       Js.t
       Js.readonly_prop
