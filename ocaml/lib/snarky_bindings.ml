@@ -113,66 +113,52 @@ module Field' = struct
   let to_constant_and_terms x = Field.to_constant_and_terms x
 end
 
+let add_gate (label : string) gate =
+  Impl.with_label label (fun () ->
+      Impl.assert_
+        { annotation = None
+        ; basic =
+            Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+              gate
+        } )
+
 module Gates = struct
   let zero in1 in2 out =
-    Impl.with_label "zero" (fun () ->
-        Impl.assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (Raw
-                   { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] }
-                )
-          } )
+    add_gate "zero"
+      (Raw { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] })
 
   let generic sl l sr r so o sm sc =
-    Impl.with_label "generic_gate" (fun () ->
-        Impl.assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (Basic { l = (sl, l); r = (sr, r); o = (so, o); m = sm; c = sc })
-          } )
+    add_gate "generic_gate"
+      (Basic { l = (sl, l); r = (sr, r); o = (so, o); m = sm; c = sc })
 
   let ec_add p1 p2 p3 inf same_x slope inf_z x21_inv =
-    let open Impl in
-    with_label "Elliptic Curve Addition" (fun () ->
-        assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (EC_add_complete
-                   { p1; p2; p3; inf; same_x; slope; inf_z; x21_inv } )
-          } ;
-        p3 )
+    add_gate "ec_add"
+      (EC_add_complete { p1; p2; p3; inf; same_x; slope; inf_z; x21_inv }) ;
+    (* TODO: do we need this? *)
+    p3
 
   let range_check0 v0 (v0p0, v0p1, v0p2, v0p3, v0p4, v0p5)
       (v0c0, v0c1, v0c2, v0c3, v0c4, v0c5, v0c6, v0c7) compact =
-    Impl.with_label "range_check0" (fun () ->
-        Impl.assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (RangeCheck0
-                   { (* Current row *) v0
-                   ; v0p0
-                   ; v0p1
-                   ; v0p2
-                   ; v0p3
-                   ; v0p4
-                   ; v0p5
-                   ; v0c0
-                   ; v0c1
-                   ; v0c2
-                   ; v0c3
-                   ; v0c4
-                   ; v0c5
-                   ; v0c6
-                   ; v0c7
-                   ; (* Coefficients *)
-                     compact
-                   } )
-          } )
+    add_gate "range_check0"
+      (RangeCheck0
+         { (* Current row *) v0
+         ; v0p0
+         ; v0p1
+         ; v0p2
+         ; v0p3
+         ; v0p4
+         ; v0p5
+         ; v0c0
+         ; v0c1
+         ; v0c2
+         ; v0c3
+         ; v0c4
+         ; v0c5
+         ; v0c6
+         ; v0c7
+         ; (* Coefficients *)
+           compact
+         } )
 
   let range_check1 v2 v12 (v0p0, v0p1) (v1p0, v1p1) (v2p0, v2p1, v2p2, v2p3)
       ( v2c0
@@ -195,44 +181,39 @@ module Gates = struct
       , v2c17
       , v2c18
       , v2c19 ) =
-    Impl.with_label "range_check1" (fun () ->
-        Impl.assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (RangeCheck1
-                   { (* Current row *) v2
-                   ; v12
-                   ; v2c0
-                   ; v2p0
-                   ; v2p1
-                   ; v2p2
-                   ; v2p3
-                   ; v2c1
-                   ; v2c2
-                   ; v2c3
-                   ; v2c4
-                   ; v2c5
-                   ; v2c6
-                   ; v2c7
-                   ; v2c8
-                   ; (* Next row *) v2c9
-                   ; v2c10
-                   ; v2c11
-                   ; v0p0
-                   ; v0p1
-                   ; v1p0
-                   ; v1p1
-                   ; v2c12
-                   ; v2c13
-                   ; v2c14
-                   ; v2c15
-                   ; v2c16
-                   ; v2c17
-                   ; v2c18
-                   ; v2c19
-                   } )
-          } )
+    add_gate "range_check1"
+      (RangeCheck1
+         { (* Current row *) v2
+         ; v12
+         ; v2c0
+         ; v2p0
+         ; v2p1
+         ; v2p2
+         ; v2p3
+         ; v2c1
+         ; v2c2
+         ; v2c3
+         ; v2c4
+         ; v2c5
+         ; v2c6
+         ; v2c7
+         ; v2c8
+         ; (* Next row *) v2c9
+         ; v2c10
+         ; v2c11
+         ; v0p0
+         ; v0p1
+         ; v1p0
+         ; v1p1
+         ; v2c12
+         ; v2c13
+         ; v2c14
+         ; v2c15
+         ; v2c16
+         ; v2c17
+         ; v2c18
+         ; v2c19
+         } )
 
   let rotate word rotated excess
       (bound_limb0, bound_limb1, bound_limb2, bound_limb3)
@@ -244,56 +225,46 @@ module Gates = struct
       , bound_crumb5
       , bound_crumb6
       , bound_crumb7 ) two_to_rot =
-    Impl.with_label "rot64_gate" (fun () ->
-        Impl.assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (Rot64
-                   { (* Current row *) word
-                   ; rotated
-                   ; excess
-                   ; bound_limb0
-                   ; bound_limb1
-                   ; bound_limb2
-                   ; bound_limb3
-                   ; bound_crumb0
-                   ; bound_crumb1
-                   ; bound_crumb2
-                   ; bound_crumb3
-                   ; bound_crumb4
-                   ; bound_crumb5
-                   ; bound_crumb6
-                   ; bound_crumb7 (* Coefficients *)
-                   ; two_to_rot (* Rotation scalar 2^rot *)
-                   } )
-          } )
+    add_gate "rot64"
+      (Rot64
+         { (* Current row *) word
+         ; rotated
+         ; excess
+         ; bound_limb0
+         ; bound_limb1
+         ; bound_limb2
+         ; bound_limb3
+         ; bound_crumb0
+         ; bound_crumb1
+         ; bound_crumb2
+         ; bound_crumb3
+         ; bound_crumb4
+         ; bound_crumb5
+         ; bound_crumb6
+         ; bound_crumb7 (* Coefficients *)
+         ; two_to_rot (* Rotation scalar 2^rot *)
+         } )
 
   let xor in1 in2 out in1_0 in1_1 in1_2 in1_3 in2_0 in2_1 in2_2 in2_3 out_0
       out_1 out_2 out_3 =
-    Impl.with_label "xor_gate" (fun () ->
-        Impl.assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (Xor
-                   { in1
-                   ; in2
-                   ; out
-                   ; in1_0
-                   ; in1_1
-                   ; in1_2
-                   ; in1_3
-                   ; in2_0
-                   ; in2_1
-                   ; in2_2
-                   ; in2_3
-                   ; out_0
-                   ; out_1
-                   ; out_2
-                   ; out_3
-                   } )
-          } )
+    add_gate "xor"
+      (Xor
+         { in1
+         ; in2
+         ; out
+         ; in1_0
+         ; in1_1
+         ; in1_2
+         ; in1_3
+         ; in2_0
+         ; in2_1
+         ; in2_2
+         ; in2_3
+         ; out_0
+         ; out_1
+         ; out_2
+         ; out_3
+         } )
 end
 
 module Bool = struct
