@@ -1,7 +1,7 @@
 /**
  * TS implementation of Pasta_bindings.{Pallas, Vesta}
  */
-import { MlTuple } from 'src/lib/ml/base.js';
+import { MlPair } from 'src/lib/ml/base.js';
 import { Field } from './field.js';
 import {
   Pallas,
@@ -71,7 +71,7 @@ const affineZero = { x: 0n, y: 0n, infinity: true };
 type Infinity = 0;
 const Infinity = 0;
 type Finite<T> = [0, T];
-type OrInfinity = Infinity | Finite<MlTuple<Field, Field>>;
+type OrInfinity = Infinity | Finite<MlPair<Field, Field>>;
 
 function toMlOrInfinity(g: GroupAffine): OrInfinity {
   if (g.infinity) return 0;
