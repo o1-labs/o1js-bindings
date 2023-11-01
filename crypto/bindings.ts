@@ -17,8 +17,13 @@ import { proofConversion } from './bindings/conversion-proof.js';
 import { conversionCore } from './bindings/conversion-core.js';
 import { verifierIndexConversion } from './bindings/conversion-verifier-index.js';
 import { oraclesConversion } from './bindings/conversion-oracles.js';
+import { jsEnvironment } from './bindings/env.js';
+import { srs } from './bindings/srs.js';
+
+export { getRustConversion, RustConversion, Wasm };
 
 const tsBindings = {
+  jsEnvironment,
   prefixHashes,
   prefixHashesLegacy,
   ...Bigint256Bindings,
@@ -29,14 +34,15 @@ const tsBindings = {
   ...FpVectorBindings,
   ...FqVectorBindings,
   rustConversion: createRustConversion,
+  srs: (wasm: Wasm) => srs(wasm, getRustConversion(wasm)),
 };
 
 // this is put in a global variable so that ../kimchi/js/bindings.js finds it
 (globalThis as any).__snarkyTsBindings = tsBindings;
 
-type wasm = typeof wasmNamespace;
+type Wasm = typeof wasmNamespace;
 
-function createRustConversion(wasm: wasm) {
+function createRustConversion(wasm: Wasm) {
   let core = conversionCore(wasm);
   let verifierIndex = verifierIndexConversion(wasm, core);
   let oracles = oraclesConversion(wasm);
@@ -50,4 +56,12 @@ function createRustConversion(wasm: wasm) {
     wireToRust: core.wireToRust,
     mapMlArrayToRustVector: core.mapMlArrayToRustVector,
   };
+}
+
+type RustConversion = ReturnType<typeof createRustConversion>;
+
+let rustConversion: RustConversion | undefined;
+
+function getRustConversion(wasm: Wasm) {
+  return rustConversion ?? (rustConversion = createRustConversion(wasm));
 }
