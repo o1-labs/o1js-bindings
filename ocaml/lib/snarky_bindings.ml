@@ -7,6 +7,8 @@ module Boolean = Impl.Boolean
 module As_prover = Impl.As_prover
 module Typ = Impl.Typ
 
+type field = Impl.field
+
 (* light-weight wrapper around snarky-ml core *)
 
 let typ (size_in_fields : int) = Typ.array ~length:size_in_fields Field.typ
