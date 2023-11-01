@@ -52,7 +52,8 @@ val snarky :
       Js.t
       Js.readonly_prop
   ; gates :
-      < generic :
+      < zero : (Field.t -> Field.t -> Field.t -> unit) Js.meth
+      ; generic :
           (   Impl.field
            -> Field.t
            -> Impl.field
@@ -62,6 +63,17 @@ val snarky :
            -> Impl.field
            -> Impl.field
            -> unit )
+          Js.meth
+      ; ecAdd :
+          (   Field.t * Field.t
+           -> Field.t * Field.t
+           -> Field.t * Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t * Field.t )
           Js.meth
       ; rangeCheck0 :
           (   Field.t
@@ -138,8 +150,7 @@ val snarky :
               * Field.t
            -> Impl.field
            -> unit )
-          Js.meth
-      ; zero : (Field.t -> Field.t -> Field.t -> unit) Js.meth >
+          Js.meth >
       Js.t
       Js.readonly_prop
   ; bool :
@@ -151,18 +162,7 @@ val snarky :
       Js.t
       Js.readonly_prop
   ; group :
-      < ecadd :
-          (   Field.t * Field.t
-           -> Field.t * Field.t
-           -> Field.t * Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t * Field.t )
-          Js.meth
-      ; scale :
+      < scale :
           (   Impl.field Snarky_backendless.Cvar.t Tuple_lib.Double.t
            -> Boolean.var array
            -> Pickles.Step_main_inputs.Inner_curve.t )

@@ -114,6 +114,17 @@ module Field' = struct
 end
 
 module Gates = struct
+  let zero in1 in2 out =
+    Impl.with_label "zero" (fun () ->
+        Impl.assert_
+          { annotation = Some __LOC__
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                (Raw
+                   { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] }
+                )
+          } )
+
   let generic sl l sr r so o sm sc =
     Impl.with_label "generic_gate" (fun () ->
         Impl.assert_
@@ -122,6 +133,18 @@ module Gates = struct
               Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
                 (Basic { l = (sl, l); r = (sr, r); o = (so, o); m = sm; c = sc })
           } )
+
+  let ec_add p1 p2 p3 inf same_x slope inf_z x21_inv =
+    let open Impl in
+    with_label "Elliptic Curve Addition" (fun () ->
+        assert_
+          { annotation = Some __LOC__
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                (EC_add_complete
+                   { p1; p2; p3; inf; same_x; slope; inf_z; x21_inv } )
+          } ;
+        p3 )
 
   let range_check0 v0 (v0p0, v0p1, v0p2, v0p3, v0p4, v0p5)
       (v0c0, v0c1, v0c2, v0c3, v0c4, v0c5, v0c6, v0c7) compact =
@@ -271,17 +294,6 @@ module Gates = struct
                    ; out_3
                    } )
           } )
-
-  let zero in1 in2 out =
-    Impl.with_label "zero" (fun () ->
-        Impl.assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (Raw
-                   { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] }
-                )
-          } )
 end
 
 module Bool = struct
@@ -297,18 +309,6 @@ module Bool = struct
 end
 
 module Group = struct
-  let ec_add p1 p2 p3 inf same_x slope inf_z x21_inv =
-    let open Impl in
-    with_label "Elliptic Curve Addition" (fun () ->
-        assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (EC_add_complete
-                   { p1; p2; p3; inf; same_x; slope; inf_z; x21_inv } )
-          } ;
-        p3 )
-
   let scale p (scalar_bits : Boolean.var array) =
     Pickles.Step_main_inputs.Ops.scale_fast_msb_bits p
       (Shifted_value scalar_bits)
@@ -457,7 +457,11 @@ let snarky =
 
     val gates =
       object%js
+        method zero = Gates.zero
+
         method generic = Gates.generic
+
+        method ecAdd = Gates.ec_add
 
         method rangeCheck0 = Gates.range_check0
 
@@ -466,8 +470,6 @@ let snarky =
         method rotate = Gates.rotate
 
         method xor = Gates.xor
-
-        method zero = Gates.zero
       end
 
     val bool =
@@ -485,8 +487,6 @@ let snarky =
 
     val group =
       object%js
-        method ecadd = Group.ec_add
-
         method scale = Group.scale
       end
 
