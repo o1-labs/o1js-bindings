@@ -174,8 +174,12 @@ module Gates = struct
            compact
          } )
 
-  let range_check1 v2 v12 (v0p0, v0p1) (v1p0, v1p1) (v2p0, v2p1, v2p2, v2p3)
+  let range_check1 v2 v12
       ( v2c0
+      , v2p0
+      , v2p1
+      , v2p2
+      , v2p3
       , v2c1
       , v2c2
       , v2c3
@@ -183,10 +187,14 @@ module Gates = struct
       , v2c5
       , v2c6
       , v2c7
-      , v2c8
-      , v2c9
+      , v2c8 )
+      ( v2c9
       , v2c10
       , v2c11
+      , v0p0
+      , v0p1
+      , v1p0
+      , v1p1
       , v2c12
       , v2c13
       , v2c14

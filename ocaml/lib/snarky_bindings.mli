@@ -110,15 +110,20 @@ val snarky :
       ; rangeCheck1 :
           (   Field.t
            -> Field.t
-           -> Field.t * Field.t
-           -> Field.t * Field.t
-           -> Field.t * Field.t * Field.t * Field.t
            -> Field.t
               * Field.t
               * Field.t
               * Field.t
               * Field.t
               * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> Field.t
               * Field.t
               * Field.t
               * Field.t
