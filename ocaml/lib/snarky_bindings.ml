@@ -144,6 +144,8 @@ module Gates = struct
   let ec_endoscale state xs ys n_acc =
     add_gate "ec_endoscale" (EC_endoscale { state; xs; ys; n_acc })
 
+  let ec_endoscalar state = add_gate "ec_endoscalar" (EC_endoscalar { state })
+
   let lookup w0 w1 w2 w3 w4 w5 w6 =
     add_gate "lookup" (Lookup { w0; w1; w2; w3; w4; w5; w6 })
 
@@ -527,6 +529,8 @@ let snarky =
         method ecScale = Gates.ec_scale
 
         method ecEndoscale = Gates.ec_endoscale
+
+        method ecEndoscalar = Gates.ec_endoscalar
 
         method lookup = Gates.lookup
 
