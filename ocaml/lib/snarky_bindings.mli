@@ -4,13 +4,15 @@ module Impl = Pickles.Impls.Step
 module Field = Impl.Field
 module Boolean = Impl.Boolean
 
+type field = Impl.field
+
 module Poseidon : sig
   type sponge
 end
 
 val snarky :
-  < exists : (int -> (unit -> Impl.field array) -> Field.t array) Js.meth
-  ; existsVar : ((unit -> Impl.field) -> Field.t) Js.meth
+  < exists : (int -> (unit -> field array) -> Field.t array) Js.meth
+  ; existsVar : ((unit -> field) -> Field.t) Js.meth
   ; run :
       < asProver : ((unit -> unit) -> unit) Js.meth
       ; constraintSystem :
@@ -35,33 +37,32 @@ val snarky :
           (int -> Field.t -> Field.t -> Boolean.var * Boolean.var) Js.meth
       ; fromBits : (Boolean.var array -> Field.t) Js.meth
       ; mul : (Field.t -> Field.t -> Field.t) Js.meth
-      ; readVar : (Field.t -> Impl.field) Js.meth
-      ; scale : (Impl.field -> Field.t -> Field.t) Js.meth
+      ; readVar : (Field.t -> field) Js.meth
+      ; scale : (field -> Field.t -> Field.t) Js.meth
       ; seal :
-          (   Impl.field Snarky_backendless.Cvar.t
-           -> Impl.field Snarky_backendless.Cvar.t )
+          (field Snarky_backendless.Cvar.t -> field Snarky_backendless.Cvar.t)
           Js.meth
       ; toBits : (int -> Field.t -> Boolean.var array) Js.meth
       ; toConstantAndTerms :
-          (Field.t -> Impl.field option * (Impl.field * int) list) Js.meth
+          (Field.t -> field option * (field * int) list) Js.meth
       ; truncateToBits16 :
           (   int
-           -> Impl.field Snarky_backendless.Cvar.t
-           -> Impl.field Snarky_backendless.Cvar.t )
+           -> field Snarky_backendless.Cvar.t
+           -> field Snarky_backendless.Cvar.t )
           Js.meth >
       Js.t
       Js.readonly_prop
   ; gates :
       < zero : (Field.t -> Field.t -> Field.t -> unit) Js.meth
       ; generic :
-          (   Impl.field
+          (   field
            -> Field.t
-           -> Impl.field
+           -> field
            -> Field.t
-           -> Impl.field
+           -> field
            -> Field.t
-           -> Impl.field
-           -> Impl.field
+           -> field
+           -> field
            -> unit )
           Js.meth
       ; poseidon : (Field.t array array -> unit) Js.meth
@@ -106,7 +107,7 @@ val snarky :
               * Field.t
               * Field.t
               * Field.t
-           -> Impl.field
+           -> field
            -> unit )
           Js.meth
       ; rangeCheck1 :
@@ -160,8 +161,8 @@ val snarky :
            -> Field.t * Field.t * Field.t
            -> Field.t
            -> Field.t
-           -> Impl.field * Impl.field * Impl.field
-           -> Impl.field
+           -> field * field * field
+           -> field
            -> unit )
           Js.meth
       ; foreignFieldMul :
@@ -180,8 +181,8 @@ val snarky :
               * Field.t
               * Field.t
            -> Field.t * Field.t * Field.t * Field.t
-           -> Impl.field
-           -> Impl.field * Impl.field * Impl.field
+           -> field
+           -> field * field * field
            -> unit )
           Js.meth
       ; rotate :
@@ -197,13 +198,13 @@ val snarky :
               * Field.t
               * Field.t
               * Field.t
-           -> Impl.field
+           -> field
            -> unit )
           Js.meth
-      ; addFixedLookupTable : (int32 -> Impl.field array array -> unit) Js.meth
-      ; addRuntimeTableConfig : (int32 -> Impl.field array -> unit) Js.meth
+      ; addFixedLookupTable : (int32 -> field array array -> unit) Js.meth
+      ; addRuntimeTableConfig : (int32 -> field array -> unit) Js.meth
       ; raw :
-          (Kimchi_types.gate_type -> Field.t array -> Impl.field array -> unit)
+          (Kimchi_types.gate_type -> Field.t array -> field array -> unit)
           Js.meth >
       Js.t
       Js.readonly_prop
@@ -217,7 +218,7 @@ val snarky :
       Js.readonly_prop
   ; group :
       < scale :
-          (   Impl.field Snarky_backendless.Cvar.t Tuple_lib.Double.t
+          (   field Snarky_backendless.Cvar.t Tuple_lib.Double.t
            -> Boolean.var array
            -> Pickles.Step_main_inputs.Inner_curve.t )
           Js.meth >
@@ -231,8 +232,8 @@ val snarky :
           Js.meth
       ; hashToGroup :
           (   Field.t array
-           -> Impl.field Snarky_backendless.Cvar.t
-              * Impl.field Snarky_backendless.Cvar.t )
+           -> field Snarky_backendless.Cvar.t * field Snarky_backendless.Cvar.t
+          )
           Js.meth
       ; sponge :
           < absorb : (Poseidon.sponge -> Field.t -> unit) Js.meth
@@ -253,14 +254,14 @@ val snarky :
       ; prove :
           (   (Field.t array -> unit)
            -> int
-           -> Impl.field array
+           -> field array
            -> Impl.Keypair.t
            -> Backend.Proof.with_public_evals )
           Js.meth
       ; verify :
-          (   Impl.field array
+          (   field array
            -> Backend.Proof.with_public_evals
-           -> ( Impl.field
+           -> ( field
               , Kimchi_bindings.Protocol.SRS.Fp.t
               , Pasta_bindings.Fq.t Kimchi_types.or_infinity
                 Kimchi_types.poly_comm )
