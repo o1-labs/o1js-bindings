@@ -77,35 +77,35 @@ export function caml_pasta_fq_plonk_gate_vector_digest(public_input_size: number
 */
 export function caml_pasta_fq_plonk_circuit_serialize(public_input_size: number, v: WasmFqGateVector): string;
 /**
-* @param {WasmPastaFqPlonkIndex} index
-* @param {WasmVecVecFq} witness
+* @param {WasmPastaFpPlonkIndex} index
+* @param {WasmVecVecFp} witness
 * @param {Uint32Array} wasm_runtime_tables
 * @param {Uint8Array} prev_challenges
 * @param {Uint32Array} prev_sgs
-* @returns {WasmFqProverProof}
+* @returns {WasmFpProverProof}
 */
-export function caml_pasta_fq_plonk_proof_create(index: WasmPastaFqPlonkIndex, witness: WasmVecVecFq, wasm_runtime_tables: Uint32Array, prev_challenges: Uint8Array, prev_sgs: Uint32Array): WasmFqProverProof;
+export function caml_pasta_fp_plonk_proof_create(index: WasmPastaFpPlonkIndex, witness: WasmVecVecFp, wasm_runtime_tables: Uint32Array, prev_challenges: Uint8Array, prev_sgs: Uint32Array): WasmFpProverProof;
 /**
-* @param {WasmFqPlonkVerifierIndex} index
-* @param {WasmFqProverProof} proof
+* @param {WasmFpPlonkVerifierIndex} index
+* @param {WasmFpProverProof} proof
 * @returns {boolean}
 */
-export function caml_pasta_fq_plonk_proof_verify(index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): boolean;
+export function caml_pasta_fp_plonk_proof_verify(index: WasmFpPlonkVerifierIndex, proof: WasmFpProverProof): boolean;
 /**
 * @param {Uint32Array} indexes
 * @param {Uint32Array} proofs
 * @returns {boolean}
 */
-export function caml_pasta_fq_plonk_proof_batch_verify(indexes: Uint32Array, proofs: Uint32Array): boolean;
+export function caml_pasta_fp_plonk_proof_batch_verify(indexes: Uint32Array, proofs: Uint32Array): boolean;
 /**
-* @returns {WasmFqProverProof}
+* @returns {WasmFpProverProof}
 */
-export function caml_pasta_fq_plonk_proof_dummy(): WasmFqProverProof;
+export function caml_pasta_fp_plonk_proof_dummy(): WasmFpProverProof;
 /**
-* @param {WasmFqProverProof} x
-* @returns {WasmFqProverProof}
+* @param {WasmFpProverProof} x
+* @returns {WasmFpProverProof}
 */
-export function caml_pasta_fq_plonk_proof_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
+export function caml_pasta_fp_plonk_proof_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
 /**
 * @param {WasmPastaFpPlonkIndex} prover_index
 * @returns {string}
@@ -113,20 +113,20 @@ export function caml_pasta_fq_plonk_proof_deep_copy(x: WasmFqProverProof): WasmF
 export function prover_to_json(prover_index: WasmPastaFpPlonkIndex): string;
 /**
 * @param {Uint32Array} lgr_comm
-* @param {WasmFqPlonkVerifierIndex} index
-* @param {WasmFqProverProof} proof
-* @returns {WasmFqOracles}
+* @param {WasmFpPlonkVerifierIndex} index
+* @param {WasmFpProverProof} proof
+* @returns {WasmFpOracles}
 */
-export function fq_oracles_create(lgr_comm: Uint32Array, index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): WasmFqOracles;
+export function fp_oracles_create(lgr_comm: Uint32Array, index: WasmFpPlonkVerifierIndex, proof: WasmFpProverProof): WasmFpOracles;
 /**
-* @returns {WasmFqOracles}
+* @returns {WasmFpOracles}
 */
-export function fq_oracles_dummy(): WasmFqOracles;
+export function fp_oracles_dummy(): WasmFpOracles;
 /**
-* @param {WasmFqProverProof} x
-* @returns {WasmFqProverProof}
+* @param {WasmFpProverProof} x
+* @returns {WasmFpProverProof}
 */
-export function fq_oracles_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
+export function fp_oracles_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
 /**
 * @param {string} name
 */
@@ -620,35 +620,35 @@ export function caml_pasta_fq_plonk_verifier_index_dummy(): WasmFqPlonkVerifierI
 */
 export function caml_pasta_fq_plonk_verifier_index_deep_copy(x: WasmFqPlonkVerifierIndex): WasmFqPlonkVerifierIndex;
 /**
-* @param {WasmPastaFpPlonkIndex} index
-* @param {WasmVecVecFp} witness
+* @param {WasmPastaFqPlonkIndex} index
+* @param {WasmVecVecFq} witness
 * @param {Uint32Array} wasm_runtime_tables
 * @param {Uint8Array} prev_challenges
 * @param {Uint32Array} prev_sgs
-* @returns {WasmFpProverProof}
+* @returns {WasmFqProverProof}
 */
-export function caml_pasta_fp_plonk_proof_create(index: WasmPastaFpPlonkIndex, witness: WasmVecVecFp, wasm_runtime_tables: Uint32Array, prev_challenges: Uint8Array, prev_sgs: Uint32Array): WasmFpProverProof;
+export function caml_pasta_fq_plonk_proof_create(index: WasmPastaFqPlonkIndex, witness: WasmVecVecFq, wasm_runtime_tables: Uint32Array, prev_challenges: Uint8Array, prev_sgs: Uint32Array): WasmFqProverProof;
 /**
-* @param {WasmFpPlonkVerifierIndex} index
-* @param {WasmFpProverProof} proof
+* @param {WasmFqPlonkVerifierIndex} index
+* @param {WasmFqProverProof} proof
 * @returns {boolean}
 */
-export function caml_pasta_fp_plonk_proof_verify(index: WasmFpPlonkVerifierIndex, proof: WasmFpProverProof): boolean;
+export function caml_pasta_fq_plonk_proof_verify(index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): boolean;
 /**
 * @param {Uint32Array} indexes
 * @param {Uint32Array} proofs
 * @returns {boolean}
 */
-export function caml_pasta_fp_plonk_proof_batch_verify(indexes: Uint32Array, proofs: Uint32Array): boolean;
+export function caml_pasta_fq_plonk_proof_batch_verify(indexes: Uint32Array, proofs: Uint32Array): boolean;
 /**
-* @returns {WasmFpProverProof}
+* @returns {WasmFqProverProof}
 */
-export function caml_pasta_fp_plonk_proof_dummy(): WasmFpProverProof;
+export function caml_pasta_fq_plonk_proof_dummy(): WasmFqProverProof;
 /**
-* @param {WasmFpProverProof} x
-* @returns {WasmFpProverProof}
+* @param {WasmFqProverProof} x
+* @returns {WasmFqProverProof}
 */
-export function caml_pasta_fp_plonk_proof_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
+export function caml_pasta_fq_plonk_proof_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
 /**
 * @param {Uint8Array} state
 * @returns {Uint8Array}
@@ -805,75 +805,75 @@ export function caml_pasta_fq_of_bytes(x: Uint8Array): Uint8Array;
 */
 export function caml_pasta_fq_deep_copy(x: Uint8Array): Uint8Array;
 /**
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_one(): WasmVestaGProjective;
+export function caml_pallas_one(): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_add(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
+export function caml_pallas_add(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_sub(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
+export function caml_pallas_sub(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_negate(x: WasmVestaGProjective): WasmVestaGProjective;
+export function caml_pallas_negate(x: WasmPallasGProjective): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_double(x: WasmVestaGProjective): WasmVestaGProjective;
+export function caml_pallas_double(x: WasmPallasGProjective): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
+* @param {WasmPallasGProjective} x
 * @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_scale(x: WasmVestaGProjective, y: Uint8Array): WasmVestaGProjective;
+export function caml_pallas_scale(x: WasmPallasGProjective, y: Uint8Array): WasmPallasGProjective;
 /**
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_random(): WasmVestaGProjective;
+export function caml_pallas_random(): WasmPallasGProjective;
 /**
 * @param {number} i
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_rng(i: number): WasmVestaGProjective;
+export function caml_pallas_rng(i: number): WasmPallasGProjective;
 /**
 * @returns {Uint8Array}
 */
-export function caml_vesta_endo_base(): Uint8Array;
+export function caml_pallas_endo_base(): Uint8Array;
 /**
 * @returns {Uint8Array}
 */
-export function caml_vesta_endo_scalar(): Uint8Array;
+export function caml_pallas_endo_scalar(): Uint8Array;
 /**
-* @param {WasmVestaGProjective} x
-* @returns {WasmGVesta}
+* @param {WasmPallasGProjective} x
+* @returns {WasmGPallas}
 */
-export function caml_vesta_to_affine(x: WasmVestaGProjective): WasmGVesta;
+export function caml_pallas_to_affine(x: WasmPallasGProjective): WasmGPallas;
 /**
-* @param {WasmGVesta} x
-* @returns {WasmVestaGProjective}
+* @param {WasmGPallas} x
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_of_affine(x: WasmGVesta): WasmVestaGProjective;
+export function caml_pallas_of_affine(x: WasmGPallas): WasmPallasGProjective;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmVestaGProjective;
+export function caml_pallas_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmPallasGProjective;
 /**
-* @param {WasmGVesta} x
-* @returns {WasmGVesta}
+* @param {WasmGPallas} x
+* @returns {WasmGPallas}
 */
-export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
+export function caml_pallas_affine_deep_copy(x: WasmGPallas): WasmGPallas;
 /**
 * @returns {number}
 */
@@ -1006,75 +1006,75 @@ export function caml_pasta_fp_of_bytes(x: Uint8Array): Uint8Array;
 */
 export function caml_pasta_fp_deep_copy(x: Uint8Array): Uint8Array;
 /**
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_one(): WasmPallasGProjective;
+export function caml_vesta_one(): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
-* @param {WasmPallasGProjective} y
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_add(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
+export function caml_vesta_add(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
-* @param {WasmPallasGProjective} y
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_sub(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
+export function caml_vesta_sub(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_negate(x: WasmPallasGProjective): WasmPallasGProjective;
+export function caml_vesta_negate(x: WasmVestaGProjective): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_double(x: WasmPallasGProjective): WasmPallasGProjective;
+export function caml_vesta_double(x: WasmVestaGProjective): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
+* @param {WasmVestaGProjective} x
 * @param {Uint8Array} y
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_scale(x: WasmPallasGProjective, y: Uint8Array): WasmPallasGProjective;
+export function caml_vesta_scale(x: WasmVestaGProjective, y: Uint8Array): WasmVestaGProjective;
 /**
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_random(): WasmPallasGProjective;
+export function caml_vesta_random(): WasmVestaGProjective;
 /**
 * @param {number} i
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_rng(i: number): WasmPallasGProjective;
+export function caml_vesta_rng(i: number): WasmVestaGProjective;
 /**
 * @returns {Uint8Array}
 */
-export function caml_pallas_endo_base(): Uint8Array;
+export function caml_vesta_endo_base(): Uint8Array;
 /**
 * @returns {Uint8Array}
 */
-export function caml_pallas_endo_scalar(): Uint8Array;
+export function caml_vesta_endo_scalar(): Uint8Array;
 /**
-* @param {WasmPallasGProjective} x
-* @returns {WasmGPallas}
+* @param {WasmVestaGProjective} x
+* @returns {WasmGVesta}
 */
-export function caml_pallas_to_affine(x: WasmPallasGProjective): WasmGPallas;
+export function caml_vesta_to_affine(x: WasmVestaGProjective): WasmGVesta;
 /**
-* @param {WasmGPallas} x
-* @returns {WasmPallasGProjective}
+* @param {WasmGVesta} x
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_of_affine(x: WasmGPallas): WasmPallasGProjective;
+export function caml_vesta_of_affine(x: WasmGVesta): WasmVestaGProjective;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmPallasGProjective;
+export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmVestaGProjective;
 /**
-* @param {WasmGPallas} x
-* @returns {WasmGPallas}
+* @param {WasmGVesta} x
+* @returns {WasmGVesta}
 */
-export function caml_pallas_affine_deep_copy(x: WasmGPallas): WasmGPallas;
+export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
 /**
 * @returns {WasmGPallas}
 */
@@ -1085,20 +1085,20 @@ export function caml_pallas_affine_one(): WasmGPallas;
 export function caml_vesta_affine_one(): WasmGVesta;
 /**
 * @param {Uint32Array} lgr_comm
-* @param {WasmFpPlonkVerifierIndex} index
-* @param {WasmFpProverProof} proof
-* @returns {WasmFpOracles}
+* @param {WasmFqPlonkVerifierIndex} index
+* @param {WasmFqProverProof} proof
+* @returns {WasmFqOracles}
 */
-export function fp_oracles_create(lgr_comm: Uint32Array, index: WasmFpPlonkVerifierIndex, proof: WasmFpProverProof): WasmFpOracles;
+export function fq_oracles_create(lgr_comm: Uint32Array, index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): WasmFqOracles;
 /**
-* @returns {WasmFpOracles}
+* @returns {WasmFqOracles}
 */
-export function fp_oracles_dummy(): WasmFpOracles;
+export function fq_oracles_dummy(): WasmFqOracles;
 /**
-* @param {WasmFpProverProof} x
-* @returns {WasmFpProverProof}
+* @param {WasmFqProverProof} x
+* @returns {WasmFqProverProof}
 */
-export function fp_oracles_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
+export function fq_oracles_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
 /**
 * A row accessible from a given row, corresponds to the fact that we open all polynomials
 * at `zeta` **and** `omega * zeta`.

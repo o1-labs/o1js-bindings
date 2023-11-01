@@ -52,7 +52,18 @@ val snarky :
       Js.t
       Js.readonly_prop
   ; gates :
-      < rangeCheck0 :
+      < generic :
+          (   Impl.field
+           -> Field.t
+           -> Impl.field
+           -> Field.t
+           -> Impl.field
+           -> Field.t
+           -> Impl.field
+           -> Impl.field
+           -> unit )
+          Js.meth
+      ; rangeCheck0 :
           (   Field.t
            -> Field.t * Field.t * Field.t * Field.t * Field.t * Field.t
            -> Field.t
