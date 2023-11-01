@@ -1,4 +1,4 @@
-import { initO1, withThreadPool } from "./web/web-backend.js";
+import { initO1, withThreadPool } from './web/web-backend.js';
 
 export { getSnarky, getWasm, withThreadPool };
 

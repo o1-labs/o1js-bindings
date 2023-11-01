@@ -910,9 +910,12 @@ macro_rules! impl_verification_key {
             pub fn [<$name:snake _deserialize>](
                 srs: &$WasmSrs,
                 index: String,
-            ) -> WasmPlonkVerifierIndex {
-                let vi: DlogVerifierIndex<$G, OpeningProof<$G>> = serde_json::from_str(&index).unwrap();
-                return to_wasm(srs, vi.into())
+            ) -> Result<WasmPlonkVerifierIndex, JsError> {
+                let vi: Result<DlogVerifierIndex<$G, OpeningProof<$G>>, serde_json::Error> = serde_json::from_str(&index);
+                match vi {
+                    Ok(vi) => Ok(to_wasm(srs, vi)),
+                    Err(e) => Err(JsError::new(&(e.to_string()))),
+                }
             }
 
             #[wasm_bindgen]

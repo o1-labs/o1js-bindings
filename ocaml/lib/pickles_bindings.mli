@@ -37,6 +37,10 @@ type pickles_rule_js =
       Js.prop >
   Js.t
 
+module Cache : sig
+  type js_storable
+end
+
 type proof = (Pickles_types.Nat.N0.n, Pickles_types.Nat.N0.n) Pickles.Proof.t
 
 module Proof0 : sig
@@ -58,6 +62,7 @@ val pickles :
       (   pickles_rule_js array
        -> < publicInputSize : int Js.prop
           ; publicOutputSize : int Js.prop
+          ; storable : Cache.js_storable Js.optdef_prop
           ; overrideWrapDomain : int Js.optdef_prop >
           Js.t
        -> < getVerificationKey : (Js.js_string Js.t * Impl.field) Js.meth
@@ -66,16 +71,27 @@ val pickles :
           ; verify : 'c Js.readonly_prop >
           Js.t )
       Js.readonly_prop
-  ; dummyProof : (int -> int -> some_proof) Js.readonly_prop
-  ; dummyVerificationKey :
-      (unit -> Js.js_string Js.t * Impl.field) Js.readonly_prop
-  ; proofOfBase64 : (Js.js_string Js.t -> int -> some_proof) Js.readonly_prop
-  ; proofToBase64 : (some_proof -> Js.js_string Js.t) Js.readonly_prop
-  ; proofToBase64Transaction : (proof -> Js.js_string Js.t) Js.readonly_prop
   ; verify :
       (   Statement.Constant.t
        -> proof
        -> Js.js_string Js.t
        -> bool Js.t Promise_js_helpers.js_promise )
+      Js.readonly_prop
+  ; loadSrsFp : (unit -> Kimchi_bindings.Protocol.SRS.Fp.t) Js.readonly_prop
+  ; loadSrsFq : (unit -> Kimchi_bindings.Protocol.SRS.Fq.t) Js.readonly_prop
+  ; dummyProof : (int -> int -> some_proof) Js.readonly_prop
+  ; dummyVerificationKey :
+      (unit -> Js.js_string Js.t * Impl.field) Js.readonly_prop
+  ; encodeVerificationKey :
+      (Pickles.Verification_key.t -> Js.js_string Js.t) Js.readonly_prop
+  ; decodeVerificationKey :
+      (Js.js_string Js.t -> Pickles.Verification_key.t) Js.readonly_prop
+  ; proofOfBase64 : (Js.js_string Js.t -> int -> some_proof) Js.readonly_prop
+  ; proofToBase64 : (some_proof -> Js.js_string Js.t) Js.readonly_prop
+  ; proofToBase64Transaction : (proof -> Js.js_string Js.t) Js.readonly_prop
+  ; util :
+      < fromMlString : (string -> Js.js_string Js.t) Js.readonly_prop
+      ; toMlString : (Js.js_string Js.t -> string) Js.readonly_prop >
+      Js.t
       Js.readonly_prop >
   Js.t
