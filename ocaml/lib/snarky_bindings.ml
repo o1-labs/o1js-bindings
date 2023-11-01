@@ -148,7 +148,7 @@ module Gates = struct
 
   let ec_endoscalar state = add_gate "ec_endoscalar" (EC_endoscalar { state })
 
-  let lookup w0 w1 w2 w3 w4 w5 w6 =
+  let lookup (w0, w1, w2, w3, w4, w5, w6) =
     add_gate "lookup" (Lookup { w0; w1; w2; w3; w4; w5; w6 })
 
   let range_check0 v0 (v0p0, v0p1, v0p2, v0p3, v0p4, v0p5)

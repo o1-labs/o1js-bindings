@@ -90,13 +90,7 @@ val snarky :
           (Field.t Kimchi_backend_common.Endoscale_scalar_round.t array -> unit)
           Js.meth
       ; lookup :
-          (   Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
+          (   Field.t * Field.t * Field.t * Field.t * Field.t * Field.t * Field.t
            -> unit )
           Js.meth
       ; rangeCheck0 :
