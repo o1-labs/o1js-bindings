@@ -17,6 +17,7 @@ export {
   PallasBindings,
   Infinity,
   OrInfinity,
+  OrInfinityJson,
   toMlOrInfinity,
   fromMlOrInfinity,
 };
@@ -81,3 +82,16 @@ function fromMlOrInfinity(g: OrInfinity): GroupAffine {
   if (g === 0) return affineZero;
   return { x: g[1][1][1], y: g[1][2][1], infinity: false };
 }
+
+type OrInfinityJson = 'Infinity' | { x: string; y: string };
+
+const OrInfinity = {
+  toJSON(g: OrInfinity): OrInfinityJson {
+    if (g === 0) return 'Infinity';
+    return { x: g[1][1][1].toString(), y: g[1][2][1].toString() };
+  },
+  fromJSON(g: OrInfinityJson): OrInfinity {
+    if (g === 'Infinity') return 0;
+    return [0, [0, [0, BigInt(g.x)], [0, BigInt(g.y)]]];
+  },
+};
