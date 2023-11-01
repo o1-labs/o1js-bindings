@@ -151,6 +151,66 @@ module Gates = struct
                    } )
           } )
 
+  let range_check1 v2 v12 (v0p0, v0p1) (v1p0, v1p1) (v2p0, v2p1, v2p2, v2p3)
+      ( v2c0
+      , v2c1
+      , v2c2
+      , v2c3
+      , v2c4
+      , v2c5
+      , v2c6
+      , v2c7
+      , v2c8
+      , v2c9
+      , v2c10
+      , v2c11
+      , v2c12
+      , v2c13
+      , v2c14
+      , v2c15
+      , v2c16
+      , v2c17
+      , v2c18
+      , v2c19 ) =
+    Impl.with_label "range_check1" (fun () ->
+        Impl.assert_
+          { annotation = Some __LOC__
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                (RangeCheck1
+                   { (* Current row *) v2
+                   ; v12
+                   ; v2c0
+                   ; v2p0
+                   ; v2p1
+                   ; v2p2
+                   ; v2p3
+                   ; v2c1
+                   ; v2c2
+                   ; v2c3
+                   ; v2c4
+                   ; v2c5
+                   ; v2c6
+                   ; v2c7
+                   ; v2c8
+                   ; (* Next row *) v2c9
+                   ; v2c10
+                   ; v2c11
+                   ; v0p0
+                   ; v0p1
+                   ; v1p0
+                   ; v1p1
+                   ; v2c12
+                   ; v2c13
+                   ; v2c14
+                   ; v2c15
+                   ; v2c16
+                   ; v2c17
+                   ; v2c18
+                   ; v2c19
+                   } )
+          } )
+
   let rotate word rotated excess
       (bound_limb0, bound_limb1, bound_limb2, bound_limb3)
       ( bound_crumb0
@@ -400,6 +460,8 @@ let snarky =
         method generic = Gates.generic
 
         method rangeCheck0 = Gates.range_check0
+
+        method rangeCheck1 = Gates.range_check1
 
         method rotate = Gates.rotate
 

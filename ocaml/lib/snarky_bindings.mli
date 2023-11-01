@@ -77,6 +77,34 @@ val snarky :
            -> Impl.field
            -> unit )
           Js.meth
+      ; rangeCheck1 :
+          (   Field.t
+           -> Field.t
+           -> Field.t * Field.t
+           -> Field.t * Field.t
+           -> Field.t * Field.t * Field.t * Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> unit )
+          Js.meth
       ; xor :
           (   Field.t
            -> Field.t
