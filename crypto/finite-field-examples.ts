@@ -16,8 +16,8 @@ let qBls12_381 =
   0x12ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000001n;
 
 let exampleFields = {
-  pastaFp: Fp,
-  pastaFq: Fq,
+  Fp,
+  Fq,
   small: createField(pSmall),
   babybear: createField(pBabybear),
   goldilocks: createField(pGoldilocks),
