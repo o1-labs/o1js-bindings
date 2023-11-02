@@ -1,27 +1,11 @@
-import { Fp, Fq, createField } from './finite_field.js';
+import { Fp, Fq } from './finite_field.js';
 import assert from 'node:assert/strict';
 import { Random, test } from '../../lib/testing/property.js';
+import { exampleFields } from './finite-field-examples.js';
 
-// some more primes
-let pSmall = 101n;
-let pBabybear = (1n << 31n) - 1n;
-let pGoldilocks = (1n << 64n) - (1n << 32n) + 1n;
-let p25519 = (1n << 255n) - 19n;
-let pBls12_381 =
-  0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001n;
-let qBls12_381 =
-  0x12ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000001n;
+let fields = Object.values(exampleFields);
 
-let fields = [
-  pSmall,
-  pBabybear,
-  pGoldilocks,
-  p25519,
-  pBls12_381,
-  qBls12_381,
-].map((p) => createField(p));
-
-for (let F of [Fp, Fq, ...fields]) {
+for (let F of fields) {
   // t is computed correctly from p = 2^M * t + 1
   assert(F.t * (1n << F.M) + 1n === F.modulus, 't, M are computed correctly');
 
