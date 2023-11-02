@@ -10,6 +10,7 @@ let pSmall = 101n;
 let pBabybear = (1n << 31n) - 1n;
 let pGoldilocks = (1n << 64n) - (1n << 32n) + 1n;
 let p25519 = (1n << 255n) - 19n;
+let pSeqp256k1 = (1n << 256n) - (1n << 32n) - 0b1111010001n;
 let pBls12_381 =
   0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001n;
 let qBls12_381 =
@@ -22,6 +23,7 @@ let exampleFields = {
   babybear: createField(pBabybear),
   goldilocks: createField(pGoldilocks),
   f25519: createField(p25519),
-  bls12_381_fp: createField(pBls12_381),
-  bls12_381_fq: createField(qBls12_381),
+  seqp256k1_base: createField(pSeqp256k1),
+  bls12_381_base: createField(pBls12_381),
+  bls12_381_scalar: createField(qBls12_381),
 };
