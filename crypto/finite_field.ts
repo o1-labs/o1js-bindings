@@ -197,10 +197,10 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
     },
     leftShift(x: bigint, bits: number, maxBitSize: number = 64) {
       let shifted = x << BigInt(bits);
-      return mod(BigInt('0b' + shifted.toString(2).slice(-maxBitSize)), p);
+      return BigInt('0b' + shifted.toString(2).slice(-maxBitSize));
     },
     rightShift(x: bigint, bits: number) {
-      return mod(x >> BigInt(bits), p);
+      return x >> BigInt(bits);
     },
   };
 }
