@@ -1,21 +1,35 @@
-import { Fp, Fq } from './finite_field.js';
+import { Fp, Fq, createField } from './finite_field.js';
 import assert from 'node:assert/strict';
 import { Random, test } from '../../lib/testing/property.js';
 
-for (let F of [Fp, Fq]) {
-  // t is computed correctly from p = 2^32 * t + 1
-  assert(F.t * (1n << 32n) + 1n === F.modulus, 't is computed correctly');
+// some more primes
+let pSmall = 101n;
+let pBabybear = (1n << 31n) - 1n;
+let pGoldilocks = (1n << 64n) - (1n << 32n) + 1n;
+let p25519 = (1n << 255n) - 19n;
+let pBls12_381 =
+  0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001n;
+let qBls12_381 =
+  0x12ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000001n;
 
-  // the primitive root of unity is computed correctly as 5^t
-  let generator = 5n;
-  let rootFp = F.power(generator, F.t);
-  assert(rootFp === F.twoadicRoot, 'root of unity is computed correctly');
+let fields = [
+  pSmall,
+  pBabybear,
+  pGoldilocks,
+  p25519,
+  pBls12_381,
+  qBls12_381,
+].map((p) => createField(p));
+
+for (let F of [Fp, Fq, ...fields]) {
+  // t is computed correctly from p = 2^M * t + 1
+  assert(F.t * (1n << F.M) + 1n === F.modulus, 't, M are computed correctly');
 
   // the primitive roots of unity `r` actually satisfy the equations defining them:
-  let shouldBe1 = F.power(F.twoadicRoot, 1n << 32n);
-  let shouldBeMinus1 = F.power(F.twoadicRoot, 1n << 31n);
-  assert(shouldBe1 === 1n, 'r^(2^32) === 1');
-  assert(shouldBeMinus1 + 1n === F.modulus, 'r^(2^32) === 1');
+  let shouldBe1 = F.power(F.twoadicRoot, 1n << F.M);
+  let shouldBeMinus1 = F.power(F.twoadicRoot, 1n << (F.M - 1n));
+  assert(shouldBe1 === 1n, 'r^(2^M) === 1');
+  assert(shouldBeMinus1 + 1n === F.modulus, 'r^(2^(M-1)) === -1');
 
   // the primitive roots of unity are non-squares
   // -> verifies that the two-adicity is 32, and that they can be used as non-squares in the sqrt algorithm
@@ -57,21 +71,27 @@ for (let F of [Fp, Fq]) {
     } else {
       assert.equal(F.inverse(3n), (p + 1n) / 3n, 'inverse 3');
     }
-    let xInv = F.inverse(x);
-    assert(xInv !== undefined, 'random x is invertible');
-    assert.equal(F.mul(xInv, x), 1n, 'inverse & mul');
+
+    if (x !== 0n) {
+      let xInv = F.inverse(x);
+      assert(xInv !== undefined, 'non-zero is invertible');
+      assert.equal(F.mul(xInv, x), 1n, 'inverse & mul');
+      assert.equal(F.div(y, x), F.mul(y, xInv), 'div & inverse');
+    }
 
     assert.equal(F.div(1n, 0n), undefined, 'div');
     assert.equal(F.div(21n, F.negate(7n)), p - 3n, 'div');
-    assert.equal(F.div(y, x), F.mul(y, xInv), 'div & inverse');
 
     assert.equal(F.square(F.negate(10n)), 100n, 'square');
     let squareX = F.square(x);
     assert(F.isSquare(squareX), 'square + isSquare');
     assert([x, F.negate(x)].includes(F.sqrt(squareX)!), 'square + sqrt');
-    assert(F.isSquare(p - 1n), 'isSquare -1');
-    let i = F.power(F.twoadicRoot, 1n << 30n);
-    assert([i, F.negate(i)].includes(F.sqrt(p - 1n)!), 'sqrt -1');
+
+    if (F.M >= 2n) {
+      assert(F.isSquare(p - 1n), 'isSquare -1');
+      let i = F.power(F.twoadicRoot, 1n << (F.M - 2n));
+      assert([i, F.negate(i)].includes(F.sqrt(p - 1n)!), 'sqrt -1');
+    }
 
     assert.equal(F.power(F.negate(2n), 3n), F.negate(8n), 'power');
     assert.equal(F.power(2n, p - 1n), 1n, 'power mod p-1');
@@ -86,8 +106,11 @@ for (let F of [Fp, Fq]) {
     assert.equal(F.dot([x, y], [y, x]), F.mul(2n, F.mul(x, y)), 'dot');
     assert.equal(F.dot([x, y], [F.negate(y), x]), 0n, 'dot');
 
-    assert(x > 1n << 128n, 'random x is large');
-    assert(x < p - (1n << 128n), 'random x is not small negative');
+    if (p >> 250n) {
+      assert(x > 1n << 128n, 'random x is large');
+      assert(x < p - (1n << 128n), 'random x is not small negative');
+    }
+    assert(x >= 0 && x < p, 'random x is in range');
 
     assert.equal(F.fromNumber(-1), p - 1n, 'fromNumber');
     assert.equal(F.fromBigint(-1n), p - 1n, 'fromBigint');
@@ -97,4 +120,12 @@ for (let F of [Fp, Fq]) {
     assert(F.equal(10n, F.fromBigint(p + 10n)), 'equal + fromBigint');
     assert(!F.equal(5n, p - 5n), 'not equal');
   });
+}
+
+// test that is specialized to Fp, Fq
+for (let F of [Fp, Fq]) {
+  // the primitive root of unity is computed correctly as 5^t
+  let generator = 5n;
+  let rootFp = F.power(generator, F.t);
+  assert(rootFp === F.twoadicRoot, 'root of unity is computed correctly');
 }
