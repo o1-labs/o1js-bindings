@@ -197,7 +197,7 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
     },
     leftShift(x: bigint, bits: number, maxBitSize: number = 64) {
       let shifted = x << BigInt(bits);
-      return BigInt('0b' + shifted.toString(2).slice(-maxBitSize));
+      return shifted & ((1n << BigInt(maxBitSize)) - 1n);
     },
     rightShift(x: bigint, bits: number) {
       return x >> BigInt(bits);
