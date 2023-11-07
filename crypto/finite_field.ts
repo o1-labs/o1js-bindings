@@ -126,7 +126,7 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
       return mod(x + y, p);
     },
     not(x: bigint, bits: number) {
-      return 2n ** BigInt(bits) - (x + 1n);
+      return mod(2n ** BigInt(bits) - (x + 1n), p);
     },
     negate(x: bigint) {
       return x === 0n ? 0n : p - x;
