@@ -214,6 +214,13 @@ function createField(
       }
       return BigInt('0b' + binary.reverse().join(''));
     },
+    leftShift(x: bigint, bits: number, maxBitSize: number = 64) {
+      let shifted = x << BigInt(bits);
+      return shifted & ((1n << BigInt(maxBitSize)) - 1n);
+    },
+    rightShift(x: bigint, bits: number) {
+      return x >> BigInt(bits);
+    },
   };
 }
 
