@@ -1,7 +1,7 @@
 import { bytesToBigInt } from './bigint-helpers.js';
 import { randomBytes } from './random.js';
 
-export { Fp, Fq, FiniteField, p, q, mod, inverse };
+export { createField, Fp, Fq, FiniteField, p, q, mod, inverse };
 
 // CONSTANTS
 
@@ -65,13 +65,13 @@ function inverse(a: bigint, p: bigint) {
   return mod(x, p);
 }
 
-function sqrt(n: bigint, p: bigint, Q: bigint, c: bigint) {
+function sqrt(n: bigint, p: bigint, Q: bigint, c: bigint, M: bigint) {
   // https://en.wikipedia.org/wiki/Tonelli-Shanks_algorithm#The_algorithm
   // variable naming is the same as in that link ^
   // Q is what we call `t` elsewhere - the odd factor in p - 1
   // c is a known primitive root of unity
+  // M is the twoadicity = exponent of 2 in factorization of p - 1
   if (n === 0n) return 0n;
-  let M = 32n;
   let t = power(n, (Q - 1n) >> 1n, p); // n^(Q - 1)/2
   let R = mod(t * n, p); // n^((Q - 1)/2 + 1) = n^((Q + 1)/2)
   t = mod(t * R, p); // n^((Q - 1)/2 + (Q + 1)/2) = n^Q
@@ -99,11 +99,11 @@ function isSquare(x: bigint, p: bigint) {
   return sqrt1 === 1n;
 }
 
-function randomField(p: bigint) {
+function randomField(p: bigint, sizeInBytes: number, hiBitMask: number) {
   // strategy: find random 255-bit bigints and use the first that's smaller than p
   while (true) {
-    let bytes = randomBytes(32);
-    bytes[31] &= 0x7f; // zero highest bit, so we get 255 random bits
+    let bytes = randomBytes(sizeInBytes);
+    bytes[sizeInBytes - 1] &= hiBitMask; // zero highest bit, so we get 255 random bits
     let x = bytesToBigInt(bytes);
     if (x < p) return x;
   }
@@ -112,15 +112,34 @@ function randomField(p: bigint) {
 // SPECIALIZATIONS TO FP, FQ
 // these should be mostly trivial
 
-const Fp = createField(p, pMinusOneOddFactor, twoadicRootFp);
-const Fq = createField(q, qMinusOneOddFactor, twoadicRootFq);
+const Fp = createField(p, {
+  oddFactor: pMinusOneOddFactor,
+  twoadicRoot: twoadicRootFp,
+  twoadicity: 32n,
+});
+const Fq = createField(q, {
+  oddFactor: qMinusOneOddFactor,
+  twoadicRoot: twoadicRootFq,
+  twoadicity: 32n,
+});
 type FiniteField = ReturnType<typeof createField>;
 
-function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
+function createField(
+  p: bigint,
+  constants?: { oddFactor: bigint; twoadicRoot: bigint; twoadicity: bigint }
+) {
+  let { oddFactor, twoadicRoot, twoadicity } =
+    constants ?? computeFieldConstants(p);
+  let sizeInBits = p.toString(2).length;
+  let sizeInBytes = Math.ceil(sizeInBits / 8);
+  let sizeHighestByte = sizeInBits - 8 * (sizeInBytes - 1);
+  let hiBitMask = (1 << sizeHighestByte) - 1;
+
   return {
     modulus: p,
-    sizeInBits: 255,
-    t,
+    sizeInBits,
+    t: oddFactor,
+    M: twoadicity,
     twoadicRoot,
     add(x: bigint, y: bigint) {
       return mod(x + y, p);
@@ -152,7 +171,7 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
       return isSquare(x, p);
     },
     sqrt(x: bigint) {
-      return sqrt(x, p, t, twoadicRoot);
+      return sqrt(x, p, oddFactor, twoadicRoot, twoadicity);
     },
     power(x: bigint, n: bigint) {
       return power(x, n, p);
@@ -172,7 +191,7 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
       return !(x & 1n);
     },
     random() {
-      return randomField(p);
+      return randomField(p, sizeInBytes, hiBitMask);
     },
     fromNumber(x: number) {
       return mod(BigInt(x), p);
@@ -205,4 +224,27 @@ function createField(p: bigint, t: bigint, twoadicRoot: bigint) {
       return x >> BigInt(bits);
     },
   };
+}
+
+/**
+ * Compute constants to instantiate a finite field just from the modulus
+ */
+function computeFieldConstants(p: bigint) {
+  // figure out the factorization p - 1 = 2^M * t
+  let oddFactor = p - 1n;
+  let twoadicity = 0n;
+  while ((oddFactor & 1n) === 0n) {
+    oddFactor >>= 1n;
+    twoadicity++;
+  }
+
+  // find z = non-square
+  // start with 2 and increment until we find one
+  let z = 2n;
+  while (isSquare(z, p)) z++;
+
+  // primitive root of unity is z^t
+  let twoadicRoot = power(z, oddFactor, p);
+
+  return { oddFactor, twoadicRoot, twoadicity };
 }
