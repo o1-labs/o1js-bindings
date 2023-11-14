@@ -47,7 +47,7 @@ const HashInput = {
 function provable<A>(
   typeObj: A,
   options?: { isPure?: boolean }
-): ProvableExtended<InferProvable<A>, InferJson<A>> {
+): InferredProvable<A> {
   type T = InferProvable<A>;
   type J = InferJson<A>;
   let objectKeys =
@@ -216,7 +216,7 @@ function provable<A>(
     toJSON: (obj: T) => toJSON(typeObj, obj, true) as J,
     fromJSON: (json: J) => fromJSON(typeObj, json, true),
     check: (obj: T) => check(typeObj, obj, true),
-  };
+  } satisfies ProvableExtended<T, J> as InferredProvable<A>;
 }
 
 function provablePure<A>(
