@@ -3,10 +3,11 @@
 set -e
 
 SNARKY_JS_PATH="."
+MINA_PATH="$SNARKY_JS_PATH/src/mina"
 DUNE_PATH="$SNARKY_JS_PATH/src/bindings/ocaml"
 BUILD_PATH="_build/default/$DUNE_PATH"
 DIR_PATH=$(dirname "$0")
-KIMCHI_BINDINGS="$SNARKY_JS_PATH/src/bindings/kimchi"
+KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi"
 NODE_BINDINGS="$SNARKY_JS_PATH/src/bindings/compiled/node_bindings"
 WEB_BINDINGS="$SNARKY_JS_PATH/src/bindings/compiled/web_bindings"
 
