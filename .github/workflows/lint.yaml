@@ -15,4 +15,3 @@ jobs:
         run: |
           npm init -y
           npm i prettier
-          npx prettier -c kimchi/js/**/*.js js/**/*.js
