@@ -3,10 +3,10 @@
 set -e
 
 SNARKY_JS_PATH="."
+MINA_PATH="$SNARKY_JS_PATH/src/mina"
 DUNE_PATH="$SNARKY_JS_PATH/src/bindings/ocaml"
 BUILD_PATH="_build/default/$DUNE_PATH"
-KIMCHI_BINDINGS="$SNARKY_JS_PATH/src/bindings/kimchi"
-MINA_PATH="$SNARKY_JS_PATH/src/mina"
+KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi"
 
 pushd "$SNARKY_JS_PATH"
   [ -d node_modules ] || npm i
