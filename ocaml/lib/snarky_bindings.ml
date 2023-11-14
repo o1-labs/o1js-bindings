@@ -7,6 +7,8 @@ module Boolean = Impl.Boolean
 module As_prover = Impl.As_prover
 module Typ = Impl.Typ
 
+type field = Impl.field
+
 (* light-weight wrapper around snarky-ml core *)
 
 let typ (size_in_fields : int) = Typ.array ~length:size_in_fields Field.typ
@@ -113,34 +115,218 @@ module Field' = struct
   let to_constant_and_terms x = Field.to_constant_and_terms x
 end
 
+let add_gate (label : string) gate =
+  Impl.with_label label (fun () ->
+      Impl.assert_
+        { annotation = None
+        ; basic =
+            Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+              gate
+        } )
+
 module Gates = struct
+  let zero in1 in2 out =
+    add_gate "zero"
+      (Raw { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] })
+
+  let generic sl l sr r so o sm sc =
+    add_gate "generic"
+      (Basic { l = (sl, l); r = (sr, r); o = (so, o); m = sm; c = sc })
+
+  let poseidon state = add_gate "poseidon" (Poseidon { state })
+
+  let ec_add p1 p2 p3 inf same_x slope inf_z x21_inv =
+    add_gate "ec_add"
+      (EC_add_complete { p1; p2; p3; inf; same_x; slope; inf_z; x21_inv }) ;
+    (* TODO: do we need this? *)
+    p3
+
+  let ec_scale state = add_gate "ec_scale" (EC_scale { state })
+
+  let ec_endoscale state xs ys n_acc =
+    add_gate "ec_endoscale" (EC_endoscale { state; xs; ys; n_acc })
+
+  let ec_endoscalar state = add_gate "ec_endoscalar" (EC_endoscalar { state })
+
+  let lookup (w0, w1, w2, w3, w4, w5, w6) =
+    add_gate "lookup" (Lookup { w0; w1; w2; w3; w4; w5; w6 })
+
   let range_check0 v0 (v0p0, v0p1, v0p2, v0p3, v0p4, v0p5)
       (v0c0, v0c1, v0c2, v0c3, v0c4, v0c5, v0c6, v0c7) compact =
-    Impl.with_label "range_check0" (fun () ->
-        Impl.assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (RangeCheck0
-                   { (* Current row *) v0
-                   ; v0p0
-                   ; v0p1
-                   ; v0p2
-                   ; v0p3
-                   ; v0p4
-                   ; v0p5
-                   ; v0c0
-                   ; v0c1
-                   ; v0c2
-                   ; v0c3
-                   ; v0c4
-                   ; v0c5
-                   ; v0c6
-                   ; v0c7
-                   ; (* Coefficients *)
-                     compact
-                   } )
-          } )
+    add_gate "range_check0"
+      (RangeCheck0
+         { (* Current row *) v0
+         ; v0p0
+         ; v0p1
+         ; v0p2
+         ; v0p3
+         ; v0p4
+         ; v0p5
+         ; v0c0
+         ; v0c1
+         ; v0c2
+         ; v0c3
+         ; v0c4
+         ; v0c5
+         ; v0c6
+         ; v0c7
+         ; (* Coefficients *)
+           compact
+         } )
+
+  let range_check1 v2 v12
+      ( v2c0
+      , v2p0
+      , v2p1
+      , v2p2
+      , v2p3
+      , v2c1
+      , v2c2
+      , v2c3
+      , v2c4
+      , v2c5
+      , v2c6
+      , v2c7
+      , v2c8 )
+      ( v2c9
+      , v2c10
+      , v2c11
+      , v0p0
+      , v0p1
+      , v1p0
+      , v1p1
+      , v2c12
+      , v2c13
+      , v2c14
+      , v2c15
+      , v2c16
+      , v2c17
+      , v2c18
+      , v2c19 ) =
+    add_gate "range_check1"
+      (RangeCheck1
+         { (* Current row *) v2
+         ; v12
+         ; v2c0
+         ; v2p0
+         ; v2p1
+         ; v2p2
+         ; v2p3
+         ; v2c1
+         ; v2c2
+         ; v2c3
+         ; v2c4
+         ; v2c5
+         ; v2c6
+         ; v2c7
+         ; v2c8
+         ; (* Next row *) v2c9
+         ; v2c10
+         ; v2c11
+         ; v0p0
+         ; v0p1
+         ; v1p0
+         ; v1p1
+         ; v2c12
+         ; v2c13
+         ; v2c14
+         ; v2c15
+         ; v2c16
+         ; v2c17
+         ; v2c18
+         ; v2c19
+         } )
+
+  let xor in1 in2 out in1_0 in1_1 in1_2 in1_3 in2_0 in2_1 in2_2 in2_3 out_0
+      out_1 out_2 out_3 =
+    add_gate "xor"
+      (Xor
+         { in1
+         ; in2
+         ; out
+         ; in1_0
+         ; in1_1
+         ; in1_2
+         ; in1_3
+         ; in2_0
+         ; in2_1
+         ; in2_2
+         ; in2_3
+         ; out_0
+         ; out_1
+         ; out_2
+         ; out_3
+         } )
+
+  let foreign_field_add (left_input_lo, left_input_mi, left_input_hi)
+      (right_input_lo, right_input_mi, right_input_hi) field_overflow carry
+      (foreign_field_modulus0, foreign_field_modulus1, foreign_field_modulus2)
+      sign =
+    add_gate "foreign_field_add"
+      (ForeignFieldAdd
+         { left_input_lo
+         ; left_input_mi
+         ; left_input_hi
+         ; right_input_lo
+         ; right_input_mi
+         ; right_input_hi
+         ; field_overflow
+         ; carry
+         ; foreign_field_modulus0
+         ; foreign_field_modulus1
+         ; foreign_field_modulus2
+         ; sign
+         } )
+
+  let foreign_field_mul (left_input0, left_input1, left_input2)
+      (right_input0, right_input1, right_input2) (remainder01, remainder2)
+      (quotient0, quotient1, quotient2) quotient_hi_bound
+      (product1_lo, product1_hi_0, product1_hi_1) carry0
+      ( carry1_0
+      , carry1_12
+      , carry1_24
+      , carry1_36
+      , carry1_48
+      , carry1_60
+      , carry1_72 ) (carry1_84, carry1_86, carry1_88, carry1_90)
+      foreign_field_modulus2
+      ( neg_foreign_field_modulus0
+      , neg_foreign_field_modulus1
+      , neg_foreign_field_modulus2 ) =
+    add_gate "foreign_field_mul"
+      (ForeignFieldMul
+         { left_input0
+         ; left_input1
+         ; left_input2
+         ; right_input0
+         ; right_input1
+         ; right_input2
+         ; remainder01
+         ; remainder2
+         ; quotient0
+         ; quotient1
+         ; quotient2
+         ; quotient_hi_bound
+         ; product1_lo
+         ; product1_hi_0
+         ; product1_hi_1
+         ; carry0
+         ; carry1_0
+         ; carry1_12
+         ; carry1_24
+         ; carry1_36
+         ; carry1_48
+         ; carry1_60
+         ; carry1_72
+         ; carry1_84
+         ; carry1_86
+         ; carry1_88
+         ; carry1_90
+         ; foreign_field_modulus2
+         ; neg_foreign_field_modulus0
+         ; neg_foreign_field_modulus1
+         ; neg_foreign_field_modulus2
+         } )
 
   let rotate word rotated excess
       (bound_limb0, bound_limb1, bound_limb2, bound_limb3)
@@ -152,67 +338,33 @@ module Gates = struct
       , bound_crumb5
       , bound_crumb6
       , bound_crumb7 ) two_to_rot =
-    Impl.with_label "rot64_gate" (fun () ->
-        Impl.assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (Rot64
-                   { (* Current row *) word
-                   ; rotated
-                   ; excess
-                   ; bound_limb0
-                   ; bound_limb1
-                   ; bound_limb2
-                   ; bound_limb3
-                   ; bound_crumb0
-                   ; bound_crumb1
-                   ; bound_crumb2
-                   ; bound_crumb3
-                   ; bound_crumb4
-                   ; bound_crumb5
-                   ; bound_crumb6
-                   ; bound_crumb7 (* Coefficients *)
-                   ; two_to_rot (* Rotation scalar 2^rot *)
-                   } )
-          } )
+    add_gate "rot64"
+      (Rot64
+         { (* Current row *) word
+         ; rotated
+         ; excess
+         ; bound_limb0
+         ; bound_limb1
+         ; bound_limb2
+         ; bound_limb3
+         ; bound_crumb0
+         ; bound_crumb1
+         ; bound_crumb2
+         ; bound_crumb3
+         ; bound_crumb4
+         ; bound_crumb5
+         ; bound_crumb6
+         ; bound_crumb7 (* Coefficients *)
+         ; two_to_rot (* Rotation scalar 2^rot *)
+         } )
 
-  let xor in1 in2 out in1_0 in1_1 in1_2 in1_3 in2_0 in2_1 in2_2 in2_3 out_0
-      out_1 out_2 out_3 =
-    Impl.with_label "xor_gate" (fun () ->
-        Impl.assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (Xor
-                   { in1
-                   ; in2
-                   ; out
-                   ; in1_0
-                   ; in1_1
-                   ; in1_2
-                   ; in1_3
-                   ; in2_0
-                   ; in2_1
-                   ; in2_2
-                   ; in2_3
-                   ; out_0
-                   ; out_1
-                   ; out_2
-                   ; out_3
-                   } )
-          } )
+  let add_fixed_lookup_table id data =
+    add_gate "add_fixed_lookup_table" (AddFixedLookupTable { id; data })
 
-  let zero in1 in2 out =
-    Impl.with_label "zero" (fun () ->
-        Impl.assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (Raw
-                   { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] }
-                )
-          } )
+  let add_runtime_table_config id first_column =
+    add_gate "add_runtime_table_config" (AddRuntimeTableCfg { id; first_column })
+
+  let raw kind values coeffs = add_gate "raw" (Raw { kind; values; coeffs })
 end
 
 module Bool = struct
@@ -228,18 +380,6 @@ module Bool = struct
 end
 
 module Group = struct
-  let ec_add p1 p2 p3 inf same_x slope inf_z x21_inv =
-    let open Impl in
-    with_label "Elliptic Curve Addition" (fun () ->
-        assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (EC_add_complete
-                   { p1; p2; p3; inf; same_x; slope; inf_z; x21_inv } )
-          } ;
-        p3 )
-
   let scale p (scalar_bits : Boolean.var array) =
     Pickles.Step_main_inputs.Ops.scale_fast_msb_bits p
       (Shifted_value scalar_bits)
@@ -388,13 +528,39 @@ let snarky =
 
     val gates =
       object%js
+        method zero = Gates.zero
+
+        method generic = Gates.generic
+
+        method poseidon = Gates.poseidon
+
+        method ecAdd = Gates.ec_add
+
+        method ecScale = Gates.ec_scale
+
+        method ecEndoscale = Gates.ec_endoscale
+
+        method ecEndoscalar = Gates.ec_endoscalar
+
+        method lookup = Gates.lookup
+
         method rangeCheck0 = Gates.range_check0
 
-        method rotate = Gates.rotate
+        method rangeCheck1 = Gates.range_check1
 
         method xor = Gates.xor
 
-        method zero = Gates.zero
+        method foreignFieldAdd = Gates.foreign_field_add
+
+        method foreignFieldMul = Gates.foreign_field_mul
+
+        method rotate = Gates.rotate
+
+        method addFixedLookupTable = Gates.add_fixed_lookup_table
+
+        method addRuntimeTableConfig = Gates.add_runtime_table_config
+
+        method raw = Gates.raw
       end
 
     val bool =
@@ -412,8 +578,6 @@ let snarky =
 
     val group =
       object%js
-        method ecadd = Group.ec_add
-
         method scale = Group.scale
       end
 

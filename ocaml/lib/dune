@@ -20,6 +20,7 @@
   pickles_base
   pickles.limb_vector
   pickles_types
+  key_cache
   kimchi_backend
   kimchi_backend.pasta
   kimchi_backend.pasta.basic

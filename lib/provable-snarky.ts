@@ -4,7 +4,7 @@ import { Field } from '../../lib/core.js';
 // TODO make this whole file reuse ./provable-generic.ts
 
 // external API
-export { ProvableExtended, provable, provablePure };
+export { ProvableExtended, provable, provablePure, provableTuple };
 
 // internal API
 export {
@@ -47,7 +47,7 @@ const HashInput = {
 function provable<A>(
   typeObj: A,
   options?: { isPure?: boolean }
-): ProvableExtended<InferProvable<A>, InferJson<A>> {
+): InferredProvable<A> {
   type T = InferProvable<A>;
   type J = InferJson<A>;
   let objectKeys =
@@ -189,8 +189,8 @@ function provable<A>(
     if (Array.isArray(typeObj))
       return typeObj.forEach((t, i) => check(t, obj[i]));
     if ('check' in typeObj) return typeObj.check(obj);
-    return (isToplevel ? objectKeys : Object.keys(typeObj)).forEach(
-      (k) => check(typeObj[k], obj[k])
+    return (isToplevel ? objectKeys : Object.keys(typeObj)).forEach((k) =>
+      check(typeObj[k], obj[k])
     );
   }
   if (options?.isPure === true) {
@@ -216,7 +216,7 @@ function provable<A>(
     toJSON: (obj: T) => toJSON(typeObj, obj, true) as J,
     fromJSON: (json: J) => fromJSON(typeObj, json, true),
     check: (obj: T) => check(typeObj, obj, true),
-  };
+  } satisfies ProvableExtended<T, J> as InferredProvable<A>;
 }
 
 function provablePure<A>(
@@ -224,6 +224,10 @@ function provablePure<A>(
 ): ProvablePure<InferProvable<A>> &
   ProvableExtension<InferProvable<A>, InferJson<A>> {
   return provable(typeObj, { isPure: true }) as any;
+}
+
+function provableTuple<T extends Tuple<any>>(types: T): InferredProvable<T> {
+  return provable(types) as any;
 }
 
 // some type inference helpers

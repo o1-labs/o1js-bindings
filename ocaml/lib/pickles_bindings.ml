@@ -4,6 +4,7 @@ module Impl = Pickles.Impls.Step
 module Field = Impl.Field
 module Boolean = Impl.Boolean
 module Typ = Impl.Typ
+module Backend = Pickles.Backend
 
 module Public_input = struct
   type t = Field.t array
@@ -368,6 +369,134 @@ module Choices = struct
     get_rules (Choices (fun ~self:_ -> [])) (Array.length js_rules - 1)
 end
 
+module Cache = struct
+  module Sync : Key_cache.Sync = struct
+    open Key_cache
+    include T (Or_error)
+
+    module Disk_storable = struct
+      include Disk_storable (Or_error)
+
+      let of_binable = Trivial.Disk_storable.of_binable
+
+      let simple to_string read write = { to_string; read; write }
+    end
+
+    let read spec { Disk_storable.to_string; read; write = _ } key =
+      Or_error.find_map_ok spec ~f:(fun s ->
+          let res, cache_hit =
+            match s with
+            | Spec.On_disk { should_write; _ } ->
+                let path = to_string key in
+                ( read ~path key
+                , if should_write then `Locally_generated else `Cache_hit )
+            | S3 _ ->
+                (Or_error.errorf "Downloading from S3 is disabled", `Cache_hit)
+          in
+          Or_error.map res ~f:(fun res -> (res, cache_hit)) )
+
+    let write spec { Disk_storable.to_string; read = _; write } key value =
+      let errs =
+        List.filter_map spec ~f:(fun s ->
+            let res =
+              match s with
+              | Spec.On_disk { should_write; _ } ->
+                  if should_write then write key value (to_string key)
+                  else Or_error.return ()
+              | S3 _ ->
+                  Or_error.return ()
+            in
+            match res with Error e -> Some e | Ok () -> None )
+      in
+      match errs with [] -> Ok () | errs -> Error (Error.of_list errs)
+  end
+
+  let () = Key_cache.set_sync_implementation (module Sync)
+
+  open Pickles.Cache
+
+  type any_key =
+    | Step_pk of Step.Key.Proving.t
+    | Step_vk of Step.Key.Verification.t
+    | Wrap_pk of Wrap.Key.Proving.t
+    | Wrap_vk of Wrap.Key.Verification.t
+
+  type any_value =
+    | Step_pk of Backend.Tick.Keypair.t
+    | Step_vk of Kimchi_bindings.Protocol.VerifierIndex.Fp.t
+    | Wrap_pk of Backend.Tock.Keypair.t
+    | Wrap_vk of Pickles.Verification_key.t
+
+  let step_pk = function Step_pk v -> Ok v | _ -> Or_error.errorf "step_pk"
+
+  let step_vk = function Step_vk v -> Ok v | _ -> Or_error.errorf "step_vk"
+
+  let wrap_pk = function Wrap_pk v -> Ok v | _ -> Or_error.errorf "wrap_pk"
+
+  let wrap_vk = function Wrap_vk v -> Ok v | _ -> Or_error.errorf "wrap_vk"
+
+  type js_storable =
+    { read : any_key -> Js.js_string Js.t -> (any_value, unit) result
+    ; write : any_key -> any_value -> Js.js_string Js.t -> (unit, unit) result
+    ; can_write : bool
+    }
+
+  let or_error f = function Ok v -> f v | _ -> Or_error.errorf "failed"
+
+  let map_error = function Ok v -> Ok v | _ -> Or_error.errorf "failed"
+
+  let step_storable { read; write; _ } : Step.storable =
+    let read key ~path =
+      read (Step_pk key) (Js.string path) |> or_error step_pk
+    in
+    let write key value path =
+      write (Step_pk key) (Step_pk value) (Js.string path) |> map_error
+    in
+    Sync.Disk_storable.simple Step.Key.Proving.to_string read write
+
+  let step_vk_storable { read; write; _ } : Step.vk_storable =
+    let read key ~path =
+      read (Step_vk key) (Js.string path) |> or_error step_vk
+    in
+    let write key value path =
+      write (Step_vk key) (Step_vk value) (Js.string path) |> map_error
+    in
+    Sync.Disk_storable.simple Step.Key.Verification.to_string read write
+
+  let wrap_storable { read; write; _ } : Wrap.storable =
+    let read key ~path =
+      read (Wrap_pk key) (Js.string path) |> or_error wrap_pk
+    in
+    let write key value path =
+      write (Wrap_pk key) (Wrap_pk value) (Js.string path) |> map_error
+    in
+    Sync.Disk_storable.simple Wrap.Key.Proving.to_string read write
+
+  let wrap_vk_storable { read; write; _ } : Wrap.vk_storable =
+    let read key ~path =
+      read (Wrap_vk key) (Js.string path) |> or_error wrap_vk
+    in
+    let write key value path =
+      write (Wrap_vk key) (Wrap_vk value) (Js.string path) |> map_error
+    in
+    Sync.Disk_storable.simple Wrap.Key.Verification.to_string read write
+    (* TODO get this code to understand equivalence of versions of Pickles.Verification_key.t *)
+    |> Obj.magic
+
+  let storables s : Pickles.Storables.t =
+    { step_storable = step_storable s
+    ; step_vk_storable = step_vk_storable s
+    ; wrap_storable = wrap_storable s
+    ; wrap_vk_storable = wrap_vk_storable s
+    }
+
+  let cache_dir { can_write; _ } : Key_cache.Spec.t list =
+    let d : Key_cache.Spec.t =
+      On_disk { directory = ""; should_write = can_write }
+    in
+    [ d ]
+end
+
 type proof = (Pickles_types.Nat.N0.n, Pickles_types.Nat.N0.n) Pickles.Proof.t
 
 module Public_inputs_with_proofs =
@@ -446,9 +575,10 @@ let constraint_constants =
   }
 
 let pickles_compile (choices : pickles_rule_js array)
-    (signature :
+    (config :
       < publicInputSize : int Js.prop
       ; publicOutputSize : int Js.prop
+      ; storable : Cache.js_storable Js.optdef_prop
       ; overrideWrapDomain : int Js.optdef_prop >
       Js.t ) =
   (* translate number of branches and recursively verified proofs from JS *)
@@ -462,14 +592,22 @@ let pickles_compile (choices : pickles_rule_js array)
   let (module Max_proofs_verified) = nat_add_module max_proofs in
 
   (* translate method circuits from JS *)
-  let public_input_size = signature##.publicInputSize in
-  let public_output_size = signature##.publicOutputSize in
+  let public_input_size = config##.publicInputSize in
+  let public_output_size = config##.publicOutputSize in
   let override_wrap_domain =
-    Js.Optdef.to_option signature##.overrideWrapDomain
+    Js.Optdef.to_option config##.overrideWrapDomain
     |> Option.map ~f:Pickles_base.Proofs_verified.of_int
   in
   let (Choices choices) =
     Choices.of_js ~public_input_size ~public_output_size choices
+  in
+
+  (* parse caching configuration *)
+  let storables =
+    Js.Optdef.to_option config##.storable |> Option.map ~f:Cache.storables
+  in
+  let cache =
+    Js.Optdef.to_option config##.storable |> Option.map ~f:Cache.cache_dir
   in
 
   (* call into Pickles *)
@@ -482,7 +620,7 @@ let pickles_compile (choices : pickles_rule_js array)
       ~auxiliary_typ:Typ.unit
       ~branches:(module Branches)
       ~max_proofs_verified:(module Max_proofs_verified)
-      ~name ~constraint_constants
+      ~name ~constraint_constants ?storables ?cache
   in
 
   (* translate returned prover and verify functions to JS *)
@@ -582,6 +720,10 @@ let verify (statement : Statement.Constant.t) (proof : proof)
   |> Promise.map ~f:(fun x -> Js.bool (Or_error.is_ok x))
   |> Promise_js_helpers.to_js
 
+let load_srs_fp () = Backend.Tick.Keypair.load_urs ()
+
+let load_srs_fq () = Backend.Tock.Keypair.load_urs ()
+
 let dummy_proof (max_proofs_verified : int) (domain_log2 : int) : some_proof =
   match max_proofs_verified with
   | 0 ->
@@ -602,11 +744,36 @@ let dummy_verification_key () =
   let hash = Mina_base.Zkapp_account.digest_vk vk in
   (data |> Js.string, hash)
 
+let encode_verification_key (vk : Pickles.Verification_key.t) =
+  Pickles.Verification_key.to_yojson vk |> Yojson.Safe.to_string |> Js.string
+
+let decode_verification_key (bytes : Js.js_string Js.t) =
+  let vk_or_error =
+    Pickles.Verification_key.of_yojson @@ Yojson.Safe.from_string
+    @@ Js.to_string bytes
+  in
+  let open Ppx_deriving_yojson_runtime.Result in
+  match vk_or_error with
+  | Ok vk ->
+      vk
+  | Error err ->
+      failwithf "Could not decode verification key: %s" err ()
+
+module Util = struct
+  let to_ml_string s = Js.to_string s
+
+  let from_ml_string s = Js.string s
+end
+
 let pickles =
   object%js
     val compile = pickles_compile
 
     val verify = verify
+
+    val loadSrsFp = load_srs_fp
+
+    val loadSrsFq = load_srs_fq
 
     val dummyProof = dummy_proof
 
@@ -620,4 +787,15 @@ let pickles =
       fun (proof : proof) ->
         proof |> Pickles.Side_loaded.Proof.of_proof
         |> Pickles.Side_loaded.Proof.to_base64 |> Js.string
+
+    val encodeVerificationKey = encode_verification_key
+
+    val decodeVerificationKey = decode_verification_key
+
+    val util =
+      object%js
+        val toMlString = Util.to_ml_string
+
+        val fromMlString = Util.from_ml_string
+      end
   end
