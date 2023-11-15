@@ -10,6 +10,8 @@ export {
   createCurveAffine,
   CurveAffine,
   ProjectiveCurve,
+  affineAdd,
+  affineDouble,
 };
 
 // TODO: constants, like generator points and cube roots for endomorphisms, should be drawn from
