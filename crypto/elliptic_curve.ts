@@ -3,6 +3,7 @@ import { FiniteField, Fp, inverse, mod, p, q } from './finite_field.js';
 export {
   Pallas,
   Vesta,
+  CurveParams,
   GroupAffine,
   GroupProjective,
   GroupMapPallas,
@@ -42,13 +43,41 @@ const projectiveZero = { x: 1n, y: 1n, z: 0n };
 type GroupProjective = { x: bigint; y: bigint; z: bigint };
 type GroupAffine = { x: bigint; y: bigint; infinity: boolean };
 
+/**
+ * Parameters defining an elliptic curve in short Weierstraß form
+ * y^2 = x^3 + ax + b
+ */
 type CurveParams = {
-  p: bigint; // base field modulus
-  order: bigint; // group order = scalar field modulus
+  /**
+   * Human-friendly name for the curve
+   */
+  name: string;
+  /**
+   * Base field modulus
+   */
+  modulus: bigint;
+  /**
+   * Scalar field modulus = group order
+   */
+  order: bigint;
+  /**
+   * Cofactor = size of EC / order
+   *
+   * This can be left undefined if the cofactor is 1.
+   */
   cofactor?: bigint;
+  /**
+   * Generator point
+   */
   generator: { x: bigint; y: bigint };
-  b: bigint;
+  /**
+   * The `a` parameter in the curve equation y^2 = x^3 + ax + b
+   */
   a: bigint;
+  /**
+   * The `b` parameter in the curve equation y^2 = x^3 + ax + b
+   */
+  b: bigint;
   endoBase?: bigint;
   endoScalar?: bigint;
 };
@@ -301,7 +330,8 @@ function projectiveInSubgroup(g: GroupProjective, p: bigint, order: bigint) {
  * Projective curve arithmetic in Jacobian coordinates
  */
 function createCurveProjective({
-  p,
+  name,
+  modulus: p,
   order,
   cofactor,
   generator,
@@ -311,8 +341,13 @@ function createCurveProjective({
   endoScalar,
 }: CurveParams) {
   if (a !== 0n) throw Error('createCurveProjective only supports a = 0');
-  let hasCofactor = cofactor !== undefined && cofactor !== 1n;
+  cofactor ??= 1n;
+  let hasCofactor = cofactor !== 1n;
   return {
+    name,
+    modulus: p,
+    order,
+    cofactor,
     zero: projectiveZero,
     one: { ...generator, z: 1n },
     get endoBase() {
@@ -370,7 +405,8 @@ function createCurveProjective({
 type ProjectiveCurve = ReturnType<typeof createCurveProjective>;
 
 const Pallas = createCurveProjective({
-  p,
+  name: 'Pallas',
+  modulus: p,
   order: q,
   generator: pallasGeneratorProjective,
   b,
@@ -379,7 +415,8 @@ const Pallas = createCurveProjective({
   endoScalar: pallasEndoScalar,
 });
 const Vesta = createCurveProjective({
-  p: q,
+  name: 'Vesta',
+  modulus: q,
   order: p,
   generator: vestaGeneratorProjective,
   b,
@@ -453,7 +490,8 @@ function affineScale(g: GroupAffine, s: bigint | boolean[], p: bigint) {
 type CurveAffine = ReturnType<typeof createCurveAffine>;
 
 function createCurveAffine({
-  p,
+  name,
+  modulus: p,
   order,
   cofactor,
   generator,
@@ -464,7 +502,8 @@ function createCurveAffine({
   if (a !== 0n) throw Error('createCurveAffine only supports a = 0');
   let hasCofactor = cofactor !== undefined && cofactor !== 1n;
   return {
-    p,
+    name,
+    modulus: p,
     order,
     hasCofactor,
 
