@@ -360,8 +360,8 @@ function createCurveProjective({
         throw Error('`endoScalar` for this curve was not provided.');
       return endoScalar;
     },
-    b,
     a,
+    b,
     hasCofactor,
 
     equal(g: GroupProjective, h: GroupProjective) {
@@ -505,6 +505,8 @@ function createCurveAffine({
     name,
     modulus: p,
     order,
+    a,
+    b,
     hasCofactor,
 
     zero: affineZero,
