@@ -7,7 +7,7 @@ const Ntest = 100000;
 const q = Pallas.order;
 const lambda = Pallas.endoScalar;
 
-for (let N = 255n; N <= 270n; N++) {
+for (let N = 260n; N <= 260n; N++) {
   let data = computeGlvData(q, lambda, N);
   testGlv(data);
 }
@@ -34,23 +34,23 @@ function computeGlvData(q: bigint, lambda: bigint, N: bigint) {
   let [[v00, v01], [v10, v11]] = egcdStopEarly(lambda, q);
 
   let det = v00 * v11 - v10 * v01;
-  let m0 = ((1n << N) * -v11) / det;
-  let m1 = ((1n << N) * v10) / det;
+  let m0 = -(v11 << N) / det;
+  let m1 = (v10 << N) / det;
 
   console.log({
     N,
     maxBitsV: Math.max(log2(v00), log2(v01), log2(v10), log2(v11)),
     maxBitsM: Math.max(log2(m0), log2(m1)),
     // maxBitsSHi: log2(q),
-    // m0: m0.toString(16),
-    // m1: m1.toString(16),
+    m0: m0.toString(16),
+    m1: m1.toString(16),
   });
 
-  let m0Residual = ((1n << N) * -v11) % det;
-  let m1Residual = ((1n << N) * v10) % det;
+  let m0Residual = -(v11 << N) % det;
+  let m1Residual = (v10 << N) % det;
 
-  assert(m0 * det + m0Residual === (1n << N) * -v11);
-  assert(m1 * det + m1Residual === (1n << N) * v10);
+  assert(m0 * det + m0Residual === -v11 << N);
+  assert(m1 * det + m1Residual === v10 << N);
 
   let m0Error = Math.abs(divide(m0Residual, det));
   let m1Error = Math.abs(divide(m1Residual, det));
@@ -88,7 +88,7 @@ function testGlv(data: GlvData) {
     let s = Fq.random();
 
     let x0 = sign(m0) * dividePower2AndRound(abs(m0) * s, N);
-    let x1 = sign(m0) * dividePower2AndRound(abs(m1) * s, N);
+    let x1 = sign(m1) * dividePower2AndRound(abs(m1) * s, N);
 
     let s0 = v00 * x0 + v01 * x1 + s;
     let s1 = v10 * x0 + v11 * x1;
