@@ -202,17 +202,17 @@ function log2(n: number | bigint) {
 /**
  * divide two bigints to return a float of given precision
  */
-function divide(x: bigint, y: bigint, prec = 10) {
-  let length = y.toString(10).length;
+function divide(x: bigint, y: bigint, prec = 32) {
+  let length = y.toString(2).length;
   let exp = BigInt(length - prec);
-  return Number(x / 10n ** exp) / Number(y / 10n ** exp);
+  return Number(x / 2n ** exp + 1n) / Number(y / 2n ** exp);
 }
 
 /**
  * scale bigint by a float
  */
-function scale(c: number, x: bigint, prec = 10) {
-  return (BigInt(Math.round(c * 10 ** prec)) * x) / 10n ** BigInt(prec);
+function scale(c: number, x: bigint, prec = 32) {
+  return (BigInt(Math.ceil(c * 2 ** prec)) * x) >> BigInt(prec);
 }
 
 function max(a: bigint, b: bigint) {
