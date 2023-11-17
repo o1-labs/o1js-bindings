@@ -700,7 +700,7 @@ macro_rules! impl_proof {
                         .try_into()
                         .expect("the witness should be a column of 15 vectors");
 
-                    let index: &ProverIndex<$G> = &index.0.as_ref();
+                    let index: &ProverIndex<$G, OpeningProof<$G>> = &index.0.as_ref();
 
                     let public_input = witness[0][0..index.cs.public].to_vec();
 
@@ -732,6 +732,7 @@ macro_rules! impl_proof {
                         $G,
                         DefaultFqSponge<_, PlonkSpongeConstantsKimchi>,
                         DefaultFrSponge<_, PlonkSpongeConstantsKimchi>,
+                        OpeningProof<$G>
                     >(
                         &group_map,
                         &[Context { verifier_index, proof, public_input }]
