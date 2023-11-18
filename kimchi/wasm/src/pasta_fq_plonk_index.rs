@@ -40,7 +40,8 @@ pub struct WasmPastaFqLookupTable {
 
 impl From<WasmPastaFqLookupTable> for LookupTable<Fq> {
     fn from(wasm_lt: WasmPastaFqLookupTable) -> LookupTable<Fq> {
-        LookupTable::create(wasm_lt.id.into(), wasm_lt.data.0).expect("LookupTable -> WasmPastaFqLookupTable conversion must succeed")
+        LookupTable::create(wasm_lt.id.into(), wasm_lt.data.0)
+            .expect("LookupTable -> WasmPastaFqLookupTable conversion must succeed")
     }
 }
 
