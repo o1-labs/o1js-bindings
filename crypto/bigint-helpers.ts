@@ -205,6 +205,6 @@ function abs(x: bigint) {
   return x < 0n ? -x : x;
 }
 
-function sign(x: bigint) {
+function sign(x: bigint): 1n | -1n {
   return x >= 0 ? 1n : -1n;
 }

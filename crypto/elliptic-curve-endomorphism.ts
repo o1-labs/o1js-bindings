@@ -1,6 +1,16 @@
 import { assert } from '../../lib/errors.js';
-import { abs, log2, max, sign } from './bigint-helpers.js';
-import { GroupAffine, affineScale } from './elliptic_curve.js';
+import { abs, bigIntToBits, log2, max, sign } from './bigint-helpers.js';
+import {
+  GroupAffine,
+  GroupProjective,
+  affineScale,
+  projectiveAdd,
+  projectiveDouble,
+  projectiveFromAffine,
+  projectiveNeg,
+  projectiveToAffine,
+  projectiveZero,
+} from './elliptic_curve.js';
 import { FiniteField, mod } from './finite_field.js';
 
 export {
@@ -50,6 +60,21 @@ function Endomorphism(
     endomorphism(P: GroupAffine) {
       return endomorphism(P, endoBase_, Field.modulus);
     },
+
+    scaleProjective(g: GroupProjective, s: bigint) {
+      return glvScaleProjective(g, s, Field.modulus, endoBase_, glvData);
+    },
+    scale(g: GroupAffine, s: bigint) {
+      let gProj = projectiveFromAffine(g);
+      let sGProj = glvScaleProjective(
+        gProj,
+        s,
+        Field.modulus,
+        endoBase_,
+        glvData
+      );
+      return projectiveToAffine(sGProj, Field.modulus);
+    },
   };
 }
 
@@ -82,7 +107,10 @@ function decompose(s: bigint, data: GlvData) {
   let x1 = divideAndRound(v10 * s, det);
   let s0 = v00 * x0 + v01 * x1 + s;
   let s1 = v10 * x0 + v11 * x1;
-  return [s0, s1];
+  return [
+    { sign: sign(s0), abs: abs(s0) },
+    { sign: sign(s1), abs: abs(s1) },
+  ];
 }
 
 /**
@@ -90,6 +118,47 @@ function decompose(s: bigint, data: GlvData) {
  */
 function endomorphism(P: GroupAffine, endoBase: bigint, p: bigint) {
   return { x: mod(endoBase * P.x, p), y: P.y };
+}
+
+function endomorphismProjective(
+  P: GroupProjective,
+  endoBase: bigint,
+  p: bigint
+) {
+  return { x: mod(endoBase * P.x, p), y: P.y, z: P.z };
+}
+
+/**
+ * Faster scalar muliplication leveraging an endomorphism
+ *
+ * This method is known as "GLV" after the authors of the paper that introduced it:
+ * https://iacr.org/archive/crypto2001/21390189.pdf
+ */
+function glvScaleProjective(
+  g: GroupProjective,
+  s: bigint,
+  p: bigint,
+  endoBase: bigint,
+  data: GlvData
+) {
+  let endoG = endomorphismProjective(g, endoBase, p);
+
+  let [s0, s1] = decompose(s, data);
+  let S0 = bigIntToBits(s0.abs);
+  let S1 = bigIntToBits(s1.abs);
+  if (s0.sign === -1n) g = projectiveNeg(g, p);
+  if (s1.sign === -1n) endoG = projectiveNeg(endoG, p);
+
+  let h = projectiveZero;
+
+  for (let i = data.maxBits - 1; i >= 0; i--) {
+    if (S0[i]) h = projectiveAdd(h, g, p);
+    if (S1[i]) h = projectiveAdd(h, endoG, p);
+    if (i === 0) break;
+    h = projectiveDouble(h, p);
+  }
+
+  return h;
 }
 
 /**

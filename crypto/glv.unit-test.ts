@@ -1,5 +1,4 @@
 import { assert } from '../../lib/errors.js';
-import { abs } from './bigint-helpers.js';
 import {
   pallasParams,
   secp256k1Params,
@@ -8,6 +7,7 @@ import {
 import { CurveParams, createCurveAffine } from './elliptic_curve.js';
 import { Fq, mod } from './finite_field.js';
 import { computeGlvData, decompose } from './elliptic-curve-endomorphism.js';
+import { Random, test } from '../../lib/testing/property.js';
 
 const Ntest = 100000;
 const isVerbose = false;
@@ -39,10 +39,13 @@ function testGlv(params: CurveParams) {
 
     // decompose s and assert decomposition is correct
     let [s0, s1] = decompose(s, data);
-    assert(mod(s0 + s1 * lambda, q) === s, 'valid decomposition');
+    assert(
+      mod(s0.sign * s0.abs + s1.sign * s1.abs * lambda, q) === s,
+      'valid decomposition'
+    );
 
-    if (abs(s0) > maxS0) maxS0 = abs(s0);
-    if (abs(s1) > maxS1) maxS1 = abs(s1);
+    if (s0.abs > maxS0) maxS0 = s0.abs;
+    if (s1.abs > maxS1) maxS1 = s1.abs;
   }
 
   if (isVerbose)
@@ -54,4 +57,12 @@ function testGlv(params: CurveParams) {
   // assert that upper bounds are correct
   assert(maxS0 < data.maxS0, 'maxS0 is correct');
   assert(maxS1 < data.maxS1, 'maxS1 is correct');
+
+  // check scalar multiplication
+  let randomScalar = Random.otherField(Curve.Scalar);
+  test(randomScalar, (s) => {
+    let sG1 = Curve.Endo.scale(Curve.one, s);
+    let sG2 = Curve.scale(Curve.one, s);
+    assert(Curve.equal(sG1, sG2), 'scalar multiplication using GLV');
+  });
 }

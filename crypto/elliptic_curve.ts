@@ -23,6 +23,12 @@ export {
   affineAdd,
   affineDouble,
   affineScale,
+  projectiveFromAffine,
+  projectiveToAffine,
+  projectiveZero,
+  projectiveAdd,
+  projectiveDouble,
+  projectiveNeg,
 };
 
 // TODO: constants, like generator points and cube roots for endomorphisms, should be drawn from
