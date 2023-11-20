@@ -1,5 +1,5 @@
 import { assert } from '../../lib/errors.js';
-import { abs, divide, log2, max, scale, sign } from './bigint-helpers.js';
+import { abs, log2, max, scale, sign } from './bigint-helpers.js';
 import { Pallas } from './elliptic_curve.js';
 import { Fq, mod } from './finite_field.js';
 
@@ -7,92 +7,77 @@ const Ntest = 100000;
 const q = Pallas.order;
 const lambda = Pallas.endoScalar;
 
-for (let N = 260n; N <= 260n; N++) {
-  let data = computeGlvData(q, lambda, N);
-  testGlv(data);
-}
+let data = computeGlvData(q, lambda);
+testGlv(data);
 
 /**
- * compute constants and upper bounds on s0, s1
+ * decompose scalar as s = s0 + s1 * lambda where |s0|, |s1| are small
  *
- * we write s = s0 + s1 * lambda, where
+ * we compute
  * s0 = x0 v00 + x1 v01 + s
  * s1 = x0 v10 + x1 v11
  *
- * x0, x1 are chosen as integer approximations to the rational solutions of
+ * for _any_ choice of x0, x1, this ensures
+ * s0 + s1 * lambda = x0 (v00 + v10 * lambda) + x1 (v01 + v11 * lambda) + s = s
+ *
+ * x0, x1 are chosen as integer approximations to the rational solutions x0*, x1* of
  * x0* v00 + x1* v01 = -s
  * x0* v10 + x1* v11 = 0
  *
- * define the error e = |x0 - x0*| + |x1 - x1*|
- * and v = max(|v00|, |v01|, |v10|, |v11|) ~ sqrt(q)
+ * we can achieve |x0 - x0*| <= 0.5 and |x1 - x1*| <= 0.5.
  *
- * making e small ensures that s0, s1 are small since
- * |s0| = |(x0 - x0*) v00 + (x1 - x1*) v01| <= v * e
- * |s1| = |(x0 - x0*) v10 + (x1 - x1*) v11| <= v * e
+ * |vij| being small ensures that s0, s1 are small:
+ *
+ * |s0| = |(x0 - x0*) v00 + (x1 - x1*) v01| <= 0.5 * (|v00| + |v01|)
+ * |s1| = |(x0 - x0*) v10 + (x1 - x1*) v11| <= 0.5 * (|v10| + |v11|)
+ *
+ * for "typical" lambda, |vij| ~ sqrt(q) so |s0|, |s1| ~ sqrt(q), see {@link egcdStopEarly}.
  */
-function computeGlvData(q: bigint, lambda: bigint, N: bigint) {
+function decompose(s: bigint, data: GlvData) {
+  let { v00, v01, v10, v11, det } = data;
+  let x0 = divideAndRound(-v11 * s, det);
+  let x1 = divideAndRound(v10 * s, det);
+  let s0 = v00 * x0 + v01 * x1 + s;
+  let s1 = v10 * x0 + v11 * x1;
+  return [s0, s1];
+}
+
+/**
+ * compute constants for GLV decomposition and upper bounds on s0, s1
+ *
+ * see {@link decompose}
+ */
+function computeGlvData(q: bigint, lambda: bigint) {
   let [[v00, v01], [v10, v11]] = egcdStopEarly(lambda, q);
 
   let det = v00 * v11 - v10 * v01;
-  let m0 = -(v11 << N) / det;
-  let m1 = (v10 << N) / det;
+  let maxS0Est = scale(0.5, abs(v00) + abs(v01));
+  let maxS1Est = scale(0.5, abs(v10) + abs(v11));
+  let maxBits = log2(max(maxS0Est, maxS1Est));
 
-  console.log({
-    N,
-    maxBitsV: Math.max(log2(v00), log2(v01), log2(v10), log2(v11)),
-    maxBitsM: Math.max(log2(m0), log2(m1)),
-    // maxBitsSHi: log2(q),
-    m0: m0.toString(16),
-    m1: m1.toString(16),
-  });
-
-  let m0Residual = -(v11 << N) % det;
-  let m1Residual = (v10 << N) % det;
-
-  assert(m0 * det + m0Residual === -v11 << N);
-  assert(m1 * det + m1Residual === v10 << N);
-
-  let m0Error = Math.abs(divide(m0Residual, det));
-  let m1Error = Math.abs(divide(m1Residual, det));
-
-  console.log({ m0Error, m1Error });
-
-  let x0Error = 0.5 + divide(abs(m0), 1n << N) + m0Error * divide(q, 1n << N);
-  let x1Error = 0.5 + divide(abs(m1), 1n << N) + m1Error * divide(q, 1n << N);
-
-  console.log({ x0Error, x1Error });
-
-  let maxS0Est = scale(x0Error, abs(v00)) + scale(x1Error, abs(v01));
-  let maxS1Est = scale(x0Error, abs(v10)) + scale(x1Error, abs(v11));
-
-  console.log('upper bounds:');
-  console.log({
-    maxS0: maxS0Est.toString(16),
-    maxS1: maxS1Est.toString(16),
-    maxBitsS0: log2(maxS0Est),
-    maxBitsS1: log2(maxS1Est),
-  });
-
-  return { v00, v01, v10, v11, N, m0, m1, maxS0Est, maxS1Est };
+  return { v00, v01, v10, v11, det, maxS0Est, maxS1Est, maxBits };
 }
 
 type GlvData = ReturnType<typeof computeGlvData>;
 
 function testGlv(data: GlvData) {
-  let { v00, v01, v10, v11, N, m0, m1, maxS0Est, maxS1Est } = data;
+  let { maxS0Est, maxS1Est, maxBits } = data;
   let maxS0 = 0n;
   let maxS1 = 0n;
+
+  console.log('upper bounds:');
+  console.log({
+    maxS0: maxS0Est.toString(16),
+    maxS1: maxS1Est.toString(16),
+    maxBits,
+  });
 
   for (let i = 0; i < Ntest; i++) {
     // random scalar
     let s = Fq.random();
 
-    let x0 = sign(m0) * dividePower2AndRound(abs(m0) * s, N);
-    let x1 = sign(m1) * dividePower2AndRound(abs(m1) * s, N);
-
-    let s0 = v00 * x0 + v01 * x1 + s;
-    let s1 = v10 * x0 + v11 * x1;
-
+    // decompose s
+    let [s0, s1] = decompose(s, data);
     assert(mod(s0 + s1 * lambda, q) === s, 'valid decomposition');
 
     if (abs(s0) > maxS0) maxS0 = abs(s0);
@@ -103,8 +88,6 @@ function testGlv(data: GlvData) {
   console.log({
     maxS0: maxS0.toString(16),
     maxS1: maxS1.toString(16),
-    maxBitsS0: log2(maxS0),
-    maxBitsS1: log2(maxS1),
   });
   assert(maxS0 < maxS0Est);
   assert(maxS1 < maxS1Est);
@@ -157,10 +140,14 @@ function egcdStopEarly(
   ];
 }
 
-// round(x / 2^m)
-function dividePower2AndRound(x: bigint, m: bigint) {
-  let roundUp = (x & (1n << (m - 1n))) !== 0n;
-  x = x >> m;
-  if (roundUp) x++;
-  return x;
+// round(x / y)
+function divideAndRound(x: bigint, y: bigint) {
+  let signz = sign(x) * sign(y);
+  x = abs(x);
+  y = abs(y);
+  let z = x / y;
+  // z is rounded down. round up if it brings z*y closer to x
+  // (z+1)*y - x <= x - z*y
+  if (2n * (x - z * y) >= y) z++;
+  return signz * z;
 }
