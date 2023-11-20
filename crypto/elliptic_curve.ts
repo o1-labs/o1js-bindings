@@ -1,5 +1,14 @@
 import { bigIntToBits } from './bigint-helpers.js';
-import { FiniteField, Fp, inverse, mod, p, q } from './finite_field.js';
+import {
+  FiniteField,
+  Fp,
+  createField,
+  inverse,
+  mod,
+  p,
+  q,
+} from './finite_field.js';
+import { Endomorphism } from './glv.js';
 export {
   Pallas,
   Vesta,
@@ -13,6 +22,7 @@ export {
   ProjectiveCurve,
   affineAdd,
   affineDouble,
+  affineScale,
 };
 
 // TODO: constants, like generator points and cube roots for endomorphisms, should be drawn from
@@ -497,12 +507,23 @@ function createCurveAffine({
   generator,
   a,
   b,
+  endoScalar,
+  endoBase,
 }: CurveParams) {
   // TODO: lift this limitation by using other formulas (in projectiveScale) for a != 0
   if (a !== 0n) throw Error('createCurveAffine only supports a = 0');
   let hasCofactor = cofactor !== undefined && cofactor !== 1n;
+
+  const Field = createField(p);
+  const Scalar = createField(order);
+  const one = { ...generator, infinity: false };
+  const Endo = Endomorphism(name, Field, Scalar, one, endoScalar, endoBase);
+
   return {
     name,
+    Field,
+    Scalar,
+
     modulus: p,
     order,
     a,
@@ -510,7 +531,12 @@ function createCurveAffine({
     hasCofactor,
 
     zero: affineZero,
-    one: { ...generator, infinity: false },
+    one,
+
+    get Endo() {
+      if (Endo === undefined) throw Error(`no endomorphism defined on ${name}`);
+      return Endo;
+    },
 
     fromNonzero(g: { x: bigint; y: bigint }): GroupAffine {
       return { ...g, infinity: false };
