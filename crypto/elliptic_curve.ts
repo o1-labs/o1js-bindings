@@ -8,7 +8,7 @@ import {
   p,
   q,
 } from './finite_field.js';
-import { Endomorphism } from './glv.js';
+import { Endomorphism } from './elliptic-curve-endomorphism.js';
 export {
   Pallas,
   Vesta,

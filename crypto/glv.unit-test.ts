@@ -7,7 +7,7 @@ import {
 } from './elliptic-curve-examples.js';
 import { CurveParams, createCurveAffine } from './elliptic_curve.js';
 import { Fq, mod } from './finite_field.js';
-import { computeGlvData, decompose } from './glv.js';
+import { computeGlvData, decompose } from './elliptic-curve-endomorphism.js';
 
 const Ntest = 100000;
 const isVerbose = false;
