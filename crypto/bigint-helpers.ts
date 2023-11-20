@@ -5,8 +5,6 @@ export {
   bigIntToBits,
   parseHexString,
   log2,
-  divide,
-  scale,
   max,
   abs,
   sign,
@@ -197,22 +195,6 @@ function log2(n: number | bigint) {
   if (typeof n === 'number') n = BigInt(n);
   if (n === 1n) return 0;
   return (n - 1n).toString(2).length;
-}
-
-/**
- * divide two bigints to return a float of given precision
- */
-function divide(x: bigint, y: bigint, prec = 32) {
-  let length = y.toString(2).length;
-  let exp = BigInt(length - prec);
-  return Number(x / 2n ** exp + 1n) / Number(y / 2n ** exp);
-}
-
-/**
- * scale bigint by a float
- */
-function scale(c: number, x: bigint, prec = 32) {
-  return (BigInt(Math.ceil(c * 2 ** prec)) * x) >> BigInt(prec);
 }
 
 function max(a: bigint, b: bigint) {

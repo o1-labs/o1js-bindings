@@ -1,14 +1,6 @@
-import { assert } from '../../lib/errors.js';
-import { abs, log2, max, scale, sign } from './bigint-helpers.js';
-import { Pallas } from './elliptic_curve.js';
-import { Fq, mod } from './finite_field.js';
+import { abs, log2, max, sign } from './bigint-helpers.js';
 
-const Ntest = 100000;
-const q = Pallas.order;
-const lambda = Pallas.endoScalar;
-
-let data = computeGlvData(q, lambda);
-testGlv(data);
+export { decompose, computeGlvData, GlvData };
 
 /**
  * decompose scalar as s = s0 + s1 * lambda where |s0|, |s1| are small
@@ -49,49 +41,16 @@ function decompose(s: bigint, data: GlvData) {
  */
 function computeGlvData(q: bigint, lambda: bigint) {
   let [[v00, v01], [v10, v11]] = egcdStopEarly(lambda, q);
-
   let det = v00 * v11 - v10 * v01;
-  let maxS0Est = scale(0.5, abs(v00) + abs(v01));
-  let maxS1Est = scale(0.5, abs(v10) + abs(v11));
+
+  let maxS0Est = ((abs(v00) + abs(v01)) >> 1n) + 1n;
+  let maxS1Est = ((abs(v10) + abs(v11)) >> 1n) + 1n;
   let maxBits = log2(max(maxS0Est, maxS1Est));
 
   return { v00, v01, v10, v11, det, maxS0Est, maxS1Est, maxBits };
 }
 
 type GlvData = ReturnType<typeof computeGlvData>;
-
-function testGlv(data: GlvData) {
-  let { maxS0Est, maxS1Est, maxBits } = data;
-  let maxS0 = 0n;
-  let maxS1 = 0n;
-
-  console.log('upper bounds:');
-  console.log({
-    maxS0: maxS0Est.toString(16),
-    maxS1: maxS1Est.toString(16),
-    maxBits,
-  });
-
-  for (let i = 0; i < Ntest; i++) {
-    // random scalar
-    let s = Fq.random();
-
-    // decompose s
-    let [s0, s1] = decompose(s, data);
-    assert(mod(s0 + s1 * lambda, q) === s, 'valid decomposition');
-
-    if (abs(s0) > maxS0) maxS0 = abs(s0);
-    if (abs(s1) > maxS1) maxS1 = abs(s1);
-  }
-
-  console.log('actual results:');
-  console.log({
-    maxS0: maxS0.toString(16),
-    maxS1: maxS1.toString(16),
-  });
-  assert(maxS0 < maxS0Est);
-  assert(maxS1 < maxS1Est);
-}
 
 /**
  * Extended Euclidian algorithm which stops when r1 < sqrt(p)
