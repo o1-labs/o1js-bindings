@@ -108,9 +108,9 @@ function decompose(s: bigint, data: GlvData) {
   let s0 = v00 * x0 + v01 * x1 + s;
   let s1 = v10 * x0 + v11 * x1;
   return [
-    { sign: sign(s0), abs: abs(s0) },
-    { sign: sign(s1), abs: abs(s1) },
-  ];
+    { value: s0, isNegative: s0 < 0n, abs: abs(s0) },
+    { value: s1, isNegative: s1 < 0n, abs: abs(s1) },
+  ] as const;
 }
 
 /**
@@ -146,8 +146,8 @@ function glvScaleProjective(
   let [s0, s1] = decompose(s, data);
   let S0 = bigIntToBits(s0.abs);
   let S1 = bigIntToBits(s1.abs);
-  if (s0.sign === -1n) g = projectiveNeg(g, p);
-  if (s1.sign === -1n) endoG = projectiveNeg(endoG, p);
+  if (s0.isNegative) g = projectiveNeg(g, p);
+  if (s1.isNegative) endoG = projectiveNeg(endoG, p);
 
   let h = projectiveZero;
 

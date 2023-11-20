@@ -42,10 +42,7 @@ function testGlv(params: CurveParams) {
 
     // decompose s and assert decomposition is correct
     let [s0, s1] = decompose(s, data);
-    assert(
-      mod(s0.sign * s0.abs + s1.sign * s1.abs * lambda, q) === s,
-      'valid decomposition'
-    );
+    assert(mod(s0.value + s1.value * lambda, q) === s, 'valid decomposition');
 
     if (s0.abs > maxS0) maxS0 = s0.abs;
     if (s1.abs > maxS1) maxS1 = s1.abs;
