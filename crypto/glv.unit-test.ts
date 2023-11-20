@@ -8,6 +8,7 @@ import { CurveParams, createCurveAffine } from './elliptic_curve.js';
 import { Fq, mod } from './finite_field.js';
 import { computeGlvData, decompose } from './elliptic-curve-endomorphism.js';
 import { Random, test } from '../../lib/testing/property.js';
+import { log2 } from './bigint-helpers.js';
 
 const Ntest = 100000;
 const isVerbose = false;
@@ -29,6 +30,8 @@ function testGlv(params: CurveParams) {
       maxS1: data.maxS1.toString(16),
       maxBits: data.maxBits,
     });
+
+  assert(data.maxBits <= log2(q) / 2, 'decomposition reduces bits by half');
 
   let maxS0 = 0n;
   let maxS1 = 0n;

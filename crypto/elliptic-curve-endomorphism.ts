@@ -173,22 +173,22 @@ function computeEndoConstants(
 ) {
   let p = Field.modulus;
   let q = Scalar.modulus;
+  // if there is a cube root of unity, it generates a subgroup of order 3
   assert(p % 3n === 1n, 'Base field has a cube root of unity');
   assert(q % 3n === 1n, 'Scalar field has a cube root of unity');
 
-  // find a cube root of unity in Fq (endo scalar) by trial and error
-  let base = 2n;
-  let lambda = 0n;
-  while (true) {
-    // ensure lambda^3 = base^(q-1) = 1
-    lambda = Scalar.power(base, (q - 1n) / 3n);
-    // if lambda != 1, we found a non-trivial cube root of unity
-    if (lambda !== 1n) break;
-    base++;
-  }
+  // find a cube root of unity in Fq (endo scalar)
+  // we need lambda^3 = 1 and lambda != 1, which implies the quadratic equation
+  // lambda^2 + lambda + 1 = 0
+  // solving for lambda, we get lambda = (-1 +- sqrt(-3)) / 2
+  let sqrtMinus3 = Scalar.sqrt(Scalar.negate(3n));
+  assert(sqrtMinus3 !== undefined, 'Scalar field has a square root of -3');
+  let lambda = Scalar.div(Scalar.sub(sqrtMinus3, 1n), 2n);
+  assert(lambda !== undefined, 'Scalar field has a cube root of unity');
 
   // sanity check
   assert(Scalar.power(lambda, 3n) === 1n, 'lambda is a cube root');
+  assert(lambda !== 1n, 'lambda is not 1');
 
   // compute beta such that lambda * (x, y) = (beta * x, y) (endo base)
   let lambdaG = affineScale(G, lambda, p);
