@@ -199,12 +199,17 @@ function createField(
     fromBigint(x: bigint) {
       return mod(x, p);
     },
-    rot(x: bigint, bits: number, direction: 'left' | 'right' = 'left') {
+    rot(
+      x: bigint,
+      bits: number,
+      direction: 'left' | 'right' = 'left',
+      maxBits = 64
+    ) {
       let bitArray = x.toString(2).split('').reverse().map(Number);
       let binary: number[] =
-        bitArray.length >= 64
-          ? bitArray.splice(0, 64)
-          : [...bitArray, ...Array(64 - bitArray.length).fill(0)];
+        bitArray.length >= maxBits
+          ? bitArray.splice(0, maxBits)
+          : [...bitArray, ...Array(maxBits - bitArray.length).fill(0)];
       for (let j = 0; j < bits; j++) {
         if (direction === 'left') {
           let last = binary.pop()!;
