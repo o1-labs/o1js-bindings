@@ -201,25 +201,15 @@ function createField(
     },
     rot(
       x: bigint,
-      bits: number,
+      bits: bigint,
       direction: 'left' | 'right' = 'left',
-      maxBits = 64
+      maxBits = 64n
     ) {
-      let bitArray = x.toString(2).split('').reverse().map(Number);
-      let binary: number[] =
-        bitArray.length >= maxBits
-          ? bitArray.splice(0, maxBits)
-          : [...bitArray, ...Array(maxBits - bitArray.length).fill(0)];
-      for (let j = 0; j < bits; j++) {
-        if (direction === 'left') {
-          let last = binary.pop()!;
-          binary.unshift(last);
-        } else {
-          let last = binary.shift()!;
-          binary.push(last);
-        }
-      }
-      return BigInt('0b' + binary.reverse().join(''));
+      if (direction === 'right') bits = maxBits - bits;
+      let full = x << bits;
+      let excess = full >> maxBits;
+      let shifted = full & ((1n << maxBits) - 1n);
+      return shifted | excess;
     },
     leftShift(x: bigint, bits: number, maxBitSize: number = 64) {
       let shifted = x << BigInt(bits);
