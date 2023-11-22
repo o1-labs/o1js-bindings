@@ -7,15 +7,13 @@ use kimchi::circuits::{
     constraints::FeatureFlags,
     lookup::index::LookupSelectors,
     lookup::lookups::{LookupFeatures, LookupInfo, LookupPatterns},
-    polynomials::permutation::Shifts,
-    polynomials::permutation::{zk_polynomial, zk_w3},
+    polynomials::permutation::{permutation_vanishing_polynomial, zk_w, Shifts},
     wires::{COLUMNS, PERMUTS},
 };
 use kimchi::linearization::expr_linearization;
 use kimchi::verifier_index::{LookupVerifierIndex, VerifierIndex as DlogVerifierIndex};
 use paste::paste;
-use poly_commitment::commitment::PolyComm;
-use poly_commitment::srs::SRS;
+use poly_commitment::{commitment::PolyComm, evaluation_proof::OpeningProof, srs::SRS};
 use std::path::Path;
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
@@ -576,6 +574,7 @@ macro_rules! impl_verification_key {
                 pub shifts: WasmShifts,
                 #[wasm_bindgen(skip)]
                 pub lookup_index: Option<WasmLookupVerifierIndex>,
+                pub zk_rows: isize,
             }
             type WasmPlonkVerifierIndex = [<Wasm $field_name:camel PlonkVerifierIndex>];
 
@@ -591,6 +590,7 @@ macro_rules! impl_verification_key {
                     evals: &WasmPlonkVerificationEvals,
                     shifts: &WasmShifts,
                     lookup_index: Option<WasmLookupVerifierIndex>,
+                    zk_rows: isize,
                 ) -> Self {
                     WasmPlonkVerifierIndex {
                         domain: domain.clone(),
@@ -601,6 +601,7 @@ macro_rules! impl_verification_key {
                         evals: evals.clone(),
                         shifts: shifts.clone(),
                         lookup_index: lookup_index.clone(),
+                        zk_rows: zk_rows,
                     }
                 }
 
@@ -675,6 +676,7 @@ macro_rules! impl_verification_key {
                             s6: vi.shift[6].into(),
                         },
                     lookup_index: vi.lookup_index.map(Into::into),
+                    zk_rows: vi.zk_rows as isize,
                 }
             }
 
@@ -721,7 +723,8 @@ macro_rules! impl_verification_key {
                 srs: &$WasmSrs,
                 evals: &WasmPlonkVerificationEvals,
                 shifts: &WasmShifts,
-                lookup_index: Option<WasmLookupVerifierIndex>
+                lookup_index: Option<WasmLookupVerifierIndex>,
+                zk_rows: isize,
             ) -> (DlogVerifierIndex<GAffine, OpeningProof<GAffine>>, Arc<SRS<GAffine>>) {
                 /*
                 let urs_copy = Rc::clone(&*urs);
@@ -780,16 +783,16 @@ macro_rules! impl_verification_key {
 
                         w: {
                             let res = once_cell::sync::OnceCell::new();
-                            res.set(zk_w3(domain)).unwrap();
+                            res.set(zk_w(domain, 3)).unwrap();
                             res
                         },
                         endo: endo_q,
                         max_poly_size: max_poly_size as usize,
                         public: public_ as usize,
                         prev_challenges: prev_challenges as usize,
-                        zkpm: {
+                        permutation_vanishing_polynomial_m: {
                             let res = once_cell::sync::OnceCell::new();
-                            res.set(zk_polynomial(domain)).unwrap();
+                            res.set(permutation_vanishing_polynomial(domain, 3)).unwrap();
                             res
                         },
                         shift: [
@@ -802,10 +805,11 @@ macro_rules! impl_verification_key {
                             shifts.s6.into()
                         ],
                         srs: {
-                            let res = once_cell::sync::OnceCell::new();
-                            res.set(srs.0.clone()).unwrap();
-                            res
+                          Arc::clone(&srs.0)
                         },
+
+                        zk_rows: zk_rows as u64,
+
                         linearization,
                         powers_of_alpha,
                         lookup_index: lookup_index.map(Into::into),
@@ -823,7 +827,8 @@ macro_rules! impl_verification_key {
                         &index.srs,
                         &index.evals,
                         &index.shifts,
-                        index.lookup_index
+                        index.lookup_index,
+                        index.zk_rows
                     )
                     .0
                 }
@@ -836,8 +841,8 @@ macro_rules! impl_verification_key {
             ) -> Result<DlogVerifierIndex<$G, OpeningProof<$G>>, JsValue> {
                 let path = Path::new(&path);
                 let (endo_q, _endo_r) = poly_commitment::srs::endos::<GAffineOther>();
-                DlogVerifierIndex::<$G>::from_file(
-                    Some(srs.0.clone()),
+                DlogVerifierIndex::<$G, OpeningProof<$G>>::from_file(
+                    srs.0.clone(),
                     path,
                     offset.map(|x| x as u64),
                     endo_q,
@@ -860,7 +865,7 @@ macro_rules! impl_verification_key {
                 index: WasmPlonkVerifierIndex,
                 path: String,
             ) -> Result<(), JsValue> {
-                let index: DlogVerifierIndex<$G> = index.into();
+                let index: DlogVerifierIndex<$G, OpeningProof<$G>> = index.into();
                 let path = Path::new(&path);
                 index.to_file(path, append).map_err(|e| {
                     println!("{}", e);
@@ -892,7 +897,7 @@ macro_rules! impl_verification_key {
             pub fn [<$name:snake _serialize>](
                 index: WasmPlonkVerifierIndex,
             ) -> String {
-                let index: DlogVerifierIndex<$G> = index.into();
+                let index: DlogVerifierIndex<$G, OpeningProof<$G>> = index.into();
                 serde_json::to_string(&index).unwrap()
             }
 
@@ -901,7 +906,7 @@ macro_rules! impl_verification_key {
                 srs: &$WasmSrs,
                 index: String,
             ) -> WasmPlonkVerifierIndex {
-                let vi: DlogVerifierIndex<$G> = serde_json::from_str(&index).unwrap();
+                let vi: DlogVerifierIndex<$G, OpeningProof<$G>> = serde_json::from_str(&index).unwrap();
                 return to_wasm(srs, vi.into())
             }
 
@@ -982,7 +987,8 @@ macro_rules! impl_verification_key {
                             s5: $F::one().into(),
                             s6: $F::one().into(),
                         },
-                    lookup_index: None
+                    lookup_index: None,
+                    zk_rows: 3,
                 }
             }
 

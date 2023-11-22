@@ -5,12 +5,15 @@ use crate::gate_vector::fq::WasmGateVector;
 use crate::srs::fq::WasmFqSrs as WasmSrs;
 use crate::wasm_flat_vector::WasmFlatVector;
 use crate::wasm_vector::{fq::*, WasmVector};
+use ark_poly::EvaluationDomain;
 use kimchi::circuits::lookup::tables::LookupTable;
 use kimchi::circuits::{constraints::ConstraintSystem, gate::CircuitGate};
 use kimchi::linearization::expr_linearization;
 use kimchi::prover_index::ProverIndex;
 use mina_curves::pasta::{Fq, Pallas as GAffine, PallasParameters, Vesta as GAffineOther};
 use mina_poseidon::{constants::PlonkSpongeConstantsKimchi, sponge::DefaultFqSponge};
+use poly_commitment::evaluation_proof::OpeningProof;
+use serde::{Deserialize, Serialize};
 use std::{
     fs::{File, OpenOptions},
     io::{BufReader, BufWriter, Seek, SeekFrom::Start},
@@ -37,10 +40,8 @@ pub struct WasmPastaFqLookupTable {
 
 impl From<WasmPastaFqLookupTable> for LookupTable<Fq> {
     fn from(wasm_lt: WasmPastaFqLookupTable) -> LookupTable<Fq> {
-        LookupTable {
-            id: wasm_lt.id.into(),
-            data: wasm_lt.data.0,
-        }
+        LookupTable::create(wasm_lt.id.into(), wasm_lt.data.0)
+            .expect("LookupTable -> WasmPastaFqLookupTable conversion must succeed")
     }
 }
 
@@ -146,7 +147,8 @@ pub fn caml_pasta_fq_plonk_index_create(
             ptr.add_lagrange_basis(cs.domain.d1);
         }
 
-        let mut index = ProverIndex::<GAffine>::create(cs, endo_q, srs.0.clone());
+        let mut index =
+            ProverIndex::<GAffine, OpeningProof<GAffine>>::create(cs, endo_q, srs.0.clone());
         // Compute and cache the verifier index digest
         index.compute_verifier_index_digest::<DefaultFqSponge<PallasParameters, PlonkSpongeConstantsKimchi>>();
 
@@ -205,8 +207,10 @@ pub fn caml_pasta_fq_plonk_index_read(
     }
 
     // deserialize the index
-    let mut t = ProverIndex::<GAffine>::deserialize(&mut rmp_serde::Deserializer::new(r))
-        .map_err(|err| JsValue::from_str(&format!("caml_pasta_fq_plonk_index_read: {err}")))?;
+    let mut t = ProverIndex::<GAffine, OpeningProof<GAffine>>::deserialize(
+        &mut rmp_serde::Deserializer::new(r),
+    )
+    .map_err(|err| JsValue::from_str(&format!("caml_pasta_fq_plonk_index_read: {err}")))?;
     t.srs = srs.0.clone();
     let (linearization, powers_of_alpha) = expr_linearization(Some(&t.cs.feature_flags), true);
     t.linearization = linearization;
