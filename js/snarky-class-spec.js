@@ -32,6 +32,10 @@ export default [
         name: 'foreignField',
         type: 'object',
       },
+      {
+        name: 'foreignGroup',
+        type: 'object',
+      },
     ],
   },
   {
