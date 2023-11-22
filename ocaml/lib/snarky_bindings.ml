@@ -291,6 +291,8 @@ module EC_group = struct
   (* curve = [a, b, modulus, gen_x, gen_y, order] *)
   let add (left_input : t) (right_input : t)
       (curve : Js.js_string Js.t Js.js_array Js.t) =
+    let here : Js.js_string Js.t = Js.string "here" in 
+    Js_of_ocaml.Firebug.console##log here;
     let external_checks = External_checks.create (module Impl) in
     let a =
       Js.to_string
