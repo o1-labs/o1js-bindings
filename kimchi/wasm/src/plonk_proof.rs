@@ -835,6 +835,7 @@ macro_rules! impl_proof {
                     lookup_gate_lookup_selector: None,
                     range_check_lookup_selector: None,
                     foreign_field_mul_lookup_selector: None,
+                    public: None,
                 };
 
                 let dlogproof = ProverProof {

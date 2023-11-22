@@ -29,6 +29,7 @@ export {
   ProofEvaluations,
   RecursionChallenge,
   ProverProof,
+  ProofWithPublic,
   LookupCommitments,
   RuntimeTableCfg,
   LookupTable,
@@ -87,7 +88,8 @@ type VerifierIndex = [
   srs: WasmSrs,
   evals: VerificationEvals,
   shifts: MlArray<Field>,
-  lookup_index: MlOption<Lookup<PolyComm>>
+  lookup_index: MlOption<Lookup<PolyComm>>,
+  zkRows: number,
 ];
 
 // oracles
@@ -175,6 +177,7 @@ type ProofEvaluations<Field> = [
   range_check_lookup_selector: MlOption<PointEvaluations<Field>>,
   foreign_field_mul_lookup_selector: MlOption<PointEvaluations<Field>>
 ];
+
 type RecursionChallenge = [_: 0, chals: MlArray<Field>, comm: PolyComm];
 
 type ProverProof = [
@@ -185,6 +188,12 @@ type ProverProof = [
   ft_eval1: Field,
   public_: MlArray<Field>,
   prev_challenges: MlArray<RecursionChallenge>
+];
+
+type ProofWithPublic = [
+  _: 0,
+  public_evals: MlOption<PointEvaluations<Field>>,
+  proof: ProverProof
 ];
 
 // tables

@@ -9,6 +9,7 @@ use ark_poly::EvaluationDomain;
 use kimchi::circuits::lookup::tables::LookupTable;
 use kimchi::circuits::{constraints::ConstraintSystem, gate::CircuitGate};
 use kimchi::linearization::expr_linearization;
+use kimchi::poly_commitment::evaluation_proof::OpeningProof;
 use kimchi::prover_index::ProverIndex;
 use mina_curves::pasta::{Fq, Pallas as GAffine, PallasParameters, Vesta as GAffineOther};
 use mina_poseidon::{constants::PlonkSpongeConstantsKimchi, sponge::DefaultFqSponge};
@@ -40,10 +41,8 @@ pub struct WasmPastaFqLookupTable {
 
 impl From<WasmPastaFqLookupTable> for LookupTable<Fq> {
     fn from(wasm_lt: WasmPastaFqLookupTable) -> LookupTable<Fq> {
-        LookupTable {
-            id: wasm_lt.id.into(),
-            data: wasm_lt.data.0,
-        }
+        LookupTable::create(wasm_lt.id.into(), wasm_lt.data.0)
+            .expect("LookupTable -> WasmPastaFqLookupTable conversion must succeed")
     }
 }
 

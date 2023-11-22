@@ -7,11 +7,11 @@ use kimchi::circuits::{
     constraints::FeatureFlags,
     lookup::index::LookupSelectors,
     lookup::lookups::{LookupFeatures, LookupInfo, LookupPatterns},
-    polynomials::permutation::Shifts,
-    polynomials::permutation::{permutation_vanishing_polynomial, zk_w},
+    polynomials::permutation::{permutation_vanishing_polynomial, zk_w, Shifts},
     wires::{COLUMNS, PERMUTS},
 };
 use kimchi::linearization::expr_linearization;
+use kimchi::poly_commitment::evaluation_proof::OpeningProof;
 use kimchi::verifier_index::{LookupVerifierIndex, VerifierIndex as DlogVerifierIndex};
 use paste::paste;
 use poly_commitment::{commitment::PolyComm, evaluation_proof::OpeningProof, srs::SRS};
@@ -575,6 +575,7 @@ macro_rules! impl_verification_key {
                 pub shifts: WasmShifts,
                 #[wasm_bindgen(skip)]
                 pub lookup_index: Option<WasmLookupVerifierIndex>,
+                pub zk_rows: isize,
             }
             type WasmPlonkVerifierIndex = [<Wasm $field_name:camel PlonkVerifierIndex>];
 
@@ -590,6 +591,7 @@ macro_rules! impl_verification_key {
                     evals: &WasmPlonkVerificationEvals,
                     shifts: &WasmShifts,
                     lookup_index: Option<WasmLookupVerifierIndex>,
+                    zk_rows: isize,
                 ) -> Self {
                     WasmPlonkVerifierIndex {
                         domain: domain.clone(),
@@ -600,6 +602,7 @@ macro_rules! impl_verification_key {
                         evals: evals.clone(),
                         shifts: shifts.clone(),
                         lookup_index: lookup_index.clone(),
+                        zk_rows: zk_rows,
                     }
                 }
 
@@ -674,6 +677,7 @@ macro_rules! impl_verification_key {
                             s6: vi.shift[6].into(),
                         },
                     lookup_index: vi.lookup_index.map(Into::into),
+                    zk_rows: vi.zk_rows as isize,
                 }
             }
 
@@ -720,10 +724,9 @@ macro_rules! impl_verification_key {
                 srs: &$WasmSrs,
                 evals: &WasmPlonkVerificationEvals,
                 shifts: &WasmShifts,
-                lookup_index: Option<WasmLookupVerifierIndex>
+                lookup_index: Option<WasmLookupVerifierIndex>,
+                zk_rows: isize,
             ) -> (DlogVerifierIndex<GAffine, OpeningProof<GAffine>>, Arc<SRS<GAffine>>) {
-                const ZK_ROWS: u64 = 3;
-
                 /*
                 let urs_copy = Rc::clone(&*urs);
                 let urs_copy_outer = Rc::clone(&*urs);
@@ -783,7 +786,7 @@ macro_rules! impl_verification_key {
 
                         w: {
                             let res = once_cell::sync::OnceCell::new();
-                            res.set(zk_w(domain, ZK_ROWS)).unwrap();
+                            res.set(zk_w(domain, 3)).unwrap();
                             res
                         },
                         endo: endo_q,
@@ -792,7 +795,7 @@ macro_rules! impl_verification_key {
                         prev_challenges: prev_challenges as usize,
                         permutation_vanishing_polynomial_m: {
                             let res = once_cell::sync::OnceCell::new();
-                            res.set(permutation_vanishing_polynomial(domain, ZK_ROWS)).unwrap();
+                            res.set(permutation_vanishing_polynomial(domain, 3)).unwrap();
                             res
                         },
                         shift: [
@@ -804,7 +807,12 @@ macro_rules! impl_verification_key {
                             shifts.s5.into(),
                             shifts.s6.into()
                         ],
-                        srs: srs.0.clone(),
+                        srs: {
+                          Arc::clone(&srs.0)
+                        },
+
+                        zk_rows: zk_rows as u64,
+
                         linearization,
                         powers_of_alpha,
                         lookup_index: lookup_index.map(Into::into),
@@ -822,7 +830,8 @@ macro_rules! impl_verification_key {
                         &index.srs,
                         &index.evals,
                         &index.shifts,
-                        index.lookup_index
+                        index.lookup_index,
+                        index.zk_rows
                     )
                     .0
                 }
@@ -981,7 +990,8 @@ macro_rules! impl_verification_key {
                             s5: $F::one().into(),
                             s6: $F::one().into(),
                         },
-                    lookup_index: None
+                    lookup_index: None,
+                    zk_rows: 3,
                 }
             }
 

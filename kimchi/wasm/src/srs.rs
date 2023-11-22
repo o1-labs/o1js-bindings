@@ -3,7 +3,8 @@ use crate::wasm_vector::WasmVector;
 use ark_poly::UVPolynomial;
 use ark_poly::{univariate::DensePolynomial, EvaluationDomain, Evaluations};
 use paste::paste;
-use poly_commitment::{commitment::b_poly_coefficients, srs::SRS, SRS as _};
+use poly_commitment::SRS as ISRS;
+use poly_commitment::{commitment::b_poly_coefficients, srs::SRS};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use std::{
@@ -21,7 +22,6 @@ macro_rules! impl_srs {
      $G: ty,
      $WasmPolyComm: ty,
      $field_name: ident) => {
-
         paste! {
             #[wasm_bindgen]
             #[derive(Clone)]
@@ -157,7 +157,7 @@ macro_rules! impl_srs {
                 let evals = evals.into_iter().map(Into::into).collect();
                 let p = Evaluations::<$F>::from_vec_and_domain(evals, x_domain).interpolate();
 
-                Ok(srs.commit_non_hiding(&p, 0, None).into())
+                Ok(srs.commit_non_hiding(&p, 1, None).into())
             }
 
             #[wasm_bindgen]
@@ -169,7 +169,7 @@ macro_rules! impl_srs {
                     let chals: Vec<$F> = chals.into_iter().map(Into::into).collect();
                     let coeffs = b_poly_coefficients(&chals);
                     let p = DensePolynomial::<$F>::from_coefficients_vec(coeffs);
-                    srs.commit_non_hiding(&p, 0, None)
+                    srs.commit_non_hiding(&p, 1, None)
                 });
                 Ok(result.into())
             }
