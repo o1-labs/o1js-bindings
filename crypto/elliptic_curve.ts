@@ -1,5 +1,13 @@
 import { bigIntToBits } from './bigint-helpers.js';
-import { FiniteField, Fp, inverse, mod, p, q } from './finite_field.js';
+import {
+  FiniteField,
+  Fp,
+  createField,
+  inverse,
+  mod,
+  p,
+  q,
+} from './finite_field.js';
 export {
   Pallas,
   Vesta,
@@ -501,8 +509,14 @@ function createCurveAffine({
   // TODO: lift this limitation by using other formulas (in projectiveScale) for a != 0
   if (a !== 0n) throw Error('createCurveAffine only supports a = 0');
   let hasCofactor = cofactor !== undefined && cofactor !== 1n;
+
+  const Field = createField(p);
+  const Scalar = createField(order);
   return {
     name,
+    Field,
+    Scalar,
+
     modulus: p,
     order,
     a,
