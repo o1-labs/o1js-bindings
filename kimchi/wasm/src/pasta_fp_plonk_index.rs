@@ -13,7 +13,6 @@ use kimchi::poly_commitment::evaluation_proof::OpeningProof;
 use kimchi::prover_index::ProverIndex;
 use mina_curves::pasta::{Fp, Pallas as GAffineOther, Vesta as GAffine, VestaParameters};
 use mina_poseidon::{constants::PlonkSpongeConstantsKimchi, sponge::DefaultFqSponge};
-use poly_commitment::evaluation_proof::OpeningProof;
 use serde::{Deserialize, Serialize};
 use std::{
     fs::{File, OpenOptions},

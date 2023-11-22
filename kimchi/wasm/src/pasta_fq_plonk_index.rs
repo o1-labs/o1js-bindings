@@ -9,7 +9,6 @@ use ark_poly::EvaluationDomain;
 use kimchi::circuits::lookup::tables::LookupTable;
 use kimchi::circuits::{constraints::ConstraintSystem, gate::CircuitGate};
 use kimchi::linearization::expr_linearization;
-use kimchi::poly_commitment::evaluation_proof::OpeningProof;
 use kimchi::prover_index::ProverIndex;
 use mina_curves::pasta::{Fq, Pallas as GAffine, PallasParameters, Vesta as GAffineOther};
 use mina_poseidon::{constants::PlonkSpongeConstantsKimchi, sponge::DefaultFqSponge};

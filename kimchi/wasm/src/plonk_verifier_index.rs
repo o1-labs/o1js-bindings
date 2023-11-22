@@ -11,7 +11,6 @@ use kimchi::circuits::{
     wires::{COLUMNS, PERMUTS},
 };
 use kimchi::linearization::expr_linearization;
-use kimchi::poly_commitment::evaluation_proof::OpeningProof;
 use kimchi::verifier_index::{LookupVerifierIndex, VerifierIndex as DlogVerifierIndex};
 use paste::paste;
 use poly_commitment::{commitment::PolyComm, evaluation_proof::OpeningProof, srs::SRS};
@@ -762,8 +761,6 @@ macro_rules! impl_verification_key {
 
                 let index =
                     DlogVerifierIndex {
-                        zk_rows: ZK_ROWS,
-
                         domain,
 
                         sigma_comm: array_init(|i| (&evals.sigma_comm[i]).into()),

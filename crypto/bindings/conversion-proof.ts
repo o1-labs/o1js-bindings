@@ -308,27 +308,6 @@ function proofConversionPerField(
         unwrap(lookupTableToRust(table))
       );
     },
-
-    runtimeTablesToRust([, ...tables]: MlArray<RuntimeTable>): Uint32Array {
-      return mapToUint32Array(tables, (table) =>
-        unwrap(runtimeTableToRust(table))
-      );
-    },
-
-    runtimeTableCfgsToRust([
-      ,
-      ...tableCfgs
-    ]: MlArray<RuntimeTableCfg>): Uint32Array {
-      return mapToUint32Array(tableCfgs, (tableCfg) =>
-        unwrap(runtimeTableCfgToRust(tableCfg))
-      );
-    },
-
-    lookupTablesToRust([, ...tables]: MlArray<LookupTable>) {
-      return mapToUint32Array(tables, (table) =>
-        unwrap(lookupTableToRust(table))
-      );
-    },
   };
 }
 
