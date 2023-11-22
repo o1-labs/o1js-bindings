@@ -333,7 +333,9 @@ module EC_group = struct
       Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order in
     let _ = Js_of_ocaml.Firebug.console##log (Js.string "ec parsing ok") in
       
-    ECG.add (module Impl) external_checks ec left_input right_input
+    let ret = ECG.add (module Impl) external_checks ec left_input right_input in
+    let _ = Js_of_ocaml.Firebug.console##log (Js.string "ecg add ok") in
+    ret
 end
 
 let snarky =
