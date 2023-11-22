@@ -291,42 +291,47 @@ module EC_group = struct
   (* curve = [a, b, modulus, gen_x, gen_y, order] *)
   let add (left_input : t) (right_input : t)
       (curve : Js.js_string Js.t Js.js_array Js.t) =
-    let here : Js.js_string Js.t = Js.string "here" in 
-    Js_of_ocaml.Firebug.console##log here;
     let external_checks = External_checks.create (module Impl) in
+    
     let a =
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 0) (fun () ->
-             raise ANotFoundInCurve ) )
-    in
+             raise ANotFoundInCurve ) ) in
+    let _ = Js_of_ocaml.Firebug.console##log (Js.string a) in
+
     let b =
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 1) (fun () ->
-             raise BNotFoundInCurve ) )
-    in
+             raise BNotFoundInCurve ) ) in
+    let _ = Js_of_ocaml.Firebug.console##log (Js.string b) in
+
     let modulus =
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 2) (fun () ->
-             raise ModulusNotFoundInCurve ) )
-    in
+             raise ModulusNotFoundInCurve ) ) in
+    let _ = Js_of_ocaml.Firebug.console##log (Js.string modulus) in
+
     let gen_x =
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 3) (fun () ->
-             raise GeneratorNotFoundInCurve ) )
-    in
+             raise GeneratorNotFoundInCurve ) ) in
+    let _ = Js_of_ocaml.Firebug.console##log (Js.string gen_x) in
+
     let gen_y =
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 4) (fun () ->
-             raise GeneratorNotFoundInCurve ) )
-    in
+             raise GeneratorNotFoundInCurve ) ) in
+    let _ = Js_of_ocaml.Firebug.console##log (Js.string gen_y) in
+
     let order =
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 5) (fun () ->
-             raise OrderNotFoundInCurve ) )
-    in
+             raise OrderNotFoundInCurve ) ) in
+    let _ = Js_of_ocaml.Firebug.console##log (Js.string order) in
+
     let ec =
-      Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order
-    in
+      Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order in
+      
     ECG.add (module Impl) external_checks ec left_input right_input
 end
 
