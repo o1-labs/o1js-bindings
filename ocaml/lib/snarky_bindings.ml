@@ -297,44 +297,36 @@ module EC_group = struct
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 0) (fun () ->
              raise ANotFoundInCurve ) ) in
-    let _ = Js_of_ocaml.Firebug.console##log (Js.string a) in
 
     let b =
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 1) (fun () ->
              raise BNotFoundInCurve ) ) in
-    let _ = Js_of_ocaml.Firebug.console##log (Js.string b) in
 
     let modulus =
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 2) (fun () ->
              raise ModulusNotFoundInCurve ) ) in
-    let _ = Js_of_ocaml.Firebug.console##log (Js.string modulus) in
 
     let gen_x =
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 3) (fun () ->
              raise GeneratorNotFoundInCurve ) ) in
-    let _ = Js_of_ocaml.Firebug.console##log (Js.string gen_x) in
 
     let gen_y =
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 4) (fun () ->
              raise GeneratorNotFoundInCurve ) ) in
-    let _ = Js_of_ocaml.Firebug.console##log (Js.string gen_y) in
 
     let order =
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 5) (fun () ->
              raise OrderNotFoundInCurve ) ) in
-    let _ = Js_of_ocaml.Firebug.console##log (Js.string order) in
 
     let ec =
       Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order in
-    let _ = Js_of_ocaml.Firebug.console##log (Js.string "ec parsing ok") in
       
     let ret = ECG.add (module Impl) external_checks ec left_input right_input in
-    let _ = Js_of_ocaml.Firebug.console##log (Js.string "ecg add ok") in
     ret
 end
 
