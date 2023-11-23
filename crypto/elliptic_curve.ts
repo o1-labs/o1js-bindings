@@ -527,6 +527,11 @@ function createCurveAffine({
     one: { ...generator, infinity: false },
 
     fromNonzero(g: { x: bigint; y: bigint }): GroupAffine {
+      if (g.x === 0n && g.y === 0n) {
+        throw Error(
+          'fromNonzero: got (0, 0), which is reserved for the zero point'
+        );
+      }
       return { ...g, infinity: false };
     },
 
