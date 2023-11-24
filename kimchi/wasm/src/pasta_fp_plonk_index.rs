@@ -1,4 +1,3 @@
-use ark_poly::EvaluationDomain;
 use kimchi::circuits::lookup::runtime_tables::RuntimeTableCfg;
 
 use crate::arkworks::WasmPastaFp;
@@ -6,6 +5,7 @@ use crate::gate_vector::fp::WasmGateVector;
 use crate::srs::fp::WasmFpSrs as WasmSrs;
 use crate::wasm_flat_vector::WasmFlatVector;
 use crate::wasm_vector::{fp::*, WasmVector};
+use ark_poly::EvaluationDomain;
 use kimchi::circuits::lookup::tables::LookupTable;
 use kimchi::circuits::{constraints::ConstraintSystem, gate::CircuitGate};
 use kimchi::linearization::expr_linearization;

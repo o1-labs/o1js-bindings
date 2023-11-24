@@ -1,4 +1,3 @@
-use ark_poly::EvaluationDomain;
 use kimchi::circuits::lookup::runtime_tables::RuntimeTableCfg;
 
 use crate::arkworks::WasmPastaFq;
@@ -6,13 +5,14 @@ use crate::gate_vector::fq::WasmGateVector;
 use crate::srs::fq::WasmFqSrs as WasmSrs;
 use crate::wasm_flat_vector::WasmFlatVector;
 use crate::wasm_vector::{fq::*, WasmVector};
+use ark_poly::EvaluationDomain;
 use kimchi::circuits::lookup::tables::LookupTable;
 use kimchi::circuits::{constraints::ConstraintSystem, gate::CircuitGate};
 use kimchi::linearization::expr_linearization;
-use kimchi::poly_commitment::evaluation_proof::OpeningProof;
 use kimchi::prover_index::ProverIndex;
 use mina_curves::pasta::{Fq, Pallas as GAffine, PallasParameters, Vesta as GAffineOther};
 use mina_poseidon::{constants::PlonkSpongeConstantsKimchi, sponge::DefaultFqSponge};
+use poly_commitment::evaluation_proof::OpeningProof;
 use serde::{Deserialize, Serialize};
 use std::{
     fs::{File, OpenOptions},

@@ -8,6 +8,20 @@ module Poseidon : sig
   type sponge
 end
 
+module Foreign_field : sig
+  type t
+
+  type t_const
+
+  type op_mode
+end
+
+module EC_group : sig
+  type t
+
+  type curve_t
+end
+
 val snarky :
   < exists : (int -> (unit -> Impl.field array) -> Field.t array) Js.meth
   ; existsVar : ((unit -> Impl.field) -> Field.t) Js.meth
@@ -122,6 +136,38 @@ val snarky :
               Kimchi_types.VerifierIndex.verifier_index
            -> bool Js.t )
           Js.meth >
+      Js.t
+      Js.readonly_prop
+  ; foreignField :
+      < assertValidElement :
+          (Foreign_field.t -> Foreign_field.t_const -> unit) Js.readonly_prop
+      ; mul :
+          (   Foreign_field.t
+           -> Foreign_field.t
+           -> Foreign_field.t_const
+           -> Foreign_field.t )
+          Js.readonly_prop
+      ; sumChain :
+          (   Foreign_field.t array
+           -> Foreign_field.op_mode array
+           -> Foreign_field.t_const
+           -> Foreign_field.t )
+          Js.readonly_prop >
+      Js.t
+      Js.readonly_prop
+  ; foreignGroup :
+      < add :
+          (   EC_group.t
+           -> EC_group.t
+           -> Js.js_string Js.t Js.js_array Js.t
+           -> EC_group.t )
+          Js.readonly_prop
+      ; scale :
+          (   EC_group.t
+           -> Boolean.var array
+           -> Js.js_string Js.t Js.js_array Js.t
+           -> EC_group.t )
+          Js.readonly_prop >
       Js.t
       Js.readonly_prop >
   Js.t

@@ -11,11 +11,9 @@ use kimchi::circuits::{
     wires::{COLUMNS, PERMUTS},
 };
 use kimchi::linearization::expr_linearization;
-use kimchi::poly_commitment::evaluation_proof::OpeningProof;
 use kimchi::verifier_index::{LookupVerifierIndex, VerifierIndex as DlogVerifierIndex};
 use paste::paste;
-use poly_commitment::commitment::PolyComm;
-use poly_commitment::srs::SRS;
+use poly_commitment::{commitment::PolyComm, evaluation_proof::OpeningProof, srs::SRS};
 use std::path::Path;
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;

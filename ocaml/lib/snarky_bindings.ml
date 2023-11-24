@@ -232,6 +232,111 @@ module Poseidon = struct
         Poseidon_sponge.squeeze s |> Impl.Field.constant
 end
 
+module Foreign_field = struct
+  module FF = Kimchi_gadgets.Foreign_field
+  module Range_check = Kimchi_gadgets.Range_check
+  module External_checks = FF.External_checks
+
+  type t = Impl.field FF.Element.Standard.t
+
+  type t_const = Impl.field FF.Element.Standard.limbs_type
+
+  type op_mode = FF.op_mode
+
+  (* high-level API of self-contained methods which do all necessary checks *)
+
+  let assert_valid_element (x : t) (p : t_const) : unit =
+    let external_checks = External_checks.create (module Impl) in
+    let _ = FF.check_canonical (module Impl) external_checks x p in
+    FF.constrain_external_checks (module Impl) external_checks p
+
+  let sum_chain (x : t array) (ops : op_mode array) (p : t_const) : t =
+    let external_checks = External_checks.create (module Impl) in
+    let sum =
+      FF.sum_chain
+        (module Impl)
+        external_checks (Array.to_list x) (Array.to_list ops) p
+    in
+    FF.constrain_external_checks (module Impl) external_checks p ;
+    sum
+
+  let mul (x : t) (y : t) (p : t_const) : t =
+    let external_checks = External_checks.create (module Impl) in
+    let z = FF.mul (module Impl) external_checks x y p in
+    FF.constrain_external_checks (module Impl) external_checks p ;
+    z
+end
+
+module EC_group = struct
+  module FF = Kimchi_gadgets.Foreign_field
+  module ECG = Kimchi_gadgets.Ec_group
+  module External_checks = FF.External_checks
+  module Curve_params = Kimchi_gadgets.Curve_params
+  module Bignum_bigint = Snarky_backendless.Backend_extended.Bignum_bigint
+
+  type t = Impl.field Kimchi_gadgets.Affine.t
+
+  type curve_t = Impl.field Kimchi_gadgets.Curve_params.InCircuit.t
+
+  exception ANotFoundInCurve
+
+  exception BNotFoundInCurve
+
+  exception ModulusNotFoundInCurve
+
+  exception GeneratorNotFoundInCurve
+
+  exception OrderNotFoundInCurve
+
+  (* curve = [a, b, modulus, gen_x, gen_y, order] *)
+  let parse_ec curve =
+    let a =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 0) (fun () ->
+             raise ANotFoundInCurve ) ) in
+
+    let b =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 1) (fun () ->
+             raise BNotFoundInCurve ) ) in
+
+    let modulus =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 2) (fun () ->
+             raise ModulusNotFoundInCurve ) ) in
+
+    let gen_x =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 3) (fun () ->
+             raise GeneratorNotFoundInCurve ) ) in
+
+    let gen_y =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 4) (fun () ->
+             raise GeneratorNotFoundInCurve ) ) in
+
+    let order =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 5) (fun () ->
+             raise OrderNotFoundInCurve ) ) in
+
+    Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order
+
+  let add (left_input : t) (right_input : t)
+      (curve : Js.js_string Js.t Js.js_array Js.t) =
+    let external_checks = External_checks.create (module Impl) in
+    let ec = parse_ec curve in
+    ECG.add (module Impl) external_checks ec left_input right_input
+  
+  let scale (point : t) (scalar : Boolean.var array)
+    (curve : Js.js_string Js.t Js.js_array Js.t) =
+    let external_checks = External_checks.create (module Impl) in
+    let ec = parse_ec curve in
+    let scalar = Array.to_list scalar in
+    ECG.scalar_mul (module Impl) external_checks ec scalar point
+
+end
+
 let snarky =
   object%js
     method exists = exists
@@ -334,5 +439,22 @@ let snarky =
 
             method squeeze = Poseidon.sponge_squeeze
           end
+      end
+
+    val foreignField =
+      let open Foreign_field in
+      object%js
+        val assertValidElement = assert_valid_element
+
+        val sumChain = sum_chain
+
+        val mul = mul
+      end
+
+    val foreignGroup =
+      let open EC_group in
+      object%js
+        val add = add
+        val scale = scale
       end
   end

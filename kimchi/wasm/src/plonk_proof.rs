@@ -809,6 +809,7 @@ macro_rules! impl_proof {
                     zeta_omega: vec![$F::one()],
                 };
                 let evals = ProofEvaluations {
+                    public: None,
                     w: array_init(|_| eval()),
                     coefficients: array_init(|_| eval()),
                     z: eval(),
@@ -834,7 +835,6 @@ macro_rules! impl_proof {
                     lookup_gate_lookup_selector: None,
                     range_check_lookup_selector: None,
                     foreign_field_mul_lookup_selector: None,
-                    public: None,
                 };
 
                 let dlogproof = ProverProof {
