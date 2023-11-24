@@ -48,10 +48,10 @@ type GenericProvableExtendedPure<T, TJson, Field> = GenericProvablePure<
 
 type GenericField<Field> = ((value: number | string | bigint) => Field) &
   GenericProvableExtended<Field, string, Field> &
-  Binable<Field> & { sizeInBytes(): number };
+  Binable<Field> & { sizeInBytes: number };
 type GenericBool<Field, Bool = unknown> = ((value: boolean) => Bool) &
   GenericProvableExtended<Bool, boolean, Field> &
-  Binable<Bool> & { sizeInBytes(): number };
+  Binable<Bool> & { sizeInBytes: number };
 
 type GenericHashInput<Field> = { fields?: Field[]; packed?: [Field, number][] };
 
