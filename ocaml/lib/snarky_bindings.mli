@@ -161,6 +161,12 @@ val snarky :
            -> EC_group.t
            -> Js.js_string Js.t Js.js_array Js.t
            -> EC_group.t )
+          Js.readonly_prop
+      ; scale :
+          (   EC_group.t
+           -> Boolean.var array
+           -> Js.js_string Js.t Js.js_array Js.t
+           -> EC_group.t )
           Js.readonly_prop >
       Js.t
       Js.readonly_prop >

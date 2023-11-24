@@ -289,10 +289,7 @@ module EC_group = struct
   exception OrderNotFoundInCurve
 
   (* curve = [a, b, modulus, gen_x, gen_y, order] *)
-  let add (left_input : t) (right_input : t)
-      (curve : Js.js_string Js.t Js.js_array Js.t) =
-    let external_checks = External_checks.create (module Impl) in
-    
+  let parse_ec curve =
     let a =
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 0) (fun () ->
@@ -323,11 +320,21 @@ module EC_group = struct
         (Js.Optdef.get (Js.array_get curve 5) (fun () ->
              raise OrderNotFoundInCurve ) ) in
 
-    let ec =
-      Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order in
-    
-    let ret = ECG.add (module Impl) external_checks ec left_input right_input in
-    ret
+    Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order
+
+  let add (left_input : t) (right_input : t)
+      (curve : Js.js_string Js.t Js.js_array Js.t) =
+    let external_checks = External_checks.create (module Impl) in
+    let ec = parse_ec curve in
+    ECG.add (module Impl) external_checks ec left_input right_input
+  
+  let scale (point : t) (scalar : Boolean.var array)
+    (curve : Js.js_string Js.t Js.js_array Js.t) =
+    let external_checks = External_checks.create (module Impl) in
+    let ec = parse_ec curve in
+    let scalar = Array.to_list scalar in
+    ECG.scalar_mul (module Impl) external_checks ec scalar point
+
 end
 
 let snarky =
@@ -448,5 +455,6 @@ let snarky =
       let open EC_group in
       object%js
         val add = add
+        val scale = scale
       end
   end
