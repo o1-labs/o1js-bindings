@@ -6,7 +6,7 @@ import {
   Sign,
 } from '../../provable/field-bigint.js';
 import { PublicKey } from '../../provable/curve-bigint.js';
-import { derivedLeafTypes } from './derived-leaves.js';
+import { derivedLeafTypesSignable } from './derived-leaves.js';
 import { createEvents } from '../../lib/events.js';
 import {
   Poseidon,
@@ -39,7 +39,7 @@ type TokenSymbol = { symbol: string; field: Field };
 type ZkappUri = { data: string; hash: Field };
 
 const { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri } =
-  derivedLeafTypes({ Field, Bool, Hash, packToFields });
+  derivedLeafTypesSignable({ Field, Bool, Hash, packToFields });
 
 type Event = Field[];
 type Events = {

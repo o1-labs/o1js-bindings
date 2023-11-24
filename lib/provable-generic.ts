@@ -4,12 +4,15 @@ import {
   GenericProvablePure,
   GenericProvableExtended,
   GenericProvableExtendedPure,
+  GenericSignable,
 } from './generic.js';
 
 export {
   createProvable,
+  createSignable,
   createHashInput,
   ProvableConstructor,
+  SignableConstructor,
   NonMethods,
   InferProvable,
   InferJson,
@@ -225,6 +228,117 @@ function createProvable<Field>(): ProvableConstructor<Field> {
   return provable;
 }
 
+type SignableConstructor<Field> = <A>(typeObj: A) => InferredSignable<A, Field>;
+
+function createSignable<Field>(): SignableConstructor<Field> {
+  type Signable<T, TJson = JSONValue> = GenericSignable<T, TJson, Field>;
+  type HashInput = GenericHashInput<Field>;
+  const HashInput = createHashInput<Field>();
+
+  let complexTypes = new Set(['object', 'function']);
+
+  function signable<A>(typeObj: A): InferredSignable<A, Field> {
+    type T = InferSignable<A, Field>;
+    type J = InferJson<A>;
+    let objectKeys =
+      typeof typeObj === 'object' && typeObj !== null
+        ? Object.keys(typeObj)
+        : [];
+    let nonCircuitPrimitives = new Set([
+      Number,
+      String,
+      Boolean,
+      BigInt,
+      null,
+      undefined,
+    ]);
+    if (
+      !nonCircuitPrimitives.has(typeObj as any) &&
+      !complexTypes.has(typeof typeObj)
+    ) {
+      throw Error(`provable: unsupported type "${typeObj}"`);
+    }
+
+    function toInput(typeObj: any, obj: any, isToplevel = false): HashInput {
+      if (nonCircuitPrimitives.has(typeObj)) return {};
+      if (!complexTypes.has(typeof typeObj))
+        throw Error(`provable: unsupported type "${typeObj}"`);
+      if (Array.isArray(typeObj)) {
+        return typeObj
+          .map((t, i) => toInput(t, obj[i]))
+          .reduce(HashInput.append, HashInput.empty);
+      }
+      if ('toInput' in typeObj) return typeObj.toInput(obj) as HashInput;
+      if ('toFields' in typeObj) {
+        return { fields: typeObj.toFields(obj) };
+      }
+      return (isToplevel ? objectKeys : Object.keys(typeObj))
+        .map((k) => toInput(typeObj[k], obj[k]))
+        .reduce(HashInput.append, HashInput.empty);
+    }
+    function toJSON(typeObj: any, obj: any, isToplevel = false): JSONValue {
+      if (typeObj === BigInt) return obj.toString();
+      if (typeObj === String || typeObj === Number || typeObj === Boolean)
+        return obj;
+      if (typeObj === undefined || typeObj === null) return null;
+      if (!complexTypes.has(typeof typeObj))
+        throw Error(`provable: unsupported type "${typeObj}"`);
+      if (Array.isArray(typeObj))
+        return typeObj.map((t, i) => toJSON(t, obj[i]));
+      if ('toJSON' in typeObj) return typeObj.toJSON(obj);
+      return Object.fromEntries(
+        (isToplevel ? objectKeys : Object.keys(typeObj)).map((k) => [
+          k,
+          toJSON(typeObj[k], obj[k]),
+        ])
+      );
+    }
+
+    function fromJSON(typeObj: any, json: any, isToplevel = false): any {
+      if (typeObj === BigInt) return BigInt(json as string);
+      if (typeObj === String || typeObj === Number || typeObj === Boolean)
+        return json;
+      if (typeObj === null || typeObj === undefined) return undefined;
+      if (!complexTypes.has(typeof typeObj))
+        throw Error(`provable: unsupported type "${typeObj}"`);
+      if (Array.isArray(typeObj))
+        return typeObj.map((t, i) => fromJSON(t, json[i]));
+      if ('fromJSON' in typeObj) return typeObj.fromJSON(json);
+      let keys = isToplevel ? objectKeys : Object.keys(typeObj);
+      let values = fromJSON(
+        keys.map((k) => typeObj[k]),
+        keys.map((k) => json[k])
+      );
+      return Object.fromEntries(keys.map((k, i) => [k, values[i]]));
+    }
+
+    function emptyValue(typeObj: any): any {
+      // TODO
+      if (typeObj === Number) return 0 as any;
+      if (typeObj === String) return '' as any;
+      if (typeObj === Boolean) return false as any;
+      if (typeObj === BigInt) return 0n as any;
+      if (typeObj === null || typeObj === undefined) return typeObj;
+      if (!complexTypes.has(typeof typeObj))
+        throw Error(`provable: unsupported type "${typeObj}"`);
+      if (Array.isArray(typeObj)) return typeObj.map(emptyValue) as any;
+      if ('emptyValue' in typeObj) return typeObj.emptyValue();
+      return Object.fromEntries(
+        Object.keys(typeObj).map((k) => [k, emptyValue(typeObj)])
+      );
+    }
+
+    return {
+      toInput: (obj: T) => toInput(typeObj, obj, true),
+      toJSON: (obj: T) => toJSON(typeObj, obj, true) as J,
+      fromJSON: (json: J) => fromJSON(typeObj, json, true),
+      emptyValue: () => emptyValue(typeObj) as T,
+    } satisfies Signable<T, J> as InferredSignable<A, Field>;
+  }
+
+  return signable;
+}
+
 function createHashInput<Field>() {
   type HashInput = GenericHashInput<Field>;
   return {
@@ -357,3 +471,27 @@ type IsPureBase<A, Field> = A extends GenericProvablePure<any, Field>
 type InferredProvable<A, Field> = IsPure<A, Field> extends true
   ? GenericProvableExtendedPure<InferProvable<A, Field>, InferJson<A>, Field>
   : GenericProvableExtended<InferProvable<A, Field>, InferJson<A>, Field>;
+
+// signable
+
+type InferSignable<A, Field> = A extends GenericSignable<infer U, any, Field>
+  ? U
+  : A extends Primitive
+  ? InferPrimitive<A>
+  : A extends Tuple<any>
+  ? {
+      [I in keyof A]: InferSignable<A[I], Field>;
+    }
+  : A extends (infer U)[]
+  ? InferSignable<U, Field>[]
+  : A extends Record<any, any>
+  ? {
+      [K in keyof A]: InferSignable<A[K], Field>;
+    }
+  : never;
+
+type InferredSignable<A, Field> = GenericSignable<
+  InferSignable<A, Field>,
+  InferJson<A>,
+  Field
+>;
