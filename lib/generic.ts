@@ -23,7 +23,7 @@ type GenericProvable<T, Field> = {
 };
 interface GenericProvablePure<T, Field> extends GenericProvable<T, Field> {
   toFields: (x: T) => Field[];
-  toAuxiliary: (x?: T) => [];
+  toAuxiliary: (x?: T) => any[];
   fromFields: (x: Field[]) => T;
   sizeInFields(): number;
   check: (x: T) => void;

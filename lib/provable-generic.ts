@@ -5,12 +5,21 @@ import {
   GenericProvableExtended,
 } from './generic.js';
 
-export { createProvable, createHashInput, ProvableConstructor };
+export {
+  createProvable,
+  createHashInput,
+  ProvableConstructor,
+  NonMethods,
+  InferProvable,
+  InferJson,
+  InferredProvable,
+  IsPure,
+};
 
 type ProvableConstructor<Field> = <A>(
   typeObj: A,
   options?: { isPure?: boolean }
-) => GenericProvableExtended<InferProvable<A, Field>, InferJson<A>, Field>;
+) => InferredProvable<A, Field>;
 
 function createProvable<Field>(): ProvableConstructor<Field> {
   type ProvableExtended<T, TJson = JSONValue> = GenericProvableExtended<
@@ -26,7 +35,7 @@ function createProvable<Field>(): ProvableConstructor<Field> {
   function provable<A>(
     typeObj: A,
     options?: { isPure?: boolean }
-  ): ProvableExtended<InferProvable<A, Field>, InferJson<A>> {
+  ): InferredProvable<A, Field> {
     type T = InferProvable<A, Field>;
     type J = InferJson<A>;
     let objectKeys =
@@ -182,8 +191,8 @@ function createProvable<Field>(): ProvableConstructor<Field> {
       if (Array.isArray(typeObj))
         return typeObj.forEach((t, i) => check(t, obj[i]));
       if ('check' in typeObj) return typeObj.check(obj);
-      return (isToplevel ? objectKeys : Object.keys(typeObj)).forEach(
-        (k) => check(typeObj[k], obj[k])
+      return (isToplevel ? objectKeys : Object.keys(typeObj)).forEach((k) =>
+        check(typeObj[k], obj[k])
       );
     }
     if (options?.isPure === true) {
@@ -197,7 +206,7 @@ function createProvable<Field>(): ProvableConstructor<Field> {
         toJSON: (obj: T) => toJSON(typeObj, obj, true) as J,
         fromJSON: (json: J) => fromJSON(typeObj, json, true),
         check: (obj: T) => check(typeObj, obj, true),
-      };
+      } satisfies ProvableExtended<T, J> as InferredProvable<A, Field>;
     }
     return {
       sizeInFields: () => sizeInFields(typeObj),
@@ -209,7 +218,7 @@ function createProvable<Field>(): ProvableConstructor<Field> {
       toJSON: (obj: T) => toJSON(typeObj, obj, true) as J,
       fromJSON: (json: J) => fromJSON(typeObj, json, true),
       check: (obj: T) => check(typeObj, obj, true),
-    };
+    } satisfies ProvableExtended<T, J> as InferredProvable<A, Field>;
   }
 
   return provable;
@@ -239,6 +248,14 @@ type JSONValue =
   | null
   | Array<JSONValue>
   | { [key: string]: JSONValue };
+
+type Struct<T, Field> = GenericProvableExtended<NonMethods<T>, any, Field> &
+  Constructor<T> & { _isStruct: true };
+
+type NonMethodKeys<T> = {
+  [K in keyof T]: T[K] extends Function ? never : K;
+}[keyof T];
+type NonMethods<T> = Pick<T, NonMethodKeys<T>>;
 
 type Constructor<T> = new (...args: any) => T;
 
@@ -280,6 +297,8 @@ type InferPrimitiveJson<P extends Primitive> = P extends typeof String
 
 type InferProvable<A, Field> = A extends Constructor<infer U>
   ? A extends GenericProvable<U, Field>
+    ? U
+    : A extends Struct<U, Field>
     ? U
     : InferProvableBase<A, Field>
   : InferProvableBase<A, Field>;
@@ -333,3 +352,13 @@ type IsPureBase<A, Field> = A extends GenericProvablePure<any, Field>
       [K in keyof A]: IsPure<A[K], Field>;
     }[keyof A]
   : false;
+
+type GenericProvableExtendedPure<T, TJson, Field> = GenericProvablePure<
+  T,
+  Field
+> &
+  GenericProvableExtended<T, TJson, Field>;
+
+type InferredProvable<A, Field> = IsPure<A, Field> extends true
+  ? GenericProvableExtendedPure<InferProvable<A, Field>, InferJson<A>, Field>
+  : GenericProvableExtended<InferProvable<A, Field>, InferJson<A>, Field>;
