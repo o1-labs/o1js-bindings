@@ -3,6 +3,7 @@ import {
   GenericProvable,
   GenericProvablePure,
   GenericProvableExtended,
+  GenericProvableExtendedPure,
 } from './generic.js';
 
 export {
@@ -180,7 +181,7 @@ function createProvable<Field>(): ProvableConstructor<Field> {
       let keys = isToplevel ? objectKeys : Object.keys(typeObj);
       let values = fromJSON(
         keys.map((k) => typeObj[k]),
-        json
+        keys.map((k) => json[k])
       );
       return Object.fromEntries(keys.map((k, i) => [k, values[i]]));
     }
@@ -352,12 +353,6 @@ type IsPureBase<A, Field> = A extends GenericProvablePure<any, Field>
       [K in keyof A]: IsPure<A[K], Field>;
     }[keyof A]
   : false;
-
-type GenericProvableExtendedPure<T, TJson, Field> = GenericProvablePure<
-  T,
-  Field
-> &
-  GenericProvableExtended<T, TJson, Field>;
 
 type InferredProvable<A, Field> = IsPure<A, Field> extends true
   ? GenericProvableExtendedPure<InferProvable<A, Field>, InferJson<A>, Field>

@@ -4,6 +4,7 @@ export {
   GenericProvable,
   GenericProvablePure,
   GenericProvableExtended,
+  GenericProvableExtendedPure,
   GenericField,
   GenericBool,
   GenericHashInput,
@@ -29,12 +30,21 @@ interface GenericProvablePure<T, Field> extends GenericProvable<T, Field> {
   check: (x: T) => void;
 }
 
-type GenericProvableExtended<T, TJson, Field> = GenericProvable<T, Field> & {
+type ProvableExtension<T, TJson, Field> = {
   toInput: (x: T) => { fields?: Field[]; packed?: [Field, number][] };
   toJSON: (x: T) => TJson;
   fromJSON: (x: TJson) => T;
   emptyValue?: () => T;
 };
+
+type GenericProvableExtended<T, TJson, Field> = GenericProvable<T, Field> &
+  ProvableExtension<T, TJson, Field>;
+
+type GenericProvableExtendedPure<T, TJson, Field> = GenericProvablePure<
+  T,
+  Field
+> &
+  ProvableExtension<T, TJson, Field>;
 
 type GenericField<Field> = ((value: number | string | bigint) => Field) &
   GenericProvableExtended<Field, string, Field> &
