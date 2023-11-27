@@ -26,7 +26,7 @@ type GenericProvable<T, TValue, Field> = {
   sizeInFields(): number;
   check: (x: T) => void;
   toValue: (x: T) => TValue;
-  fromValue: (x: TValue) => T;
+  fromValue: (x: T | TValue) => T;
 };
 interface GenericProvablePure<T, TValue, Field>
   extends GenericProvable<T, TValue, Field> {

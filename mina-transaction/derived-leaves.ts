@@ -142,8 +142,11 @@ function createTokenSymbol<
     toValue(t: TokenSymbol<Field>): string {
       return self.toJSON(t);
     },
-    fromValue(s: string): TokenSymbol<Field> {
-      return self.fromJSON(s);
+    fromValue(s: string | TokenSymbol<Field>): TokenSymbol<Field> {
+      if (typeof s === 'string') {
+        return self.fromJSON(s);
+      }
+      return s;
     },
   };
   return self;

@@ -356,7 +356,7 @@ function ProvableFromLayout<
       toValue(value: T): TValue {
         return toValue(typeData, value);
       },
-      fromValue(value: TValue): T {
+      fromValue(value: TValue | T): T {
         return fromValue(typeData, value);
       },
     };
