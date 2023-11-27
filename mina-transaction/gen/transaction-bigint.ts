@@ -18,15 +18,15 @@ import {
   VerificationKeyHash,
   ReceiptChainHash,
 } from '../transaction-leaves-bigint.js';
-import { GenericProvableExtended } from '../../lib/generic.js';
-import { ProvableFromLayout, GenericLayout } from '../../lib/from-layout.js';
+import { GenericSignable } from '../../lib/generic.js';
+import { SignableFromLayout, GenericLayout } from '../../lib/from-layout.js';
 import * as Json from './transaction-json.js';
 import { jsLayout } from './js-layout.js';
 
 export { customTypes, ZkappCommand, AccountUpdate, Account };
 export { Json };
 export * from '../transaction-leaves-bigint.js';
-export { provableFromLayout, toJSONEssential, emptyValue, Layout, TypeMap };
+export { signableFromLayout, toJSONEssential, empty, Layout, TypeMap };
 
 type TypeMap = {
   PublicKey: PublicKey;
@@ -40,7 +40,7 @@ type TypeMap = {
 };
 
 const TypeMap: {
-  [K in keyof TypeMap]: ProvableExtended<TypeMap[K], Json.TypeMap[K]>;
+  [K in keyof TypeMap]: Signable<TypeMap[K], Json.TypeMap[K]>;
 } = {
   PublicKey,
   UInt64,
@@ -52,42 +52,42 @@ const TypeMap: {
   Sign,
 };
 
-type ProvableExtended<T, TJson> = GenericProvableExtended<T, TJson, Field>;
+type Signable<T, TJson> = GenericSignable<T, TJson, Field>;
 type Layout = GenericLayout<TypeMap>;
 
 type CustomTypes = {
-  ZkappUri: ProvableExtended<
+  ZkappUri: Signable<
     {
       data: string;
       hash: Field;
     },
     string
   >;
-  TokenSymbol: ProvableExtended<
+  TokenSymbol: Signable<
     {
       symbol: string;
       field: Field;
     },
     string
   >;
-  StateHash: ProvableExtended<Field, Json.TypeMap['Field']>;
-  Events: ProvableExtended<
+  StateHash: Signable<Field, Json.TypeMap['Field']>;
+  Events: Signable<
     {
       data: Field[][];
       hash: Field;
     },
     Json.TypeMap['Field'][][]
   >;
-  Actions: ProvableExtended<
+  Actions: Signable<
     {
       data: Field[][];
       hash: Field;
     },
     Json.TypeMap['Field'][][]
   >;
-  ActionState: ProvableExtended<Field, Json.TypeMap['Field']>;
-  VerificationKeyHash: ProvableExtended<Field, Json.TypeMap['Field']>;
-  ReceiptChainHash: ProvableExtended<Field, Json.TypeMap['Field']>;
+  ActionState: Signable<Field, Json.TypeMap['Field']>;
+  VerificationKeyHash: Signable<Field, Json.TypeMap['Field']>;
+  ReceiptChainHash: Signable<Field, Json.TypeMap['Field']>;
 };
 let customTypes: CustomTypes = {
   ZkappUri,
@@ -99,7 +99,7 @@ let customTypes: CustomTypes = {
   VerificationKeyHash,
   ReceiptChainHash,
 };
-let { provableFromLayout, toJSONEssential, emptyValue } = ProvableFromLayout<
+let { signableFromLayout, toJSONEssential, empty } = SignableFromLayout<
   TypeMap,
   Json.TypeMap
 >(TypeMap, customTypes);
@@ -313,7 +313,7 @@ type ZkappCommand = {
   memo: string;
 };
 
-let ZkappCommand = provableFromLayout<ZkappCommand, Json.ZkappCommand>(
+let ZkappCommand = signableFromLayout<ZkappCommand, Json.ZkappCommand>(
   jsLayout.ZkappCommand as any
 );
 
@@ -514,7 +514,7 @@ type AccountUpdate = {
   };
 };
 
-let AccountUpdate = provableFromLayout<AccountUpdate, Json.AccountUpdate>(
+let AccountUpdate = signableFromLayout<AccountUpdate, Json.AccountUpdate>(
   jsLayout.AccountUpdate as any
 );
 
@@ -564,6 +564,6 @@ type Account = {
   };
 };
 
-let Account = provableFromLayout<Account, Json.Account>(
+let Account = signableFromLayout<Account, Json.Account>(
   jsLayout.Account as any
 );
