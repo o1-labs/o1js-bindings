@@ -1,7 +1,7 @@
 import { Provable, ProvablePure } from '../../snarky.js';
 import { Field } from '../../lib/core.js';
 import {
-  createProvable,
+  createDerivers,
   NonMethods,
   InferProvable as GenericInferProvable,
   InferJson,
@@ -43,7 +43,7 @@ type IsPure<T> = GenericIsPure<T, Field>;
 type HashInput = GenericHashInput<Field>;
 const HashInput = createHashInput<Field>();
 
-const provable = createProvable<Field>();
+const { provable } = createDerivers<Field>();
 
 function provablePure<A>(
   typeObj: A

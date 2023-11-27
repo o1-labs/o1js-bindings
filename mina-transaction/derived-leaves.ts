@@ -5,7 +5,7 @@ import {
   GenericSignableBool,
   GenericSignableField,
 } from '../lib/generic.js';
-import { createProvable, createSignable } from '../lib/provable-generic.js';
+import { createDerivers } from '../lib/provable-generic.js';
 import * as Json from './gen/transaction-json.js';
 import {
   bytesToBits,
@@ -33,7 +33,7 @@ function derivedLeafTypes<Field, Bool>({
   Hash: HashHelpers<Field>;
   packToFields: (input: GenericHashInput<Field>) => Field[];
 }) {
-  let provable = createProvable<Field>();
+  let { provable } = createDerivers<Field>();
   const Encoding = fieldEncodings<Field>(Field);
 
   type TokenId = Field;
@@ -168,7 +168,7 @@ function derivedLeafTypesSignable<Field, Bool>({
   Hash: HashHelpers<Field>;
   packToFields: (input: GenericHashInput<Field>) => Field[];
 }) {
-  let signable = createSignable<Field>();
+  let { signable } = createDerivers<Field>();
   const Encoding = fieldEncodings<Field>(Field);
 
   type TokenId = Field;

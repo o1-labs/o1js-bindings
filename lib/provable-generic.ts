@@ -8,8 +8,7 @@ import {
 } from './generic.js';
 
 export {
-  createProvable,
-  createSignable,
+  createDerivers,
   createHashInput,
   ProvableConstructor,
   SignableConstructor,
@@ -24,8 +23,16 @@ type ProvableConstructor<Field> = <A>(
   typeObj: A,
   options?: { isPure?: boolean }
 ) => InferredProvable<A, Field>;
+type SignableConstructor<Field> = <A>(typeObj: A) => InferredSignable<A, Field>;
 
-function createProvable<Field>(): ProvableConstructor<Field> {
+function createDerivers<Field>(): {
+  provable: ProvableConstructor<Field>;
+  signable: SignableConstructor<Field>;
+} {
+  let complexTypes = new Set(['object', 'function']);
+  let primitives = new Set([Number, String, Boolean, BigInt, null, undefined]);
+
+  type Signable<T, TJson = JSONValue> = GenericSignable<T, TJson, Field>;
   type ProvableExtended<T, TJson = JSONValue> = GenericProvableExtended<
     T,
     TJson,
@@ -33,8 +40,6 @@ function createProvable<Field>(): ProvableConstructor<Field> {
   >;
   type HashInput = GenericHashInput<Field>;
   const HashInput = createHashInput<Field>();
-
-  let complexTypes = new Set(['object', 'function']);
 
   function provable<A>(
     typeObj: A,
@@ -46,23 +51,13 @@ function createProvable<Field>(): ProvableConstructor<Field> {
       typeof typeObj === 'object' && typeObj !== null
         ? Object.keys(typeObj)
         : [];
-    let nonCircuitPrimitives = new Set([
-      Number,
-      String,
-      Boolean,
-      BigInt,
-      null,
-      undefined,
-    ]);
-    if (
-      !nonCircuitPrimitives.has(typeObj as any) &&
-      !complexTypes.has(typeof typeObj)
-    ) {
+
+    if (!primitives.has(typeObj as any) && !complexTypes.has(typeof typeObj)) {
       throw Error(`provable: unsupported type "${typeObj}"`);
     }
 
     function sizeInFields(typeObj: any): number {
-      if (nonCircuitPrimitives.has(typeObj)) return 0;
+      if (primitives.has(typeObj)) return 0;
       if (!complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
       if (Array.isArray(typeObj))
@@ -73,7 +68,7 @@ function createProvable<Field>(): ProvableConstructor<Field> {
         .reduce((a, b) => a + b, 0);
     }
     function toFields(typeObj: any, obj: any, isToplevel = false): Field[] {
-      if (nonCircuitPrimitives.has(typeObj)) return [];
+      if (primitives.has(typeObj)) return [];
       if (!complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
       if (Array.isArray(typeObj))
@@ -98,40 +93,7 @@ function createProvable<Field>(): ProvableConstructor<Field> {
         toAuxiliary(typeObj[k], obj?.[k])
       );
     }
-    function toInput(typeObj: any, obj: any, isToplevel = false): HashInput {
-      if (nonCircuitPrimitives.has(typeObj)) return {};
-      if (!complexTypes.has(typeof typeObj))
-        throw Error(`provable: unsupported type "${typeObj}"`);
-      if (Array.isArray(typeObj)) {
-        return typeObj
-          .map((t, i) => toInput(t, obj[i]))
-          .reduce(HashInput.append, HashInput.empty);
-      }
-      if ('toInput' in typeObj) return typeObj.toInput(obj) as HashInput;
-      if ('toFields' in typeObj) {
-        return { fields: typeObj.toFields(obj) };
-      }
-      return (isToplevel ? objectKeys : Object.keys(typeObj))
-        .map((k) => toInput(typeObj[k], obj[k]))
-        .reduce(HashInput.append, HashInput.empty);
-    }
-    function toJSON(typeObj: any, obj: any, isToplevel = false): JSONValue {
-      if (typeObj === BigInt) return obj.toString();
-      if (typeObj === String || typeObj === Number || typeObj === Boolean)
-        return obj;
-      if (typeObj === undefined || typeObj === null) return null;
-      if (!complexTypes.has(typeof typeObj))
-        throw Error(`provable: unsupported type "${typeObj}"`);
-      if (Array.isArray(typeObj))
-        return typeObj.map((t, i) => toJSON(t, obj[i]));
-      if ('toJSON' in typeObj) return typeObj.toJSON(obj);
-      return Object.fromEntries(
-        (isToplevel ? objectKeys : Object.keys(typeObj)).map((k) => [
-          k,
-          toJSON(typeObj[k], obj[k]),
-        ])
-      );
-    }
+
     function fromFields(
       typeObj: any,
       fields: Field[],
@@ -171,25 +133,9 @@ function createProvable<Field>(): ProvableConstructor<Field> {
       );
       return Object.fromEntries(keys.map((k, i) => [k, values[i]]));
     }
-    function fromJSON(typeObj: any, json: any, isToplevel = false): any {
-      if (typeObj === BigInt) return BigInt(json as string);
-      if (typeObj === String || typeObj === Number || typeObj === Boolean)
-        return json;
-      if (typeObj === null || typeObj === undefined) return undefined;
-      if (!complexTypes.has(typeof typeObj))
-        throw Error(`provable: unsupported type "${typeObj}"`);
-      if (Array.isArray(typeObj))
-        return typeObj.map((t, i) => fromJSON(t, json[i]));
-      if ('fromJSON' in typeObj) return typeObj.fromJSON(json);
-      let keys = isToplevel ? objectKeys : Object.keys(typeObj);
-      let values = fromJSON(
-        keys.map((k) => typeObj[k]),
-        keys.map((k) => json[k])
-      );
-      return Object.fromEntries(keys.map((k, i) => [k, values[i]]));
-    }
+
     function check(typeObj: any, obj: any, isToplevel = false): void {
-      if (nonCircuitPrimitives.has(typeObj)) return;
+      if (primitives.has(typeObj)) return;
       if (!complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
       if (Array.isArray(typeObj))
@@ -199,6 +145,11 @@ function createProvable<Field>(): ProvableConstructor<Field> {
         check(typeObj[k], obj[k])
       );
     }
+
+    let { emptyValue, fromJSON, toJSON, toInput } = signable(typeObj);
+
+    type S = InferSignable<A, Field>;
+
     if (options?.isPure === true) {
       return {
         sizeInFields: () => sizeInFields(typeObj),
@@ -206,10 +157,11 @@ function createProvable<Field>(): ProvableConstructor<Field> {
         toAuxiliary: () => [],
         fromFields: (fields: Field[]) =>
           fromFields(typeObj, fields, [], true) as T,
-        toInput: (obj: T) => toInput(typeObj, obj, true),
-        toJSON: (obj: T) => toJSON(typeObj, obj, true) as J,
-        fromJSON: (json: J) => fromJSON(typeObj, json, true),
+        toInput: (obj: T) => toInput(obj as S),
+        toJSON: (obj: T) => toJSON(obj as S) satisfies J,
+        fromJSON: (json: J) => fromJSON(json) as T,
         check: (obj: T) => check(typeObj, obj, true),
+        emptyValue: () => emptyValue() as T,
       } satisfies ProvableExtended<T, J> as InferredProvable<A, Field>;
     }
     return {
@@ -218,24 +170,13 @@ function createProvable<Field>(): ProvableConstructor<Field> {
       toAuxiliary: (obj?: T) => toAuxiliary(typeObj, obj, true),
       fromFields: (fields: Field[], aux: any[]) =>
         fromFields(typeObj, fields, aux, true) as T,
-      toInput: (obj: T) => toInput(typeObj, obj, true),
-      toJSON: (obj: T) => toJSON(typeObj, obj, true) as J,
-      fromJSON: (json: J) => fromJSON(typeObj, json, true),
+      toInput: (obj: T) => toInput(obj as S),
+      toJSON: (obj: T) => toJSON(obj as S) satisfies J,
+      fromJSON: (json: J) => fromJSON(json) as T,
       check: (obj: T) => check(typeObj, obj, true),
+      emptyValue: () => emptyValue() as T,
     } satisfies ProvableExtended<T, J> as InferredProvable<A, Field>;
   }
-
-  return provable;
-}
-
-type SignableConstructor<Field> = <A>(typeObj: A) => InferredSignable<A, Field>;
-
-function createSignable<Field>(): SignableConstructor<Field> {
-  type Signable<T, TJson = JSONValue> = GenericSignable<T, TJson, Field>;
-  type HashInput = GenericHashInput<Field>;
-  const HashInput = createHashInput<Field>();
-
-  let complexTypes = new Set(['object', 'function']);
 
   function signable<A>(typeObj: A): InferredSignable<A, Field> {
     type T = InferSignable<A, Field>;
@@ -244,7 +185,7 @@ function createSignable<Field>(): SignableConstructor<Field> {
       typeof typeObj === 'object' && typeObj !== null
         ? Object.keys(typeObj)
         : [];
-    let nonCircuitPrimitives = new Set([
+    let primitives = new Set([
       Number,
       String,
       Boolean,
@@ -252,15 +193,12 @@ function createSignable<Field>(): SignableConstructor<Field> {
       null,
       undefined,
     ]);
-    if (
-      !nonCircuitPrimitives.has(typeObj as any) &&
-      !complexTypes.has(typeof typeObj)
-    ) {
+    if (!primitives.has(typeObj as any) && !complexTypes.has(typeof typeObj)) {
       throw Error(`provable: unsupported type "${typeObj}"`);
     }
 
     function toInput(typeObj: any, obj: any, isToplevel = false): HashInput {
-      if (nonCircuitPrimitives.has(typeObj)) return {};
+      if (primitives.has(typeObj)) return {};
       if (!complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
       if (Array.isArray(typeObj)) {
@@ -335,7 +273,7 @@ function createSignable<Field>(): SignableConstructor<Field> {
     } satisfies Signable<T, J> as InferredSignable<A, Field>;
   }
 
-  return signable;
+  return { provable, signable };
 }
 
 function createHashInput<Field>() {
