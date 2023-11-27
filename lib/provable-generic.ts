@@ -15,6 +15,7 @@ export {
   NonMethods,
   InferProvable,
   InferJson,
+  InferValue,
   InferredProvable,
   IsPure,
 };

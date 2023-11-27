@@ -123,7 +123,7 @@ function createTokenSymbol<
   Field,
   Base extends GenericSignable<TokenSymbol<Field>, any, Field>
 >(base: Base, Field: GenericSignableField<Field>) {
-  return {
+  let self = {
     ...(base as Omit<Base, 'toJSON' | 'fromJSON'>),
     toInput({ field }: TokenSymbol<Field>): GenericHashInput<Field> {
       return { packed: [[field, 48]] };
@@ -139,7 +139,14 @@ function createTokenSymbol<
         );
       return { symbol, field: prefixToField(Field, symbol) };
     },
+    toValue(t: TokenSymbol<Field>): string {
+      return self.toJSON(t);
+    },
+    fromValue(s: string): TokenSymbol<Field> {
+      return self.fromJSON(s);
+    },
   };
+  return self;
 }
 
 type AuthRequired<Bool> = {
