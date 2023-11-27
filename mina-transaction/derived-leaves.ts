@@ -217,10 +217,16 @@ function createZkappUri<Field>(
     return Hash.hashWithPrefix(prefixes.zkappUri, packed);
   }
 
-  return dataAsHash<string, string, Field>({
+  return dataAsHash<string, string, string, Field>({
     empty() {
       let hash = Hash.hashWithPrefix(prefixes.zkappUri, [Field(0), Field(0)]);
       return { data: '', hash };
+    },
+    toValue(data: string) {
+      return data;
+    },
+    fromValue(value: string) {
+      return { data: value, hash: hashZkappUri(value) };
     },
     toJSON(data: string) {
       return data;

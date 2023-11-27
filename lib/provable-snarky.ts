@@ -31,9 +31,12 @@ type ProvableExtension<T, TJson = any> = {
   fromJSON: (x: TJson) => T;
   empty: () => T;
 };
-type ProvableExtended<T, TJson = any> = Provable<T> &
+type ProvableExtended<T, TValue = any, TJson = any> = Provable<T, TValue> &
   ProvableExtension<T, TJson>;
-type ProvableExtendedPure<T, TJson = any> = ProvablePure<T> &
+type ProvableExtendedPure<T, TValue = any, TJson = any> = ProvablePure<
+  T,
+  TValue
+> &
   ProvableExtension<T, TJson>;
 
 type InferProvable<T> = GenericInferProvable<T, Field>;
