@@ -49,8 +49,6 @@ function ProvableFromLayout<
   type HashInput = { fields?: Field[]; packed?: [Field, number][] };
   type Layout = GenericLayout<TypeMap>;
 
-  const PrimitiveMap = primitiveTypeMap<Field>();
-
   type FoldSpec<T, R> = GenericFoldSpec<T, R, TypeMap>;
 
   function layoutFold<T, R>(spec: FoldSpec<T, R>, typeData: Layout, value?: T) {
@@ -163,7 +161,7 @@ function ProvableFromLayout<
       return values;
     }
     if (primitiveTypes.has(typeData.type as string)) {
-      return (PrimitiveMap as any)[typeData.type].fromJSON(json);
+      return (primitiveTypeMap as any)[typeData.type].fromJSON(json);
     }
     return (TypeMap as any)[typeData.type].fromJSON(json);
   }
@@ -293,7 +291,7 @@ function ProvableFromLayout<
       return values;
     }
     if (primitiveTypes.has(typeData.type as string)) {
-      return (PrimitiveMap as any)[typeData.type].fromFields(fields, aux);
+      return (primitiveTypeMap as any)[typeData.type].fromFields(fields, aux);
     }
     return (TypeMap as any)[typeData.type].fromFields(fields, aux);
   }
@@ -458,7 +456,6 @@ function genericLayoutFold<
   typeData: GenericLayout<TypeMap>,
   value?: T
 ): R {
-  let PrimitiveMap = primitiveTypeMap<TypeMap['Field']>();
   let { checkedTypeName } = typeData;
   if (checkedTypeName) {
     // there's a custom type!
@@ -521,7 +518,11 @@ function genericLayoutFold<
     return spec.reduceObject(keys, object);
   }
   if (primitiveTypes.has(typeData.type)) {
-    return spec.map((PrimitiveMap as any)[typeData.type], value, typeData.type);
+    return spec.map(
+      (primitiveTypeMap as any)[typeData.type],
+      value,
+      typeData.type
+    );
   }
   return spec.map((TypeMap as any)[typeData.type], value, typeData.type);
 }

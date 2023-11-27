@@ -12,6 +12,7 @@ export {
   GenericSignableField,
   GenericSignableBool,
   primitiveTypes,
+  PrimitiveTypeMap,
   primitiveTypeMap,
   EmptyNull,
   EmptyUndefined,
@@ -106,27 +107,13 @@ function EmptyVoid<Field>(): GenericProvableExtended<void, null, Field> &
   return undefinedType;
 }
 
-function primitiveTypeMap<Field>(): {
+type PrimitiveTypeMap<Field> = {
   number: GenericProvableExtended<number, number, Field>;
   string: GenericProvableExtended<string, string, Field>;
   null: GenericProvableExtended<null, null, Field>;
-} & {
-  number: GenericSignable<number, number, any>;
-  string: GenericSignable<string, string, any>;
-  null: GenericSignable<null, null, any>;
-} {
-  return primitiveTypeMap_;
-}
+};
 
-const primitiveTypeMap_: {
-  number: GenericProvableExtended<number, number, any>;
-  string: GenericProvableExtended<string, string, any>;
-  null: GenericProvableExtended<null, null, any>;
-} & {
-  number: GenericSignable<number, number, any>;
-  string: GenericSignable<string, string, any>;
-  null: GenericSignable<null, null, any>;
-} = {
+const primitiveTypeMap: PrimitiveTypeMap<any> = {
   number: {
     ...emptyType,
     toAuxiliary: (value = 0) => [value],
