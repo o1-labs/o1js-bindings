@@ -67,9 +67,8 @@ type GenericSignableBool<Field, Bool = unknown> = ((value: boolean) => Bool) &
   GenericSignable<Bool, boolean, Field> &
   Binable<Bool> & { sizeInBytes: number };
 
-// TODO make `boolean` the value type
 type GenericBool<Field, Bool = unknown> = GenericSignableBool<Field, Bool> &
-  GenericProvable<Bool, 0n | 1n, Field>;
+  GenericProvable<Bool, boolean, Field>;
 
 type GenericHashInput<Field> = { fields?: Field[]; packed?: [Field, number][] };
 

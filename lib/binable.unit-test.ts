@@ -95,10 +95,10 @@ test.negative(Random.field, (field) =>
   FieldWithFailingCheck.fromBytes(FieldWithFailingCheck.toBytes(field))
 );
 
-let notABool = Random.map(Random.uint32, (x) => x + 2n);
+let notABool = Random.map(Random.uint32, (x) => Number(x) + 2);
 test.negative(notABool, (bool) =>
   // should fail to decode when check fails
-  Bool.fromBytes(Bool.toBytes(bool as Bool))
+  Bool.fromBytes([bool])
 );
 
 // record combinator
@@ -133,7 +133,7 @@ test(randomAccountBalance, (accountBalance) => {
 let MessedUpBool = defineBinable({
   toBytes: Bool.toBytes,
   readBytes(bytes, offset) {
-    let value = BigInt(bytes[offset++]) as Bool;
+    let value = !!bytes[offset++];
     return [value, offset + 1]; // by accident, offset is incremented twice
   },
 });
