@@ -514,7 +514,13 @@ function createCurveAffine({
   const Scalar = createField(order);
   return {
     name,
+    /**
+     * Arithmetic over the base field
+     */
     Field,
+    /**
+     * Arithmetic over the scalar field
+     */
     Scalar,
 
     modulus: p,
