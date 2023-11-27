@@ -313,18 +313,17 @@ function createSignable<Field>(): SignableConstructor<Field> {
     }
 
     function emptyValue(typeObj: any): any {
-      // TODO
-      if (typeObj === Number) return 0 as any;
-      if (typeObj === String) return '' as any;
-      if (typeObj === Boolean) return false as any;
-      if (typeObj === BigInt) return 0n as any;
+      if (typeObj === Number) return 0;
+      if (typeObj === String) return '';
+      if (typeObj === Boolean) return false;
+      if (typeObj === BigInt) return 0n;
       if (typeObj === null || typeObj === undefined) return typeObj;
       if (!complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
-      if (Array.isArray(typeObj)) return typeObj.map(emptyValue) as any;
+      if (Array.isArray(typeObj)) return typeObj.map(emptyValue);
       if ('emptyValue' in typeObj) return typeObj.emptyValue();
       return Object.fromEntries(
-        Object.keys(typeObj).map((k) => [k, emptyValue(typeObj)])
+        Object.keys(typeObj).map((k) => [k, emptyValue(typeObj[k])])
       );
     }
 
