@@ -86,8 +86,8 @@ function SignableFromLayout<
       toInput(value: T): HashInput {
         return toInput(typeData, value);
       },
-      emptyValue(): T {
-        return emptyValue(typeData);
+      empty(): T {
+        return empty(typeData);
       },
     };
   }
@@ -136,7 +136,7 @@ function SignableFromLayout<
           if (json !== null) {
             value = fromJSON(optionTypeData.inner, json);
           } else {
-            value = emptyValue(optionTypeData.inner);
+            value = empty(optionTypeData.inner);
             if (optionTypeData.optionType === 'closedInterval') {
               let innerInner = optionTypeData.inner.entries.lower;
               let innerType =
@@ -171,11 +171,11 @@ function SignableFromLayout<
     return (TypeMap as any)[typeData.type].fromJSON(json);
   }
 
-  function emptyValue(typeData: Layout) {
+  function empty(typeData: Layout) {
     return layoutFold<undefined, any>(
       {
         map(type) {
-          return type.emptyValue();
+          return type.empty();
         },
         reduceArray(array) {
           return array;
@@ -277,7 +277,7 @@ function SignableFromLayout<
     toInput,
     toJSON,
     fromJSON,
-    emptyValue,
+    empty,
     toJSONEssential,
   };
 }
@@ -300,7 +300,7 @@ function ProvableFromLayout<
 
   type FoldSpec<T, R> = GenericFoldSpec<T, R, TypeMap, BaseType>;
 
-  const { toInput, toJSON, fromJSON, emptyValue, toJSONEssential } =
+  const { toInput, toJSON, fromJSON, empty, toJSONEssential } =
     SignableFromLayout(TypeMap, customTypes);
 
   function layoutFold<T, R>(spec: FoldSpec<T, R>, typeData: Layout, value?: T) {
@@ -333,8 +333,8 @@ function ProvableFromLayout<
       toInput(value: T): HashInput {
         return toInput(typeData, value);
       },
-      emptyValue(): T {
-        return emptyValue(typeData);
+      empty(): T {
+        return empty(typeData);
       },
     };
   }
@@ -485,7 +485,7 @@ function ProvableFromLayout<
     );
   }
 
-  return { provableFromLayout, toJSONEssential, emptyValue };
+  return { provableFromLayout, toJSONEssential, empty };
 }
 
 // generic over leaf types

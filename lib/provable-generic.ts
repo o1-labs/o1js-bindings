@@ -146,7 +146,7 @@ function createDerivers<Field>(): {
       );
     }
 
-    let { emptyValue, fromJSON, toJSON, toInput } = signable(typeObj);
+    let { empty, fromJSON, toJSON, toInput } = signable(typeObj);
 
     type S = InferSignable<A, Field>;
 
@@ -161,7 +161,7 @@ function createDerivers<Field>(): {
         toJSON: (obj: T) => toJSON(obj as S) satisfies J,
         fromJSON: (json: J) => fromJSON(json) as T,
         check: (obj: T) => check(typeObj, obj, true),
-        emptyValue: () => emptyValue() as T,
+        empty: () => empty() as T,
       } satisfies ProvableExtended<T, J> as InferredProvable<A, Field>;
     }
     return {
@@ -174,7 +174,7 @@ function createDerivers<Field>(): {
       toJSON: (obj: T) => toJSON(obj as S) satisfies J,
       fromJSON: (json: J) => fromJSON(json) as T,
       check: (obj: T) => check(typeObj, obj, true),
-      emptyValue: () => emptyValue() as T,
+      empty: () => empty() as T,
     } satisfies ProvableExtended<T, J> as InferredProvable<A, Field>;
   }
 
@@ -250,7 +250,7 @@ function createDerivers<Field>(): {
       return Object.fromEntries(keys.map((k, i) => [k, values[i]]));
     }
 
-    function emptyValue(typeObj: any): any {
+    function empty(typeObj: any): any {
       if (typeObj === Number) return 0;
       if (typeObj === String) return '';
       if (typeObj === Boolean) return false;
@@ -258,10 +258,10 @@ function createDerivers<Field>(): {
       if (typeObj === null || typeObj === undefined) return typeObj;
       if (!complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
-      if (Array.isArray(typeObj)) return typeObj.map(emptyValue);
-      if ('emptyValue' in typeObj) return typeObj.emptyValue();
+      if (Array.isArray(typeObj)) return typeObj.map(empty);
+      if ('empty' in typeObj) return typeObj.empty();
       return Object.fromEntries(
-        Object.keys(typeObj).map((k) => [k, emptyValue(typeObj[k])])
+        Object.keys(typeObj).map((k) => [k, empty(typeObj[k])])
       );
     }
 
@@ -269,7 +269,7 @@ function createDerivers<Field>(): {
       toInput: (obj: T) => toInput(typeObj, obj, true),
       toJSON: (obj: T) => toJSON(typeObj, obj, true) as J,
       fromJSON: (json: J) => fromJSON(typeObj, json, true),
-      emptyValue: () => emptyValue(typeObj) as T,
+      empty: () => empty(typeObj) as T,
     } satisfies Signable<T, J> as InferredSignable<A, Field>;
   }
 

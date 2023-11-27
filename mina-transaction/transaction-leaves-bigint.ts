@@ -52,17 +52,17 @@ const { Events, Actions } = createEvents({ Field, Poseidon });
 type ActionState = Field;
 const ActionState = {
   ...Field,
-  emptyValue: Actions.emptyActionState,
+  empty: Actions.emptyActionState,
 };
 
 type VerificationKeyHash = Field;
 const VerificationKeyHash = {
   ...Field,
-  emptyValue: () => Field(mocks.dummyVerificationKeyHash),
+  empty: () => Field(mocks.dummyVerificationKeyHash),
 };
 
 type ReceiptChainHash = Field;
 const ReceiptChainHash = {
   ...Field,
-  emptyValue: () => Hash.emptyHashWithPrefix('CodaReceiptEmpty'),
+  empty: () => Hash.emptyHashWithPrefix('CodaReceiptEmpty'),
 };

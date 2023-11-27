@@ -29,7 +29,7 @@ type ProvableExtension<T, TJson = any> = {
   toInput: (x: T) => { fields?: Field[]; packed?: [Field, number][] };
   toJSON: (x: T) => TJson;
   fromJSON: (x: TJson) => T;
-  emptyValue: () => T;
+  empty: () => T;
 };
 type ProvableExtended<T, TJson = any> = Provable<T> &
   ProvableExtension<T, TJson>;

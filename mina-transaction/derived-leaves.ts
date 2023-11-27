@@ -107,7 +107,7 @@ function createEncodedField<
 >(base: Base, encoding: Base58<Field>, empty?: Field) {
   return {
     ...(base as Omit<Base, 'toJSON' | 'fromJSON'>),
-    emptyValue: empty !== undefined ? () => empty : base.emptyValue,
+    empty: empty !== undefined ? () => empty : base.empty,
     toJSON(x: Field): Json.TokenId {
       return encoding.toBase58(x);
     },
@@ -155,7 +155,7 @@ function createAuthRequired<
 >(base: Base, Bool: GenericSignableBool<Field, Bool>) {
   return {
     ...(base as Omit<Base, 'toJSON' | 'fromJSON'>),
-    emptyValue(): AuthRequired<Bool> {
+    empty(): AuthRequired<Bool> {
       return {
         constant: Bool(true),
         signatureNecessary: Bool(false),
@@ -211,7 +211,7 @@ function createZkappUri<Field>(
   }
 
   return dataAsHash<string, string, Field>({
-    emptyValue() {
+    empty() {
       let hash = Hash.hashWithPrefix(prefixes.zkappUri, [Field(0), Field(0)]);
       return { data: '', hash };
     },

@@ -38,7 +38,7 @@ type GenericSignable<T, TJson, Field> = {
   toInput: (x: T) => { fields?: Field[]; packed?: [Field, number][] };
   toJSON: (x: T) => TJson;
   fromJSON: (x: TJson) => T;
-  emptyValue: () => T;
+  empty: () => T;
 };
 
 type GenericProvableExtended<T, TJson, Field> = GenericProvable<T, Field> &
@@ -77,7 +77,7 @@ const emptyType = {
   toInput: () => ({}),
   toJSON: () => null,
   fromJSON: () => null,
-  emptyValue: () => null,
+  empty: () => null,
 };
 
 const undefinedType = {
@@ -85,7 +85,7 @@ const undefinedType = {
   fromFields: () => undefined,
   toJSON: () => null,
   fromJSON: () => undefined,
-  emptyValue: () => undefined,
+  empty: () => undefined,
 };
 
 let primitiveTypes = new Set(['number', 'string', 'null']);
@@ -120,7 +120,7 @@ const primitiveTypeMap: PrimitiveTypeMap<any> = {
     toJSON: (value) => value,
     fromJSON: (value) => value,
     fromFields: (_, [value]) => value,
-    emptyValue: () => 0,
+    empty: () => 0,
   },
   string: {
     ...emptyType,
@@ -128,7 +128,7 @@ const primitiveTypeMap: PrimitiveTypeMap<any> = {
     toJSON: (value) => value,
     fromJSON: (value) => value,
     fromFields: (_, [value]) => value,
-    emptyValue: () => '',
+    empty: () => '',
   },
   null: emptyType,
 };

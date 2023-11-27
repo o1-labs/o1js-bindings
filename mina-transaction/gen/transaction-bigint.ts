@@ -26,7 +26,7 @@ import { jsLayout } from './js-layout.js';
 export { customTypes, ZkappCommand, AccountUpdate, Account };
 export { Json };
 export * from '../transaction-leaves-bigint.js';
-export { signableFromLayout, toJSONEssential, emptyValue, Layout, TypeMap };
+export { signableFromLayout, toJSONEssential, empty, Layout, TypeMap };
 
 type TypeMap = {
   PublicKey: PublicKey;
@@ -99,7 +99,7 @@ let customTypes: CustomTypes = {
   VerificationKeyHash,
   ReceiptChainHash,
 };
-let { signableFromLayout, toJSONEssential, emptyValue } = SignableFromLayout<
+let { signableFromLayout, toJSONEssential, empty } = SignableFromLayout<
   TypeMap,
   Json.TypeMap
 >(TypeMap, customTypes);

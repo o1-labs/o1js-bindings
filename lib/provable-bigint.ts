@@ -43,7 +43,7 @@ function ProvableBigint<
       check(x);
       return x;
     },
-    emptyValue() {
+    empty() {
       return 0n as T;
     },
   };
