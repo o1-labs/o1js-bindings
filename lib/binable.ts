@@ -5,7 +5,7 @@ import {
   PositiveInteger,
 } from '../crypto/non-negative.js';
 import { bytesToBigInt, bigIntToBytes } from '../crypto/bigint-helpers.js';
-import { GenericField } from './generic.js';
+import { GenericField, GenericSignableField } from './generic.js';
 
 export {
   Binable,
@@ -314,7 +314,10 @@ const BinableUint32 = BinableUint(32);
 
 // same as Random_oracle.prefix_to_field in OCaml
 // converts string to bytes and bytes to field; throws if bytes don't fit in one field
-function prefixToField<Field>(Field: GenericField<Field>, prefix: string) {
+function prefixToField<Field>(
+  Field: GenericSignableField<Field> | GenericField<Field>,
+  prefix: string
+) {
   let fieldSize = Field.sizeInBytes;
   if (prefix.length >= fieldSize) throw Error('prefix too long');
   let stringBytes = stringToBytes(prefix);
