@@ -19,17 +19,14 @@ import {
   ReceiptChainHash,
 } from '../transaction-leaves-bigint.js';
 import { GenericSignable } from '../../lib/generic.js';
-import {
-  SignableFromLayout,
-  GenericLayout,
-} from '../../lib/from-layout-signable.js';
+import { SignableFromLayout, GenericLayout } from '../../lib/from-layout.js';
 import * as Json from './transaction-json.js';
 import { jsLayout } from './js-layout.js';
 
 export { customTypes, ZkappCommand, AccountUpdate, Account };
 export { Json };
 export * from '../transaction-leaves-bigint.js';
-export { provableFromLayout, toJSONEssential, emptyValue, Layout, TypeMap };
+export { signableFromLayout, toJSONEssential, emptyValue, Layout, TypeMap };
 
 type TypeMap = {
   PublicKey: PublicKey;
@@ -102,7 +99,7 @@ let customTypes: CustomTypes = {
   VerificationKeyHash,
   ReceiptChainHash,
 };
-let { provableFromLayout, toJSONEssential, emptyValue } = SignableFromLayout<
+let { signableFromLayout, toJSONEssential, emptyValue } = SignableFromLayout<
   TypeMap,
   Json.TypeMap
 >(TypeMap, customTypes);
@@ -316,7 +313,7 @@ type ZkappCommand = {
   memo: string;
 };
 
-let ZkappCommand = provableFromLayout<ZkappCommand, Json.ZkappCommand>(
+let ZkappCommand = signableFromLayout<ZkappCommand, Json.ZkappCommand>(
   jsLayout.ZkappCommand as any
 );
 
@@ -517,7 +514,7 @@ type AccountUpdate = {
   };
 };
 
-let AccountUpdate = provableFromLayout<AccountUpdate, Json.AccountUpdate>(
+let AccountUpdate = signableFromLayout<AccountUpdate, Json.AccountUpdate>(
   jsLayout.AccountUpdate as any
 );
 
@@ -567,6 +564,6 @@ type Account = {
   };
 };
 
-let Account = provableFromLayout<Account, Json.Account>(
+let Account = signableFromLayout<Account, Json.Account>(
   jsLayout.Account as any
 );
