@@ -2,6 +2,7 @@ import {
   GenericBool,
   GenericField,
   GenericHashInput,
+  GenericSignable,
   GenericSignableBool,
   GenericSignableField,
 } from '../lib/generic.js';
@@ -13,7 +14,7 @@ import {
   stringLengthInBytes,
   stringToBytes,
 } from '../lib/binable.js';
-import { fieldEncodings } from '../../lib/base58.js';
+import { Base58, fieldEncodings } from '../../lib/base58.js';
 import { dataAsHash } from '../../lib/events.js';
 import { HashHelpers } from '../../lib/hash-generic.js';
 import { prefixes } from '../crypto/constants.js';
@@ -35,126 +36,29 @@ function derivedLeafTypes<Field, Bool>({
 }) {
   let { provable } = createDerivers<Field>();
   const Encoding = fieldEncodings<Field>(Field);
+  const fieldBase = provable(Field);
 
-  type TokenId = Field;
-  type StateHash = Field;
-  type TokenSymbol = { symbol: string; field: Field };
-  type AuthRequired = {
-    constant: Bool;
-    signatureNecessary: Bool;
-    signatureSufficient: Bool;
+  return {
+    TokenId: createEncodedField(
+      fieldBase,
+      Encoding.TokenId,
+      Field(defaultTokenId)
+    ),
+    StateHash: createEncodedField(fieldBase, Encoding.StateHash),
+    TokenSymbol: createTokenSymbol(
+      provable({ field: Field, symbol: String }),
+      Field
+    ),
+    AuthRequired: createAuthRequired(
+      provable({
+        constant: Bool,
+        signatureNecessary: Bool,
+        signatureSufficient: Bool,
+      }),
+      Bool
+    ),
+    ZkappUri: createZkappUri(Field, Hash, packToFields),
   };
-
-  const defaultTokenId = 1;
-  const TokenId = {
-    ...provable(Field),
-    emptyValue(): TokenId {
-      return Field(defaultTokenId);
-    },
-    toJSON(x: TokenId): Json.TokenId {
-      return Encoding.TokenId.toBase58(x);
-    },
-    fromJSON(x: Json.TokenId) {
-      return Encoding.TokenId.fromBase58(x);
-    },
-  };
-
-  const StateHash = {
-    ...provable(Field),
-    toJSON(x: Field): Json.Field {
-      return Encoding.StateHash.toBase58(x);
-    },
-    fromJSON(x: Json.Field) {
-      return Encoding.StateHash.fromBase58(x);
-    },
-  };
-
-  type HashInput = GenericHashInput<Field>;
-  const TokenSymbol = {
-    ...provable({ field: Field, symbol: String }),
-    toInput({ field }: TokenSymbol): HashInput {
-      return { packed: [[field, 48]] };
-    },
-    toJSON({ symbol }: TokenSymbol) {
-      return symbol;
-    },
-    fromJSON(symbol: string): TokenSymbol {
-      let bytesLength = stringLengthInBytes(symbol);
-      if (bytesLength > tokenSymbolLength)
-        throw Error(
-          `Token symbol ${symbol} should be a maximum of 6 bytes, but is ${bytesLength}`
-        );
-      return { symbol, field: prefixToField(Field, symbol) };
-    },
-  };
-
-  const AuthRequired = {
-    ...provable({
-      constant: Bool,
-      signatureNecessary: Bool,
-      signatureSufficient: Bool,
-    }),
-    emptyValue(): AuthRequired {
-      return {
-        constant: Bool(true),
-        signatureNecessary: Bool(false),
-        signatureSufficient: Bool(true),
-      };
-    },
-    toJSON(x: AuthRequired): Json.AuthRequired {
-      let c = Number(Bool.toJSON(x.constant));
-      let n = Number(Bool.toJSON(x.signatureNecessary));
-      let s = Number(Bool.toJSON(x.signatureSufficient));
-      // prettier-ignore
-      switch (`${c}${n}${s}`) {
-        case '110': return 'Impossible';
-        case '101': return 'None';
-        case '000': return 'Proof';
-        case '011': return 'Signature';
-        case '001': return 'Either';
-        default: throw Error('Unexpected permission');
-      }
-    },
-    fromJSON(json: Json.AuthRequired): AuthRequired {
-      let map: Record<Json.AuthRequired, string> = {
-        Impossible: '110',
-        None: '101',
-        Proof: '000',
-        Signature: '011',
-        Either: '001',
-      };
-      let code = map[json];
-      if (code === undefined) throw Error('Unexpected permission');
-      let [constant, signatureNecessary, signatureSufficient] = code
-        .split('')
-        .map((s) => Bool(!!Number(s)));
-      return { constant, signatureNecessary, signatureSufficient };
-    },
-  };
-
-  // Mina_base.Zkapp_account.hash_zkapp_uri_opt
-  function hashZkappUri(uri: string) {
-    let bits = bytesToBits(stringToBytes(uri));
-    bits.push(true);
-    let input: HashInput = { packed: bits.map((b) => [Field(Number(b)), 1]) };
-    let packed = packToFields(input);
-    return Hash.hashWithPrefix(prefixes.zkappUri, packed);
-  }
-
-  const ZkappUri = dataAsHash<string, string, Field>({
-    emptyValue() {
-      let hash = Hash.hashWithPrefix(prefixes.zkappUri, [Field(0), Field(0)]);
-      return { data: '', hash };
-    },
-    toJSON(data: string) {
-      return data;
-    },
-    fromJSON(json: string) {
-      return { data: json, hash: hashZkappUri(json) };
-    },
-  });
-
-  return { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri };
 }
 
 function derivedLeafTypesSignable<Field, Bool>({
@@ -170,50 +74,64 @@ function derivedLeafTypesSignable<Field, Bool>({
 }) {
   let { signable } = createDerivers<Field>();
   const Encoding = fieldEncodings<Field>(Field);
+  const fieldBase = signable(Field);
 
-  type TokenId = Field;
-  type StateHash = Field;
-  type TokenSymbol = { symbol: string; field: Field };
-  type AuthRequired = {
-    constant: Bool;
-    signatureNecessary: Bool;
-    signatureSufficient: Bool;
+  return {
+    TokenId: createEncodedField(
+      fieldBase,
+      Encoding.TokenId,
+      Field(defaultTokenId)
+    ),
+    StateHash: createEncodedField(fieldBase, Encoding.StateHash),
+    TokenSymbol: createTokenSymbol(
+      signable({ field: Field, symbol: String }),
+      Field
+    ),
+    AuthRequired: createAuthRequired(
+      signable({
+        constant: Bool,
+        signatureNecessary: Bool,
+        signatureSufficient: Bool,
+      }),
+      Bool
+    ),
+    ZkappUri: createZkappUri(Field, Hash, packToFields),
   };
+}
 
-  const defaultTokenId = 1;
-  const TokenId = {
-    ...signable(Field),
-    emptyValue(): TokenId {
-      return Field(defaultTokenId);
-    },
-    toJSON(x: TokenId): Json.TokenId {
-      return Encoding.TokenId.toBase58(x);
+const defaultTokenId = 1;
+
+function createEncodedField<
+  Field,
+  Base extends GenericSignable<Field, string, Field>
+>(base: Base, encoding: Base58<Field>, empty?: Field) {
+  return {
+    ...(base as Omit<Base, 'toJSON' | 'fromJSON'>),
+    emptyValue: empty !== undefined ? () => empty : base.emptyValue,
+    toJSON(x: Field): Json.TokenId {
+      return encoding.toBase58(x);
     },
     fromJSON(x: Json.TokenId) {
-      return Encoding.TokenId.fromBase58(x);
+      return encoding.fromBase58(x);
     },
   };
+}
 
-  const StateHash = {
-    ...signable(Field),
-    toJSON(x: Field): Json.Field {
-      return Encoding.StateHash.toBase58(x);
-    },
-    fromJSON(x: Json.Field) {
-      return Encoding.StateHash.fromBase58(x);
-    },
-  };
+type TokenSymbol<Field> = { symbol: string; field: Field };
 
-  type HashInput = GenericHashInput<Field>;
-  const TokenSymbol = {
-    ...signable({ field: Field, symbol: String }),
-    toInput({ field }: TokenSymbol): HashInput {
+function createTokenSymbol<
+  Field,
+  Base extends GenericSignable<TokenSymbol<Field>, any, Field>
+>(base: Base, Field: GenericSignableField<Field>) {
+  return {
+    ...(base as Omit<Base, 'toJSON' | 'fromJSON'>),
+    toInput({ field }: TokenSymbol<Field>): GenericHashInput<Field> {
       return { packed: [[field, 48]] };
     },
-    toJSON({ symbol }: TokenSymbol) {
+    toJSON({ symbol }: TokenSymbol<Field>) {
       return symbol;
     },
-    fromJSON(symbol: string): TokenSymbol {
+    fromJSON(symbol: string): TokenSymbol<Field> {
       let bytesLength = stringLengthInBytes(symbol);
       if (bytesLength > tokenSymbolLength)
         throw Error(
@@ -222,21 +140,29 @@ function derivedLeafTypesSignable<Field, Bool>({
       return { symbol, field: prefixToField(Field, symbol) };
     },
   };
+}
 
-  const AuthRequired = {
-    ...signable({
-      constant: Bool,
-      signatureNecessary: Bool,
-      signatureSufficient: Bool,
-    }),
-    emptyValue(): AuthRequired {
+type AuthRequired<Bool> = {
+  constant: Bool;
+  signatureNecessary: Bool;
+  signatureSufficient: Bool;
+};
+
+function createAuthRequired<
+  Field,
+  Bool,
+  Base extends GenericSignable<AuthRequired<Bool>, AuthRequired<boolean>, Field>
+>(base: Base, Bool: GenericSignableBool<Field, Bool>) {
+  return {
+    ...(base as Omit<Base, 'toJSON' | 'fromJSON'>),
+    emptyValue(): AuthRequired<Bool> {
       return {
         constant: Bool(true),
         signatureNecessary: Bool(false),
         signatureSufficient: Bool(true),
       };
     },
-    toJSON(x: AuthRequired): Json.AuthRequired {
+    toJSON(x: AuthRequired<Bool>): Json.AuthRequired {
       let c = Number(Bool.toJSON(x.constant));
       let n = Number(Bool.toJSON(x.signatureNecessary));
       let s = Number(Bool.toJSON(x.signatureSufficient));
@@ -250,7 +176,7 @@ function derivedLeafTypesSignable<Field, Bool>({
         default: throw Error('Unexpected permission');
       }
     },
-    fromJSON(json: Json.AuthRequired): AuthRequired {
+    fromJSON(json: Json.AuthRequired): AuthRequired<Bool> {
       let map: Record<Json.AuthRequired, string> = {
         Impossible: '110',
         None: '101',
@@ -266,17 +192,25 @@ function derivedLeafTypesSignable<Field, Bool>({
       return { constant, signatureNecessary, signatureSufficient };
     },
   };
+}
 
+function createZkappUri<Field>(
+  Field: GenericSignableField<Field>,
+  Hash: HashHelpers<Field>,
+  packToFields: (input: GenericHashInput<Field>) => Field[]
+) {
   // Mina_base.Zkapp_account.hash_zkapp_uri_opt
   function hashZkappUri(uri: string) {
     let bits = bytesToBits(stringToBytes(uri));
     bits.push(true);
-    let input: HashInput = { packed: bits.map((b) => [Field(Number(b)), 1]) };
+    let input: GenericHashInput<Field> = {
+      packed: bits.map((b) => [Field(Number(b)), 1]),
+    };
     let packed = packToFields(input);
     return Hash.hashWithPrefix(prefixes.zkappUri, packed);
   }
 
-  const ZkappUri = dataAsHash<string, string, Field>({
+  return dataAsHash<string, string, Field>({
     emptyValue() {
       let hash = Hash.hashWithPrefix(prefixes.zkappUri, [Field(0), Field(0)]);
       return { data: '', hash };
@@ -288,6 +222,4 @@ function derivedLeafTypesSignable<Field, Bool>({
       return { data: json, hash: hashZkappUri(json) };
     },
   });
-
-  return { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri };
 }
