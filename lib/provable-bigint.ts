@@ -8,7 +8,6 @@ import {
 import { BinableWithBits, defineBinable, withBits } from './binable.js';
 
 export {
-  provable,
   signable,
   ProvableExtended,
   ProvableBigint,
@@ -19,7 +18,7 @@ export {
 
 type Field = bigint;
 
-let { provable, signable } = createDerivers<Field>();
+let { signable } = createDerivers<Field>();
 
 type Signable<T, J> = GenericSignable<T, J, Field>;
 type ProvableExtended<T, J> = GenericProvableExtended<T, J, Field>;
