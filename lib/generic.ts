@@ -40,25 +40,14 @@ type GenericSignable<T, TJson, Field> = {
   emptyValue: () => T;
 };
 
-type ProvableExtension<T, TJson, Field> = {
-  toInput: (x: T) => { fields?: Field[]; packed?: [Field, number][] };
-  toJSON: (x: T) => TJson;
-  fromJSON: (x: TJson) => T;
-  emptyValue?: () => T;
-};
-
 type GenericProvableExtended<T, TJson, Field> = GenericProvable<T, Field> &
-  ProvableExtension<T, TJson, Field>;
+  GenericSignable<T, TJson, Field>;
 
 type GenericProvableExtendedPure<T, TJson, Field> = GenericProvablePure<
   T,
   Field
 > &
-  ProvableExtension<T, TJson, Field>;
-
-type GenericField<Field> = ((value: number | string | bigint) => Field) &
-  GenericProvableExtended<Field, string, Field> &
-  Binable<Field> & { sizeInBytes: number };
+  GenericSignable<T, TJson, Field>;
 
 type GenericSignableField<Field> = ((
   value: number | string | bigint
@@ -66,13 +55,15 @@ type GenericSignableField<Field> = ((
   GenericSignable<Field, string, Field> &
   Binable<Field> & { sizeInBytes: number };
 
-type GenericBool<Field, Bool = unknown> = ((value: boolean) => Bool) &
-  GenericProvableExtended<Bool, boolean, Field> &
-  Binable<Bool> & { sizeInBytes: number };
+type GenericField<Field> = GenericSignableField<Field> &
+  GenericProvable<Field, Field>;
 
 type GenericSignableBool<Field, Bool = unknown> = ((value: boolean) => Bool) &
   GenericSignable<Bool, boolean, Field> &
   Binable<Bool> & { sizeInBytes: number };
+
+type GenericBool<Field, Bool = unknown> = GenericSignableBool<Field, Bool> &
+  GenericProvable<Bool, Field>;
 
 type GenericHashInput<Field> = { fields?: Field[]; packed?: [Field, number][] };
 
