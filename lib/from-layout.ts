@@ -26,7 +26,16 @@ type GenericTypeMap<
   TokenId: TokenId;
 };
 type AnyTypeMap = GenericTypeMap<any, any, any, any, any, any, any, any>;
-type TypeMapValues<TypeMap extends AnyTypeMap, JsonMap extends AnyTypeMap> = {
+
+type TypeMapValues<
+  TypeMap extends AnyTypeMap,
+  JsonMap extends AnyTypeMap,
+  BaseType
+> = {
+  [K in keyof TypeMap & keyof JsonMap]: BaseType;
+};
+
+type TypeMapProvable<TypeMap extends AnyTypeMap, JsonMap extends AnyTypeMap> = {
   [K in keyof TypeMap & keyof JsonMap]: GenericProvableExtended<
     TypeMap[K],
     JsonMap[K],
@@ -38,7 +47,7 @@ function ProvableFromLayout<
   TypeMap extends AnyTypeMap,
   JsonMap extends AnyTypeMap
 >(
-  TypeMap: TypeMapValues<TypeMap, JsonMap>,
+  TypeMap: TypeMapProvable<TypeMap, JsonMap>,
   customTypes: Record<
     string,
     GenericProvableExtended<any, any, TypeMap['Field']>
@@ -46,10 +55,11 @@ function ProvableFromLayout<
 ) {
   type Field = TypeMap['Field'];
   const Field = TypeMap.Field;
+  type BaseType = GenericProvableExtended<any, any, TypeMap['Field']>;
   type HashInput = { fields?: Field[]; packed?: [Field, number][] };
   type Layout = GenericLayout<TypeMap>;
 
-  type FoldSpec<T, R> = GenericFoldSpec<T, R, TypeMap>;
+  type FoldSpec<T, R> = GenericFoldSpec<T, R, TypeMap, BaseType>;
 
   function layoutFold<T, R>(spec: FoldSpec<T, R>, typeData: Layout, value?: T) {
     return genericLayoutFold(TypeMap, customTypes, spec, typeData, value);
@@ -297,15 +307,10 @@ function ProvableFromLayout<
   }
 
   function emptyValue(typeData: Layout) {
-    let zero = TypeMap.Field.fromJSON('0');
     return layoutFold<undefined, any>(
       {
         map(type) {
-          if (type.emptyValue) return type.emptyValue();
-          return type.fromFields(
-            Array(type.sizeInFields()).fill(zero),
-            type.toAuxiliary()
-          );
+          return type.emptyValue();
         },
         reduceArray(array) {
           return array;
@@ -423,12 +428,8 @@ function ProvableFromLayout<
 
 // generic over leaf types
 
-type GenericFoldSpec<T, R, TypeMap extends AnyTypeMap> = {
-  map: (
-    type: GenericProvableExtended<any, any, TypeMap['Field']>,
-    value?: T,
-    name?: string
-  ) => R;
+type GenericFoldSpec<T, R, TypeMap extends AnyTypeMap, BaseType> = {
+  map: (type: BaseType, value?: T, name?: string) => R;
   reduceArray: (array: R[], typeData: ArrayLayout<TypeMap>) => R;
   reduceObject: (keys: string[], record: Record<string, R>) => R;
   reduceFlaggedOption: (
@@ -442,17 +443,15 @@ type GenericFoldSpec<T, R, TypeMap extends AnyTypeMap> = {
 };
 
 function genericLayoutFold<
-  T,
-  R,
-  TypeMap extends AnyTypeMap,
-  JsonMap extends AnyTypeMap
+  BaseType,
+  T = any,
+  R = any,
+  TypeMap extends AnyTypeMap = AnyTypeMap,
+  JsonMap extends AnyTypeMap = AnyTypeMap
 >(
-  TypeMap: TypeMapValues<TypeMap, JsonMap>,
-  customTypes: Record<
-    string,
-    GenericProvableExtended<any, any, TypeMap['Field']>
-  >,
-  spec: GenericFoldSpec<T, R, TypeMap>,
+  TypeMap: TypeMapValues<TypeMap, JsonMap, BaseType>,
+  customTypes: Record<string, BaseType>,
+  spec: GenericFoldSpec<T, R, TypeMap, BaseType>,
   typeData: GenericLayout<TypeMap>,
   value?: T
 ): R {
@@ -474,7 +473,10 @@ function genericLayoutFold<
     return spec.reduceArray(array, arrayTypeData);
   }
   if (typeData.type === 'option') {
-    let { optionType, inner } = typeData as OptionLayout<TypeMap>;
+    let { optionType, inner } = typeData as OptionLayout<
+      TypeMap,
+      BaseLayout<TypeMap>
+    >;
     switch (optionType) {
       case 'closedInterval':
       case 'flaggedOption':
