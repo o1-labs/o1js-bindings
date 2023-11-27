@@ -416,7 +416,7 @@ type InferProvableBase<A, Field> = A extends GenericProvable<
   ? InferPrimitive<A>
   : A extends Tuple<any>
   ? {
-      [I in keyof A & number]: InferProvable<A[I], Field>;
+      [I in keyof A]: InferProvable<A[I], Field>;
     }
   : A extends (infer U)[]
   ? InferProvable<U, Field>[]
@@ -432,7 +432,7 @@ type InferValue<A> = A extends GenericProvable<any, infer U, any>
   ? InferPrimitiveValue<A>
   : A extends Tuple<any>
   ? {
-      [I in keyof A & number]: InferValue<A[I]>;
+      [I in keyof A]: InferValue<A[I]>;
     }
   : A extends (infer U)[]
   ? InferValue<U>[]
@@ -450,7 +450,7 @@ type InferJson<A> = A extends WithJson<infer J>
   ? InferPrimitiveJson<A>
   : A extends Tuple<any>
   ? {
-      [I in keyof A & number]: InferJson<A[I]>;
+      [I in keyof A]: InferJson<A[I]>;
     }
   : A extends WithJson<infer U>[]
   ? U[]
