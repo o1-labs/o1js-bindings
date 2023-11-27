@@ -139,15 +139,6 @@ function createTokenSymbol<
         );
       return { symbol, field: prefixToField(Field, symbol) };
     },
-    toValue(t: TokenSymbol<Field>): string {
-      return self.toJSON(t);
-    },
-    fromValue(s: string | TokenSymbol<Field>): TokenSymbol<Field> {
-      if (typeof s === 'string') {
-        return self.fromJSON(s);
-      }
-      return s;
-    },
   };
   return self;
 }
@@ -225,11 +216,11 @@ function createZkappUri<Field>(
       let hash = Hash.hashWithPrefix(prefixes.zkappUri, [Field(0), Field(0)]);
       return { data: '', hash };
     },
-    toValue(data: string) {
+    toValue(data) {
       return data;
     },
-    fromValue(value: string) {
-      return { data: value, hash: hashZkappUri(value) };
+    fromValue(value) {
+      return value;
     },
     toJSON(data: string) {
       return data;
@@ -237,5 +228,6 @@ function createZkappUri<Field>(
     fromJSON(json: string) {
       return { data: json, hash: hashZkappUri(json) };
     },
+    Field,
   });
 }

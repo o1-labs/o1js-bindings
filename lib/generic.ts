@@ -55,10 +55,10 @@ type GenericProvableExtendedPure<T, TValue, TJson, Field> = GenericProvablePure<
   GenericSignable<T, TJson, Field>;
 
 type GenericSignableField<Field> = ((
-  value: number | string | bigint
+  value: number | string | bigint | Field
 ) => Field) &
   GenericSignable<Field, string, Field> &
-  Binable<Field> & { sizeInBytes: number };
+  Binable<Field> & { sizeInBytes: number; toBigint: (x: Field) => bigint };
 
 type GenericField<Field> = GenericSignableField<Field> &
   GenericProvable<Field, bigint, Field>;

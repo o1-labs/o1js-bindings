@@ -71,7 +71,10 @@ type CustomTypes = {
       data: string;
       hash: Field;
     },
-    string,
+    {
+      data: string;
+      hash: bigint;
+    },
     string
   >;
   TokenSymbol: ProvableExtended<
@@ -79,7 +82,10 @@ type CustomTypes = {
       symbol: string;
       field: Field;
     },
-    string,
+    {
+      symbol: string;
+      field: bigint;
+    },
     string
   >;
   StateHash: ProvableExtended<
@@ -92,7 +98,10 @@ type CustomTypes = {
       data: Field[][];
       hash: Field;
     },
-    Value.TypeMap['Field'][][],
+    {
+      data: bigint[][];
+      hash: bigint;
+    },
     Json.TypeMap['Field'][][]
   >;
   Actions: ProvableExtended<
@@ -100,7 +109,10 @@ type CustomTypes = {
       data: Field[][];
       hash: Field;
     },
-    Value.TypeMap['Field'][][],
+    {
+      data: bigint[][];
+      hash: bigint;
+    },
     Json.TypeMap['Field'][][]
   >;
   ActionState: ProvableExtended<
