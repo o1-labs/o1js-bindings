@@ -79,7 +79,8 @@
   pickles
   random_oracle
   random_oracle.permutation.ocaml
-  yojson)
+  yojson
+  protocol_version)
  (instrumentation
   (backend bisect_ppx))
  (preprocess

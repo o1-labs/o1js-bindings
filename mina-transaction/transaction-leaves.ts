@@ -10,7 +10,7 @@ import {
   emptyHashWithPrefix,
 } from '../../lib/hash.js';
 import { provable } from '../../lib/circuit_value.js';
-import { mocks } from '../crypto/constants.js';
+import { mocks, protocolVersions } from '../crypto/constants.js';
 
 export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
 
@@ -23,6 +23,7 @@ export {
   VerificationKeyHash,
   ReceiptChainHash,
   StateHash,
+  TransactionVersion,
 };
 
 type AuthRequired = {
@@ -62,4 +63,10 @@ type ReceiptChainHash = Field;
 const ReceiptChainHash = {
   ...provable(Field),
   emptyValue: () => emptyHashWithPrefix('CodaReceiptEmpty'),
+};
+
+type TransactionVersion = Field;
+const TransactionVersion = {
+  ...provable(UInt32),
+  emptyValue: () => UInt32.from(protocolVersions.txnVersion),
 };

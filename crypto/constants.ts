@@ -1,5 +1,5 @@
 // @gen this file is generated - don't edit it directly
-export { prefixes, versionBytes, poseidonParamsKimchiFp, poseidonParamsLegacyFp, mocks }
+export { prefixes, versionBytes, protocolVersions, poseidonParamsKimchiFp, poseidonParamsLegacyFp, mocks }
 
 let prefixes = {
   "event": "MinaZkappEvent******",
@@ -27,6 +27,7 @@ let versionBytes = {
   "transactionHash": 29,
   "signedCommandV1": 19
 };
+let protocolVersions = { "txnVersion": 3 };
 let poseidonParamsKimchiFp = {
   "mds": [
     [
