@@ -1,11 +1,6 @@
 import { assert } from '../../lib/errors.js';
-import {
-  pallasParams,
-  secp256k1Params,
-  vestaParams,
-} from './elliptic-curve-examples.js';
-import { CurveParams, createCurveAffine } from './elliptic_curve.js';
-import { Fq, mod } from './finite_field.js';
+import { CurveParams } from './elliptic-curve-examples.js';
+import { createCurveAffine } from './elliptic_curve.js';
 import { computeGlvData, decompose } from './elliptic-curve-endomorphism.js';
 import { Random, test } from '../../lib/testing/property.js';
 import { log2 } from './bigint-helpers.js';
@@ -13,9 +8,9 @@ import { log2 } from './bigint-helpers.js';
 const Ntest = 100000;
 const isVerbose = false;
 
-testGlv(pallasParams);
-testGlv(vestaParams);
-testGlv(secp256k1Params);
+testGlv(CurveParams.Pallas);
+testGlv(CurveParams.Vesta);
+testGlv(CurveParams.Secp256k1);
 
 function testGlv(params: CurveParams) {
   if (isVerbose) console.log(`\ntesting GLV for ${params.name}`);
@@ -38,11 +33,14 @@ function testGlv(params: CurveParams) {
 
   for (let i = 0; i < Ntest; i++) {
     // random scalar
-    let s = Fq.random();
+    let s = Curve.Scalar.random();
 
     // decompose s and assert decomposition is correct
     let [s0, s1] = decompose(s, data);
-    assert(mod(s0.value + s1.value * lambda, q) === s, 'valid decomposition');
+    assert(
+      Curve.Scalar.mod(s0.value + s1.value * lambda) === s,
+      'valid decomposition'
+    );
 
     if (s0.abs > maxS0) maxS0 = s0.abs;
     if (s1.abs > maxS1) maxS1 = s1.abs;
