@@ -1,11 +1,12 @@
 import { CurveParams, Pallas, Vesta } from './elliptic_curve.js';
+import { exampleFields } from './finite-field-examples.js';
 
-export { secp256k1Params, pallasParams, vestaParams };
+export { CurveParams };
 
 const secp256k1Params: CurveParams = {
   name: 'secp256k1',
-  modulus: 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2fn,
-  order: 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n,
+  modulus: exampleFields.secp256k1.modulus,
+  order: exampleFields.secq256k1.modulus,
   a: 0n,
   b: 7n,
   generator: {
@@ -34,4 +35,10 @@ const vestaParams: CurveParams = {
   generator: Vesta.one,
   endoBase: Vesta.endoBase,
   endoScalar: Vesta.endoScalar,
+};
+
+const CurveParams = {
+  Secp256k1: secp256k1Params,
+  Pallas: pallasParams,
+  Vesta: vestaParams,
 };

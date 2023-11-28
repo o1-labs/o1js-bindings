@@ -527,7 +527,13 @@ function createCurveAffine({
 
   return {
     name,
+    /**
+     * Arithmetic over the base field
+     */
     Field,
+    /**
+     * Arithmetic over the scalar field
+     */
     Scalar,
 
     modulus: p,
@@ -545,6 +551,11 @@ function createCurveAffine({
     },
 
     fromNonzero(g: { x: bigint; y: bigint }): GroupAffine {
+      if (g.x === 0n && g.y === 0n) {
+        throw Error(
+          'fromNonzero: got (0, 0), which is reserved for the zero point'
+        );
+      }
       return { ...g, infinity: false };
     },
 
