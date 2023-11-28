@@ -18,7 +18,7 @@ export {
   InferValue,
   InferredProvable,
   IsPure,
-  DeepProvableOrValue,
+  From,
 };
 
 type ProvableConstructor<Field> = <A>(
@@ -517,24 +517,22 @@ type InferredSignable<A, Field> = GenericSignable<
 
 // deep union type for flexible fromValue
 
-type DeepProvableOrValue<A> = A extends {
-  from: (x: infer U) => any;
+type From<A> = A extends {
+  fromValue: (x: infer U) => any;
 } & GenericProvable<any, any, any>
   ? U | InferProvable<A, any>
-  : A extends { fromValue: (x: infer U) => any }
-  ? U
   : A extends GenericProvable<any, any, any>
   ? InferProvable<A, any> | InferValue<A>
   : A extends Primitive
   ? InferPrimitiveValue<A>
   : A extends Tuple<any>
   ? {
-      [I in keyof A]: DeepProvableOrValue<A[I]>;
+      [I in keyof A]: From<A[I]>;
     }
   : A extends (infer U)[]
-  ? DeepProvableOrValue<U>[]
+  ? From<U>[]
   : A extends Record<any, any>
   ? {
-      [K in keyof A]: DeepProvableOrValue<A[K]>;
+      [K in keyof A]: From<A[K]>;
     }
   : never;
