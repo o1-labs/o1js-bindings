@@ -79,27 +79,37 @@ function Endomorphism(
 }
 
 /**
+ * GLV decomposition, named after the authors Gallant, Lambert and Vanstone who introduced it:
+ * https://iacr.org/archive/crypto2001/21390189.pdf
+ *
  * decompose scalar as s = s0 + s1 * lambda where |s0|, |s1| are small
  *
- * we compute
+ * this relies on scalars v00, v01, v10, v11 which satisfy
+ * - v00 + v10 * lambda = 0 (mod q)
+ * - v01 + v11 * lambda = 0 (mod q)
+ * - |vij| ~ sqrt(q), i.e. each vij has only about half the bits of the max scalar size
+ *
+ * the vij are computed in {@link egcdStopEarly}.
+ *
+ * for a scalar s, we pick x0, x1 (see below) and define
  * s0 = x0 v00 + x1 v01 + s
  * s1 = x0 v10 + x1 v11
  *
- * for _any_ choice of x0, x1, this ensures
- * s0 + s1 * lambda = x0 (v00 + v10 * lambda) + x1 (v01 + v11 * lambda) + s = s
+ * this yields a valid decomposition for _any_ choice of x0, x1, because
+ * s0 + s1 * lambda = x0 (v00 + v10 * lambda) + x1 (v01 + v11 * lambda) + s = s (mod q)
  *
- * x0, x1 are chosen as integer approximations to the rational solutions x0*, x1* of
+ * to ensure s0, s1 are small, x0, x1 are chosen as integer approximations to the rational solutions x0*, x1* of
  * x0* v00 + x1* v01 = -s
  * x0* v10 + x1* v11 = 0
  *
- * we can achieve |x0 - x0*| <= 0.5 and |x1 - x1*| <= 0.5.
+ * picking the integer xi that's closest to xi* gives us |xi - xi*| <= 0.5
  *
- * |vij| being small ensures that s0, s1 are small:
+ * now, |vij| being small ensures that s0, s1 are small:
  *
  * |s0| = |(x0 - x0*) v00 + (x1 - x1*) v01| <= 0.5 * (|v00| + |v01|)
  * |s1| = |(x0 - x0*) v10 + (x1 - x1*) v11| <= 0.5 * (|v10| + |v11|)
  *
- * for "typical" lambda, |vij| ~ sqrt(q) so |s0|, |s1| ~ sqrt(q), see {@link egcdStopEarly}.
+ * given |vij| ~ sqrt(q), we also get |s0|, |s1| ~ sqrt(q).
  */
 function decompose(s: bigint, data: GlvData) {
   let { v00, v01, v10, v11, det } = data;
@@ -129,10 +139,16 @@ function endomorphismProjective(
 }
 
 /**
- * Faster scalar muliplication leveraging an endomorphism
+ * Faster scalar muliplication leveraging the GLV decomposition (see {@link decompose}).
  *
- * This method is known as "GLV" after the authors of the paper that introduced it:
- * https://iacr.org/archive/crypto2001/21390189.pdf
+ * This method to speed up plain, non-provable scalar multiplication was the original application of GLV
+ *
+ * Instead of scaling a single point, we apply the decomposition to scale two points, with two scalars of half the orginal length:
+ *
+ * `s*G = s0*G + s1*lambda*G = s0*G + s1*endo(G)`, where endo(G) is cheap to compute
+ *
+ * Because we can do doubling on both points at once, we save half the double()` operations,
+ * while the number of `add()` operations stays the same.
  */
 function glvScaleProjective(
   g: GroupProjective,
@@ -236,15 +252,9 @@ type GlvData = ReturnType<typeof computeGlvData>;
  * Input: positive integers l, p
  *
  * Output: matrix V = [[v00,v01],[v10,v11]] of field elements satisfying
- * (1, l)^T V = v0j + l*v1j = 0 (mod p) and |vij| ~ sqrt(p) for "random" l
+ * (1, l)^T V = v0j + l*v1j = 0 (mod p)
  *
- * Fun fact: the determinant of V is either p or -p. Proof:
- * - initially, det = r0 * t1 - r1 * t0 = p * 1 - l * 0 = p
- * - in each iteration, det flips its sign:
- * det' = r0' * t1' - r1' * t0' =
- * (r1 * (t0 - quotient * t1)) - ((r0 - quotient * r1) * t1) =
- * r1 * t0 - r1 * t1 * quotient - r0 * t1 + quotient * r1 * t1 =
- * r1 * t0 - r0 * t1 = -det
+ * For random / "typical" l, we will have |vij| ~ sqrt(p) for all vij
  */
 function egcdStopEarly(
   l: bigint,
