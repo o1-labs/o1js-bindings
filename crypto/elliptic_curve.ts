@@ -545,6 +545,7 @@ function createCurveAffine({
     zero: affineZero,
     one,
 
+    hasEndomorphism: Endo !== undefined,
     get Endo() {
       if (Endo === undefined) throw Error(`no endomorphism defined on ${name}`);
       return Endo;
