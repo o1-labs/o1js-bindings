@@ -123,7 +123,7 @@ function createTokenSymbol<
   Field,
   Base extends GenericSignable<TokenSymbol<Field>, any, Field>
 >(base: Base, Field: GenericSignableField<Field>) {
-  return {
+  let self = {
     ...(base as Omit<Base, 'toJSON' | 'fromJSON'>),
     toInput({ field }: TokenSymbol<Field>): GenericHashInput<Field> {
       return { packed: [[field, 48]] };
@@ -140,6 +140,7 @@ function createTokenSymbol<
       return { symbol, field: prefixToField(Field, symbol) };
     },
   };
+  return self;
 }
 
 type AuthRequired<Bool> = {
@@ -210,10 +211,16 @@ function createZkappUri<Field>(
     return Hash.hashWithPrefix(prefixes.zkappUri, packed);
   }
 
-  return dataAsHash<string, string, Field>({
+  return dataAsHash<string, string, string, Field>({
     empty() {
       let hash = Hash.hashWithPrefix(prefixes.zkappUri, [Field(0), Field(0)]);
       return { data: '', hash };
+    },
+    toValue(data) {
+      return data;
+    },
+    fromValue(value) {
+      return value;
     },
     toJSON(data: string) {
       return data;
@@ -221,5 +228,6 @@ function createZkappUri<Field>(
     fromJSON(json: string) {
       return { data: json, hash: hashZkappUri(json) };
     },
+    Field,
   });
 }

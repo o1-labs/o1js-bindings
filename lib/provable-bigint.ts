@@ -1,17 +1,13 @@
 import { bigIntToBytes } from '../crypto/bigint-helpers.js';
 import { createDerivers } from './provable-generic.js';
-import {
-  GenericHashInput,
-  GenericProvableExtended,
-  GenericSignable,
-} from './generic.js';
+import { GenericHashInput, GenericSignable } from './generic.js';
 import { BinableWithBits, defineBinable, withBits } from './binable.js';
 
 export {
   signable,
-  ProvableExtended,
   ProvableBigint,
   BinableBigint,
+  BinableBool,
   HashInput,
   Signable,
 };
@@ -21,7 +17,6 @@ type Field = bigint;
 let { signable } = createDerivers<Field>();
 
 type Signable<T, J> = GenericSignable<T, J, Field>;
-type ProvableExtended<T, J> = GenericProvableExtended<T, J, Field>;
 type HashInput = GenericHashInput<Field>;
 
 function ProvableBigint<
@@ -72,5 +67,21 @@ function BinableBigint<T extends bigint = bigint>(
       },
     }),
     sizeInBits
+  );
+}
+
+function BinableBool(check: (x: number) => void): BinableWithBits<boolean> {
+  return withBits(
+    defineBinable({
+      toBytes(x) {
+        return [x ? 1 : 0];
+      },
+      readBytes(bytes, start) {
+        let byte = bytes[start];
+        check(byte);
+        return [byte === 1, start + 1];
+      },
+    }),
+    1
   );
 }
