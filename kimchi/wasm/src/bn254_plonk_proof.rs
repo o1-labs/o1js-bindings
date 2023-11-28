@@ -69,6 +69,15 @@ pub fn wasm_bn254_plonk_proof_create() -> Result<Uint8Array, JsError> {
 }
 
 /**
+ * `Pickles.Impls.Step.constraint_system`
+ * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/snark0.ml#L1285
+ */
+fn inject_wrapper_and_create_constraint_system() {
+    // TODO: this should be in a closure as a parameter for `finalize_is_running`
+    inject_wrapper(/* f */, /* || -> main() */);
+}
+
+/**
  * `Pickles.Impls.Step.r1cs_h`
  * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/runners.ml#L225
  */
@@ -144,7 +153,10 @@ fn bind<S, T>(x: Checked<S>, f: Fn(S) -> Checked<T>) -> Checked<T> {
     }
 }
 
-
+/**
+ * `Pickles.Impls.Step.inject_wrapper`
+ * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/snark0.ml#L1259
+ */
 fn inject_wrapper<InputVar, RVar>(f: Fn(RVar) -> RVar, x: Fn(InputVar) -> RVar) -> dyn Fn(InputVar) -> RVar {
     |a| f(x(a))
 }
