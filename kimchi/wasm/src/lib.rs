@@ -111,3 +111,6 @@ pub mod poseidon;
 pub mod circuit;
 
 pub mod wasm_ocaml_serde;
+
+// BN254 Proof
+pub mod bn254_plonk_proof;

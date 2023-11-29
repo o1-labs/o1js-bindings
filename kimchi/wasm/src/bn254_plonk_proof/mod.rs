@@ -1,14 +1,12 @@
 use ark_ec::short_weierstrass_jacobian::GroupAffine;
-use ark_ff::{UniformRand, Zero};
 use groupmap::GroupMap;
 use js_sys::Uint8Array;
 use kimchi::circuits::polynomial::COLUMNS;
 use kimchi::circuits::polynomials::generic::testing::create_circuit;
 use kimchi::circuits::polynomials::generic::testing::fill_in_witness;
-use kimchi::poly_commitment::pairing_proof::{PairingProof, PairingSRS};
+use kimchi::poly_commitment::pairing_proof::PairingProof;
 use kimchi::proof::ProverProof;
 use kimchi::prover_index::testing::new_index_for_test_with_lookups;
-use kimchi::snarky::{Constants, SnarkyConstraintSystem};
 use mina_poseidon::{
     constants::PlonkSpongeConstantsKimchi,
     sponge::{DefaultFqSponge, DefaultFrSponge},
@@ -17,6 +15,9 @@ use poly_commitment::commitment::CommitmentCurve;
 use std::array;
 use wasm_bindgen::prelude::*;
 
+mod snark;
+
+type Fp = ark_bn254::Fr;
 type BN254 = GroupAffine<ark_bn254::g1::Parameters>;
 type Proof = PairingProof<ark_ec::bn::Bn<ark_bn254::Parameters>>;
 
@@ -32,7 +33,7 @@ enum CVar {
 
 enum Checked<A, F> {
     Pure(A),
-    Function(Fn(RunState<F>) -> (RunState<F>, A))
+    Function(dyn Fn(RunState<F>) -> (RunState<F>, A))
 }
 
 #[wasm_bindgen]
@@ -66,27 +67,6 @@ pub fn wasm_bn254_plonk_proof_create() -> Result<Uint8Array, JsError> {
     let rmp_srs = rmp_serde::to_vec(&srs).map_err(|_| JsError::new("Could not serialize SRS"))?;
 
     Ok(rmp_srs.as_slice().into())
-}
-
-/**
- * `Pickles.Impls.Step.constraint_system`
- * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/snark0.ml#L1285
- */
-fn inject_wrapper_and_create_constraint_system() {
-    // TODO: this should be in a closure as a parameter for `finalize_is_running`
-    inject_wrapper(/* f */, /* || -> main() */);
-}
-
-/**
- * `Pickles.Impls.Step.r1cs_h`
- * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/runners.ml#L225
- */
-fn r1cs_h(next_input: &mut i32) -> SnarkyConstraintSystem<BN254> {
-    let (retval, checked) = collect_input_constraints(next_input);
-    
-    // Add run_to_run
-    
-    create_constraint_system(next_input, retval, checked)
 }
 
 /**
@@ -151,27 +131,4 @@ fn bind<S, T>(x: Checked<S>, f: Fn(S) -> Checked<T>) -> Checked<T> {
             eval(f(a), s)
         })
     }
-}
-
-/**
- * `Pickles.Impls.Step.inject_wrapper`
- * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/snark0.ml#L1259
- */
-fn inject_wrapper<InputVar, RVar>(f: Fn(RVar) -> RVar, x: Fn(InputVar) -> RVar) -> dyn Fn(InputVar) -> RVar {
-    |a| f(x(a))
-}
-
-/**
- * `Pickles.Impls.Step.constraint_system`
- * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/runners.ml#L48
- */
-fn create_constraint_system(num_inputs: &i32, output, t) -> SnarkyConstraintSystem<BN254> {
-    let constants = Constants::new();
-    let mut cs = SnarkyConstraintSystem::create(constants);
-    let next_auxiliary = num_inputs.clone();
-    cs.set_public_input_size(num_inputs);
-    let auxiliary_input_size = next_auxiliary - num_inputs;
-    cs.set_auxiliary_input_size(auxiliary_input_size);
-
-    cs
 }
