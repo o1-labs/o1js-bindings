@@ -1,40 +1,30 @@
 use ark_ec::short_weierstrass_jacobian::GroupAffine;
+use ark_ff::UniformRand;
+use ark_ff::Zero;
 use groupmap::GroupMap;
 use js_sys::Uint8Array;
 use kimchi::circuits::polynomial::COLUMNS;
 use kimchi::circuits::polynomials::generic::testing::create_circuit;
 use kimchi::circuits::polynomials::generic::testing::fill_in_witness;
+use kimchi::keccak_sponge::{Keccak256FqSponge, Keccak256FrSponge};
 use kimchi::poly_commitment::pairing_proof::PairingProof;
 use kimchi::proof::ProverProof;
 use kimchi::prover_index::testing::new_index_for_test_with_lookups;
-use mina_poseidon::{
-    constants::PlonkSpongeConstantsKimchi,
-    sponge::{DefaultFqSponge, DefaultFrSponge},
-};
 use poly_commitment::commitment::CommitmentCurve;
 use std::array;
 use wasm_bindgen::prelude::*;
 
+use self::snark::Checked;
+
+mod circuit;
 mod snark;
 
 type Fp = ark_bn254::Fr;
+type Fq = ark_bn254::Fq;
 type BN254 = GroupAffine<ark_bn254::g1::Parameters>;
+type FrSponge = Keccak256FrSponge<Fp>;
+type FqSponge = Keccak256FqSponge<Fq, BN254, Fp>;
 type Proof = PairingProof<ark_ec::bn::Bn<ark_bn254::Parameters>>;
-
-type EFqSponge = DefaultFqSponge<BN254Parameters, PlonkSpongeConstantsKimchi>;
-type EFrSponge = DefaultFrSponge<Fp, PlonkSpongeConstantsKimchi>;
-
-struct RunState<Field> {
-}
-
-enum CVar {
-    Var(i32)
-}
-
-enum Checked<A, F> {
-    Pure(A),
-    Function(dyn Fn(RunState<F>) -> (RunState<F>, A))
-}
 
 #[wasm_bindgen]
 pub fn wasm_bn254_plonk_proof_create() -> Result<Uint8Array, JsError> {
@@ -45,14 +35,14 @@ pub fn wasm_bn254_plonk_proof_create() -> Result<Uint8Array, JsError> {
     fill_in_witness(0, &mut witness, &[]);
 
     let x = Fp::rand(&mut rand::rngs::OsRng);
-    let prover = new_index_for_test_with_lookups(gates, 0, 0, vec![], None, true);
+    let prover = new_index_for_test_with_lookups(gates, 0, 0, vec![], None, true, None);
     let public_inputs = vec![];
 
     prover.verify(&witness, &public_inputs).unwrap();
 
     let group_map = <BN254 as CommitmentCurve>::Map::setup();
 
-    let proof = ProverProof::create_recursive::<EFqSponge, EFrSponge>(
+    let proof = ProverProof::create_recursive::<FqSponge, FrSponge>(
         &group_map,
         witness,
         &[],
@@ -70,48 +60,6 @@ pub fn wasm_bn254_plonk_proof_create() -> Result<Uint8Array, JsError> {
 }
 
 /**
- * `Pickles.Impls.Step.collect_input_constraints`
- * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/runners.ml#L189
- */
-fn collect_input_constraints(next_input: &mut i32) -> (BN254, /* ??? */) {
-    let var = alloc_input(/* input_typ */);
-    let retval = alloc_input(/* return_typ */);
-    let circuit = /* TODO */
-
-    (retval, circuit)
-}
-
-/**
- * `Pickles.Impls.Step.collect_input_constraints`
- * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/runners.ml#L204
- */
-fn alloc_input(next_input: &mut i32) -> BN254 {
-    const SIZE_IN_FIELD_ELEMENTS = 1;
-    let fields: [_; SIZE_IN_FIELD_ELEMENTS] = std::array::from_fn(|i| alloc_var(next_input));
-    
-    var_of_fields(&fields)
-}
-
-/**
- * `Pickles.Impls.Step.alloc_var`
- * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/runners.ml#L180
- */
-fn alloc_var(next_input: &mut i32) -> CVar {
-    let v = next_input.clone();
-    *next_input += 1;
-
-    CVar::Var(v)
-}
-
-/**
- * `Pickles.Impls.Step.Typ.T.field.var_of_fields`
- * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/typ.ml#L138
- */
-fn var_of_fields(fields: &[BN254]) -> BN254 {
-    fields[0]
-}
-
-/**
  * `Pickles.Impls.Step.Checked1.return`
  * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/checked_runner.ml#L43
  */
@@ -123,12 +71,12 @@ fn return_value<T>(x: Checked<T>) -> Checked<Checked<T>> {
  * `Pickles.Impls.Step.Checked1.bind`
  * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/checked_runner.ml#L57
  */
-fn bind<S, T>(x: Checked<S>, f: Fn(S) -> Checked<T>) -> Checked<T> {
+fn bind<S, T>(x: Checked<S>, f: Box<dyn Fn(S) -> Checked<T>>) -> Checked<T> {
     match x {
-        Pure(a) => f(a),
-        Function(g) => Function(|s| {
+        Checked::Pure(a) => f(a),
+        Checked::Function(g) => Checked::Function(|s| {
             let (s, a) = g(s);
             eval(f(a), s)
-        })
+        }),
     }
 }
