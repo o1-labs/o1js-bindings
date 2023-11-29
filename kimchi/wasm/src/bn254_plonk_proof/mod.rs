@@ -16,7 +16,6 @@ use wasm_bindgen::prelude::*;
 
 use self::snark::Checked;
 
-mod circuit;
 mod snark;
 
 type Fp = ark_bn254::Fr;

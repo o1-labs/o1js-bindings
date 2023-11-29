@@ -1,9 +1,8 @@
 use ark_bn254::Fq;
 use kimchi::snarky::{constants::Constants, constraint_system::SnarkyConstraintSystem};
 
-use super::{Fp, BN254, circuit::Main};
+use super::{Fp, BN254};
 
-type RVar<T> = Box<dyn Fn() -> T>;
 
 struct RunState {}
 pub enum Checked<A> {
@@ -41,30 +40,12 @@ impl Snark {
     /**
      * `Pickles.Impls.Step.mark_active`
      * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/snark0.ml#L1163
-     *
-     * TODO: what is `T`?
      */
-    fn mark_active<T>(&mut self, f: Box<dyn Fn() -> RVar<T>>) -> RVar<T>
+    fn mark_active(&mut self, f: Box<dyn Fn()>)
     {
         self.active_counters.insert(0, self.this_functor_id());
-        let ret = f();
+        f();
         self.active_counters.remove(0);
-
-        ret
-    }
-
-    /**
-     * `Pickles.Impls.Step.inject_wrapper`
-     * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/snark0.ml#L1259
-     *
-     * TODO: what is `T`?
-     */
-    fn inject_wrapper<InputVar, T>(
-        f: Box<dyn Fn(RVar<T>) -> RVar<T>>,
-        x: Box<dyn Fn(InputVar) -> RVar<T>>,
-    ) -> Box<dyn Fn(InputVar) -> RVar<T>>
-    {
-        Box::new(|a| f(x(a)))
     }
 
     /**
@@ -118,7 +99,7 @@ impl Snark {
     fn r1cs_h<InputVar, C>(
         &self,
         next_input: &mut usize,
-        x: Box<dyn Fn(InputVar) -> C>,
+        x: Box<dyn FnMut(InputVar) -> C>,
     ) -> SnarkyConstraintSystem<Fp> {
         let (retval, checked) = collect_input_constraints(next_input, &|| Box::new(&x));
 
@@ -134,7 +115,7 @@ impl Snark {
     fn init_and_create_constraint_system<C, F>(
         &self,
         num_inputs: usize, outputs: BN254, t: Checked<Box<dyn Fn() -> C>>
-    ) -> SnarkyConstraintSystem<Fq>
+    ) -> SnarkyConstraintSystem<Fp>
     {
         let constants = Constants::new::<BN254>();
         let mut cs = SnarkyConstraintSystem::create(constants);
@@ -150,14 +131,13 @@ impl Snark {
      * `Pickles.Impls.Step.constraint_system`
      * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/snark0.ml#L1285
      */
-    pub fn create_constraint_system(&mut self, x: Main) -> SnarkyConstraintSystem<Fp> {
+    pub fn create_constraint_system(&mut self, main: Box<dyn Fn(&[Fp]) -> ()>) -> SnarkyConstraintSystem<Fp> {
         // TODO: this should be in a closure as a parameter for `finalize_is_running`
-        let f = Box::new(|x| self.mark_active(x));
-        let x_wrapped = Self::inject_wrapper(f, x);
+        let x = |a| {|| self.mark_active(Box::new(|| main(a)))};
 
         // In OCaml, the function calls `Perform.constraint_system` but that function only consists of a call to
         // `r1cs_h`, so we simplify that by directly calling to `r1cs_h`
         let mut next_input = 0;
-        self.r1cs_h(&mut next_input, x_wrapped)
+        self.r1cs_h(&mut next_input, Box::new(x))
     }
 }
