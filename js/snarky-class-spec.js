@@ -94,6 +94,10 @@ export default [
         name: 'util',
         type: 'object',
       },
+      {
+        name: 'sideLoaded',
+        type: 'object'
+      },
     ],
   },
   {
