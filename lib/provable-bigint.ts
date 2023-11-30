@@ -1,36 +1,34 @@
 import { bigIntToBytes } from '../crypto/bigint-helpers.js';
-import { createProvable } from './provable-generic.js';
-import { GenericHashInput, GenericProvableExtended } from './generic.js';
+import { createDerivers } from './provable-generic.js';
+import {
+  GenericHashInput,
+  GenericProvableExtended,
+  GenericSignable,
+} from './generic.js';
 import { BinableWithBits, defineBinable, withBits } from './binable.js';
 
-export { provable, ProvableExtended, ProvableBigint, BinableBigint, HashInput };
+export {
+  signable,
+  ProvableExtended,
+  ProvableBigint,
+  BinableBigint,
+  HashInput,
+  Signable,
+};
 
 type Field = bigint;
 
-let provable = createProvable<Field>();
+let { signable } = createDerivers<Field>();
 
+type Signable<T, J> = GenericSignable<T, J, Field>;
 type ProvableExtended<T, J> = GenericProvableExtended<T, J, Field>;
 type HashInput = GenericHashInput<Field>;
 
 function ProvableBigint<
   T extends bigint = bigint,
   TJSON extends string = string
->(check: (x: bigint) => void): ProvableExtended<T, TJSON> {
+>(check: (x: bigint) => void): Signable<T, TJSON> {
   return {
-    sizeInFields() {
-      return 1;
-    },
-    toFields(x): Field[] {
-      return [x];
-    },
-    toAuxiliary() {
-      return [];
-    },
-    check,
-    fromFields([x]) {
-      check(x);
-      return x as T;
-    },
     toInput(x) {
       return { fields: [x], packed: [] };
     },
@@ -44,6 +42,9 @@ function ProvableBigint<
       let x = BigInt(json) as T;
       check(x);
       return x;
+    },
+    empty() {
+      return 0n as T;
     },
   };
 }
