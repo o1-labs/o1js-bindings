@@ -16,7 +16,9 @@ use wasm_bindgen::prelude::*;
 
 use self::snark::Checked;
 
+mod circuit;
 mod snark;
+mod r#type;
 
 type Fp = ark_bn254::Fr;
 type Fq = ark_bn254::Fq;
@@ -24,6 +26,7 @@ type BN254 = GroupAffine<ark_bn254::g1::Parameters>;
 type FrSponge = Keccak256FrSponge<Fp>;
 type FqSponge = Keccak256FqSponge<Fq, BN254, Fp>;
 type Proof = PairingProof<ark_ec::bn::Bn<ark_bn254::Parameters>>;
+type Main = Box<dyn Fn(&[Fp])>;
 
 #[wasm_bindgen]
 pub fn wasm_bn254_plonk_proof_create() -> Result<Uint8Array, JsError> {

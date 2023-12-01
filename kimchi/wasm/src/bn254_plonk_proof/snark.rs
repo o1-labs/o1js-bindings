@@ -1,19 +1,12 @@
-use ark_bn254::Fq;
 use kimchi::snarky::{constants::Constants, constraint_system::SnarkyConstraintSystem};
 
-use super::{Fp, BN254};
-
+use super::{Fp, BN254, Main, r#type::{Type, CVar}};
 
 struct RunState {}
 pub enum Checked<A> {
     Pure(A),
     Function(Box<dyn Fn(RunState) -> (RunState, A)>),
 }
-
-enum CVar {
-    Var(i32),
-}
-
 pub struct Snark {
     pub functor_counter: i32,
     pub active_counters: Vec<i32>,
@@ -52,18 +45,18 @@ impl Snark {
      * `Pickles.Impls.Step.alloc_input`
      * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/runners.ml#L204
      */
-    fn alloc_input(next_input: &mut i32) -> CVar {
+    fn alloc_input(next_input: &mut i32, r#type: Type) -> CVar<Fp> {
         const SIZE_IN_FIELD_ELEMENTS: usize = 1;
         let fields: [_; SIZE_IN_FIELD_ELEMENTS] = std::array::from_fn(|i| Self::alloc_var(next_input));
 
-        Self::var_of_fields(&fields)
+        r#type.var_of_fields(&fields)
     }
 
     /**
      * `Pickles.Impls.Step.alloc_var`
      * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/runners.ml#L180
      */
-    fn alloc_var(next_input: &mut i32) -> CVar {
+    fn alloc_var(next_input: &mut i32) -> CVar<Fp> {
         let v = next_input.clone();
         *next_input += 1;
 
@@ -71,22 +64,14 @@ impl Snark {
     }
 
     /**
-     * `Pickles.Impls.Step.Typ.T.field.var_of_fields`
-     * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/typ.ml#L138
-     */
-    fn var_of_fields(fields: &[CVar]) -> CVar {
-        fields[0]
-    }
-
-    /**
      * `Pickles.Impls.Step.collect_input_constraints`
      * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/runners.ml#L189
      */
-    fn collect_input_constraints<InputVar, C>(next_input: &mut usize, x: Box<dyn Fn() -> Box<dyn Fn(InputVar) -> C>>) -> (CVar, Checked<F3>) 
+    fn collect_input_constraints<InputVar, C>(next_input: &mut usize, x: Box<dyn Fn() -> Box<dyn Fn(InputVar) -> C>>, input_type: Type, return_type: Type) -> (CVar, Checked<Box<dyn Fn() -> C>>) 
     where
      {
-        let var = alloc_input(/* input_typ */);
-        let retval = alloc_input(/* return_typ */);
+        let var = alloc_input(next_input, input_type);
+        let retval = alloc_input(next_input, return_type);
         let circuit = /* TODO */
     
         (retval, circuit)
@@ -100,8 +85,10 @@ impl Snark {
         &self,
         next_input: &mut usize,
         x: Box<dyn FnMut(InputVar) -> C>,
+        input_type: Type,
+        return_type: Type
     ) -> SnarkyConstraintSystem<Fp> {
-        let (retval, checked) = collect_input_constraints(next_input, &|| Box::new(&x));
+        let (retval, checked) = collect_input_constraints(next_input, &|| Box::new(&x), input_type, return_type);
 
         // Add run_to_run
 
@@ -131,13 +118,13 @@ impl Snark {
      * `Pickles.Impls.Step.constraint_system`
      * See https://github.com/o1-labs/snarky/blob/94b2df82129658d505b612806a5804bc192f13f0/src/base/snark0.ml#L1285
      */
-    pub fn create_constraint_system(&mut self, main: Box<dyn Fn(&[Fp]) -> ()>) -> SnarkyConstraintSystem<Fp> {
+    pub fn create_constraint_system(&mut self, main: Main, input_type: Type, return_type: Type) -> SnarkyConstraintSystem<Fp> {
         // TODO: this should be in a closure as a parameter for `finalize_is_running`
         let x = |a| {|| self.mark_active(Box::new(|| main(a)))};
 
         // In OCaml, the function calls `Perform.constraint_system` but that function only consists of a call to
         // `r1cs_h`, so we simplify that by directly calling to `r1cs_h`
         let mut next_input = 0;
-        self.r1cs_h(&mut next_input, Box::new(x))
+        self.r1cs_h(&mut next_input, Box::new(x), input_type, return_type)
     }
 }
