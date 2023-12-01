@@ -8,12 +8,19 @@ import {
   InferredProvable as GenericInferredProvable,
   IsPure as GenericIsPure,
   createHashInput,
+  Constructor,
 } from './provable-generic.js';
 import { Tuple } from '../../lib/util/types.js';
 import { GenericHashInput } from './generic.js';
 
 // external API
-export { ProvableExtended, provable, provablePure, provableTuple };
+export {
+  ProvableExtended,
+  provable,
+  provablePure,
+  provableTuple,
+  provableFromClass,
+};
 
 // internal API
 export {
@@ -53,4 +60,39 @@ function provablePure<A>(
 
 function provableTuple<T extends Tuple<any>>(types: T): InferredProvable<T> {
   return provable(types) as any;
+}
+
+function provableFromClass<A, T extends InferProvable<A>>(
+  Class: Constructor<T> & { check?: (x: T) => void },
+  typeObj: A
+): ProvableExtended<T, InferJson<A>> {
+  let raw = provable(typeObj);
+  return {
+    sizeInFields: raw.sizeInFields,
+    toFields: raw.toFields,
+    toAuxiliary: raw.toAuxiliary,
+    fromFields(fields, aux) {
+      return construct(Class, raw.fromFields(fields, aux));
+    },
+    check(value) {
+      if (Class.check !== undefined) {
+        Class.check(value);
+      } else {
+        raw.check(value);
+      }
+    },
+    toInput: raw.toInput,
+    toJSON: raw.toJSON,
+    fromJSON(x) {
+      return construct(Class, raw.fromJSON(x));
+    },
+    empty() {
+      return construct(Class, raw.empty());
+    },
+  };
+}
+
+function construct<Raw, T extends Raw>(Class: Constructor<T>, value: Raw): T {
+  let instance = Object.create(Class.prototype);
+  return Object.assign(instance, value);
 }
