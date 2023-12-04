@@ -27,7 +27,6 @@ ark-ff = { version = "0.3.0", features = ["parallel"] }
 ark-serialize = "0.3.0"
 ark-ec = { version = "0.3.0", features = ["parallel"] }
 ark-poly = { version = "0.3.0", features = ["parallel"] }
-ark-bn254 = "0.3.0"
 
 # proof-systems
 poly-commitment = { path = "../../../../../crypto/proof-systems/poly-commitment" }
@@ -35,7 +34,7 @@ groupmap = { path = "../../../../../crypto/proof-systems/groupmap" }
 mina-curves = { path = "../../../../../crypto/proof-systems/curves" }
 o1-utils = { path = "../../../../../crypto/proof-systems/utils" }
 mina-poseidon = { path = "../../../../../crypto/proof-systems/poseidon" }
-kimchi = { path = "../../../../../crypto/proof-systems/kimchi", features = ["wasm_types", "keccak-sponges", "bn254"] }
+kimchi = { path = "../../../../../crypto/proof-systems/kimchi", features = ["wasm_types"] }
 
 array-init = "2.0.0"
 base64 = "0.13.0"

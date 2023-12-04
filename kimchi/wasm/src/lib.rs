@@ -1,4 +1,4 @@
-//! The Marlin_p+lonk_stubs crate exports some functionalities
+//! The Marlin_plonk_stubs crate exports some functionalities
 //! and structures from the following the Rust crates to OCaml:
 //!
 //! * [Marlin](https://github.com/o1-labs/marlin),
@@ -111,6 +111,3 @@ pub mod poseidon;
 pub mod circuit;
 
 pub mod wasm_ocaml_serde;
-
-// BN254 Proof
-pub mod bn254_plonk_proof;
