@@ -116,19 +116,16 @@ function conversionCorePerField(
     },
 
     polyCommToRust(polyComm: PolyComm): WasmPolyComm {
-      let [, camlUnshifted, camlShifted] = polyComm;
-      let rustShifted = MlOption.mapFrom(camlShifted, self.pointToRust);
-      let rustUnshifted = self.pointsToRust(camlUnshifted);
-      return new PolyComm(rustUnshifted, rustShifted);
+      let [, camlElems] = polyComm;
+      let rustElems = self.pointsToRust(camlElems);
+      return new PolyComm(rustElems);
     },
     polyCommFromRust(polyComm: WasmPolyComm): PolyComm {
-      let rustShifted = polyComm.shifted;
-      let rustUnshifted = polyComm.unshifted;
-      let mlShifted = MlOption.mapTo(rustShifted, affineFromRust);
-      let mlUnshifted = mapFromUintArray(rustUnshifted, (ptr) => {
+      let rustElems = polyComm.elems;
+      let mlElems = mapFromUintArray(rustElems, (ptr) => {
         return affineFromRust(wrap(ptr, CommitmentCurve));
       });
-      return [0, [0, ...mlUnshifted], mlShifted];
+      return [0, [0, ...mlElems]];
     },
 
     polyCommsToRust([, ...comms]: MlArray<PolyComm>): Uint32Array {

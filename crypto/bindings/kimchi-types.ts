@@ -53,8 +53,7 @@ type Gate = [
 
 type PolyComm = [
   _: 0,
-  unshifted: MlArray<OrInfinity>,
-  shifted: MlOption<OrInfinity>
+  elems: MlArray<OrInfinity>,
 ];
 
 // verifier index
