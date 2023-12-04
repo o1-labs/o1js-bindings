@@ -40,7 +40,7 @@ type ProvableExtension<T, TJson = any> = {
 };
 type ProvableExtended<T, TJson = any> = Provable<T> &
   ProvableExtension<T, TJson>;
-type ProvableExtendedPure<T, TJson = any> = ProvablePure<T> &
+type ProvablePureExtended<T, TJson = any> = ProvablePure<T> &
   ProvableExtension<T, TJson>;
 
 type InferProvable<T> = GenericInferProvable<T, Field>;
@@ -54,7 +54,7 @@ const { provable } = createDerivers<Field>();
 
 function provablePure<A>(
   typeObj: A
-): ProvableExtendedPure<InferProvable<A>, InferJson<A>> {
+): ProvablePureExtended<InferProvable<A>, InferJson<A>> {
   return provable(typeObj, { isPure: true }) as any;
 }
 
@@ -65,7 +65,9 @@ function provableTuple<T extends Tuple<any>>(types: T): InferredProvable<T> {
 function provableFromClass<A, T extends InferProvable<A>>(
   Class: Constructor<T> & { check?: (x: T) => void },
   typeObj: A
-): ProvableExtended<T, InferJson<A>> {
+): IsPure<A> extends true
+  ? ProvablePureExtended<T, InferJson<A>>
+  : ProvableExtended<T, InferJson<A>> {
   let raw = provable(typeObj);
   return {
     sizeInFields: raw.sizeInFields,
@@ -89,7 +91,7 @@ function provableFromClass<A, T extends InferProvable<A>>(
     empty() {
       return construct(Class, raw.empty());
     },
-  };
+  } satisfies ProvableExtended<T, InferJson<A>> as any;
 }
 
 function construct<Raw, T extends Raw>(Class: Constructor<T>, value: Raw): T {
