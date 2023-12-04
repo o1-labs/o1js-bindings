@@ -28,6 +28,10 @@ export default [
         name: 'poseidon',
         type: 'object',
       },
+      {
+        name: 'foreignField',
+        type: 'object',
+      },
     ],
   },
   {

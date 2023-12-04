@@ -232,6 +232,41 @@ module Poseidon = struct
         Poseidon_sponge.squeeze s |> Impl.Field.constant
 end
 
+module Foreign_field = struct
+  module FF = Kimchi_gadgets.Foreign_field
+  module Range_check = Kimchi_gadgets.Range_check
+  module External_checks = FF.External_checks
+
+  type t = Impl.field FF.Element.Standard.t
+
+  type t_const = Impl.field FF.Element.Standard.limbs_type
+
+  type op_mode = FF.op_mode
+
+  (* high-level API of self-contained methods which do all necessary checks *)
+
+  let assert_valid_element (x : t) (p : t_const) : unit =
+    let external_checks = External_checks.create (module Impl) in
+    let _ = FF.check_canonical (module Impl) external_checks x p in
+    FF.constrain_external_checks (module Impl) external_checks p
+
+  let sum_chain (x : t array) (ops : op_mode array) (p : t_const) : t =
+    let external_checks = External_checks.create (module Impl) in
+    let sum =
+      FF.sum_chain
+        (module Impl)
+        external_checks (Array.to_list x) (Array.to_list ops) p
+    in
+    FF.constrain_external_checks (module Impl) external_checks p ;
+    sum
+
+  let mul (x : t) (y : t) (p : t_const) : t =
+    let external_checks = External_checks.create (module Impl) in
+    let z = FF.mul (module Impl) external_checks x y p in
+    FF.constrain_external_checks (module Impl) external_checks p ;
+    z
+end
+
 let snarky =
   object%js
     method exists = exists
@@ -334,5 +369,15 @@ let snarky =
 
             method squeeze = Poseidon.sponge_squeeze
           end
+      end
+
+    val foreignField =
+      let open Foreign_field in
+      object%js
+        val assertValidElement = assert_valid_element
+
+        val sumChain = sum_chain
+
+        val mul = mul
       end
   end
