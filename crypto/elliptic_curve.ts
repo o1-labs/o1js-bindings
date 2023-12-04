@@ -527,6 +527,7 @@ function createCurveAffine({
     order,
     a,
     b,
+    cofactor,
     hasCofactor,
 
     zero: affineZero,
