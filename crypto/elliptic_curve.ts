@@ -1,11 +1,26 @@
-import { FiniteField, Fp, inverse, mod, p, q } from './finite_field.js';
+import { bigIntToBits } from './bigint-helpers.js';
+import {
+  FiniteField,
+  Fp,
+  createField,
+  inverse,
+  mod,
+  p,
+  q,
+} from './finite_field.js';
 export {
   Pallas,
   Vesta,
+  CurveParams,
   GroupAffine,
   GroupProjective,
   GroupMapPallas,
+  createCurveProjective,
+  createCurveAffine,
+  CurveAffine,
   ProjectiveCurve,
+  affineAdd,
+  affineDouble,
 };
 
 // TODO: constants, like generator points and cube roots for endomorphisms, should be drawn from
@@ -13,12 +28,10 @@ export {
 const pallasGeneratorProjective = {
   x: 1n,
   y: 12418654782883325593414442427049395787963493412651469444558597405572177144507n,
-  z: 1n,
 };
 const vestaGeneratorProjective = {
   x: 1n,
   y: 11426906929455361843568202299992114520848200991084027513389447476559454104162n,
-  z: 1n,
 };
 const vestaEndoBase =
   2942865608506852014473558576493638302197734138389222805617480874486368177743n;
@@ -37,6 +50,45 @@ const projectiveZero = { x: 1n, y: 1n, z: 0n };
 
 type GroupProjective = { x: bigint; y: bigint; z: bigint };
 type GroupAffine = { x: bigint; y: bigint; infinity: boolean };
+
+/**
+ * Parameters defining an elliptic curve in short Weierstraß form
+ * y^2 = x^3 + ax + b
+ */
+type CurveParams = {
+  /**
+   * Human-friendly name for the curve
+   */
+  name: string;
+  /**
+   * Base field modulus
+   */
+  modulus: bigint;
+  /**
+   * Scalar field modulus = group order
+   */
+  order: bigint;
+  /**
+   * Cofactor = size of EC / order
+   *
+   * This can be left undefined if the cofactor is 1.
+   */
+  cofactor?: bigint;
+  /**
+   * Generator point
+   */
+  generator: { x: bigint; y: bigint };
+  /**
+   * The `a` parameter in the curve equation y^2 = x^3 + ax + b
+   */
+  a: bigint;
+  /**
+   * The `b` parameter in the curve equation y^2 = x^3 + ax + b
+   */
+  b: bigint;
+  endoBase?: bigint;
+  endoScalar?: bigint;
+};
 
 type GroupMapParams = {
   u: bigint;
@@ -57,13 +109,14 @@ type STuple = { u: bigint; v: bigint; y: bigint };
 const GroupMap = {
   create: (F: FiniteField, params: GroupMapParams) => {
     const { a, b } = params.spec;
+    if (a !== 0n) throw Error('GroupMap only supports a = 0');
     function tryDecode(x: bigint): { x: bigint; y: bigint } | undefined {
-      // a * a * a = a^3
+      // x^3
       const pow3 = F.power(x, 3n);
       // a * x - since a = 0, ax will be 0 as well
       // const ax = F.mul(a, x);
 
-      // a^3 + ax + b, but since ax = 0 we can write a^3 + b
+      // x^3 + ax + b, but since ax = 0 we can write x^3 + b
       const y = F.add(pow3, b);
 
       if (!F.isSquare(y)) return undefined;
@@ -213,14 +266,23 @@ function projectiveSub(g: GroupProjective, h: GroupProjective, p: bigint) {
   return projectiveAdd(g, projectiveNeg(h, p), p);
 }
 
-function projectiveScale(g: GroupProjective, x: bigint, p: bigint) {
+function projectiveScale(g: GroupProjective, x: bigint | boolean[], p: bigint) {
+  let bits = typeof x === 'bigint' ? bigIntToBits(x) : x;
   let h = projectiveZero;
-  while (x > 0n) {
-    if (x & 1n) h = projectiveAdd(h, g, p);
+  for (let bit of bits) {
+    if (bit) h = projectiveAdd(h, g, p);
     g = projectiveDouble(g, p);
-    x >>= 1n;
   }
   return h;
+}
+
+function projectiveFromAffine({
+  x,
+  y,
+  infinity,
+}: GroupAffine): GroupProjective {
+  if (infinity) return projectiveZero;
+  return { x, y, z: 1n };
 }
 
 function projectiveToAffine(g: GroupProjective, p: bigint): GroupAffine {
@@ -266,27 +328,58 @@ function projectiveOnCurve({ x, y, z }: GroupProjective, p: bigint, b: bigint) {
   return mod(y2 - x3 - b * z6, p) === 0n;
 }
 
-function createCurveProjective(
-  p: bigint,
-  generator: GroupProjective,
-  endoBase: bigint,
-  endoScalar: bigint,
-  b: bigint,
-  a: bigint
-) {
+// checks whether the elliptic curve point g is in the subgroup defined by [order]g = 0
+function projectiveInSubgroup(g: GroupProjective, p: bigint, order: bigint) {
+  let orderTimesG = projectiveScale(g, order, p);
+  return projectiveEqual(orderTimesG, projectiveZero, p);
+}
+
+/**
+ * Projective curve arithmetic in Jacobian coordinates
+ */
+function createCurveProjective({
+  name,
+  modulus: p,
+  order,
+  cofactor,
+  generator,
+  b,
+  a,
+  endoBase,
+  endoScalar,
+}: CurveParams) {
+  if (a !== 0n) throw Error('createCurveProjective only supports a = 0');
+  cofactor ??= 1n;
+  let hasCofactor = cofactor !== 1n;
   return {
+    name,
+    modulus: p,
+    order,
+    cofactor,
     zero: projectiveZero,
-    one: generator,
-    endoBase,
-    endoScalar,
-    b,
+    one: { ...generator, z: 1n },
+    get endoBase() {
+      if (endoBase === undefined)
+        throw Error('`endoBase` for this curve was not provided.');
+      return endoBase;
+    },
+    get endoScalar() {
+      if (endoScalar === undefined)
+        throw Error('`endoScalar` for this curve was not provided.');
+      return endoScalar;
+    },
     a,
+    b,
+    hasCofactor,
 
     equal(g: GroupProjective, h: GroupProjective) {
       return projectiveEqual(g, h, p);
     },
     isOnCurve(g: GroupProjective) {
       return projectiveOnCurve(g, p, b);
+    },
+    isInSubgroup(g: GroupProjective) {
+      return projectiveInSubgroup(g, p, order);
     },
     add(g: GroupProjective, h: GroupProjective) {
       return projectiveAdd(g, h, p);
@@ -304,33 +397,178 @@ function createCurveProjective(
       return projectiveScale(g, s, p);
     },
     endomorphism({ x, y, z }: GroupProjective) {
+      if (endoBase === undefined)
+        throw Error('endomorphism needs `endoBase` parameter.');
       return { x: mod(endoBase * x, p), y, z };
     },
     toAffine(g: GroupProjective) {
       return projectiveToAffine(g, p);
     },
-    fromAffine({ x, y, infinity }: GroupAffine) {
-      if (infinity) return projectiveZero;
-      return { x, y, z: 1n };
+    fromAffine(a: GroupAffine) {
+      return projectiveFromAffine(a);
     },
   };
 }
 
 type ProjectiveCurve = ReturnType<typeof createCurveProjective>;
 
-const Pallas = createCurveProjective(
-  p,
-  pallasGeneratorProjective,
-  pallasEndoBase,
-  pallasEndoScalar,
+const Pallas = createCurveProjective({
+  name: 'Pallas',
+  modulus: p,
+  order: q,
+  generator: pallasGeneratorProjective,
   b,
-  a
-);
-const Vesta = createCurveProjective(
-  q,
-  vestaGeneratorProjective,
-  vestaEndoBase,
-  vestaEndoScalar,
+  a,
+  endoBase: pallasEndoBase,
+  endoScalar: pallasEndoScalar,
+});
+const Vesta = createCurveProjective({
+  name: 'Vesta',
+  modulus: q,
+  order: p,
+  generator: vestaGeneratorProjective,
   b,
-  a
-);
+  a,
+  endoBase: vestaEndoBase,
+  endoScalar: vestaEndoScalar,
+});
+
+const affineZero: GroupAffine = { x: 0n, y: 0n, infinity: true };
+
+function affineOnCurve(
+  { x, y, infinity }: GroupAffine,
+  p: bigint,
+  a: bigint,
+  b: bigint
+) {
+  if (infinity) return true;
+  // y^2 = x^3 + ax + b
+  let x2 = mod(x * x, p);
+  return mod(y * y - x * x2 - a * x - b, p) === 0n;
+}
+
+function affineAdd(g: GroupAffine, h: GroupAffine, p: bigint): GroupAffine {
+  if (g.infinity) return h;
+  if (h.infinity) return g;
+
+  let { x: x1, y: y1 } = g;
+  let { x: x2, y: y2 } = h;
+
+  if (x1 === x2) {
+    // g + g --> we double
+    if (y1 === y2) return affineDouble(g, p);
+    // g - g --> return zero
+    return affineZero;
+  }
+  // m = (y2 - y1)/(x2 - x1)
+  let d = inverse(x2 - x1, p);
+  if (d === undefined) throw Error('impossible');
+  let m = mod((y2 - y1) * d, p);
+  // x3 = m^2 - x1 - x2
+  let x3 = mod(m * m - x1 - x2, p);
+  // y3 = m*(x1 - x3) - y1
+  let y3 = mod(m * (x1 - x3) - y1, p);
+  return { x: x3, y: y3, infinity: false };
+}
+
+function affineDouble({ x, y, infinity }: GroupAffine, p: bigint): GroupAffine {
+  if (infinity) return affineZero;
+  // m = 3*x^2 / 2y
+  let d = inverse(2n * y, p);
+  if (d === undefined) throw Error('impossible');
+  let m = mod(3n * x * x * d, p);
+  // x2 = m^2 - 2x
+  let x2 = mod(m * m - 2n * x, p);
+  // y2 = m*(x - x2) - y
+  let y2 = mod(m * (x - x2) - y, p);
+  return { x: x2, y: y2, infinity: false };
+}
+
+function affineNegate({ x, y, infinity }: GroupAffine, p: bigint): GroupAffine {
+  if (infinity) return affineZero;
+  return { x, y: y === 0n ? 0n : p - y, infinity };
+}
+
+function affineScale(g: GroupAffine, s: bigint | boolean[], p: bigint) {
+  let gProj = projectiveFromAffine(g);
+  let sgProj = projectiveScale(gProj, s, p);
+  return projectiveToAffine(sgProj, p);
+}
+
+type CurveAffine = ReturnType<typeof createCurveAffine>;
+
+function createCurveAffine({
+  name,
+  modulus: p,
+  order,
+  cofactor,
+  generator,
+  a,
+  b,
+}: CurveParams) {
+  // TODO: lift this limitation by using other formulas (in projectiveScale) for a != 0
+  if (a !== 0n) throw Error('createCurveAffine only supports a = 0');
+  let hasCofactor = cofactor !== undefined && cofactor !== 1n;
+
+  const Field = createField(p);
+  const Scalar = createField(order);
+  return {
+    name,
+    /**
+     * Arithmetic over the base field
+     */
+    Field,
+    /**
+     * Arithmetic over the scalar field
+     */
+    Scalar,
+
+    modulus: p,
+    order,
+    a,
+    b,
+    hasCofactor,
+
+    zero: affineZero,
+    one: { ...generator, infinity: false },
+
+    from(g: { x: bigint; y: bigint }): GroupAffine {
+      if (g.x === 0n && g.y === 0n) return affineZero;
+      return { ...g, infinity: false };
+    },
+
+    fromNonzero(g: { x: bigint; y: bigint }): GroupAffine {
+      if (g.x === 0n && g.y === 0n) {
+        throw Error(
+          'fromNonzero: got (0, 0), which is reserved for the zero point'
+        );
+      }
+      return { ...g, infinity: false };
+    },
+
+    equal(g: GroupAffine, h: GroupAffine) {
+      return mod(g.x - h.x, p) === 0n && mod(g.y - h.y, p) === 0n;
+    },
+    isOnCurve(g: GroupAffine) {
+      return affineOnCurve(g, p, a, b);
+    },
+    isInSubgroup(g: GroupAffine) {
+      return projectiveInSubgroup(projectiveFromAffine(g), p, order);
+    },
+    add(g: GroupAffine, h: GroupAffine) {
+      return affineAdd(g, h, p);
+    },
+    double(g: GroupAffine) {
+      return affineDouble(g, p);
+    },
+    negate(g: GroupAffine) {
+      return affineNegate(g, p);
+    },
+    sub(g: GroupAffine, h: GroupAffine) {
+      return affineAdd(g, affineNegate(h, p), p);
+    },
+    scale(g: GroupAffine, s: bigint | boolean[]) {
+      return affineScale(g, s, p);
+    },
+  };
+}

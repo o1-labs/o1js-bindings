@@ -141,6 +141,9 @@ function createField(
     t: oddFactor,
     M: twoadicity,
     twoadicRoot,
+    mod(x: bigint) {
+      return mod(x, p);
+    },
     add(x: bigint, y: bigint) {
       return mod(x + y, p);
     },
