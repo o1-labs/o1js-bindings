@@ -17,6 +17,7 @@ export {
   InferJson,
   InferredProvable,
   IsPure,
+  Constructor,
 };
 
 type ProvableConstructor<Field> = <A>(
