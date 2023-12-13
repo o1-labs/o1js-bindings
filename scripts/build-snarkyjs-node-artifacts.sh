@@ -26,6 +26,7 @@ if [ -f "$BUILD_PATH/snarky_js_node.bc.js" ]; then
 fi
 
 # Copy mina config files, that is necessary for o1js to build
+dune b "$MINA_PATH/src/config.mlh" && \
 cp "$MINA_PATH/src/config.mlh" "$SNARKY_JS_PATH/src" \
 && cp -r "$MINA_PATH/src/config" "$SNARKY_JS_PATH/src/config" || exit 1
 
