@@ -765,6 +765,61 @@ module Util = struct
   let from_ml_string s = Js.string s
 end
 
+let side_loaded_create (name : Js.js_string Js.t) (max_proofs_verified : int)
+    (public_input_length : int) (public_output_length : int) =
+  let name = Js.to_string name in
+  let feature_flags = Pickles_types.Plonk_types.Features.none in
+  let typ = statement_typ public_input_length public_output_length in
+  match max_proofs_verified with
+  | 0 ->
+      Obj.magic
+      @@ Pickles.Side_loaded.create ~name
+           ~max_proofs_verified:(module Pickles_types.Nat.N0)
+           ~feature_flags ~typ
+  | 1 ->
+      Obj.magic
+      @@ Pickles.Side_loaded.create ~name
+           ~max_proofs_verified:(module Pickles_types.Nat.N1)
+           ~feature_flags ~typ
+  | 2 ->
+      Obj.magic
+      @@ Pickles.Side_loaded.create ~name
+           ~max_proofs_verified:(module Pickles_types.Nat.N2)
+           ~feature_flags ~typ
+  | _ ->
+      failwith "side_loaded_create is unhappy; you should pass 0, 1, or 2"
+
+let vk_to_circuit vk =
+  let vk () =
+    match
+      Pickles.Side_loaded.Verification_key.of_base64 (Js.to_string (vk ()))
+    with
+    | Ok vk_ ->
+        vk_
+    | Error err ->
+        failwithf "Could not decode base64 verification key: %s"
+          (Error.to_string_hum err) ()
+  in
+  Impl.exists Pickles.Side_loaded.Verification_key.typ ~compute:(fun () ->
+      vk () )
+
+let vk_digest vk =
+  Pickles.Side_loaded.Verification_key.Checked.to_input vk
+  |> Random_oracle.Checked.pack_input
+
+let in_circuit tag checked_vk = Pickles.Side_loaded.in_circuit tag checked_vk
+
+let in_prover tag (vk : Js.js_string Js.t) =
+  let vk =
+    match Pickles.Side_loaded.Verification_key.of_base64 (Js.to_string vk) with
+    | Ok vk_ ->
+        vk_
+    | Error err ->
+        failwithf "Could not decode base64 verification key: %s"
+          (Error.to_string_hum err) ()
+  in
+  Pickles.Side_loaded.in_prover tag vk
+
 let pickles =
   object%js
     val compile = pickles_compile
@@ -797,5 +852,26 @@ let pickles =
         val toMlString = Util.to_ml_string
 
         val fromMlString = Util.from_ml_string
+      end
+
+    val sideLoaded =
+      object%js
+        val create = side_loaded_create
+
+        val inCircuit =
+          (* We get weak variables here, but they're synthetic. Don't try this
+             at home.
+          *)
+          Obj.magic in_circuit
+
+        val inProver =
+          (* We get weak variables here, but they're synthetic. Don't try this
+             at home.
+          *)
+          Obj.magic in_prover
+
+        val vkToCircuit = vk_to_circuit
+
+        val vkDigest = vk_digest
       end
   end
