@@ -141,6 +141,9 @@ function createField(
     t: oddFactor,
     M: twoadicity,
     twoadicRoot,
+    mod(x: bigint) {
+      return mod(x, p);
+    },
     add(x: bigint, y: bigint) {
       return mod(x + y, p);
     },
@@ -199,22 +202,17 @@ function createField(
     fromBigint(x: bigint) {
       return mod(x, p);
     },
-    rot(x: bigint, bits: number, direction: 'left' | 'right' = 'left') {
-      let bitArray = x.toString(2).split('').reverse().map(Number);
-      let binary: number[] =
-        bitArray.length >= 64
-          ? bitArray.splice(0, 64)
-          : [...bitArray, ...Array(64 - bitArray.length).fill(0)];
-      for (let j = 0; j < bits; j++) {
-        if (direction === 'left') {
-          let last = binary.pop()!;
-          binary.unshift(last);
-        } else {
-          let last = binary.shift()!;
-          binary.push(last);
-        }
-      }
-      return BigInt('0b' + binary.reverse().join(''));
+    rot(
+      x: bigint,
+      bits: bigint,
+      direction: 'left' | 'right' = 'left',
+      maxBits = 64n
+    ) {
+      if (direction === 'right') bits = maxBits - bits;
+      let full = x << bits;
+      let excess = full >> maxBits;
+      let shifted = full & ((1n << maxBits) - 1n);
+      return shifted | excess;
     },
     leftShift(x: bigint, bits: number, maxBitSize: number = 64) {
       let shifted = x << BigInt(bits);
