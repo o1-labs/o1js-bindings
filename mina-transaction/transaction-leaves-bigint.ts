@@ -10,7 +10,7 @@ import { derivedLeafTypesSignable } from './derived-leaves.js';
 import { createEvents } from '../../lib/events.js';
 import {
   Poseidon,
-  Hash,
+  HashHelpers,
   packToFields,
 } from '../../provable/poseidon-bigint.js';
 import { mocks } from '../crypto/constants.js';
@@ -39,7 +39,7 @@ type TokenSymbol = { symbol: string; field: Field };
 type ZkappUri = { data: string; hash: Field };
 
 const { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri } =
-  derivedLeafTypesSignable({ Field, Bool, Hash, packToFields });
+  derivedLeafTypesSignable({ Field, Bool, HashHelpers, packToFields });
 
 type Event = Field[];
 type Events = {
@@ -64,5 +64,5 @@ const VerificationKeyHash = {
 type ReceiptChainHash = Field;
 const ReceiptChainHash = {
   ...Field,
-  empty: () => Hash.emptyHashWithPrefix('CodaReceiptEmpty'),
+  empty: () => HashHelpers.emptyHashWithPrefix('CodaReceiptEmpty'),
 };
