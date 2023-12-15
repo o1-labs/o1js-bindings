@@ -280,6 +280,76 @@ module Foreign_field = struct
     z
 end
 
+module EC_group = struct
+  module FF = Kimchi_gadgets.Foreign_field
+  module ECG = Kimchi_gadgets.Ec_group
+  module External_checks = FF.External_checks
+  module Curve_params = Kimchi_gadgets.Curve_params
+  module Bignum_bigint = Snarky_backendless.Backend_extended.Bignum_bigint
+
+  type t = Impl.field Kimchi_gadgets.Affine.t
+
+  type curve_t = Impl.field Kimchi_gadgets.Curve_params.InCircuit.t
+
+  exception ANotFoundInCurve
+
+  exception BNotFoundInCurve
+
+  exception ModulusNotFoundInCurve
+
+  exception GeneratorNotFoundInCurve
+
+  exception OrderNotFoundInCurve
+
+  (* curve = [a, b, modulus, gen_x, gen_y, order] *)
+  let parse_ec curve =
+    let a =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 0) (fun () ->
+             raise ANotFoundInCurve ) ) in
+
+    let b =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 1) (fun () ->
+             raise BNotFoundInCurve ) ) in
+
+    let modulus =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 2) (fun () ->
+             raise ModulusNotFoundInCurve ) ) in
+
+    let gen_x =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 3) (fun () ->
+             raise GeneratorNotFoundInCurve ) ) in
+
+    let gen_y =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 4) (fun () ->
+             raise GeneratorNotFoundInCurve ) ) in
+
+    let order =
+      Js.to_string
+        (Js.Optdef.get (Js.array_get curve 5) (fun () ->
+             raise OrderNotFoundInCurve ) ) in
+
+    Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order
+
+  let add (left_input : t) (right_input : t)
+      (curve : Js.js_string Js.t Js.js_array Js.t) =
+    let external_checks = External_checks.create (module Impl) in
+    let ec = parse_ec curve in
+    ECG.add (module Impl) external_checks ec left_input right_input
+  
+  let scale (point : t) (scalar : Boolean.var array)
+    (curve : Js.js_string Js.t Js.js_array Js.t) =
+    let external_checks = External_checks.create (module Impl) in
+    let ec = parse_ec curve in
+    let scalar = Array.to_list scalar in
+    ECG.scalar_mul (module Impl) external_checks ec scalar point
+
+end
+
 let snarky =
   object%js
     method exists = exists
@@ -394,5 +464,12 @@ let snarky =
         val sumChain = sum_chain
 
         val mul = mul
+      end
+
+    val foreignGroup =
+      let open EC_group in
+      object%js
+        val add = add
+        val scale = scale
       end
   end
