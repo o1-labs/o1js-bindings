@@ -1,6 +1,7 @@
 module Js = Js_of_ocaml.Js
 module Backend = Kimchi_backend.Pasta.Vesta_based_plonk
 module Impl = Pickles.Impls.Step
+module Bn254_impl = Pickles.Impls.Bn254
 module Field = Impl.Field
 module Boolean = Impl.Boolean
 
@@ -107,6 +108,7 @@ val snarky :
       Js.readonly_prop
   ; circuit :
       < compile : ((Field.t array -> unit) -> int -> Impl.Keypair.t) Js.meth
+      ; compileBn254 : ((Bn254_impl.Field.t array -> unit) -> int -> Bn254_impl.Keypair.t) Js.meth
       ; keypair :
           < getConstraintSystemJSON : (Impl.Keypair.t -> 'a) Js.meth
           ; getVerificationKey :

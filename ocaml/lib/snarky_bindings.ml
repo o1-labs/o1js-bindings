@@ -2,6 +2,7 @@ open Core_kernel
 module Js = Js_of_ocaml.Js
 module Backend = Kimchi_backend.Pasta.Vesta_based_plonk
 module Impl = Pickles.Impls.Step
+module Bn254_impl = Pickles.Impls.Bn254
 module Field = Impl.Field
 module Boolean = Impl.Boolean
 module As_prover = Impl.As_prover
@@ -10,6 +11,8 @@ module Typ = Impl.Typ
 (* light-weight wrapper around snarky-ml core *)
 
 let typ (size_in_fields : int) = Typ.array ~length:size_in_fields Field.typ
+
+let bn254_typ (size_in_fields : int) = Bn254_impl.Typ.array ~length:size_in_fields Bn254_impl.Field.typ
 
 let exists (size_in_fields : int) (compute : unit -> Field.Constant.t array) =
   Impl.exists (typ size_in_fields) ~compute
@@ -148,6 +151,10 @@ module Circuit = struct
     let of_js (main : Field.t array -> unit) =
       let main' public_input () = main public_input in
       main'
+    
+    let bn254_of_js (main : Bn254_impl.Field.t array -> unit) =
+      let main' public_input () = main public_input in
+      main'
   end
 
   let compile main public_input_size =
@@ -171,6 +178,12 @@ module Circuit = struct
     Array.iter public_input ~f:(fun x ->
         Backend.Field.Vector.emplace_back public_input_vec x ) ;
     Backend.Proof.verify proof vk public_input_vec |> Js.bool
+
+  let compile_bn254 main public_input_size =
+    let input_typ = bn254_typ public_input_size in
+    let return_typ = Bn254_impl.Typ.unit in
+    let cs = Bn254_impl.constraint_system ~input_typ ~return_typ (Main.bn254_of_js main) in
+    Bn254_impl.Keypair.generate ~prev_challenges:0 cs
 
   module Keypair = struct
     let get_vk t = Impl.Keypair.vk t
@@ -342,6 +355,8 @@ let snarky =
     val circuit =
       object%js
         method compile = Circuit.compile
+
+        method compileBn254 = Circuit.compile_bn254
 
         method prove = Circuit.prove
 
