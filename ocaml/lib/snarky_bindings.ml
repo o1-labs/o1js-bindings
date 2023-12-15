@@ -42,6 +42,7 @@ module Run = struct
     with exn -> Util.raise_exn exn
 
   let constraint_system (main : unit -> unit) =
+    let () = Js_of_ocaml.Firebug.console##log "HERE!" in
     let cs =
       Impl.constraint_system ~input_typ:Impl.Typ.unit ~return_typ:Impl.Typ.unit
         (fun () -> main)
@@ -180,7 +181,6 @@ module Circuit = struct
     Backend.Proof.verify proof vk public_input_vec |> Js.bool
 
   let compile_bn254 main public_input_size =
-    let () = Js_of_ocaml.Firebug.console##log "HERE!" in
     let input_typ = bn254_typ public_input_size in
     let return_typ = Bn254_impl.Typ.unit in
     let cs = Bn254_impl.constraint_system ~input_typ ~return_typ (Main.bn254_of_js main) in
