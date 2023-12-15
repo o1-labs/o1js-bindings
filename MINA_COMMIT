@@ -1,6 +1,2 @@
 The mina commit used to generate the backends for node and web is
-<<<<<<< HEAD
-3d737d96c1dd3f35b8b7b30160496c56704e4a25
-=======
-cf47ed075616c9d670d9f93e21336fdcaf514c35
->>>>>>> foreign_ec_ops
+03c46ada1417e75d58afa3cae0cf4dab10ddf325
