@@ -11,7 +11,16 @@ type field = Impl.field
 
 (* light-weight wrapper around snarky-ml core *)
 
-let typ (size_in_fields : int) = Typ.array ~length:size_in_fields Field.typ
+let typ (size_in_fields : int) : (Field.t array, field array) Typ.t =
+  Typ
+    { var_to_fields = (fun fields -> (fields, ()))
+    ; var_of_fields = (fun (fields, _) -> fields)
+    ; value_to_fields = (fun fields -> (fields, ()))
+    ; value_of_fields = (fun (fields, _) -> fields)
+    ; size_in_field_elements = size_in_fields
+    ; constraint_system_auxiliary = (fun _ -> ())
+    ; check = (fun _ -> Impl.Internal_Basic.Checked.return ())
+    }
 
 let exists (size_in_fields : int) (compute : unit -> Field.Constant.t array) =
   Impl.exists (typ size_in_fields) ~compute
