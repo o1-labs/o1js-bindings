@@ -540,6 +540,7 @@ function createCurveAffine({
     order,
     a,
     b,
+    cofactor,
     hasCofactor,
 
     zero: affineZero,
@@ -549,6 +550,11 @@ function createCurveAffine({
     get Endo() {
       if (Endo === undefined) throw Error(`no endomorphism defined on ${name}`);
       return Endo;
+    },
+
+    from(g: { x: bigint; y: bigint }): GroupAffine {
+      if (g.x === 0n && g.y === 0n) return affineZero;
+      return { ...g, infinity: false };
     },
 
     fromNonzero(g: { x: bigint; y: bigint }): GroupAffine {

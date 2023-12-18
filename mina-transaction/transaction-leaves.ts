@@ -5,7 +5,7 @@ import { derivedLeafTypes } from './derived-leaves.js';
 import { createEvents } from '../../lib/events.js';
 import {
   Poseidon,
-  Hash,
+  HashHelpers,
   packToFields,
   emptyHashWithPrefix,
 } from '../../lib/hash.js';
@@ -36,7 +36,7 @@ type TokenSymbol = { symbol: string; field: Field };
 type ZkappUri = { data: string; hash: Field };
 
 const { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri } =
-  derivedLeafTypes({ Field, Bool, Hash, packToFields });
+  derivedLeafTypes({ Field, Bool, HashHelpers, packToFields });
 
 type Event = Field[];
 type Events = {
@@ -49,17 +49,17 @@ const { Events, Actions } = createEvents({ Field, Poseidon });
 type ActionState = Field;
 const ActionState = {
   ...provable(Field),
-  emptyValue: Actions.emptyActionState,
+  empty: Actions.emptyActionState,
 };
 
 type VerificationKeyHash = Field;
 const VerificationKeyHash = {
   ...provable(Field),
-  emptyValue: () => Field(mocks.dummyVerificationKeyHash),
+  empty: () => Field(mocks.dummyVerificationKeyHash),
 };
 
 type ReceiptChainHash = Field;
 const ReceiptChainHash = {
   ...provable(Field),
-  emptyValue: () => emptyHashWithPrefix('CodaReceiptEmpty'),
+  empty: () => emptyHashWithPrefix('CodaReceiptEmpty'),
 };

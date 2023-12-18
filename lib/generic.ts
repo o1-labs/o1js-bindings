@@ -4,10 +4,15 @@ export {
   GenericProvable,
   GenericProvablePure,
   GenericProvableExtended,
+  GenericProvableExtendedPure,
   GenericField,
   GenericBool,
   GenericHashInput,
+  GenericSignable,
+  GenericSignableField,
+  GenericSignableBool,
   primitiveTypes,
+  PrimitiveTypeMap,
   primitiveTypeMap,
   EmptyNull,
   EmptyUndefined,
@@ -23,25 +28,43 @@ type GenericProvable<T, Field> = {
 };
 interface GenericProvablePure<T, Field> extends GenericProvable<T, Field> {
   toFields: (x: T) => Field[];
-  toAuxiliary: (x?: T) => [];
+  toAuxiliary: (x?: T) => any[];
   fromFields: (x: Field[]) => T;
   sizeInFields(): number;
   check: (x: T) => void;
 }
 
-type GenericProvableExtended<T, TJson, Field> = GenericProvable<T, Field> & {
+type GenericSignable<T, TJson, Field> = {
   toInput: (x: T) => { fields?: Field[]; packed?: [Field, number][] };
   toJSON: (x: T) => TJson;
   fromJSON: (x: TJson) => T;
-  emptyValue?: () => T;
+  empty: () => T;
 };
 
-type GenericField<Field> = ((value: number | string | bigint) => Field) &
-  GenericProvableExtended<Field, string, Field> &
-  Binable<Field> & { sizeInBytes(): number };
-type GenericBool<Field, Bool = unknown> = ((value: boolean) => Bool) &
-  GenericProvableExtended<Bool, boolean, Field> &
-  Binable<Bool> & { sizeInBytes(): number };
+type GenericProvableExtended<T, TJson, Field> = GenericProvable<T, Field> &
+  GenericSignable<T, TJson, Field>;
+
+type GenericProvableExtendedPure<T, TJson, Field> = GenericProvablePure<
+  T,
+  Field
+> &
+  GenericSignable<T, TJson, Field>;
+
+type GenericSignableField<Field> = ((
+  value: number | string | bigint
+) => Field) &
+  GenericSignable<Field, string, Field> &
+  Binable<Field> & { sizeInBytes: number };
+
+type GenericField<Field> = GenericSignableField<Field> &
+  GenericProvable<Field, Field>;
+
+type GenericSignableBool<Field, Bool = unknown> = ((value: boolean) => Bool) &
+  GenericSignable<Bool, boolean, Field> &
+  Binable<Bool> & { sizeInBytes: number };
+
+type GenericBool<Field, Bool = unknown> = GenericSignableBool<Field, Bool> &
+  GenericProvable<Bool, Field>;
 
 type GenericHashInput<Field> = { fields?: Field[]; packed?: [Field, number][] };
 
@@ -54,6 +77,7 @@ const emptyType = {
   toInput: () => ({}),
   toJSON: () => null,
   fromJSON: () => null,
+  empty: () => null,
 };
 
 const undefinedType = {
@@ -61,6 +85,7 @@ const undefinedType = {
   fromFields: () => undefined,
   toJSON: () => null,
   fromJSON: () => undefined,
+  empty: () => undefined,
 };
 
 let primitiveTypes = new Set(['number', 'string', 'null']);
@@ -82,25 +107,20 @@ function EmptyVoid<Field>(): GenericProvableExtended<void, null, Field> &
   return undefinedType;
 }
 
-function primitiveTypeMap<Field>(): {
+type PrimitiveTypeMap<Field> = {
   number: GenericProvableExtended<number, number, Field>;
   string: GenericProvableExtended<string, string, Field>;
   null: GenericProvableExtended<null, null, Field>;
-} {
-  return primitiveTypeMap_;
-}
+};
 
-const primitiveTypeMap_: {
-  number: GenericProvableExtended<number, number, any>;
-  string: GenericProvableExtended<string, string, any>;
-  null: GenericProvableExtended<null, null, any>;
-} = {
+const primitiveTypeMap: PrimitiveTypeMap<any> = {
   number: {
     ...emptyType,
     toAuxiliary: (value = 0) => [value],
     toJSON: (value) => value,
     fromJSON: (value) => value,
     fromFields: (_, [value]) => value,
+    empty: () => 0,
   },
   string: {
     ...emptyType,
@@ -108,6 +128,7 @@ const primitiveTypeMap_: {
     toJSON: (value) => value,
     fromJSON: (value) => value,
     fromFields: (_, [value]) => value,
+    empty: () => '',
   },
   null: emptyType,
 };
