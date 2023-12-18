@@ -6,7 +6,7 @@ SNARKY_JS_PATH="."
 MINA_PATH="$SNARKY_JS_PATH/src/mina"
 DUNE_PATH="$SNARKY_JS_PATH/src/bindings/ocaml"
 BUILD_PATH="_build/default/$DUNE_PATH"
-KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi"
+KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
 
 pushd "$SNARKY_JS_PATH"
   [ -d node_modules ] || npm i
