@@ -22,6 +22,8 @@ const pallasParams: CurveParams = {
   a: Pallas.a,
   b: Pallas.b,
   generator: Pallas.one,
+  endoBase: Pallas.endoBase,
+  endoScalar: Pallas.endoScalar,
 };
 
 const vestaParams: CurveParams = {
@@ -31,6 +33,8 @@ const vestaParams: CurveParams = {
   a: Vesta.a,
   b: Vesta.b,
   generator: Vesta.one,
+  endoBase: Vesta.endoBase,
+  endoScalar: Vesta.endoScalar,
 };
 
 const CurveParams = {

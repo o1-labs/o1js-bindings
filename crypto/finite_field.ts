@@ -1,4 +1,4 @@
-import { bytesToBigInt } from './bigint-helpers.js';
+import { bytesToBigInt, log2 } from './bigint-helpers.js';
 import { randomBytes } from './random.js';
 
 export { createField, Fp, Fq, FiniteField, p, q, mod, inverse };
@@ -130,7 +130,7 @@ function createField(
 ) {
   let { oddFactor, twoadicRoot, twoadicity } =
     constants ?? computeFieldConstants(p);
-  let sizeInBits = p.toString(2).length;
+  let sizeInBits = log2(p);
   let sizeInBytes = Math.ceil(sizeInBits / 8);
   let sizeHighestByte = sizeInBits - 8 * (sizeInBytes - 1);
   let hiBitMask = (1 << sizeHighestByte) - 1;

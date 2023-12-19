@@ -8,6 +8,7 @@ import {
   p,
   q,
 } from './finite_field.js';
+import { Endomorphism } from './elliptic-curve-endomorphism.js';
 export {
   Pallas,
   Vesta,
@@ -21,6 +22,13 @@ export {
   ProjectiveCurve,
   affineAdd,
   affineDouble,
+  affineScale,
+  projectiveFromAffine,
+  projectiveToAffine,
+  projectiveZero,
+  projectiveAdd,
+  projectiveDouble,
+  projectiveNeg,
 };
 
 // TODO: constants, like generator points and cube roots for endomorphisms, should be drawn from
@@ -505,6 +513,8 @@ function createCurveAffine({
   generator,
   a,
   b,
+  endoScalar,
+  endoBase,
 }: CurveParams) {
   // TODO: lift this limitation by using other formulas (in projectiveScale) for a != 0
   if (a !== 0n) throw Error('createCurveAffine only supports a = 0');
@@ -512,6 +522,9 @@ function createCurveAffine({
 
   const Field = createField(p);
   const Scalar = createField(order);
+  const one = { ...generator, infinity: false };
+  const Endo = Endomorphism(name, Field, Scalar, one, endoScalar, endoBase);
+
   return {
     name,
     /**
@@ -531,7 +544,13 @@ function createCurveAffine({
     hasCofactor,
 
     zero: affineZero,
-    one: { ...generator, infinity: false },
+    one,
+
+    hasEndomorphism: Endo !== undefined,
+    get Endo() {
+      if (Endo === undefined) throw Error(`no endomorphism defined on ${name}`);
+      return Endo;
+    },
 
     from(g: { x: bigint; y: bigint }): GroupAffine {
       if (g.x === 0n && g.y === 0n) return affineZero;

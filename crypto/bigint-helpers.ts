@@ -4,6 +4,10 @@ export {
   bigIntToBytes,
   bigIntToBits,
   parseHexString,
+  log2,
+  max,
+  abs,
+  sign,
 };
 
 function bytesToBigInt(bytes: Uint8Array | number[]) {
@@ -181,4 +185,26 @@ function toBase(x: bigint, base: bigint) {
     digits.pop();
   }
   return digits;
+}
+
+/**
+ * ceil(log2(n))
+ * = smallest k such that n <= 2^k
+ */
+function log2(n: number | bigint) {
+  if (typeof n === 'number') n = BigInt(n);
+  if (n === 1n) return 0;
+  return (n - 1n).toString(2).length;
+}
+
+function max(a: bigint, b: bigint) {
+  return a > b ? a : b;
+}
+
+function abs(x: bigint) {
+  return x < 0n ? -x : x;
+}
+
+function sign(x: bigint): 1n | -1n {
+  return x >= 0 ? 1n : -1n;
 }
