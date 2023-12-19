@@ -2,32 +2,29 @@
 
 set -e
 
-SNARKY_JS_PATH="."
-MINA_PATH="$SNARKY_JS_PATH/src/mina"
-DUNE_PATH="$SNARKY_JS_PATH/src/bindings/ocaml"
+MINA_PATH="src/mina"
+DUNE_PATH="src/bindings/ocaml"
 BUILD_PATH="_build/default/$DUNE_PATH"
 DIR_PATH=$(dirname "$0")
-KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi"
-NODE_BINDINGS="$SNARKY_JS_PATH/src/bindings/compiled/node_bindings"
-WEB_BINDINGS="$SNARKY_JS_PATH/src/bindings/compiled/web_bindings"
+KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
+NODE_BINDINGS="src/bindings/compiled/node_bindings"
+WEB_BINDINGS="src/bindings/compiled/web_bindings"
 
 # 1. node build
 
 $DIR_PATH/build-snarkyjs-node-artifacts.sh
-pushd $SNARKY_JS_PATH
-  node src/build/copy-to-dist.js
-popd
+node src/build/copy-to-dist.js
 
 chmod -R 777 "$NODE_BINDINGS"
 
-BINDINGS_PATH="$SNARKY_JS_PATH"/dist/node/bindings/compiled/_node_bindings
+BINDINGS_PATH=dist/node/bindings/compiled/_node_bindings
 cp "$BINDINGS_PATH"/snarky_js_node.bc.cjs "$NODE_BINDINGS"/snarky_js_node.bc.cjs
 cp "$BINDINGS_PATH"/snarky_js_node.bc.map "$NODE_BINDINGS"/snarky_js_node.bc.map
 cp "$BINDINGS_PATH"/plonk_wasm* "$NODE_BINDINGS"/
 
 sed -i 's/plonk_wasm.js/plonk_wasm.cjs/' "$NODE_BINDINGS"/snarky_js_node.bc.cjs
 
-npm run build --prefix="$SNARKY_JS_PATH"
+npm run build
 
 # 2. web build
 
@@ -54,9 +51,9 @@ pushd $WEB_BINDINGS
   mv snarky_js_web.bc.min.js snarky_js_web.bc.js
 popd
 
-npm run build:web --prefix="$SNARKY_JS_PATH"
+npm run build:web
 
 # 3. update MINA_COMMIT file in o1js
 
 echo "The mina commit used to generate the backends for node and web is
-$(git rev-parse HEAD)" > "$SNARKY_JS_PATH/src/bindings/MINA_COMMIT"
+$(git rev-parse HEAD)" > "src/bindings/MINA_COMMIT"
