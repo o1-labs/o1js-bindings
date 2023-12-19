@@ -5,7 +5,7 @@ set -e
 MINA_PATH="src/mina"
 DUNE_PATH="src/bindings/ocaml"
 BUILD_PATH="_build/default/$DUNE_PATH"
-KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi"
+KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
 
 [ -d node_modules ] || npm i
 
