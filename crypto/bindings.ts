@@ -7,7 +7,7 @@ import { prefixHashes, prefixHashesLegacy } from '../crypto/constants.js';
 import { Bigint256Bindings } from './bindings/bigint256.js';
 import { PallasBindings, VestaBindings, Bn254Bindings } from './bindings/curve.js';
 import { FpBindings, FqBindings, Bn254FpBindings, Bn254FqBindings } from './bindings/field.js';
-import { FpVectorBindings, FqVectorBindings } from './bindings/vector.js';
+import { FpVectorBindings, FqVectorBindings, Bn254FpVectorBindings, Bn254FqVectorBindings } from './bindings/vector.js';
 import type * as wasmNamespace from '../compiled/node_bindings/plonk_wasm.cjs';
 import {
   fieldsFromRustFlat,
@@ -31,6 +31,8 @@ const tsBindings = {
   ...Bn254Bindings,
   ...FpVectorBindings,
   ...FqVectorBindings,
+  ...Bn254FpVectorBindings,
+  ...Bn254FqVectorBindings,
   rustConversion: createRustConversion,
 };
 
