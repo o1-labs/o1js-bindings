@@ -6,6 +6,7 @@ import { Field } from './field.js';
 import {
   Pallas,
   Vesta,
+  Bn254,
   ProjectiveCurve,
   GroupProjective,
   GroupAffine,
@@ -15,6 +16,7 @@ import { withPrefix } from './util.js';
 export {
   VestaBindings,
   PallasBindings,
+  Bn254Bindings,
   Infinity,
   OrInfinity,
   toMlOrInfinity,
@@ -23,6 +25,7 @@ export {
 
 const VestaBindings = withPrefix('caml_vesta', createCurveBindings(Vesta));
 const PallasBindings = withPrefix('caml_pallas', createCurveBindings(Pallas));
+const Bn254Bindings = withPrefix('caml_bn254', createCurveBindings(Bn254));
 
 function createCurveBindings(Curve: ProjectiveCurve) {
   return {

@@ -1,7 +1,8 @@
-import { FiniteField, Fp, inverse, mod, p, q } from './finite_field.js';
+import { FiniteField, Fp, inverse, mod, p, q, bn254p, bn254q } from './finite_field.js';
 export {
   Pallas,
   Vesta,
+  Bn254,
   GroupAffine,
   GroupProjective,
   GroupMapPallas,
@@ -20,18 +21,31 @@ const vestaGeneratorProjective = {
   y: 11426906929455361843568202299992114520848200991084027513389447476559454104162n,
   z: 1n,
 };
+const bn254GeneratorProjective = {
+  x: 16798108731015832284940804142231733909889187121439069848933715426072753864722n,
+  y: 1n,
+  z: 1n,
+};
 const vestaEndoBase =
   2942865608506852014473558576493638302197734138389222805617480874486368177743n;
 const pallasEndoBase =
   20444556541222657078399132219657928148671392403212669005631716460534733845831n;
+const bn254EndoBase =
+  21888242871839275220042445260109153167277707414472061641714758635765020556616n;
 const vestaEndoScalar =
   8503465768106391777493614032514048814691664078728891710322960303815233784505n;
 const pallasEndoScalar =
   26005156700822196841419187675678338661165322343552424574062261873906994770353n;
+const bn254EndoScalar =
+  21888242871839275217838484774961031246154997185409878258781734729429964517155n;
 
-// the b and a in y^2 = x^3 + ax + b
+// Pasta: the b and a in y^2 = x^3 + ax + b
 const b = 5n;
 const a = 0n;
+
+// Bn254: the b and a in y^2 = x^3 + ax + b
+const bn254b = 2n;
+const bn254a = 0n;
 
 const projectiveZero = { x: 1n, y: 1n, z: 0n };
 
@@ -333,4 +347,13 @@ const Vesta = createCurveProjective(
   vestaEndoScalar,
   b,
   a
+);
+
+const Bn254 = createCurveProjective(
+  bn254p,
+  bn254GeneratorProjective,
+  bn254EndoBase,
+  bn254EndoScalar,
+  bn254b,
+  bn254a
 );

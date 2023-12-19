@@ -1,7 +1,7 @@
 import { bytesToBigInt } from './bigint-helpers.js';
 import { randomBytes } from './random.js';
 
-export { Fp, Fq, Bn254Fp, Bn254Fq, FiniteField, p, q, mod, inverse };
+export { Fp, Fq, Bn254Fp, Bn254Fq, FiniteField, p, q, bn254p, bn254q, mod, inverse };
 
 // CONSTANTS (Pasta)
 
