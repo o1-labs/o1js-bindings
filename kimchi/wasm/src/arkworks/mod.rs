@@ -30,7 +30,7 @@ pub mod pasta_fq;
 pub use bigint_256::WasmBigInteger256;
 pub use bn254_fp::WasmBn254Fp;
 pub use bn254_fq::WasmBn254Fq;
-pub use group_affine::{WasmGPallas, WasmGVesta};
+pub use group_affine::{WasmGBn254, WasmGPallas, WasmGVesta};
 pub use group_projective::{WasmPallasGProjective, WasmVestaGProjective};
 pub use pasta_fp::WasmPastaFp;
 pub use pasta_fq::WasmPastaFq;
