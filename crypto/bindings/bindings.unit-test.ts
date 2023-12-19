@@ -119,6 +119,10 @@ equivalentRecord(Bigint256Bindings, wasm, {
     from: [bigint256, numberLessThan(256)],
     to: boolean,
   },
+  caml_bigint_256_test_uint32: {
+    from: [bigint256, numberLessThan(8)],
+    to: number,
+  },
   caml_bigint_256_to_bytes: { from: [bigint256], to: bytes },
   caml_bigint_256_of_bytes: { from: [bytes], to: bigint256 },
   caml_bigint_256_deep_copy: { from: [bigint256], to: bigint256 },

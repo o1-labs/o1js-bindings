@@ -117,6 +117,11 @@ pub fn caml_bigint_256_test_bit(x: WasmBigInteger256, i: i32) -> bool {
 }
 
 #[wasm_bindgen]
+pub fn caml_bigint_256_test_uint32(x: WasmBigInteger256, i: i32) -> i32 {
+    panic!("caml_bigint_256_test_uint32 not implemented");
+}
+
+#[wasm_bindgen]
 pub fn caml_bigint_256_to_bytes(x: WasmBigInteger256) -> Vec<u8> {
     let mut serialized_bytes = vec![];
     x.0.serialize(&mut serialized_bytes)

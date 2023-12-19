@@ -48,6 +48,9 @@ const Bigint256Bindings = withPrefix('caml_bigint_256', {
   test_bit(b: Bigint256, i: number): MlBool {
     return MlBool(!!(b[1] & (1n << BigInt(i))));
   },
+  test_uint32(b: Bigint256, i: number): number {
+    return Number(b[1] >> BigInt(32 * i)) & 0xff_ff_ff_ff;
+  },
   to_bytes([, x]: Bigint256) {
     let ocamlBytes = caml_create_bytes(32);
     for (let i = 0; i < 32; i++) {
