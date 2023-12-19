@@ -42,7 +42,6 @@ module Run = struct
     with exn -> Util.raise_exn exn
 
   let constraint_system (main : unit -> unit) =
-    let () = Js_of_ocaml.Firebug.console##log "HERE!" in
     let cs =
       Impl.constraint_system ~input_typ:Impl.Typ.unit ~return_typ:Impl.Typ.unit
         (fun () -> main)
