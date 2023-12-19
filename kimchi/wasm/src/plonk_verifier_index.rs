@@ -777,6 +777,7 @@ macro_rules! impl_verification_key {
                 let domain = Domain::<$F>::new(1 << log_size_of_group).unwrap();
 
                 let feature_flags = compute_feature_flags(&index);
+                let zk_rows = index.zk_rows;
                 let (linearization, powers_of_alpha) = expr_linearization(Some(&feature_flags), true);
 
                 let index =
