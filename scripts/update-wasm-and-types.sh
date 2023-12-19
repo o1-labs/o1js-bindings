@@ -5,11 +5,10 @@
 
 set -e
 
-SNARKY_JS_PATH="."
-MINA_PATH="$SNARKY_JS_PATH/src/mina"
-KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi"
-_NODE_BINDINGS="$SNARKY_JS_PATH/src/bindings/compiled/_node_bindings"
-NODE_BINDINGS="$SNARKY_JS_PATH/src/bindings/compiled/node_bindings"
+MINA_PATH="src/mina"
+KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
+_NODE_BINDINGS="src/bindings/compiled/_node_bindings"
+NODE_BINDINGS="src/bindings/compiled/node_bindings"
 
 export DUNE_USE_DEFAULT_LINKER="y"
 
@@ -23,6 +22,6 @@ mv -f $_NODE_BINDINGS/plonk_wasm.js $_NODE_BINDINGS/plonk_wasm.cjs
 mv -f $_NODE_BINDINGS/plonk_wasm.d.ts $_NODE_BINDINGS/plonk_wasm.d.cts
 
 chmod 777 "$_NODE_BINDINGS"/*
-node "$SNARKY_JS_PATH/src/build/fix-wasm-bindings-node.js" "$_NODE_BINDINGS/plonk_wasm.cjs"
+node "src/build/fix-wasm-bindings-node.js" "$_NODE_BINDINGS/plonk_wasm.cjs"
 
 cp $_NODE_BINDINGS/plonk_wasm.d.cts $NODE_BINDINGS/

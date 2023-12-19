@@ -2,15 +2,12 @@
 
 set -e
 
-SNARKY_JS_PATH="."
-MINA_PATH="$SNARKY_JS_PATH/src/mina"
-DUNE_PATH="$SNARKY_JS_PATH/src/bindings/ocaml"
+MINA_PATH="src/mina"
+DUNE_PATH="src/bindings/ocaml"
 BUILD_PATH="_build/default/$DUNE_PATH"
 KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi"
 
-pushd "$SNARKY_JS_PATH"
-  [ -d node_modules ] || npm i
-popd
+[ -d node_modules ] || npm i
 
 export DUNE_USE_DEFAULT_LINKER="y"
 
@@ -27,8 +24,8 @@ fi
 
 # Copy mina config files, that is necessary for o1js to build
 dune b "$MINA_PATH/src/config.mlh" && \
-cp "$MINA_PATH/src/config.mlh" "$SNARKY_JS_PATH/src" \
-&& cp -r "$MINA_PATH/src/config" "$SNARKY_JS_PATH/src/config" || exit 1
+cp "$MINA_PATH/src/config.mlh" "src" \
+&& cp -r "$MINA_PATH/src/config" "src/config" || exit 1
 
 dune b $KIMCHI_BINDINGS/js/node_js \
 && dune b $DUNE_PATH/snarky_js_node.bc.js || exit 1
@@ -39,23 +36,23 @@ if [ -f "$BUILD_PATH/snarky_js_node.bc.map" ]; then
   cp "$BUILD_PATH/snarky_js_node.bc.map" "_build/snarky_js_node.bc.map";
 fi
 
-dune b $SNARKY_JS_PATH/src/bindings/mina-transaction/gen/js-layout.ts \
-&& dune b $SNARKY_JS_PATH/src/bindings/crypto/constants.ts \
- $SNARKY_JS_PATH/src/bindings/crypto/test_vectors/poseidonKimchi.ts \
+dune b src/bindings/mina-transaction/gen/js-layout.ts \
+&& dune b src/bindings/crypto/constants.ts \
+ src/bindings/crypto/test_vectors/poseidonKimchi.ts \
 || exit 1
 
 # Cleanup mina config files
-rm -rf "$SNARKY_JS_PATH/src/config" \
-&& rm "$SNARKY_JS_PATH/src/config.mlh" || exit 1
+rm -rf "src/config" \
+&& rm "src/config.mlh" || exit 1
 
-BINDINGS_PATH="$SNARKY_JS_PATH"/src/bindings/compiled/_node_bindings/
+BINDINGS_PATH=src/bindings/compiled/_node_bindings/
 mkdir -p "$BINDINGS_PATH"
 chmod -R 777 "$BINDINGS_PATH"
 cp _build/default/$KIMCHI_BINDINGS/js/node_js/plonk_wasm* "$BINDINGS_PATH"
 mv -f $BINDINGS_PATH/plonk_wasm.js $BINDINGS_PATH/plonk_wasm.cjs
 mv -f $BINDINGS_PATH/plonk_wasm.d.ts $BINDINGS_PATH/plonk_wasm.d.cts
 cp $BUILD_PATH/snarky_js_node*.js "$BINDINGS_PATH"
-cp $SNARKY_JS_PATH/src/bindings/compiled/node_bindings/snarky_js_node.bc.d.cts $BINDINGS_PATH/
+cp src/bindings/compiled/node_bindings/snarky_js_node.bc.d.cts $BINDINGS_PATH/
 cp "_build/snarky_js_node.bc.map" "$BINDINGS_PATH"/snarky_js_node.bc.map
 mv -f $BINDINGS_PATH/snarky_js_node.bc.js $BINDINGS_PATH/snarky_js_node.bc.cjs
 sed -i 's/plonk_wasm.js/plonk_wasm.cjs/' $BINDINGS_PATH/snarky_js_node.bc.cjs
@@ -74,5 +71,5 @@ sed -i 's/return \[0,Exn,t\]/return globalThis.Error(t.c)/' "$BINDINGS_PATH"/sna
 sed -i 's/function raise(t){throw caml_call1(to_exn$0,t)}/function raise(t){throw Error(t?.[1]?.c ?? "Unknown error thrown by raise")}/' "$BINDINGS_PATH"/snarky_js_node.bc.cjs
 
 chmod 777 "$BINDINGS_PATH"/*
-node "$SNARKY_JS_PATH/src/build/fix-wasm-bindings-node.js" "$BINDINGS_PATH/plonk_wasm.cjs"
+node "src/build/fix-wasm-bindings-node.js" "$BINDINGS_PATH/plonk_wasm.cjs"
 
