@@ -1,9 +1,9 @@
 import { bytesToBigInt } from './bigint-helpers.js';
 import { randomBytes } from './random.js';
 
-export { Fp, Fq, FiniteField, p, q, mod, inverse };
+export { Fp, Fq, Bn254Fp, Bn254Fq, FiniteField, p, q, mod, inverse };
 
-// CONSTANTS
+// CONSTANTS (Pasta)
 
 // the modulus. called `p` in most of our code.
 const p = 0x40000000000000000000000000000000224698fc094cf91b992d30ed00000001n;
@@ -20,6 +20,24 @@ const twoadicRootFp =
   0x2bce74deac30ebda362120830561f81aea322bf2b7bb7584bdad6fabd87ea32fn;
 const twoadicRootFq =
   0x2de6a9b8746d3f589e5c4dfd492ae26e9bb97ea3c106f049a70e2c1102b6d05fn;
+
+// CONSTANTS (Bn254)
+
+// the modulus. called `p` in most of our code.
+const bn254p = 0x2523648240000001ba344d80000000086121000000000013a700000000000013n;
+const bn254q = 0x30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47n;
+
+// this is `t`, where p = 2^32 * t + 1
+const bn254pMinusOneOddFactor =
+  0x2523648240000001ba344d80000000086121000000000013a700000000000012n;
+const bn254qMinusOneOddFactor =
+  0x30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd46n;
+
+// primitive roots of unity, computed as (5^t mod p). this works because 5 generates the multiplicative group mod p
+const twoadicRootBn254Fp =
+  0x636e735580d13d9ca22bf3742445ffd656452ac01eb203d81860ef942963f9e7n;
+const twoadicRootBn254Fq =
+  0x68c3488912edefaa8d087f6872aabf4f51e1a247090812312259d6b14729c0fan;
 
 // GENERAL FINITE FIELD ALGORITHMS
 
@@ -109,11 +127,13 @@ function randomField(p: bigint) {
   }
 }
 
-// SPECIALIZATIONS TO FP, FQ
+// SPECIALIZATIONS TO FP, FQ (Pasta and Bn254)
 // these should be mostly trivial
 
 const Fp = createField(p, pMinusOneOddFactor, twoadicRootFp);
 const Fq = createField(q, qMinusOneOddFactor, twoadicRootFq);
+const Bn254Fp = createField(bn254p, bn254pMinusOneOddFactor, twoadicRootBn254Fp);
+const Bn254Fq = createField(bn254q, bn254qMinusOneOddFactor, twoadicRootBn254Fq);
 type FiniteField = ReturnType<typeof createField>;
 
 function createField(p: bigint, t: bigint, twoadicRoot: bigint) {

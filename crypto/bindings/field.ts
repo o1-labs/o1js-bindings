@@ -1,7 +1,7 @@
 /**
  * TS implementation of Pasta_bindings.{Fp, Fq}
  */
-import { FiniteField, Fp, Fq, mod } from '../finite_field.js';
+import { FiniteField, Fp, Fq, Bn254Fp, Bn254Fq, mod } from '../finite_field.js';
 import {
   Bigint256Bindings,
   Bigint256,
@@ -14,10 +14,12 @@ import { withPrefix } from './util.js';
 
 type Field = [0, bigint];
 
-export { FpBindings, FqBindings, Field };
+export { FpBindings, FqBindings, Bn254FpBindings, Bn254FqBindings, Field };
 
 const FpBindings = withPrefix('caml_pasta_fp', createFieldBindings(Fp));
 const FqBindings = withPrefix('caml_pasta_fq', createFieldBindings(Fq));
+const Bn254FpBindings = withPrefix('caml_bn254_fp', createFieldBindings(Bn254Fp));
+const Bn254FqBindings = withPrefix('caml_bn254_fq', createFieldBindings(Bn254Fq));
 
 function createFieldBindings(Field: FiniteField) {
   return {
