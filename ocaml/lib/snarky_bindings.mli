@@ -26,6 +26,7 @@ end
 val snarky :
   < exists : (int -> (unit -> Impl.field array) -> Field.t array) Js.meth
   ; existsVar : ((unit -> Impl.field) -> Field.t) Js.meth
+  ; existsBn254 : (int -> (unit -> Bn254_impl.field array) -> Bn254_impl.Field.t array) Js.meth
   ; run :
       < asProver : ((unit -> unit) -> unit) Js.meth
       ; constraintSystem :
