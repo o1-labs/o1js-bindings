@@ -37,7 +37,7 @@ const tsBindings = {
   srs: (wasm: Wasm) => srs(wasm, getRustConversion(wasm)),
 };
 
-// this is put in a global variable so that ../kimchi/js/bindings.js finds it
+// this is put in a global variable so that mina/src/lib/crypto/kimchi_bindings/js/bindings.js finds it
 (globalThis as any).__snarkyTsBindings = tsBindings;
 
 type Wasm = typeof wasmNamespace;
