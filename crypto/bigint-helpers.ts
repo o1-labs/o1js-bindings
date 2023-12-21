@@ -3,7 +3,7 @@ export {
   bytesToBigInt,
   bigIntToBytes,
   bigIntToBits,
-  parseHexString,
+  parseHexString32,
   log2,
   max,
   abs,
@@ -38,13 +38,19 @@ function bytesToBigInt(bytes: Uint8Array | number[]) {
   return x;
 }
 
-function parseHexString(input: string) {
+let hexToNum: { [hexCharCode: number]: number } = {};
+for (let i = 0; i < 16; i++) hexToNum[i.toString(16).charCodeAt(0)] = i;
+let encoder = new TextEncoder();
+
+function parseHexString32(input: string) {
   // Parse the bytes explicitly, Bigint endianness is wrong
-  let inputBytes = new Uint8Array(32);
-  for (var j = 0; j < 32; j++) {
-    inputBytes[j] = parseInt(input[2 * j] + input[2 * j + 1], 16);
+  let bytes = encoder.encode(input);
+  for (let j = 0; j < 32; j++) {
+    let n1 = hexToNum[bytes[2 * j]];
+    let n0 = hexToNum[bytes[2 * j + 1]];
+    bytes[j] = (n1 << 4) | n0;
   }
-  return bytesToBigInt(inputBytes);
+  return bytesToBigint32(bytes);
 }
 
 /**
