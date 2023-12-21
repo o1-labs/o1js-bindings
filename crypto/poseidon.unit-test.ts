@@ -14,7 +14,7 @@ function checkTestVectors(
 ) {
   for (let i = 0; i < testVectors.length; i++) {
     let { input, output } = testVectors[i];
-    let inputBigint = input.map(parseHexString32);
+    let inputBigint = input.map((h) => parseHexString32(h));
     let hashOutput = hash(inputBigint);
     let hex = fieldToHex(hashOutput);
     expect(hex).toEqual(output);
