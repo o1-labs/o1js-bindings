@@ -1,5 +1,5 @@
 import { Field } from './field.js';
-import { bigIntToBytes, bytesToBigInt } from '../bigint-helpers.js';
+import { bigintToBytes32, bytesToBigint32 } from '../bigint-helpers.js';
 import type {
   WasmGPallas,
   WasmGVesta,
@@ -27,12 +27,11 @@ const fieldSizeBytes = 32;
 
 // field, field vectors
 
-// TODO make more performant
 function fieldToRust([, x]: Field): Uint8Array {
-  return Uint8Array.from(bigIntToBytes(x, fieldSizeBytes));
+  return bigintToBytes32(x);
 }
 function fieldFromRust(x: Uint8Array): Field {
-  return [0, bytesToBigInt(x)];
+  return [0, bytesToBigint32(x)];
 }
 
 // TODO avoid intermediate Uint8Arrays

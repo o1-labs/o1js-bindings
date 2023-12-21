@@ -8,7 +8,25 @@ export {
   max,
   abs,
   sign,
+  bytesToBigint32,
+  bigintToBytes32,
 };
+
+function bytesToBigint32(bytes: Uint8Array) {
+  let words = new BigUint64Array(bytes.buffer, bytes.byteOffset, 4);
+  return words[0] | (words[1] << 64n) | (words[2] << 128n) | (words[3] << 192n);
+}
+
+const mask64 = (1n << 64n) - 1n;
+
+function bigintToBytes32(x: bigint): Uint8Array {
+  let words = new BigUint64Array(4);
+  words[0] = x & mask64;
+  words[1] = (x >> 64n) & mask64;
+  words[2] = (x >> 128n) & mask64;
+  words[3] = x >> 192n;
+  return new Uint8Array(words.buffer);
+}
 
 function bytesToBigInt(bytes: Uint8Array | number[]) {
   let x = 0n;
