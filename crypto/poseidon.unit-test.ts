@@ -2,16 +2,19 @@ import { Poseidon, PoseidonLegacy } from './poseidon.js';
 import { testPoseidonKimchiFp } from './test_vectors/poseidonKimchi.js';
 import { testPoseidonLegacyFp } from './test_vectors/poseidonLegacy.js';
 import { expect } from 'expect';
-import { bigIntToBytes, parseHexString } from './bigint-helpers.js';
+import { bigIntToBytes, parseHexString32 } from './bigint-helpers.js';
 import { test, Random } from '../../lib/testing/property.js';
 import { Test } from '../../snarky.js';
 import { FieldConst } from '../../lib/field.js';
 import { MlArray } from '../../lib/ml/base.js';
 
-function checkTestVectors(testVectors: {input: string[], output: string}[], hash: (input: bigint[]) => bigint) {
+function checkTestVectors(
+  testVectors: { input: string[]; output: string }[],
+  hash: (input: bigint[]) => bigint
+) {
   for (let i = 0; i < testVectors.length; i++) {
     let { input, output } = testVectors[i];
-    let inputBigint = input.map(parseHexString);
+    let inputBigint = input.map(parseHexString32);
     let hashOutput = hash(inputBigint);
     let hex = fieldToHex(hashOutput);
     expect(hex).toEqual(output);

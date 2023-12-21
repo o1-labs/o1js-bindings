@@ -274,7 +274,7 @@ function verifierIndexConversionPerField(
 
   let self = {
     shiftsToRust([, ...shifts]: MlArray<Field>): WasmShifts {
-      let s = shifts.map(fieldToRust);
+      let s = shifts.map((s) => fieldToRust(s));
       return new Shifts(s[0], s[1], s[2], s[3], s[4], s[5], s[6]);
     },
     shiftsFromRust(s: WasmShifts): MlArray<Field> {
