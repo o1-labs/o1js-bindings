@@ -253,33 +253,33 @@ module Foreign_field = struct
   module Range_check = Kimchi_gadgets.Range_check
   module External_checks = FF.External_checks
 
-  type t = Impl.field FF.Element.Standard.t
+  type t = Bn254_impl.field FF.Element.Standard.t
 
-  type t_const = Impl.field FF.Element.Standard.limbs_type
+  type t_const = Bn254_impl.field FF.Element.Standard.limbs_type
 
   type op_mode = FF.op_mode
 
   (* high-level API of self-contained methods which do all necessary checks *)
 
   let assert_valid_element (x : t) (p : t_const) : unit =
-    let external_checks = External_checks.create (module Impl) in
-    let _ = FF.check_canonical (module Impl) external_checks x p in
-    FF.constrain_external_checks (module Impl) external_checks p
+    let external_checks = External_checks.create (module Bn254_impl) in
+    let _ = FF.check_canonical (module Bn254_impl) external_checks x p in
+    FF.constrain_external_checks (module Bn254_impl) external_checks p
 
   let sum_chain (x : t array) (ops : op_mode array) (p : t_const) : t =
-    let external_checks = External_checks.create (module Impl) in
+    let external_checks = External_checks.create (module Bn254_impl) in
     let sum =
       FF.sum_chain
-        (module Impl)
+        (module Bn254_impl)
         external_checks (Array.to_list x) (Array.to_list ops) p
     in
-    FF.constrain_external_checks (module Impl) external_checks p ;
+    FF.constrain_external_checks (module Bn254_impl) external_checks p ;
     sum
 
   let mul (x : t) (y : t) (p : t_const) : t =
-    let external_checks = External_checks.create (module Impl) in
-    let z = FF.mul (module Impl) external_checks x y p in
-    FF.constrain_external_checks (module Impl) external_checks p ;
+    let external_checks = External_checks.create (module Bn254_impl) in
+    let z = FF.mul (module Bn254_impl) external_checks x y p in
+    FF.constrain_external_checks (module Bn254_impl) external_checks p ;
     z
 end
 
@@ -290,9 +290,9 @@ module EC_group = struct
   module Curve_params = Kimchi_gadgets.Curve_params
   module Bignum_bigint = Snarky_backendless.Backend_extended.Bignum_bigint
 
-  type t = Impl.field Kimchi_gadgets.Affine.t
+  type t = Bn254_impl.field Kimchi_gadgets.Affine.t
 
-  type curve_t = Impl.field Kimchi_gadgets.Curve_params.InCircuit.t
+  type curve_t = Bn254_impl.field Kimchi_gadgets.Curve_params.InCircuit.t
 
   exception ANotFoundInCurve
 
@@ -336,20 +336,20 @@ module EC_group = struct
         (Js.Optdef.get (Js.array_get curve 5) (fun () ->
              raise OrderNotFoundInCurve ) ) in
 
-    Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order
+    Curve_params.from_strings (module Bn254_impl) a b modulus gen_x gen_y order
 
   let add (left_input : t) (right_input : t)
       (curve : Js.js_string Js.t Js.js_array Js.t) =
-    let external_checks = External_checks.create (module Impl) in
+    let external_checks = External_checks.create (module Bn254_impl) in
     let ec = parse_ec curve in
-    ECG.add (module Impl) external_checks ec left_input right_input
+    ECG.add (module Bn254_impl) external_checks ec left_input right_input
   
-  let scale (point : t) (scalar : Boolean.var array)
+  let scale (point : t) (scalar : Bn254_impl.Boolean.var array)
     (curve : Js.js_string Js.t Js.js_array Js.t) =
-    let external_checks = External_checks.create (module Impl) in
+    let external_checks = External_checks.create (module Bn254_impl) in
     let ec = parse_ec curve in
     let scalar = Array.to_list scalar in
-    ECG.scalar_mul (module Impl) external_checks ec scalar point
+    ECG.scalar_mul (module Bn254_impl) external_checks ec scalar point
 
 end
 
