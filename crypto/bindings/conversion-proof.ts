@@ -31,6 +31,7 @@ import type {
   RuntimeTable,
   RuntimeTableCfg,
   LookupTable,
+  Field,
 } from './kimchi-types.js';
 import { MlArray, MlOption, MlTuple } from '../../../lib/ml/base.js';
 import {
@@ -48,9 +49,10 @@ import {
 
 export { proofConversion };
 
-const proofEvaluationsToRust = mapProofEvaluations(fieldToRust);
+const fieldToRust_ = (x: Field) => fieldToRust(x);
+const proofEvaluationsToRust = mapProofEvaluations(fieldToRust_);
 const proofEvaluationsFromRust = mapProofEvaluations(fieldFromRust);
-const pointEvalsOptionToRust = mapPointEvalsOption(fieldToRust);
+const pointEvalsOptionToRust = mapPointEvalsOption(fieldToRust_);
 const pointEvalsOptionFromRust = mapPointEvalsOption(fieldFromRust);
 
 type WasmProofEvaluations = [

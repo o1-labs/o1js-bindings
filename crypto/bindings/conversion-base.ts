@@ -27,20 +27,18 @@ const fieldSizeBytes = 32;
 
 // field, field vectors
 
-function fieldToRust([, x]: Field): Uint8Array {
-  return bigintToBytes32(x);
+function fieldToRust([, x]: Field, dest = new Uint8Array(32)): Uint8Array {
+  return bigintToBytes32(x, dest);
 }
 function fieldFromRust(x: Uint8Array): Field {
   return [0, bytesToBigint32(x)];
 }
 
-// TODO avoid intermediate Uint8Arrays
 function fieldsToRustFlat([, ...fields]: MlArray<Field>): Uint8Array {
   let n = fields.length;
   let flatBytes = new Uint8Array(n * fieldSizeBytes);
   for (let i = 0, offset = 0; i < n; i++, offset += fieldSizeBytes) {
-    let fieldBytes = fieldToRust(fields[i]);
-    flatBytes.set(fieldBytes, offset);
+    fieldToRust(fields[i], flatBytes.subarray(offset, offset + fieldSizeBytes));
   }
   return flatBytes;
 }
@@ -78,6 +76,8 @@ function affineFromRust<A extends WasmAffine>(pt: A): OrInfinity {
   }
 }
 
+const tmpBytes = new Uint8Array(32);
+
 function affineToRust<A extends WasmAffine>(
   pt: OrInfinity,
   makeAffine: () => A
@@ -87,8 +87,10 @@ function affineToRust<A extends WasmAffine>(
     res.infinity = true;
   } else {
     let [, [, x, y]] = pt;
-    res.x = fieldToRust(x);
-    res.y = fieldToRust(y);
+    // we can use the same bytes here every time,
+    // because x and y setters copy the bytes into wasm memory
+    res.x = fieldToRust(x, tmpBytes);
+    res.y = fieldToRust(y, tmpBytes);
   }
   return res;
 }

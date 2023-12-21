@@ -15,7 +15,7 @@ function testBigintRoundtrip(x: bigint, size: number) {
   expect(x1).toEqual(x);
 
   if (size === 32) {
-    let bytes32 = bigintToBytes32(x);
+    let bytes32 = bigintToBytes32(x, new Uint8Array(32));
     let x2 = bytesToBigint32(bytes32);
     expect(x2).toEqual(x);
   }

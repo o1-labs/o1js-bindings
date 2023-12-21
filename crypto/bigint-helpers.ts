@@ -19,13 +19,13 @@ function bytesToBigint32(bytes: Uint8Array) {
 
 const mask64 = (1n << 64n) - 1n;
 
-function bigintToBytes32(x: bigint): Uint8Array {
-  let words = new BigUint64Array(4);
+function bigintToBytes32(x: bigint, bytes: Uint8Array): Uint8Array {
+  let words = new BigUint64Array(bytes.buffer, bytes.byteOffset, 4);
   words[0] = x & mask64;
   words[1] = (x >> 64n) & mask64;
   words[2] = (x >> 128n) & mask64;
   words[3] = x >> 192n;
-  return new Uint8Array(words.buffer);
+  return bytes;
 }
 
 function bytesToBigInt(bytes: Uint8Array | number[]) {
