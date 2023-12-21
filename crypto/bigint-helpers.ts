@@ -42,15 +42,17 @@ let hexToNum: { [hexCharCode: number]: number } = {};
 for (let i = 0; i < 16; i++) hexToNum[i.toString(16).charCodeAt(0)] = i;
 let encoder = new TextEncoder();
 
-function parseHexString32(input: string, bytes = new Uint8Array(64)) {
+const tmpBytes = new Uint8Array(64);
+
+function parseHexString32(input: string) {
   // Parse the bytes explicitly, Bigint endianness is wrong
-  encoder.encodeInto(input, bytes);
+  encoder.encodeInto(input, tmpBytes);
   for (let j = 0; j < 32; j++) {
-    let n1 = hexToNum[bytes[2 * j]];
-    let n0 = hexToNum[bytes[2 * j + 1]];
-    bytes[j] = (n1 << 4) | n0;
+    let n1 = hexToNum[tmpBytes[2 * j]];
+    let n0 = hexToNum[tmpBytes[2 * j + 1]];
+    tmpBytes[j] = (n1 << 4) | n0;
   }
-  return bytesToBigint32(bytes);
+  return bytesToBigint32(tmpBytes);
 }
 
 /**
