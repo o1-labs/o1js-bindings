@@ -110,6 +110,12 @@ val snarky :
           ; create : (bool Js.t -> Poseidon.sponge) Js.meth
           ; squeeze : (Poseidon.sponge -> Field.t) Js.meth >
           Js.t
+          Js.readonly_prop
+      ; foreignSponge :
+          < absorb : (Poseidon.sponge -> Field.t -> unit) Js.meth
+          ; create : (bool Js.t -> Poseidon.sponge) Js.meth
+          ; squeeze : (Poseidon.sponge -> Field.t) Js.meth >
+          Js.t
           Js.readonly_prop >
       Js.t
       Js.readonly_prop
