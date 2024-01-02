@@ -12,7 +12,7 @@ WEB_BINDINGS="src/bindings/compiled/web_bindings"
 
 # 1. node build
 
-$DIR_PATH/build-snarkyjs-node-artifacts.sh
+$DIR_PATH/build-o1js-node-artifacts.sh
 node src/build/copy-to-dist.js
 
 chmod -R 777 "$NODE_BINDINGS"
