@@ -1,6 +1,6 @@
 // TODO this code is not currently working
 
-import { Circuit } from '../snarky.js';
+import { Circuit } from '../o1js.js';
 /**
  * @type { import("./wrapper") }
  */

@@ -4,7 +4,7 @@ import { testPoseidonLegacyFp } from './test_vectors/poseidonLegacy.js';
 import { expect } from 'expect';
 import { bigIntToBytes, parseHexString32 } from './bigint-helpers.js';
 import { test, Random } from '../../lib/testing/property.js';
-import { Test } from '../../snarky.js';
+import { Test } from '../../o1js.js';
 import { FieldConst } from '../../lib/field.js';
 import { MlArray } from '../../lib/ml/base.js';
 

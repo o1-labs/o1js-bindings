@@ -1,4 +1,4 @@
-import { Provable, ProvablePure } from '../../snarky.js';
+import { Provable, ProvablePure } from '../../o1js.js';
 import { Field } from '../../lib/core.js';
 import {
   createDerivers,
