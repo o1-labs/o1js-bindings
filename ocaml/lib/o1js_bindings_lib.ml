@@ -7,7 +7,7 @@ let export () =
   Js.export "Test" Consistency_test.test
 
 let export_global () =
-  let snarky_obj =
+  let o1js_obj =
     Js.Unsafe.(
       let i = inject in
       obj
@@ -17,4 +17,4 @@ let export_global () =
          ; ("Test", i Consistency_test.test)
         |])
   in
-  Js.Unsafe.(set global (Js.string "__snarky") snarky_obj)
+  Js.Unsafe.(set global (Js.string "__o1js") o1js_obj)

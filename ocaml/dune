@@ -5,11 +5,11 @@
 
 (data_only_dirs test_module)
 
-(vendored_dirs snarkyjs)
+(vendored_dirs o1js)
 
 (executable
- (name snarky_js_node)
- (modules snarky_js_node)
+ (name o1js_node)
+ (modules o1js_node)
  (modes js)
  (flags (-g))
  (link_flags
@@ -18,7 +18,7 @@
   (flags +toplevel.js +dynlink.js --pretty --source-map)
   (link_flags --source-map)
   (javascript_files overrides.js))
- (libraries snarky_js_bindings_lib bindings_js.node_backend)
+ (libraries o1js_bindings_lib bindings_js.node_backend)
  (link_deps
   ../../mina/src/lib/crypto/kimchi_bindings/js/node_js/plonk_wasm.js
   ../../mina/src/lib/crypto/kimchi_bindings/js/node_js/plonk_wasm_bg.wasm)
@@ -29,14 +29,14 @@
   (pps ppx_version js_of_ocaml-ppx)))
 
 (executable
- (name snarky_js_web)
- (modules snarky_js_web)
+ (name o1js_web)
+ (modules o1js_web)
  (modes js)
  (link_flags (-noautolink))
  (js_of_ocaml
   (flags +toplevel.js +dynlink.js --pretty)
   (javascript_files overrides.js))
- (libraries snarky_js_bindings_lib bindings_js.web_backend)
+ (libraries o1js_bindings_lib bindings_js.web_backend)
  (link_deps
   ../../mina/src/lib/crypto/kimchi_bindings/js/web/plonk_wasm.js
   ../../mina/src/lib/crypto/kimchi_bindings/js/web/plonk_wasm_bg.wasm)
@@ -47,8 +47,8 @@
   (pps ppx_version js_of_ocaml-ppx)))
 
 (executable
- (name snarky_js_types)
- (modules snarky_js_types)
+ (name o1js_types)
+ (modules o1js_types)
  (link_flags (-linkall))
  (modes native)
  (libraries mina_base fields_derivers.zkapps yojson)
@@ -62,11 +62,11 @@
  (action
   (with-stdout-to
    jsLayout.json
-   (run %{exe:./snarky_js_types.exe}))))
+   (run %{exe:./o1js_types.exe}))))
 
 (executable
- (name snarky_js_constants)
- (modules snarky_js_constants)
+ (name o1js_constants)
+ (modules o1js_constants)
  (link_flags (-linkall))
  (modes native)
  (libraries

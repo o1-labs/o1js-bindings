@@ -1,8 +1,8 @@
 import { initO1, withThreadPool } from './web/web-backend.js';
 
-export { getSnarky, getWasm, withThreadPool };
+export { getO1js, getWasm, withThreadPool };
 
-let getSnarky = () => globalThis.__snarky;
+let getO1js = () => globalThis.__o1js;
 
 function getWasm() {
   return globalThis.plonk_wasm;
