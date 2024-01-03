@@ -9,6 +9,10 @@ module Poseidon : sig
   type sponge
 end
 
+module Foreign_poseidon : sig
+  type sponge
+end
+
 module Foreign_field : sig
   type t
 
@@ -112,9 +116,9 @@ val snarky :
           Js.t
           Js.readonly_prop
       ; foreignSponge :
-          < absorb : (Poseidon.sponge -> Field.t -> unit) Js.meth
-          ; create : (bool Js.t -> Poseidon.sponge) Js.meth
-          ; squeeze : (Poseidon.sponge -> Field.t) Js.meth >
+          < absorb : (Foreign_poseidon.sponge -> Foreign_field.t -> unit) Js.meth
+          ; create : (bool Js.t -> Foreign_poseidon.sponge) Js.meth
+          ; squeeze : (Foreign_poseidon.sponge -> Foreign_field.t) Js.meth >
           Js.t
           Js.readonly_prop >
       Js.t
