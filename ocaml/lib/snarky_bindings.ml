@@ -248,56 +248,6 @@ module Poseidon = struct
         Poseidon_sponge.squeeze s |> Impl.Field.constant
 end
 
-module Foreign_poseidon = struct
-  let update (state : Field.t Random_oracle.State.t) (input : Field.t array) :
-      Field.t Random_oracle.State.t =
-    Random_oracle.Checked.update ~state input
-
-  let hash_to_group (xs : Field.t array) =
-    let input = Random_oracle.Checked.hash xs in
-    Snark_params.Group_map.Checked.to_group input
-
-  (* sponge *)
-
-  let to_unchecked (x : Field.t) =
-    match x with Constant y -> y | y -> As_prover.read_var y
-
-  module Poseidon_sponge_checked =
-    Sponge.Make_sponge (Pickles.Step_main_inputs.Sponge.Permutation)
-  module Poseidon_sponge =
-    Sponge.Make_sponge (Sponge.Poseidon (Pickles.Tick_field_sponge.Inputs))
-
-  let sponge_params = Kimchi_bn254_basic.poseidon_params_fp
-
-  let sponge_params_checked = Sponge.Params.map sponge_params ~f:Bn254_impl.Field.constant
-
-  type sponge =
-    | Checked of Poseidon_sponge_checked.t
-    | Unchecked of Poseidon_sponge.t
-
-  (* returns a "sponge" that stays opaque to JS *)
-  let sponge_create (is_checked : bool Js.t) : sponge =
-    if Js.to_bool is_checked then
-      Checked (Poseidon_sponge_checked.create ?init:None sponge_params_checked)
-    else Unchecked (Poseidon_sponge.create ?init:None sponge_params)
-
-  let sponge_absorb (sponge : sponge) (field : Foreign_field.t) : unit =
-    (* TODO: make foreign to native field conversion univoque *)
-    let (f0, _, _) = field in
-    match sponge with
-    | Checked s ->
-        Poseidon_sponge_checked.absorb s f0
-    | Unchecked s ->
-        Poseidon_sponge.absorb s @@ to_unchecked f0
-
-  let sponge_squeeze (sponge : sponge) : Foreign_field.t =
-    match sponge with
-    | Checked s ->
-        Poseidon_sponge_checked.squeeze s
-    | Unchecked s ->
-        Poseidon_sponge.squeeze s |> Impl.Field.constant
-end
-
 module Foreign_field = struct
   module FF = Kimchi_gadgets.Foreign_field
   module Range_check = Kimchi_gadgets.Range_check
@@ -400,7 +350,48 @@ module EC_group = struct
     let ec = parse_ec curve in
     let scalar = Array.to_list scalar in
     ECG.scalar_mul (module Bn254_impl) external_checks ec scalar point
+end
 
+module Foreign_poseidon = struct
+  let to_unchecked (x : Bn254_impl.Field.t) =
+    match x with Constant y -> y | y -> Bn254_impl.As_prover.read_var y
+
+  module Poseidon_sponge_checked =
+    Sponge.Make_sponge (Pickles.Bn254_main_inputs.Sponge.Permutation)
+  module Poseidon_sponge =
+    Sponge.Make_sponge (Sponge.Poseidon (Pickles.Bn254_field_sponge.Inputs))
+
+  let sponge_params = Kimchi_bn254_basic.poseidon_params_fp
+
+  let sponge_params_checked = Sponge.Params.map sponge_params ~f:Bn254_impl.Field.constant
+
+  type sponge =
+    | Checked of Poseidon_sponge_checked.t
+    | Unchecked of Poseidon_sponge.t
+
+  (* returns a "sponge" that stays opaque to JS *)
+  let sponge_create (is_checked : bool Js.t) : sponge =
+    if Js.to_bool is_checked then
+      Checked (Poseidon_sponge_checked.create ?init:None sponge_params_checked)
+    else Unchecked (Poseidon_sponge.create ?init:None sponge_params)
+
+  let sponge_absorb (sponge : sponge) (field : Foreign_field.t) : unit =
+    (* TODO: make foreign to native field conversion univoque *)
+    let (f0, _, _) = Foreign_field.FF.Element.Standard.to_limbs field in
+    match sponge with
+    | Checked s ->
+        Poseidon_sponge_checked.absorb s f0
+    | Unchecked s ->
+        Poseidon_sponge.absorb s @@ to_unchecked f0
+
+  let sponge_squeeze (sponge : sponge) : Foreign_field.t =
+    let field = match sponge with
+      | Checked s ->
+          Poseidon_sponge_checked.squeeze s
+      | Unchecked s ->
+          Poseidon_sponge.squeeze s |> Bn254_impl.Field.constant in
+    let limbs = (field, Bn254_impl.Field.zero, Bn254_impl.Field.zero) in
+    Foreign_field.FF.Element.Standard.of_limbs limbs
 end
 
 let snarky =
