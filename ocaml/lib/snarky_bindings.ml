@@ -162,10 +162,10 @@ module Circuit = struct
     
     let bn254_of_js_main (main : Bn254_impl.Field.t array -> unit) (public_input : Bn254_impl.Field.t array) () =
       let constant_opt = Bn254_impl.Field.to_constant public_input.(0) in
-      let constant = match constant_opt with
-        Some c -> c
-        | None -> raise (Invalid_argument "constant is None") in
-      let () = Js_of_ocaml.Firebug.console##log (Js.string (Bn254_impl.Field.Constant.to_string constant)) in
+      let constant_str = match constant_opt with
+        Some c -> Bn254_impl.Field.Constant.to_string c
+        | None -> "None" in
+      let () = Js_of_ocaml.Firebug.console##log (Js.string constant_str) in
       main public_input
     
     let bn254_of_js (main : Bn254_impl.Field.t array -> unit) =
