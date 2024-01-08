@@ -31,14 +31,14 @@ let exists_var (compute : unit -> Field.Constant.t) =
   Impl.exists Field.typ ~compute
 
 module Low_level = struct
-  let make_state num_inputs eval_constraints with_witness =
+  let make_state num_inputs eval_constraints with_witness log_constraint =
     let input = Impl.Low_level.field_vec () in
     let next_auxiliary = ref num_inputs in
     let aux = Impl.Low_level.field_vec () in
     let system = Backend.R1CS_constraint_system.create () in
     let state =
       Impl.Low_level.make_state ~num_inputs ~input ~next_auxiliary ~aux ~system
-        ~eval_constraints ~with_witness ()
+        ~eval_constraints ~with_witness ~log_constraint ()
     in
     (state, input, aux, system)
 
@@ -55,7 +55,8 @@ module Run = struct
   let in_prover_block () = As_prover.in_prover_block () |> Js.bool
 
   (* TODO recreate this in JS *)
-  let run_circuit num_inputs eval_constraints with_witness (f : unit -> unit) =
+  let run_circuit num_inputs eval_constraints with_witness log_constraint
+      (f : unit -> unit) =
     let open Impl.Low_level in
     let input = field_vec () in
     let next_auxiliary = ref num_inputs in
@@ -63,7 +64,7 @@ module Run = struct
     let system = Backend.R1CS_constraint_system.create () in
     let state' =
       make_state ~num_inputs ~input ~next_auxiliary ~aux ~system
-        ~eval_constraints ~with_witness ()
+        ~eval_constraints ~with_witness ~log_constraint ()
     in
     set_state state' ;
     try

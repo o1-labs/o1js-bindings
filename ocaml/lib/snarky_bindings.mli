@@ -20,6 +20,12 @@ val snarky :
           (   int
            -> bool
            -> bool
+           -> (   ?at_label_boundary:[ `End | `Start ] * string
+               -> ( field Snarky_backendless.Cvar.t
+                  , field )
+                  Snarky_backendless.Constraint.basic_with_annotation
+                  option
+               -> unit )
            -> Impl.Low_level.state
               * Impl.Low_level.field_vec
               * Impl.Low_level.field_vec
@@ -38,7 +44,19 @@ val snarky :
               Js.t )
           Js.meth
       ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
-      ; runCircuit : (int -> bool -> bool -> (unit -> unit) -> unit) Js.meth
+      ; runCircuit :
+          (   int
+           -> bool
+           -> bool
+           -> (   ?at_label_boundary:[ `End | `Start ] * string
+               -> ( field Snarky_backendless.Cvar.t
+                  , field )
+                  Snarky_backendless.Constraint.basic_with_annotation
+                  option
+               -> unit )
+           -> (unit -> unit)
+           -> unit )
+          Js.meth
       ; runAndCheck : ((unit -> unit) -> unit) Js.meth
       ; runUnchecked : ((unit -> unit) -> unit) Js.meth >
       Js.t
