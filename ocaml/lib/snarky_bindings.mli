@@ -13,6 +13,21 @@ end
 val snarky :
   < exists : (int -> (unit -> field array) -> Field.t array) Js.meth
   ; existsVar : ((unit -> field) -> Field.t) Js.meth
+  ; lowLevel :
+      < fieldVec : (unit -> Impl.Low_level.field_vec) Js.meth
+      ; getState : (unit -> Impl.Low_level.state) Js.meth
+      ; makeState :
+          (   int
+           -> bool
+           -> bool
+           -> Impl.Low_level.state
+              * Impl.Low_level.field_vec
+              * Impl.Low_level.field_vec
+              * Backend.R1CS_constraint_system.t )
+          Js.meth
+      ; setState : (Impl.Low_level.state -> unit) Js.meth >
+      Js.t
+      Js.readonly_prop
   ; run :
       < asProver : ((unit -> unit) -> unit) Js.meth
       ; constraintSystem :
@@ -23,6 +38,7 @@ val snarky :
               Js.t )
           Js.meth
       ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
+      ; runCircuit : (int -> bool -> bool -> (unit -> unit) -> unit) Js.meth
       ; runAndCheck : ((unit -> unit) -> unit) Js.meth
       ; runUnchecked : ((unit -> unit) -> unit) Js.meth >
       Js.t

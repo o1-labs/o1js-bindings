@@ -30,10 +30,49 @@ let exists (size_in_fields : int) (compute : unit -> Field.Constant.t array) =
 let exists_var (compute : unit -> Field.Constant.t) =
   Impl.exists Field.typ ~compute
 
+module Low_level = struct
+  let make_state num_inputs eval_constraints with_witness =
+    let input = Impl.Low_level.field_vec () in
+    let next_auxiliary = ref num_inputs in
+    let aux = Impl.Low_level.field_vec () in
+    let system = Backend.R1CS_constraint_system.create () in
+    let state =
+      Impl.Low_level.make_state ~num_inputs ~input ~next_auxiliary ~aux ~system
+        ~eval_constraints ~with_witness ()
+    in
+    (state, input, aux, system)
+
+  let get_state () = !Impl.Low_level.state
+
+  let set_state state = Impl.Low_level.set_state state
+
+  let field_vec () = Impl.Low_level.field_vec ()
+end
+
 module Run = struct
   let as_prover = Impl.as_prover
 
   let in_prover_block () = As_prover.in_prover_block () |> Js.bool
+
+  (* TODO recreate this in JS *)
+  let run_circuit num_inputs eval_constraints with_witness (f : unit -> unit) =
+    let open Impl.Low_level in
+    let input = field_vec () in
+    let next_auxiliary = ref num_inputs in
+    let aux = field_vec () in
+    let system = Backend.R1CS_constraint_system.create () in
+    let state' =
+      make_state ~num_inputs ~input ~next_auxiliary ~aux ~system
+        ~eval_constraints ~with_witness ()
+    in
+    set_state state' ;
+    try
+      let result = mark_active f in
+      set_state (Snarky_backendless.Run_state.set_is_running !state true) ;
+      result
+    with exn ->
+      set_state (Snarky_backendless.Run_state.set_is_running !state false) ;
+      Util.raise_exn exn
 
   let run_and_check (f : unit -> unit) =
     try
@@ -491,6 +530,17 @@ let snarky =
 
     method existsVar = exists_var
 
+    val lowLevel =
+      object%js
+        method makeState = Low_level.make_state
+
+        method getState = Low_level.get_state
+
+        method setState = Low_level.set_state
+
+        method fieldVec = Low_level.field_vec
+      end
+
     val run =
       let open Run in
       object%js
@@ -501,6 +551,8 @@ let snarky =
         method runAndCheck = run_and_check
 
         method runUnchecked = run_unchecked
+
+        method runCircuit = run_circuit
 
         method constraintSystem = constraint_system
       end
