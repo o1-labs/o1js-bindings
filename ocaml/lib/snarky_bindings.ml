@@ -119,6 +119,11 @@ module Field' = struct
   let to_constant_and_terms x = Field.to_constant_and_terms x
 end
 
+module Bn254_field = struct
+  (** x === y without handling of constants *)
+  let assert_equal x y = Bn254_impl.assert_ (Bn254_impl.Constraint.equal x y)
+end
+
 module Bool = struct
   let not x = Boolean.not x
 
@@ -446,6 +451,12 @@ let snarky =
         method seal = seal
 
         method toConstantAndTerms = to_constant_and_terms
+      end
+
+    val fieldBn254 =
+      let open Bn254_field in
+      object%js
+        method assertEqual = assert_equal
       end
 
     val bool =

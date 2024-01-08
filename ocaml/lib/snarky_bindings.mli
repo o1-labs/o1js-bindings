@@ -71,6 +71,10 @@ val snarky :
           Js.meth >
       Js.t
       Js.readonly_prop
+  ; fieldBn254 :
+      < assertEqual : (Bn254_impl.Field.t -> Bn254_impl.Field.t -> unit) Js.meth >
+      Js.t
+      Js.readonly_prop
   ; bool :
       < and_ : (Boolean.var -> Boolean.var -> Boolean.var) Js.meth
       ; assertEqual : (Boolean.var -> Boolean.var -> unit) Js.meth

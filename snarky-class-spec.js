@@ -14,6 +14,10 @@ export default [
         type: 'object',
       },
       {
+        name: 'fieldBn254',
+        type: 'object',
+      },
+      {
         name: 'bool',
         type: 'object',
       },
