@@ -14,21 +14,21 @@ val snarky :
   < exists : (int -> (unit -> field array) -> Field.t array) Js.meth
   ; existsVar : ((unit -> field) -> Field.t) Js.meth
   ; lowLevel :
-      < fieldVec : (unit -> Impl.Low_level.field_vec) Js.meth
-      ; getState : (unit -> Impl.Low_level.state) Js.meth
-      ; makeState :
+      < state : Impl.Low_level.state ref Js.readonly_prop
+      ; createState :
           (   int
            -> bool
            -> bool
            -> (   ?at_label_boundary:[ `End | `Start ] * string
                -> ( field Snarky_backendless.Cvar.t
                   , field )
-                  Snarky_backendless.Constraint.basic_with_annotation
+                  Snarky_backendless.Constraint.t
                   option
                -> unit )
+              option
            -> Impl.Low_level.state
-              * Impl.Low_level.field_vec
-              * Impl.Low_level.field_vec
+              * Field.Constant.Vector.t
+              * Field.Constant.Vector.t
               * Backend.R1CS_constraint_system.t )
           Js.meth
       ; setState : (Impl.Low_level.state -> unit) Js.meth >
@@ -51,9 +51,10 @@ val snarky :
            -> (   ?at_label_boundary:[ `End | `Start ] * string
                -> ( field Snarky_backendless.Cvar.t
                   , field )
-                  Snarky_backendless.Constraint.basic_with_annotation
+                  Snarky_backendless.Constraint.t
                   option
                -> unit )
+              option
            -> (unit -> unit)
            -> unit )
           Js.meth

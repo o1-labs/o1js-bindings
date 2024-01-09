@@ -31,22 +31,20 @@ let exists_var (compute : unit -> Field.Constant.t) =
   Impl.exists Field.typ ~compute
 
 module Low_level = struct
-  let make_state num_inputs eval_constraints with_witness log_constraint =
-    let input = Impl.Low_level.field_vec () in
-    let next_auxiliary = ref num_inputs in
-    let aux = Impl.Low_level.field_vec () in
-    let system = Backend.R1CS_constraint_system.create () in
-    let state =
-      Impl.Low_level.make_state ~num_inputs ~input ~next_auxiliary ~aux ~system
-        ~eval_constraints ~with_witness ~log_constraint ()
-    in
-    (state, input, aux, system)
-
-  let get_state () = !Impl.Low_level.state
+  let state = Impl.Low_level.state
 
   let set_state state = Impl.Low_level.set_state state
 
-  let field_vec () = Impl.Low_level.field_vec ()
+  let create_state num_inputs eval_constraints with_witness log_constraint =
+    let input = Field.Constant.Vector.create () in
+    let next_auxiliary = ref num_inputs in
+    let aux = Field.Constant.Vector.create () in
+    let system = Backend.R1CS_constraint_system.create () in
+    let state =
+      Impl.Low_level.make_state ~num_inputs ~input ~next_auxiliary ~aux ~system
+        ~eval_constraints ~with_witness ?log_constraint ()
+    in
+    (state, input, aux, system)
 end
 
 module Run = struct
@@ -57,22 +55,19 @@ module Run = struct
   (* TODO recreate this in JS *)
   let run_circuit num_inputs eval_constraints with_witness log_constraint
       (f : unit -> unit) =
-    let open Impl.Low_level in
-    let input = field_vec () in
-    let next_auxiliary = ref num_inputs in
-    let aux = field_vec () in
-    let system = Backend.R1CS_constraint_system.create () in
-    let state' =
-      make_state ~num_inputs ~input ~next_auxiliary ~aux ~system
-        ~eval_constraints ~with_witness ~log_constraint ()
+    let state', _, _, _ =
+      Low_level.create_state num_inputs eval_constraints with_witness
+        log_constraint
     in
-    set_state state' ;
+    Low_level.set_state state' ;
     try
-      let result = mark_active f in
-      set_state (Snarky_backendless.Run_state.set_is_running !state true) ;
+      let result = Impl.Low_level.mark_active f in
+      Low_level.(
+        set_state (Snarky_backendless.Run_state.set_is_running !state true)) ;
       result
     with exn ->
-      set_state (Snarky_backendless.Run_state.set_is_running !state false) ;
+      Low_level.(
+        set_state (Snarky_backendless.Run_state.set_is_running !state false)) ;
       Util.raise_exn exn
 
   let run_and_check (f : unit -> unit) =
@@ -533,13 +528,11 @@ let snarky =
 
     val lowLevel =
       object%js
-        method makeState = Low_level.make_state
-
-        method getState = Low_level.get_state
+        val state = Low_level.state
 
         method setState = Low_level.set_state
 
-        method fieldVec = Low_level.field_vec
+        method createState = Low_level.create_state
       end
 
     val run =
