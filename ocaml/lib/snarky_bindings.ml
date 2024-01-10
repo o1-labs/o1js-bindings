@@ -161,10 +161,11 @@ module Circuit = struct
       main'
     
       let bn254_of_js_main (main : Bn254_impl.Field.t array -> unit) (public_input : Bn254_impl.Field.t array) () =
-        let public_input_cvar = match public_input.(0) with
-          Snarky_backendless.Cvar.Constant c -> c
-          | _ -> raise (Invalid_argument "NOPE") in
-        let () = Js_of_ocaml.Firebug.console##log (Js.string (Kimchi_backend.Bn254.Bn254_based_plonk.Field.to_string public_input_cvar)) in
+        let public_input_str = match public_input.(0) with
+          Snarky_backendless.Cvar.Constant c -> "Constant " ^ (Kimchi_backend.Bn254.Bn254_based_plonk.Field.to_string c)
+          | Snarky_backendless.Cvar.Var v -> "Var " ^ (string_of_int v) 
+          | _ -> raise (Invalid_argument "Wrong Cvar type") in
+        let () = Js_of_ocaml.Firebug.console##log (Js.string public_input_str) in
         main public_input
     
     let bn254_of_js (main : Bn254_impl.Field.t array -> unit) =
