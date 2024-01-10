@@ -245,3 +245,24 @@ pub mod fq {
         Fq
     );
 }
+
+//
+// Bn254Fp
+//
+
+pub mod bn254_fp {
+    use super::*;
+    use crate::arkworks::{WasmBn254Fp, WasmGBn254};
+    use crate::poly_comm::bn254::WasmFpPolyComm as WasmPolyComm;
+    use mina_curves::bn254::{Bn254, Fp};
+
+    impl_srs!(
+        caml_fp_srs,
+        WasmBn254Fp,
+        WasmGBn254,
+        Fp,
+        Bn254,
+        WasmPolyComm,
+        Fp
+    );
+}
