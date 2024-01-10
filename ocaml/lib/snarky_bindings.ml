@@ -547,7 +547,7 @@ let snarky =
 
         method createState = Low_level.create_state
 
-        method pushActiveCounter = Low_level.push_active_counter
+        val pushActiveCounter = Low_level.push_active_counter
 
         method resetActiveCounter = Low_level.reset_active_counter
 
