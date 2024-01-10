@@ -206,5 +206,5 @@ pub mod bn254_fp {
     use crate::arkworks::WasmBn254Fp as WasmF;
     use mina_curves::bn254::Fp as F;
 
-    impl_gate_vector!(fp, WasmF, F, Fp);
+    impl_gate_vector!(bn254_fp, WasmF, F, Bn254Fp);
 }

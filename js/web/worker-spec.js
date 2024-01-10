@@ -42,6 +42,23 @@ function workerSpec(wasm) {
       ],
       res: wasm.WasmPastaFqPlonkIndex,
     },
+    caml_bn254_fp_plonk_index_create: {
+      args: [
+        // gates
+        wasm.WasmBn254FpGateVector,
+        // public_
+        undefined /* number */,
+        // lookup_tables
+        undefined /*Uint32Array*/,
+        // runtime_table_cfgs
+        undefined /*Uint32Array*/,
+        // prev_challenges
+        undefined /* number */,
+        // srs
+        wasm.WasmBn254FpSrs,
+      ],
+      res: wasm.WasmBn254FpPlonkIndex,
+    },
     caml_pasta_fp_plonk_verifier_index_create: {
       args: [wasm.WasmPastaFpPlonkIndex],
       res: wasm.WasmFpPlonkVerifierIndex,
