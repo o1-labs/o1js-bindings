@@ -32,7 +32,14 @@ val snarky :
               * Backend.R1CS_constraint_system.t )
           Js.meth
       ; pushActiveCounter : (unit -> int list) Js.meth
-      ; resetActiveCounter : (int list -> unit) Js.meth >
+      ; resetActiveCounter : (int list -> unit) Js.meth
+      ; constraintSystem :
+          < getRows : (Backend.R1CS_constraint_system.t -> int) Js.meth
+          ; digest :
+              (Backend.R1CS_constraint_system.t -> Js.js_string Js.t) Js.meth
+          ; toJson : (Backend.R1CS_constraint_system.t -> 'a) Js.meth >
+          Js.t
+          Js.readonly_prop >
       Js.t
       Js.readonly_prop
   ; run :

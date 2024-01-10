@@ -48,6 +48,16 @@ module Low_level = struct
 
   let reset_active_counter counters =
     Impl.Low_level.reset_active_counter counters
+
+  module Constraint_system = struct
+    let get_rows cs = Backend.R1CS_constraint_system.get_rows_len cs
+
+    let digest cs =
+      Backend.R1CS_constraint_system.digest cs |> Md5.to_hex |> Js.string
+
+    let to_json cs =
+      Backend.R1CS_constraint_system.to_json cs |> Js.string |> Util.json_parse
+  end
 end
 
 module Run = struct
@@ -540,6 +550,15 @@ let snarky =
         method pushActiveCounter = Low_level.push_active_counter
 
         method resetActiveCounter = Low_level.reset_active_counter
+
+        val constraintSystem =
+          object%js
+            method getRows = Low_level.Constraint_system.get_rows
+
+            method digest = Low_level.Constraint_system.digest
+
+            method toJson = Low_level.Constraint_system.to_json
+          end
       end
 
     val run =
