@@ -787,6 +787,53 @@ var caml_pasta_fq_plonk_index_write = function (append, t, path) {
   );
 };
 
+// Provides: caml_bn254_fp_plonk_index_create_bytecode
+// Requires: caml_bn254_fp_plonk_index_create
+var caml_bn254_fp_plonk_index_create_bytecode = function (
+  gates,
+  public_inputs,
+  caml_lookup_tables,
+  caml_runtime_table_cfgs,
+  prev_challenges,
+  urs
+) {
+  return caml_bn254_fp_plonk_index_create(
+    gates,
+    public_inputs,
+    caml_lookup_tables,
+    caml_runtime_table_cfgs,
+    prev_challenges,
+    urs
+  );
+};
+
+// Provides: caml_bn254_fp_plonk_index_create
+// Requires: plonk_wasm, free_on_finalize, tsRustConversion
+var caml_bn254_fp_plonk_index_create = function (
+  gates,
+  public_inputs,
+  caml_lookup_tables,
+  caml_runtime_table_cfgs,
+  prev_challenges,
+  urs
+) {
+  var wasm_lookup_tables =
+    tsRustConversion.bn254Fp.lookupTablesToRust(caml_lookup_tables);
+  var wasm_runtime_table_cfgs = tsRustConversion.bn254Fp.runtimeTableCfgsToRust(
+    caml_runtime_table_cfgs
+  );
+
+  var t = plonk_wasm.caml_bn254_fp_plonk_index_create(
+    gates,
+    public_inputs,
+    wasm_lookup_tables,
+    wasm_runtime_table_cfgs,
+    prev_challenges,
+    urs
+  );
+  return free_on_finalize(t);
+};
+
 // verifier index
 
 // Provides: caml_opt_of_rust
