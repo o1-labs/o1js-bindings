@@ -610,6 +610,38 @@ export function caml_bn254_fq_size_in_bits(): number;
 */
 export function caml_bn254_fq_size(): Uint8Array;
 /**
+* @returns {WasmFpGateVector}
+*/
+export function caml_bn254_fp_plonk_gate_vector_create(): WasmFpGateVector;
+/**
+* @param {WasmFpGateVector} v
+* @param {WasmFpGate} gate
+*/
+export function caml_bn254_fp_plonk_gate_vector_add(v: WasmFpGateVector, gate: WasmFpGate): void;
+/**
+* @param {WasmFpGateVector} v
+* @param {number} i
+* @returns {WasmFpGate}
+*/
+export function caml_bn254_fp_plonk_gate_vector_get(v: WasmFpGateVector, i: number): WasmFpGate;
+/**
+* @param {WasmFpGateVector} v
+* @returns {number}
+*/
+export function caml_bn254_fp_plonk_gate_vector_len(v: WasmFpGateVector): number;
+/**
+* @param {WasmFpGateVector} v
+* @param {Wire} t
+* @param {Wire} h
+*/
+export function caml_bn254_fp_plonk_gate_vector_wrap(v: WasmFpGateVector, t: Wire, h: Wire): void;
+/**
+* @param {number} public_input_size
+* @param {WasmFpGateVector} v
+* @returns {Uint8Array}
+*/
+export function caml_bn254_fp_plonk_gate_vector_digest(public_input_size: number, v: WasmFpGateVector): Uint8Array;
+/**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
 * @returns {Uint8Array}
@@ -1291,45 +1323,45 @@ export enum CurrOrNext {
 * not to re-use powers of alpha across constraints.
 */
 export enum GateType {
-/**
-* Zero gate
-*/
+  /**
+  * Zero gate
+  */
   Zero = 0,
-/**
-* Generic arithmetic gate
-*/
+  /**
+  * Generic arithmetic gate
+  */
   Generic = 1,
-/**
-* Poseidon permutation gate
-*/
+  /**
+  * Poseidon permutation gate
+  */
   Poseidon = 2,
-/**
-* Complete EC addition in Affine form
-*/
+  /**
+  * Complete EC addition in Affine form
+  */
   CompleteAdd = 3,
-/**
-* EC variable base scalar multiplication
-*/
+  /**
+  * EC variable base scalar multiplication
+  */
   VarBaseMul = 4,
-/**
-* EC variable base scalar multiplication with group endomorphim optimization
-*/
+  /**
+  * EC variable base scalar multiplication with group endomorphim optimization
+  */
   EndoMul = 5,
-/**
-* Gate for computing the scalar corresponding to an endoscaling
-*/
+  /**
+  * Gate for computing the scalar corresponding to an endoscaling
+  */
   EndoMulScalar = 6,
   Lookup = 7,
-/**
-* Cairo
-*/
+  /**
+  * Cairo
+  */
   CairoClaim = 8,
   CairoInstruction = 9,
   CairoFlags = 10,
   CairoTransition = 11,
-/**
-* Range check
-*/
+  /**
+  * Range check
+  */
   RangeCheck0 = 12,
   RangeCheck1 = 13,
   ForeignFieldAdd = 14,
@@ -1344,56 +1376,56 @@ export enum GateType {
 */
 export class FeatureFlags {
   free(): void;
-/**
-* Foreign field addition gate
-*/
+  /**
+  * Foreign field addition gate
+  */
   foreign_field_add: boolean;
-/**
-* Foreign field multiplication gate
-*/
+  /**
+  * Foreign field multiplication gate
+  */
   foreign_field_mul: boolean;
-/**
-* Lookup features
-*/
+  /**
+  * Lookup features
+  */
   lookup_features: LookupFeatures;
-/**
-* RangeCheck0 gate
-*/
+  /**
+  * RangeCheck0 gate
+  */
   range_check0: boolean;
-/**
-* RangeCheck1 gate
-*/
+  /**
+  * RangeCheck1 gate
+  */
   range_check1: boolean;
-/**
-* ROT gate
-*/
+  /**
+  * ROT gate
+  */
   rot: boolean;
-/**
-* XOR gate
-*/
+  /**
+  * XOR gate
+  */
   xor: boolean;
 }
 /**
 */
 export class LookupFeatures {
   free(): void;
-/**
-* @param {LookupPatterns} patterns
-* @param {boolean} joint_lookup_used
-* @param {boolean} uses_runtime_tables
-*/
+  /**
+  * @param {LookupPatterns} patterns
+  * @param {boolean} joint_lookup_used
+  * @param {boolean} uses_runtime_tables
+  */
   constructor(patterns: LookupPatterns, joint_lookup_used: boolean, uses_runtime_tables: boolean);
-/**
-* Whether joint lookups are used
-*/
+  /**
+  * Whether joint lookups are used
+  */
   joint_lookup_used: boolean;
-/**
-* A single lookup constraint is a vector of lookup constraints to be applied at a row.
-*/
+  /**
+  * A single lookup constraint is a vector of lookup constraints to be applied at a row.
+  */
   patterns: LookupPatterns;
-/**
-* True if runtime lookup tables are used.
-*/
+  /**
+  * True if runtime lookup tables are used.
+  */
   uses_runtime_tables: boolean;
 }
 /**
@@ -1401,23 +1433,23 @@ export class LookupFeatures {
 */
 export class LookupInfo {
   free(): void;
-/**
-* @param {number} max_per_row
-* @param {number} max_joint_size
-* @param {LookupFeatures} features
-*/
+  /**
+  * @param {number} max_per_row
+  * @param {number} max_joint_size
+  * @param {LookupFeatures} features
+  */
   constructor(max_per_row: number, max_joint_size: number, features: LookupFeatures);
-/**
-* The features enabled for this lookup configuration
-*/
+  /**
+  * The features enabled for this lookup configuration
+  */
   features: LookupFeatures;
-/**
-* The maximum joint size of any joint lookup in a constraint in `kinds`. This can be computed from `kinds`.
-*/
+  /**
+  * The maximum joint size of any joint lookup in a constraint in `kinds`. This can be computed from `kinds`.
+  */
   max_joint_size: number;
-/**
-* The maximum length of an element of `kinds`. This can be computed from `kinds`.
-*/
+  /**
+  * The maximum length of an element of `kinds`. This can be computed from `kinds`.
+  */
   max_per_row: number;
 }
 /**
@@ -1425,73 +1457,73 @@ export class LookupInfo {
 */
 export class LookupPatterns {
   free(): void;
-/**
-* @param {boolean} xor
-* @param {boolean} lookup
-* @param {boolean} range_check
-* @param {boolean} foreign_field_mul
-*/
+  /**
+  * @param {boolean} xor
+  * @param {boolean} lookup
+  * @param {boolean} range_check
+  * @param {boolean} foreign_field_mul
+  */
   constructor(xor: boolean, lookup: boolean, range_check: boolean, foreign_field_mul: boolean);
-/**
-*/
+  /**
+  */
   foreign_field_mul: boolean;
-/**
-*/
+  /**
+  */
   lookup: boolean;
-/**
-*/
+  /**
+  */
   range_check: boolean;
-/**
-*/
+  /**
+  */
   xor: boolean;
 }
 /**
 */
 export class PoolBuilder {
   free(): void;
-/**
-* @returns {number}
-*/
+  /**
+  * @returns {number}
+  */
   numThreads(): number;
-/**
-* @returns {number}
-*/
+  /**
+  * @returns {number}
+  */
   receiver(): number;
-/**
-*/
+  /**
+  */
   build(): void;
 }
 /**
 */
 export class WasmFpDomain {
   free(): void;
-/**
-* @param {number} log_size_of_group
-* @param {Uint8Array} group_gen
-*/
+  /**
+  * @param {number} log_size_of_group
+  * @param {Uint8Array} group_gen
+  */
   constructor(log_size_of_group: number, group_gen: Uint8Array);
-/**
-*/
+  /**
+  */
   group_gen: Uint8Array;
-/**
-*/
+  /**
+  */
   log_size_of_group: number;
 }
 /**
 */
 export class WasmFpGate {
   free(): void;
-/**
-* @param {number} typ
-* @param {WasmGateWires} wires
-* @param {Uint8Array} coeffs
-*/
+  /**
+  * @param {number} typ
+  * @param {WasmGateWires} wires
+  * @param {Uint8Array} coeffs
+  */
   constructor(typ: number, wires: WasmGateWires, coeffs: Uint8Array);
-/**
-*/
+  /**
+  */
   typ: number;
-/**
-*/
+  /**
+  */
   wires: WasmGateWires;
 }
 /**
@@ -1503,426 +1535,426 @@ export class WasmFpGateVector {
 */
 export class WasmFpLookupCommitments {
   free(): void;
-/**
-* @param {Uint32Array} sorted
-* @param {WasmFpPolyComm} aggreg
-* @param {WasmFpPolyComm | undefined} runtime
-*/
+  /**
+  * @param {Uint32Array} sorted
+  * @param {WasmFpPolyComm} aggreg
+  * @param {WasmFpPolyComm | undefined} runtime
+  */
   constructor(sorted: Uint32Array, aggreg: WasmFpPolyComm, runtime?: WasmFpPolyComm);
-/**
-*/
+  /**
+  */
   aggreg: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   runtime?: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   sorted: Uint32Array;
 }
 /**
 */
 export class WasmFpLookupSelectors {
   free(): void;
-/**
-* @param {WasmFpPolyComm | undefined} xor
-* @param {WasmFpPolyComm | undefined} lookup
-* @param {WasmFpPolyComm | undefined} range_check
-* @param {WasmFpPolyComm | undefined} ffmul
-*/
+  /**
+  * @param {WasmFpPolyComm | undefined} xor
+  * @param {WasmFpPolyComm | undefined} lookup
+  * @param {WasmFpPolyComm | undefined} range_check
+  * @param {WasmFpPolyComm | undefined} ffmul
+  */
   constructor(xor?: WasmFpPolyComm, lookup?: WasmFpPolyComm, range_check?: WasmFpPolyComm, ffmul?: WasmFpPolyComm);
-/**
-*/
+  /**
+  */
   ffmul?: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   lookup?: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   range_check?: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   xor?: WasmFpPolyComm;
 }
 /**
 */
 export class WasmFpLookupVerifierIndex {
   free(): void;
-/**
-* @param {boolean} joint_lookup_used
-* @param {Uint32Array} lookup_table
-* @param {WasmFpLookupSelectors} lookup_selectors
-* @param {WasmFpPolyComm | undefined} table_ids
-* @param {LookupInfo} lookup_info
-* @param {WasmFpPolyComm | undefined} runtime_tables_selector
-*/
+  /**
+  * @param {boolean} joint_lookup_used
+  * @param {Uint32Array} lookup_table
+  * @param {WasmFpLookupSelectors} lookup_selectors
+  * @param {WasmFpPolyComm | undefined} table_ids
+  * @param {LookupInfo} lookup_info
+  * @param {WasmFpPolyComm | undefined} runtime_tables_selector
+  */
   constructor(joint_lookup_used: boolean, lookup_table: Uint32Array, lookup_selectors: WasmFpLookupSelectors, table_ids: WasmFpPolyComm | undefined, lookup_info: LookupInfo, runtime_tables_selector?: WasmFpPolyComm);
-/**
-*/
+  /**
+  */
   joint_lookup_used: boolean;
-/**
-*/
+  /**
+  */
   lookup_info: LookupInfo;
-/**
-*/
+  /**
+  */
   lookup_selectors: WasmFpLookupSelectors;
-/**
-*/
+  /**
+  */
   lookup_table: Uint32Array;
-/**
-*/
+  /**
+  */
   runtime_tables_selector?: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   table_ids?: WasmFpPolyComm;
 }
 /**
 */
 export class WasmFpOpeningProof {
   free(): void;
-/**
-* @param {Uint32Array} lr_0
-* @param {Uint32Array} lr_1
-* @param {WasmGVesta} delta
-* @param {Uint8Array} z1
-* @param {Uint8Array} z2
-* @param {WasmGVesta} sg
-*/
+  /**
+  * @param {Uint32Array} lr_0
+  * @param {Uint32Array} lr_1
+  * @param {WasmGVesta} delta
+  * @param {Uint8Array} z1
+  * @param {Uint8Array} z2
+  * @param {WasmGVesta} sg
+  */
   constructor(lr_0: Uint32Array, lr_1: Uint32Array, delta: WasmGVesta, z1: Uint8Array, z2: Uint8Array, sg: WasmGVesta);
-/**
-*/
+  /**
+  */
   delta: WasmGVesta;
-/**
-*/
+  /**
+  */
   lr_0: Uint32Array;
-/**
-*/
+  /**
+  */
   lr_1: Uint32Array;
-/**
-*/
+  /**
+  */
   sg: WasmGVesta;
-/**
-*/
+  /**
+  */
   z1: Uint8Array;
-/**
-*/
+  /**
+  */
   z2: Uint8Array;
 }
 /**
 */
 export class WasmFpOracles {
   free(): void;
-/**
-* @param {WasmFpRandomOracles} o
-* @param {Uint8Array} p_eval0
-* @param {Uint8Array} p_eval1
-* @param {Uint8Array} opening_prechallenges
-* @param {Uint8Array} digest_before_evaluations
-*/
+  /**
+  * @param {WasmFpRandomOracles} o
+  * @param {Uint8Array} p_eval0
+  * @param {Uint8Array} p_eval1
+  * @param {Uint8Array} opening_prechallenges
+  * @param {Uint8Array} digest_before_evaluations
+  */
   constructor(o: WasmFpRandomOracles, p_eval0: Uint8Array, p_eval1: Uint8Array, opening_prechallenges: Uint8Array, digest_before_evaluations: Uint8Array);
-/**
-*/
+  /**
+  */
   digest_before_evaluations: Uint8Array;
-/**
-*/
+  /**
+  */
   o: WasmFpRandomOracles;
-/**
-*/
+  /**
+  */
   opening_prechallenges: Uint8Array;
-/**
-*/
+  /**
+  */
   p_eval0: Uint8Array;
-/**
-*/
+  /**
+  */
   p_eval1: Uint8Array;
 }
 /**
 */
 export class WasmFpPlonkVerificationEvals {
   free(): void;
-/**
-* @param {Uint32Array} sigma_comm
-* @param {Uint32Array} coefficients_comm
-* @param {WasmFpPolyComm} generic_comm
-* @param {WasmFpPolyComm} psm_comm
-* @param {WasmFpPolyComm} complete_add_comm
-* @param {WasmFpPolyComm} mul_comm
-* @param {WasmFpPolyComm} emul_comm
-* @param {WasmFpPolyComm} endomul_scalar_comm
-* @param {WasmFpPolyComm | undefined} xor_comm
-* @param {WasmFpPolyComm | undefined} range_check0_comm
-* @param {WasmFpPolyComm | undefined} range_check1_comm
-* @param {WasmFpPolyComm | undefined} foreign_field_add_comm
-* @param {WasmFpPolyComm | undefined} foreign_field_mul_comm
-* @param {WasmFpPolyComm | undefined} rot_comm
-*/
+  /**
+  * @param {Uint32Array} sigma_comm
+  * @param {Uint32Array} coefficients_comm
+  * @param {WasmFpPolyComm} generic_comm
+  * @param {WasmFpPolyComm} psm_comm
+  * @param {WasmFpPolyComm} complete_add_comm
+  * @param {WasmFpPolyComm} mul_comm
+  * @param {WasmFpPolyComm} emul_comm
+  * @param {WasmFpPolyComm} endomul_scalar_comm
+  * @param {WasmFpPolyComm | undefined} xor_comm
+  * @param {WasmFpPolyComm | undefined} range_check0_comm
+  * @param {WasmFpPolyComm | undefined} range_check1_comm
+  * @param {WasmFpPolyComm | undefined} foreign_field_add_comm
+  * @param {WasmFpPolyComm | undefined} foreign_field_mul_comm
+  * @param {WasmFpPolyComm | undefined} rot_comm
+  */
   constructor(sigma_comm: Uint32Array, coefficients_comm: Uint32Array, generic_comm: WasmFpPolyComm, psm_comm: WasmFpPolyComm, complete_add_comm: WasmFpPolyComm, mul_comm: WasmFpPolyComm, emul_comm: WasmFpPolyComm, endomul_scalar_comm: WasmFpPolyComm, xor_comm?: WasmFpPolyComm, range_check0_comm?: WasmFpPolyComm, range_check1_comm?: WasmFpPolyComm, foreign_field_add_comm?: WasmFpPolyComm, foreign_field_mul_comm?: WasmFpPolyComm, rot_comm?: WasmFpPolyComm);
-/**
-*/
+  /**
+  */
   coefficients_comm: Uint32Array;
-/**
-*/
+  /**
+  */
   complete_add_comm: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   emul_comm: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   endomul_scalar_comm: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   foreign_field_add_comm?: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   foreign_field_mul_comm?: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   generic_comm: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   mul_comm: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   psm_comm: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   range_check0_comm?: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   range_check1_comm?: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   rot_comm?: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   sigma_comm: Uint32Array;
-/**
-*/
+  /**
+  */
   xor_comm?: WasmFpPolyComm;
 }
 /**
 */
 export class WasmFpPlonkVerifierIndex {
   free(): void;
-/**
-* @param {WasmFpDomain} domain
-* @param {number} max_poly_size
-* @param {number} public_
-* @param {number} prev_challenges
-* @param {WasmFpSrs} srs
-* @param {WasmFpPlonkVerificationEvals} evals
-* @param {WasmFpShifts} shifts
-* @param {WasmFpLookupVerifierIndex | undefined} lookup_index
-* @param {number} zk_rows
-*/
+  /**
+  * @param {WasmFpDomain} domain
+  * @param {number} max_poly_size
+  * @param {number} public_
+  * @param {number} prev_challenges
+  * @param {WasmFpSrs} srs
+  * @param {WasmFpPlonkVerificationEvals} evals
+  * @param {WasmFpShifts} shifts
+  * @param {WasmFpLookupVerifierIndex | undefined} lookup_index
+  * @param {number} zk_rows
+  */
   constructor(domain: WasmFpDomain, max_poly_size: number, public_: number, prev_challenges: number, srs: WasmFpSrs, evals: WasmFpPlonkVerificationEvals, shifts: WasmFpShifts, lookup_index: WasmFpLookupVerifierIndex | undefined, zk_rows: number);
-/**
-*/
+  /**
+  */
   domain: WasmFpDomain;
-/**
-*/
+  /**
+  */
   evals: WasmFpPlonkVerificationEvals;
-/**
-*/
+  /**
+  */
   lookup_index?: WasmFpLookupVerifierIndex;
-/**
-*/
+  /**
+  */
   max_poly_size: number;
-/**
-*/
+  /**
+  */
   prev_challenges: number;
-/**
-*/
+  /**
+  */
   public_: number;
-/**
-*/
+  /**
+  */
   shifts: WasmFpShifts;
-/**
-*/
+  /**
+  */
   srs: WasmFpSrs;
-/**
-*/
+  /**
+  */
   zk_rows: number;
 }
 /**
 */
 export class WasmFpPolyComm {
   free(): void;
-/**
-* @param {Uint32Array} unshifted
-* @param {WasmGVesta | undefined} shifted
-*/
+  /**
+  * @param {Uint32Array} unshifted
+  * @param {WasmGVesta | undefined} shifted
+  */
   constructor(unshifted: Uint32Array, shifted?: WasmGVesta);
-/**
-*/
+  /**
+  */
   shifted?: WasmGVesta;
-/**
-*/
+  /**
+  */
   unshifted: Uint32Array;
 }
 /**
 */
 export class WasmFpProverCommitments {
   free(): void;
-/**
-* @param {Uint32Array} w_comm
-* @param {WasmFpPolyComm} z_comm
-* @param {WasmFpPolyComm} t_comm
-* @param {WasmFpLookupCommitments | undefined} lookup
-*/
+  /**
+  * @param {Uint32Array} w_comm
+  * @param {WasmFpPolyComm} z_comm
+  * @param {WasmFpPolyComm} t_comm
+  * @param {WasmFpLookupCommitments | undefined} lookup
+  */
   constructor(w_comm: Uint32Array, z_comm: WasmFpPolyComm, t_comm: WasmFpPolyComm, lookup?: WasmFpLookupCommitments);
-/**
-*/
+  /**
+  */
   lookup?: WasmFpLookupCommitments;
-/**
-*/
+  /**
+  */
   t_comm: WasmFpPolyComm;
-/**
-*/
+  /**
+  */
   w_comm: Uint32Array;
-/**
-*/
+  /**
+  */
   z_comm: WasmFpPolyComm;
 }
 /**
 */
 export class WasmFpProverProof {
   free(): void;
-/**
-* @param {WasmFpProverCommitments} commitments
-* @param {WasmFpOpeningProof} proof
-* @param {any} evals
-* @param {Uint8Array} ft_eval1
-* @param {Uint8Array} public_
-* @param {WasmVecVecFp} prev_challenges_scalars
-* @param {Uint32Array} prev_challenges_comms
-*/
+  /**
+  * @param {WasmFpProverCommitments} commitments
+  * @param {WasmFpOpeningProof} proof
+  * @param {any} evals
+  * @param {Uint8Array} ft_eval1
+  * @param {Uint8Array} public_
+  * @param {WasmVecVecFp} prev_challenges_scalars
+  * @param {Uint32Array} prev_challenges_comms
+  */
   constructor(commitments: WasmFpProverCommitments, proof: WasmFpOpeningProof, evals: any, ft_eval1: Uint8Array, public_: Uint8Array, prev_challenges_scalars: WasmVecVecFp, prev_challenges_comms: Uint32Array);
-/**
-* @returns {string}
-*/
+  /**
+  * @returns {string}
+  */
   serialize(): string;
-/**
-*/
+  /**
+  */
   commitments: WasmFpProverCommitments;
-/**
-*/
+  /**
+  */
   evals: any;
-/**
-*/
+  /**
+  */
   ft_eval1: Uint8Array;
-/**
-*/
+  /**
+  */
   prev_challenges_comms: Uint32Array;
-/**
-*/
+  /**
+  */
   prev_challenges_scalars: WasmVecVecFp;
-/**
-*/
+  /**
+  */
   proof: WasmFpOpeningProof;
-/**
-*/
+  /**
+  */
   public_: Uint8Array;
 }
 /**
 */
 export class WasmFpRandomOracles {
   free(): void;
-/**
-* @param {Uint8Array | undefined} joint_combiner_chal
-* @param {Uint8Array | undefined} joint_combiner
-* @param {Uint8Array} beta
-* @param {Uint8Array} gamma
-* @param {Uint8Array} alpha_chal
-* @param {Uint8Array} alpha
-* @param {Uint8Array} zeta
-* @param {Uint8Array} v
-* @param {Uint8Array} u
-* @param {Uint8Array} zeta_chal
-* @param {Uint8Array} v_chal
-* @param {Uint8Array} u_chal
-*/
+  /**
+  * @param {Uint8Array | undefined} joint_combiner_chal
+  * @param {Uint8Array | undefined} joint_combiner
+  * @param {Uint8Array} beta
+  * @param {Uint8Array} gamma
+  * @param {Uint8Array} alpha_chal
+  * @param {Uint8Array} alpha
+  * @param {Uint8Array} zeta
+  * @param {Uint8Array} v
+  * @param {Uint8Array} u
+  * @param {Uint8Array} zeta_chal
+  * @param {Uint8Array} v_chal
+  * @param {Uint8Array} u_chal
+  */
   constructor(joint_combiner_chal: Uint8Array | undefined, joint_combiner: Uint8Array | undefined, beta: Uint8Array, gamma: Uint8Array, alpha_chal: Uint8Array, alpha: Uint8Array, zeta: Uint8Array, v: Uint8Array, u: Uint8Array, zeta_chal: Uint8Array, v_chal: Uint8Array, u_chal: Uint8Array);
-/**
-*/
+  /**
+  */
   alpha: Uint8Array;
-/**
-*/
+  /**
+  */
   alpha_chal: Uint8Array;
-/**
-*/
+  /**
+  */
   beta: Uint8Array;
-/**
-*/
+  /**
+  */
   gamma: Uint8Array;
-/**
-*/
+  /**
+  */
   joint_combiner?: Uint8Array;
-/**
-*/
+  /**
+  */
   joint_combiner_chal?: Uint8Array;
-/**
-*/
+  /**
+  */
   u: Uint8Array;
-/**
-*/
+  /**
+  */
   u_chal: Uint8Array;
-/**
-*/
+  /**
+  */
   v: Uint8Array;
-/**
-*/
+  /**
+  */
   v_chal: Uint8Array;
-/**
-*/
+  /**
+  */
   zeta: Uint8Array;
-/**
-*/
+  /**
+  */
   zeta_chal: Uint8Array;
 }
 /**
 */
 export class WasmFpRuntimeTable {
   free(): void;
-/**
-* @param {number} id
-* @param {Uint8Array} data
-*/
+  /**
+  * @param {number} id
+  * @param {Uint8Array} data
+  */
   constructor(id: number, data: Uint8Array);
 }
 /**
 */
 export class WasmFpShifts {
   free(): void;
-/**
-* @param {Uint8Array} s0
-* @param {Uint8Array} s1
-* @param {Uint8Array} s2
-* @param {Uint8Array} s3
-* @param {Uint8Array} s4
-* @param {Uint8Array} s5
-* @param {Uint8Array} s6
-*/
+  /**
+  * @param {Uint8Array} s0
+  * @param {Uint8Array} s1
+  * @param {Uint8Array} s2
+  * @param {Uint8Array} s3
+  * @param {Uint8Array} s4
+  * @param {Uint8Array} s5
+  * @param {Uint8Array} s6
+  */
   constructor(s0: Uint8Array, s1: Uint8Array, s2: Uint8Array, s3: Uint8Array, s4: Uint8Array, s5: Uint8Array, s6: Uint8Array);
-/**
-*/
+  /**
+  */
   s0: Uint8Array;
-/**
-*/
+  /**
+  */
   s1: Uint8Array;
-/**
-*/
+  /**
+  */
   s2: Uint8Array;
-/**
-*/
+  /**
+  */
   s3: Uint8Array;
-/**
-*/
+  /**
+  */
   s4: Uint8Array;
-/**
-*/
+  /**
+  */
   s5: Uint8Array;
-/**
-*/
+  /**
+  */
   s6: Uint8Array;
 }
 /**
@@ -1934,33 +1966,33 @@ export class WasmFpSrs {
 */
 export class WasmFqDomain {
   free(): void;
-/**
-* @param {number} log_size_of_group
-* @param {Uint8Array} group_gen
-*/
+  /**
+  * @param {number} log_size_of_group
+  * @param {Uint8Array} group_gen
+  */
   constructor(log_size_of_group: number, group_gen: Uint8Array);
-/**
-*/
+  /**
+  */
   group_gen: Uint8Array;
-/**
-*/
+  /**
+  */
   log_size_of_group: number;
 }
 /**
 */
 export class WasmFqGate {
   free(): void;
-/**
-* @param {number} typ
-* @param {WasmGateWires} wires
-* @param {Uint8Array} coeffs
-*/
+  /**
+  * @param {number} typ
+  * @param {WasmGateWires} wires
+  * @param {Uint8Array} coeffs
+  */
   constructor(typ: number, wires: WasmGateWires, coeffs: Uint8Array);
-/**
-*/
+  /**
+  */
   typ: number;
-/**
-*/
+  /**
+  */
   wires: WasmGateWires;
 }
 /**
@@ -1972,426 +2004,426 @@ export class WasmFqGateVector {
 */
 export class WasmFqLookupCommitments {
   free(): void;
-/**
-* @param {Uint32Array} sorted
-* @param {WasmFqPolyComm} aggreg
-* @param {WasmFqPolyComm | undefined} runtime
-*/
+  /**
+  * @param {Uint32Array} sorted
+  * @param {WasmFqPolyComm} aggreg
+  * @param {WasmFqPolyComm | undefined} runtime
+  */
   constructor(sorted: Uint32Array, aggreg: WasmFqPolyComm, runtime?: WasmFqPolyComm);
-/**
-*/
+  /**
+  */
   aggreg: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   runtime?: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   sorted: Uint32Array;
 }
 /**
 */
 export class WasmFqLookupSelectors {
   free(): void;
-/**
-* @param {WasmFqPolyComm | undefined} xor
-* @param {WasmFqPolyComm | undefined} lookup
-* @param {WasmFqPolyComm | undefined} range_check
-* @param {WasmFqPolyComm | undefined} ffmul
-*/
+  /**
+  * @param {WasmFqPolyComm | undefined} xor
+  * @param {WasmFqPolyComm | undefined} lookup
+  * @param {WasmFqPolyComm | undefined} range_check
+  * @param {WasmFqPolyComm | undefined} ffmul
+  */
   constructor(xor?: WasmFqPolyComm, lookup?: WasmFqPolyComm, range_check?: WasmFqPolyComm, ffmul?: WasmFqPolyComm);
-/**
-*/
+  /**
+  */
   ffmul?: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   lookup?: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   range_check?: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   xor?: WasmFqPolyComm;
 }
 /**
 */
 export class WasmFqLookupVerifierIndex {
   free(): void;
-/**
-* @param {boolean} joint_lookup_used
-* @param {Uint32Array} lookup_table
-* @param {WasmFqLookupSelectors} lookup_selectors
-* @param {WasmFqPolyComm | undefined} table_ids
-* @param {LookupInfo} lookup_info
-* @param {WasmFqPolyComm | undefined} runtime_tables_selector
-*/
+  /**
+  * @param {boolean} joint_lookup_used
+  * @param {Uint32Array} lookup_table
+  * @param {WasmFqLookupSelectors} lookup_selectors
+  * @param {WasmFqPolyComm | undefined} table_ids
+  * @param {LookupInfo} lookup_info
+  * @param {WasmFqPolyComm | undefined} runtime_tables_selector
+  */
   constructor(joint_lookup_used: boolean, lookup_table: Uint32Array, lookup_selectors: WasmFqLookupSelectors, table_ids: WasmFqPolyComm | undefined, lookup_info: LookupInfo, runtime_tables_selector?: WasmFqPolyComm);
-/**
-*/
+  /**
+  */
   joint_lookup_used: boolean;
-/**
-*/
+  /**
+  */
   lookup_info: LookupInfo;
-/**
-*/
+  /**
+  */
   lookup_selectors: WasmFqLookupSelectors;
-/**
-*/
+  /**
+  */
   lookup_table: Uint32Array;
-/**
-*/
+  /**
+  */
   runtime_tables_selector?: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   table_ids?: WasmFqPolyComm;
 }
 /**
 */
 export class WasmFqOpeningProof {
   free(): void;
-/**
-* @param {Uint32Array} lr_0
-* @param {Uint32Array} lr_1
-* @param {WasmGPallas} delta
-* @param {Uint8Array} z1
-* @param {Uint8Array} z2
-* @param {WasmGPallas} sg
-*/
+  /**
+  * @param {Uint32Array} lr_0
+  * @param {Uint32Array} lr_1
+  * @param {WasmGPallas} delta
+  * @param {Uint8Array} z1
+  * @param {Uint8Array} z2
+  * @param {WasmGPallas} sg
+  */
   constructor(lr_0: Uint32Array, lr_1: Uint32Array, delta: WasmGPallas, z1: Uint8Array, z2: Uint8Array, sg: WasmGPallas);
-/**
-*/
+  /**
+  */
   delta: WasmGPallas;
-/**
-*/
+  /**
+  */
   lr_0: Uint32Array;
-/**
-*/
+  /**
+  */
   lr_1: Uint32Array;
-/**
-*/
+  /**
+  */
   sg: WasmGPallas;
-/**
-*/
+  /**
+  */
   z1: Uint8Array;
-/**
-*/
+  /**
+  */
   z2: Uint8Array;
 }
 /**
 */
 export class WasmFqOracles {
   free(): void;
-/**
-* @param {WasmFqRandomOracles} o
-* @param {Uint8Array} p_eval0
-* @param {Uint8Array} p_eval1
-* @param {Uint8Array} opening_prechallenges
-* @param {Uint8Array} digest_before_evaluations
-*/
+  /**
+  * @param {WasmFqRandomOracles} o
+  * @param {Uint8Array} p_eval0
+  * @param {Uint8Array} p_eval1
+  * @param {Uint8Array} opening_prechallenges
+  * @param {Uint8Array} digest_before_evaluations
+  */
   constructor(o: WasmFqRandomOracles, p_eval0: Uint8Array, p_eval1: Uint8Array, opening_prechallenges: Uint8Array, digest_before_evaluations: Uint8Array);
-/**
-*/
+  /**
+  */
   digest_before_evaluations: Uint8Array;
-/**
-*/
+  /**
+  */
   o: WasmFqRandomOracles;
-/**
-*/
+  /**
+  */
   opening_prechallenges: Uint8Array;
-/**
-*/
+  /**
+  */
   p_eval0: Uint8Array;
-/**
-*/
+  /**
+  */
   p_eval1: Uint8Array;
 }
 /**
 */
 export class WasmFqPlonkVerificationEvals {
   free(): void;
-/**
-* @param {Uint32Array} sigma_comm
-* @param {Uint32Array} coefficients_comm
-* @param {WasmFqPolyComm} generic_comm
-* @param {WasmFqPolyComm} psm_comm
-* @param {WasmFqPolyComm} complete_add_comm
-* @param {WasmFqPolyComm} mul_comm
-* @param {WasmFqPolyComm} emul_comm
-* @param {WasmFqPolyComm} endomul_scalar_comm
-* @param {WasmFqPolyComm | undefined} xor_comm
-* @param {WasmFqPolyComm | undefined} range_check0_comm
-* @param {WasmFqPolyComm | undefined} range_check1_comm
-* @param {WasmFqPolyComm | undefined} foreign_field_add_comm
-* @param {WasmFqPolyComm | undefined} foreign_field_mul_comm
-* @param {WasmFqPolyComm | undefined} rot_comm
-*/
+  /**
+  * @param {Uint32Array} sigma_comm
+  * @param {Uint32Array} coefficients_comm
+  * @param {WasmFqPolyComm} generic_comm
+  * @param {WasmFqPolyComm} psm_comm
+  * @param {WasmFqPolyComm} complete_add_comm
+  * @param {WasmFqPolyComm} mul_comm
+  * @param {WasmFqPolyComm} emul_comm
+  * @param {WasmFqPolyComm} endomul_scalar_comm
+  * @param {WasmFqPolyComm | undefined} xor_comm
+  * @param {WasmFqPolyComm | undefined} range_check0_comm
+  * @param {WasmFqPolyComm | undefined} range_check1_comm
+  * @param {WasmFqPolyComm | undefined} foreign_field_add_comm
+  * @param {WasmFqPolyComm | undefined} foreign_field_mul_comm
+  * @param {WasmFqPolyComm | undefined} rot_comm
+  */
   constructor(sigma_comm: Uint32Array, coefficients_comm: Uint32Array, generic_comm: WasmFqPolyComm, psm_comm: WasmFqPolyComm, complete_add_comm: WasmFqPolyComm, mul_comm: WasmFqPolyComm, emul_comm: WasmFqPolyComm, endomul_scalar_comm: WasmFqPolyComm, xor_comm?: WasmFqPolyComm, range_check0_comm?: WasmFqPolyComm, range_check1_comm?: WasmFqPolyComm, foreign_field_add_comm?: WasmFqPolyComm, foreign_field_mul_comm?: WasmFqPolyComm, rot_comm?: WasmFqPolyComm);
-/**
-*/
+  /**
+  */
   coefficients_comm: Uint32Array;
-/**
-*/
+  /**
+  */
   complete_add_comm: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   emul_comm: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   endomul_scalar_comm: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   foreign_field_add_comm?: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   foreign_field_mul_comm?: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   generic_comm: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   mul_comm: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   psm_comm: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   range_check0_comm?: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   range_check1_comm?: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   rot_comm?: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   sigma_comm: Uint32Array;
-/**
-*/
+  /**
+  */
   xor_comm?: WasmFqPolyComm;
 }
 /**
 */
 export class WasmFqPlonkVerifierIndex {
   free(): void;
-/**
-* @param {WasmFqDomain} domain
-* @param {number} max_poly_size
-* @param {number} public_
-* @param {number} prev_challenges
-* @param {WasmFqSrs} srs
-* @param {WasmFqPlonkVerificationEvals} evals
-* @param {WasmFqShifts} shifts
-* @param {WasmFqLookupVerifierIndex | undefined} lookup_index
-* @param {number} zk_rows
-*/
+  /**
+  * @param {WasmFqDomain} domain
+  * @param {number} max_poly_size
+  * @param {number} public_
+  * @param {number} prev_challenges
+  * @param {WasmFqSrs} srs
+  * @param {WasmFqPlonkVerificationEvals} evals
+  * @param {WasmFqShifts} shifts
+  * @param {WasmFqLookupVerifierIndex | undefined} lookup_index
+  * @param {number} zk_rows
+  */
   constructor(domain: WasmFqDomain, max_poly_size: number, public_: number, prev_challenges: number, srs: WasmFqSrs, evals: WasmFqPlonkVerificationEvals, shifts: WasmFqShifts, lookup_index: WasmFqLookupVerifierIndex | undefined, zk_rows: number);
-/**
-*/
+  /**
+  */
   domain: WasmFqDomain;
-/**
-*/
+  /**
+  */
   evals: WasmFqPlonkVerificationEvals;
-/**
-*/
+  /**
+  */
   lookup_index?: WasmFqLookupVerifierIndex;
-/**
-*/
+  /**
+  */
   max_poly_size: number;
-/**
-*/
+  /**
+  */
   prev_challenges: number;
-/**
-*/
+  /**
+  */
   public_: number;
-/**
-*/
+  /**
+  */
   shifts: WasmFqShifts;
-/**
-*/
+  /**
+  */
   srs: WasmFqSrs;
-/**
-*/
+  /**
+  */
   zk_rows: number;
 }
 /**
 */
 export class WasmFqPolyComm {
   free(): void;
-/**
-* @param {Uint32Array} unshifted
-* @param {WasmGPallas | undefined} shifted
-*/
+  /**
+  * @param {Uint32Array} unshifted
+  * @param {WasmGPallas | undefined} shifted
+  */
   constructor(unshifted: Uint32Array, shifted?: WasmGPallas);
-/**
-*/
+  /**
+  */
   shifted?: WasmGPallas;
-/**
-*/
+  /**
+  */
   unshifted: Uint32Array;
 }
 /**
 */
 export class WasmFqProverCommitments {
   free(): void;
-/**
-* @param {Uint32Array} w_comm
-* @param {WasmFqPolyComm} z_comm
-* @param {WasmFqPolyComm} t_comm
-* @param {WasmFqLookupCommitments | undefined} lookup
-*/
+  /**
+  * @param {Uint32Array} w_comm
+  * @param {WasmFqPolyComm} z_comm
+  * @param {WasmFqPolyComm} t_comm
+  * @param {WasmFqLookupCommitments | undefined} lookup
+  */
   constructor(w_comm: Uint32Array, z_comm: WasmFqPolyComm, t_comm: WasmFqPolyComm, lookup?: WasmFqLookupCommitments);
-/**
-*/
+  /**
+  */
   lookup?: WasmFqLookupCommitments;
-/**
-*/
+  /**
+  */
   t_comm: WasmFqPolyComm;
-/**
-*/
+  /**
+  */
   w_comm: Uint32Array;
-/**
-*/
+  /**
+  */
   z_comm: WasmFqPolyComm;
 }
 /**
 */
 export class WasmFqProverProof {
   free(): void;
-/**
-* @param {WasmFqProverCommitments} commitments
-* @param {WasmFqOpeningProof} proof
-* @param {any} evals
-* @param {Uint8Array} ft_eval1
-* @param {Uint8Array} public_
-* @param {WasmVecVecFq} prev_challenges_scalars
-* @param {Uint32Array} prev_challenges_comms
-*/
+  /**
+  * @param {WasmFqProverCommitments} commitments
+  * @param {WasmFqOpeningProof} proof
+  * @param {any} evals
+  * @param {Uint8Array} ft_eval1
+  * @param {Uint8Array} public_
+  * @param {WasmVecVecFq} prev_challenges_scalars
+  * @param {Uint32Array} prev_challenges_comms
+  */
   constructor(commitments: WasmFqProverCommitments, proof: WasmFqOpeningProof, evals: any, ft_eval1: Uint8Array, public_: Uint8Array, prev_challenges_scalars: WasmVecVecFq, prev_challenges_comms: Uint32Array);
-/**
-* @returns {string}
-*/
+  /**
+  * @returns {string}
+  */
   serialize(): string;
-/**
-*/
+  /**
+  */
   commitments: WasmFqProverCommitments;
-/**
-*/
+  /**
+  */
   evals: any;
-/**
-*/
+  /**
+  */
   ft_eval1: Uint8Array;
-/**
-*/
+  /**
+  */
   prev_challenges_comms: Uint32Array;
-/**
-*/
+  /**
+  */
   prev_challenges_scalars: WasmVecVecFq;
-/**
-*/
+  /**
+  */
   proof: WasmFqOpeningProof;
-/**
-*/
+  /**
+  */
   public_: Uint8Array;
 }
 /**
 */
 export class WasmFqRandomOracles {
   free(): void;
-/**
-* @param {Uint8Array | undefined} joint_combiner_chal
-* @param {Uint8Array | undefined} joint_combiner
-* @param {Uint8Array} beta
-* @param {Uint8Array} gamma
-* @param {Uint8Array} alpha_chal
-* @param {Uint8Array} alpha
-* @param {Uint8Array} zeta
-* @param {Uint8Array} v
-* @param {Uint8Array} u
-* @param {Uint8Array} zeta_chal
-* @param {Uint8Array} v_chal
-* @param {Uint8Array} u_chal
-*/
+  /**
+  * @param {Uint8Array | undefined} joint_combiner_chal
+  * @param {Uint8Array | undefined} joint_combiner
+  * @param {Uint8Array} beta
+  * @param {Uint8Array} gamma
+  * @param {Uint8Array} alpha_chal
+  * @param {Uint8Array} alpha
+  * @param {Uint8Array} zeta
+  * @param {Uint8Array} v
+  * @param {Uint8Array} u
+  * @param {Uint8Array} zeta_chal
+  * @param {Uint8Array} v_chal
+  * @param {Uint8Array} u_chal
+  */
   constructor(joint_combiner_chal: Uint8Array | undefined, joint_combiner: Uint8Array | undefined, beta: Uint8Array, gamma: Uint8Array, alpha_chal: Uint8Array, alpha: Uint8Array, zeta: Uint8Array, v: Uint8Array, u: Uint8Array, zeta_chal: Uint8Array, v_chal: Uint8Array, u_chal: Uint8Array);
-/**
-*/
+  /**
+  */
   alpha: Uint8Array;
-/**
-*/
+  /**
+  */
   alpha_chal: Uint8Array;
-/**
-*/
+  /**
+  */
   beta: Uint8Array;
-/**
-*/
+  /**
+  */
   gamma: Uint8Array;
-/**
-*/
+  /**
+  */
   joint_combiner?: Uint8Array;
-/**
-*/
+  /**
+  */
   joint_combiner_chal?: Uint8Array;
-/**
-*/
+  /**
+  */
   u: Uint8Array;
-/**
-*/
+  /**
+  */
   u_chal: Uint8Array;
-/**
-*/
+  /**
+  */
   v: Uint8Array;
-/**
-*/
+  /**
+  */
   v_chal: Uint8Array;
-/**
-*/
+  /**
+  */
   zeta: Uint8Array;
-/**
-*/
+  /**
+  */
   zeta_chal: Uint8Array;
 }
 /**
 */
 export class WasmFqRuntimeTable {
   free(): void;
-/**
-* @param {number} id
-* @param {Uint8Array} data
-*/
+  /**
+  * @param {number} id
+  * @param {Uint8Array} data
+  */
   constructor(id: number, data: Uint8Array);
 }
 /**
 */
 export class WasmFqShifts {
   free(): void;
-/**
-* @param {Uint8Array} s0
-* @param {Uint8Array} s1
-* @param {Uint8Array} s2
-* @param {Uint8Array} s3
-* @param {Uint8Array} s4
-* @param {Uint8Array} s5
-* @param {Uint8Array} s6
-*/
+  /**
+  * @param {Uint8Array} s0
+  * @param {Uint8Array} s1
+  * @param {Uint8Array} s2
+  * @param {Uint8Array} s3
+  * @param {Uint8Array} s4
+  * @param {Uint8Array} s5
+  * @param {Uint8Array} s6
+  */
   constructor(s0: Uint8Array, s1: Uint8Array, s2: Uint8Array, s3: Uint8Array, s4: Uint8Array, s5: Uint8Array, s6: Uint8Array);
-/**
-*/
+  /**
+  */
   s0: Uint8Array;
-/**
-*/
+  /**
+  */
   s1: Uint8Array;
-/**
-*/
+  /**
+  */
   s2: Uint8Array;
-/**
-*/
+  /**
+  */
   s3: Uint8Array;
-/**
-*/
+  /**
+  */
   s4: Uint8Array;
-/**
-*/
+  /**
+  */
   s5: Uint8Array;
-/**
-*/
+  /**
+  */
   s6: Uint8Array;
 }
 /**
@@ -2403,78 +2435,78 @@ export class WasmFqSrs {
 */
 export class WasmGBn254 {
   free(): void;
-/**
-*/
+  /**
+  */
   infinity: boolean;
-/**
-*/
+  /**
+  */
   x: Uint8Array;
-/**
-*/
+  /**
+  */
   y: Uint8Array;
 }
 /**
 */
 export class WasmGPallas {
   free(): void;
-/**
-*/
+  /**
+  */
   infinity: boolean;
-/**
-*/
+  /**
+  */
   x: Uint8Array;
-/**
-*/
+  /**
+  */
   y: Uint8Array;
 }
 /**
 */
 export class WasmGVesta {
   free(): void;
-/**
-*/
+  /**
+  */
   infinity: boolean;
-/**
-*/
+  /**
+  */
   x: Uint8Array;
-/**
-*/
+  /**
+  */
   y: Uint8Array;
 }
 /**
 */
 export class WasmGateWires {
   free(): void;
-/**
-* @param {Wire} w0
-* @param {Wire} w1
-* @param {Wire} w2
-* @param {Wire} w3
-* @param {Wire} w4
-* @param {Wire} w5
-* @param {Wire} w6
-*/
+  /**
+  * @param {Wire} w0
+  * @param {Wire} w1
+  * @param {Wire} w2
+  * @param {Wire} w3
+  * @param {Wire} w4
+  * @param {Wire} w5
+  * @param {Wire} w6
+  */
   constructor(w0: Wire, w1: Wire, w2: Wire, w3: Wire, w4: Wire, w5: Wire, w6: Wire);
-/**
-*/
+  /**
+  */
   0: Wire;
-/**
-*/
+  /**
+  */
   1: Wire;
-/**
-*/
+  /**
+  */
   2: Wire;
-/**
-*/
+  /**
+  */
   3: Wire;
-/**
-*/
+  /**
+  */
   4: Wire;
-/**
-*/
+  /**
+  */
   5: Wire;
-/**
-*/
+  /**
+  */
   6: Wire;
 }
 /**
@@ -2486,10 +2518,10 @@ export class WasmPallasGProjective {
 */
 export class WasmPastaFpLookupTable {
   free(): void;
-/**
-* @param {number} id
-* @param {WasmVecVecFp} data
-*/
+  /**
+  * @param {number} id
+  * @param {WasmVecVecFp} data
+  */
   constructor(id: number, data: WasmVecVecFp);
 }
 /**
@@ -2502,20 +2534,20 @@ export class WasmPastaFpPlonkIndex {
 */
 export class WasmPastaFpRuntimeTableCfg {
   free(): void;
-/**
-* @param {number} id
-* @param {Uint8Array} first_column
-*/
+  /**
+  * @param {number} id
+  * @param {Uint8Array} first_column
+  */
   constructor(id: number, first_column: Uint8Array);
 }
 /**
 */
 export class WasmPastaFqLookupTable {
   free(): void;
-/**
-* @param {number} id
-* @param {WasmVecVecFq} data
-*/
+  /**
+  * @param {number} id
+  * @param {WasmVecVecFq} data
+  */
   constructor(id: number, data: WasmVecVecFq);
 }
 /**
@@ -2528,82 +2560,82 @@ export class WasmPastaFqPlonkIndex {
 */
 export class WasmPastaFqRuntimeTableCfg {
   free(): void;
-/**
-* @param {number} id
-* @param {Uint8Array} first_column
-*/
+  /**
+  * @param {number} id
+  * @param {Uint8Array} first_column
+  */
   constructor(id: number, first_column: Uint8Array);
 }
 /**
 */
 export class WasmVecVecFp {
   free(): void;
-/**
-* @param {number} n
-*/
+  /**
+  * @param {number} n
+  */
   constructor(n: number);
-/**
-* @param {Uint8Array} x
-*/
+  /**
+  * @param {Uint8Array} x
+  */
   push(x: Uint8Array): void;
-/**
-* @param {number} i
-* @returns {Uint8Array}
-*/
+  /**
+  * @param {number} i
+  * @returns {Uint8Array}
+  */
   get(i: number): Uint8Array;
-/**
-* @param {number} i
-* @param {Uint8Array} x
-*/
+  /**
+  * @param {number} i
+  * @param {Uint8Array} x
+  */
   set(i: number, x: Uint8Array): void;
 }
 /**
 */
 export class WasmVecVecFpPolyComm {
   free(): void;
-/**
-* @param {number} n
-*/
+  /**
+  * @param {number} n
+  */
   constructor(n: number);
-/**
-* @param {Uint32Array} x
-*/
+  /**
+  * @param {Uint32Array} x
+  */
   push(x: Uint32Array): void;
 }
 /**
 */
 export class WasmVecVecFq {
   free(): void;
-/**
-* @param {number} n
-*/
+  /**
+  * @param {number} n
+  */
   constructor(n: number);
-/**
-* @param {Uint8Array} x
-*/
+  /**
+  * @param {Uint8Array} x
+  */
   push(x: Uint8Array): void;
-/**
-* @param {number} i
-* @returns {Uint8Array}
-*/
+  /**
+  * @param {number} i
+  * @returns {Uint8Array}
+  */
   get(i: number): Uint8Array;
-/**
-* @param {number} i
-* @param {Uint8Array} x
-*/
+  /**
+  * @param {number} i
+  * @param {Uint8Array} x
+  */
   set(i: number, x: Uint8Array): void;
 }
 /**
 */
 export class WasmVecVecFqPolyComm {
   free(): void;
-/**
-* @param {number} n
-*/
+  /**
+  * @param {number} n
+  */
   constructor(n: number);
-/**
-* @param {Uint32Array} x
-*/
+  /**
+  * @param {Uint32Array} x
+  */
   push(x: Uint32Array): void;
 }
 /**
@@ -2618,16 +2650,16 @@ export class WasmVestaGProjective {
 */
 export class Wire {
   free(): void;
-/**
-* @param {number} row
-* @param {number} col
-* @returns {Wire}
-*/
+  /**
+  * @param {number} row
+  * @param {number} col
+  * @returns {Wire}
+  */
   static create(row: number, col: number): Wire;
-/**
-*/
+  /**
+  */
   col: number;
-/**
-*/
+  /**
+  */
   row: number;
 }

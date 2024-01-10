@@ -62,6 +62,12 @@ export function caml_pasta_fq_plonk_index_create(a: number, b: number, c: number
 export function caml_pasta_fq_plonk_index_read(a: number, b: number, c: number, d: number, e: number, f: number): void;
 export function caml_pasta_fq_plonk_index_write(a: number, b: number, c: number, d: number, e: number): void;
 export function caml_pasta_fq_plonk_index_serialize(a: number, b: number): void;
+export function caml_bn254_fp_plonk_gate_vector_create(): number;
+export function caml_bn254_fp_plonk_gate_vector_add(a: number, b: number): void;
+export function caml_bn254_fp_plonk_gate_vector_get(a: number, b: number): number;
+export function caml_bn254_fp_plonk_gate_vector_len(a: number): number;
+export function caml_bn254_fp_plonk_gate_vector_wrap(a: number, b: number, c: number): void;
+export function caml_bn254_fp_plonk_gate_vector_digest(a: number, b: number, c: number): void;
 export function __wbg_wasmfpdomain_free(a: number): void;
 export function __wbg_get_wasmfpdomain_log_size_of_group(a: number): number;
 export function __wbg_set_wasmfpdomain_log_size_of_group(a: number, b: number): void;
