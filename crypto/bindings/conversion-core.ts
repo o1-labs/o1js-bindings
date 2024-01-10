@@ -58,10 +58,17 @@ function conversionCore(wasm: wasm) {
     Gate: wasm.WasmFqGate,
     PolyComm: wasm.WasmFqPolyComm,
   });
+  const bn254Fp = conversionCorePerField(wasm, {
+    CommitmentCurve: wasm.WasmGBn254,
+    makeAffine: wasm.caml_bn254_affine_one,
+    Gate: wasm.WasmBn254FpGate,
+    PolyComm: wasm.WasmBn254FpPolyComm,
+  });
 
   return {
     fp,
     fq,
+    bn254Fp,
     wireToRust: fp.wireToRust, // doesn't depend on the field
     mapMlArrayToRustVector<TMl, TRust extends {}>(
       [, ...array]: MlArray<TMl>,

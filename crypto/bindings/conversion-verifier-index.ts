@@ -49,15 +49,15 @@ type WasmLookupSelector = WasmFpLookupSelectors | WasmFqLookupSelectors;
 type WasmClasses = {
   Domain: typeof WasmFpDomain | typeof WasmFqDomain;
   VerificationEvals:
-    | typeof WasmFpPlonkVerificationEvals
-    | typeof WasmFqPlonkVerificationEvals;
+  | typeof WasmFpPlonkVerificationEvals
+  | typeof WasmFqPlonkVerificationEvals;
   Shifts: typeof WasmFpShifts | typeof WasmFqShifts;
   VerifierIndex:
-    | typeof WasmFpPlonkVerifierIndex
-    | typeof WasmFqPlonkVerifierIndex;
+  | typeof WasmFpPlonkVerifierIndex
+  | typeof WasmFqPlonkVerifierIndex;
   LookupVerifierIndex:
-    | typeof WasmFpLookupVerifierIndex
-    | typeof WasmFqLookupVerifierIndex;
+  | typeof WasmFpLookupVerifierIndex
+  | typeof WasmFqLookupVerifierIndex;
   LookupSelector: typeof WasmFpLookupSelectors | typeof WasmFqLookupSelectors;
 };
 
@@ -78,7 +78,7 @@ function verifierIndexConversion(wasm: wasm, core: ConversionCores) {
       VerifierIndex: wasm.WasmFqPlonkVerifierIndex,
       LookupVerifierIndex: wasm.WasmFqLookupVerifierIndex,
       LookupSelector: wasm.WasmFqLookupSelectors,
-    }),
+    })
   };
 }
 

@@ -428,7 +428,7 @@ var caml_bn254_fp_plonk_gate_vector_add = function (v, x) {
   // TODO: rename to `plonk_wasm.caml_bn254_fp_plonk_gate_vector_add`
   return plonk_wasm.caml_pasta_bn254_fp_plonk_gate_vector_add(
     v,
-    tsRustConversion.fp.gateToRust(x)
+    tsRustConversion.bn254Fp.gateToRust(x)
   );
 };
 
@@ -454,8 +454,8 @@ var caml_bn254_fp_plonk_gate_vector_wrap = function (v, x, y) {
   // TODO: rename to `plonk_wasm.caml_bn254_fp_plonk_gate_vector_wrap`
   return plonk_wasm.caml_pasta_bn254_fp_plonk_gate_vector_wrap(
     v,
-    tsRustConversion.wireToRust(x),
-    tsRustConversion.wireToRust(y)
+    tsRustConversion.bn254Fp.wireToRust(x),
+    tsRustConversion.bn254Fp.wireToRust(y)
   );
 };
 

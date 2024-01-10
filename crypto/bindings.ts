@@ -50,6 +50,7 @@ function createRustConversion(wasm: wasm) {
   return {
     fp: { ...core.fp, ...verifierIndex.fp, ...oracles.fp, ...proof.fp },
     fq: { ...core.fq, ...verifierIndex.fq, ...oracles.fq, ...proof.fq },
+    bn254Fp: { ...core.bn254Fp },
     fieldsToRustFlat,
     fieldsFromRustFlat,
     wireToRust: core.wireToRust,
