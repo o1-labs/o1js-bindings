@@ -33,8 +33,6 @@ let exists_var (compute : unit -> Field.Constant.t) =
 module Low_level = struct
   let state = Impl.Low_level.state
 
-  let set_state state = Impl.Low_level.set_state state
-
   let create_state num_inputs eval_constraints with_witness log_constraint =
     let input = Field.Constant.Vector.create () in
     let next_auxiliary = ref num_inputs in
@@ -45,6 +43,11 @@ module Low_level = struct
         ~eval_constraints ~with_witness ?log_constraint ()
     in
     (state, input, aux, system)
+
+  let push_active_counter () = Impl.Low_level.push_active_counter ()
+
+  let reset_active_counter counters =
+    Impl.Low_level.reset_active_counter counters
 end
 
 module Run = struct
@@ -55,19 +58,21 @@ module Run = struct
   (* TODO recreate this in JS *)
   let run_circuit num_inputs eval_constraints with_witness log_constraint
       (f : unit -> unit) =
-    let state', _, _, _ =
+    let state, _, _, _ =
       Low_level.create_state num_inputs eval_constraints with_witness
         log_constraint
     in
-    Low_level.set_state state' ;
+    let old_state = !Low_level.state in
+    Low_level.state := state ;
+    let counters = Impl.Low_level.push_active_counter () in
     try
-      let result = Impl.Low_level.mark_active f in
-      Low_level.(
-        set_state (Snarky_backendless.Run_state.set_is_running !state true)) ;
+      let result = f () in
+      Impl.Low_level.reset_active_counter counters ;
+      Low_level.state := old_state ;
       result
     with exn ->
-      Low_level.(
-        set_state (Snarky_backendless.Run_state.set_is_running !state false)) ;
+      Impl.Low_level.reset_active_counter counters ;
+      Low_level.state := old_state ;
       Util.raise_exn exn
 
   let run_and_check (f : unit -> unit) =
@@ -530,9 +535,11 @@ let snarky =
       object%js
         val state = Low_level.state
 
-        method setState = Low_level.set_state
-
         method createState = Low_level.create_state
+
+        method pushActiveCounter = Low_level.push_active_counter
+
+        method resetActiveCounter = Low_level.reset_active_counter
       end
 
     val run =

@@ -31,7 +31,8 @@ val snarky :
               * Field.Constant.Vector.t
               * Backend.R1CS_constraint_system.t )
           Js.meth
-      ; setState : (Impl.Low_level.state -> unit) Js.meth >
+      ; pushActiveCounter : (unit -> int list) Js.meth
+      ; resetActiveCounter : (int list -> unit) Js.meth >
       Js.t
       Js.readonly_prop
   ; run :
