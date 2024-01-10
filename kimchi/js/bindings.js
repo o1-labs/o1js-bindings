@@ -418,13 +418,15 @@ var caml_pasta_fq_plonk_circuit_serialize = function (
 // Provides: caml_bn254_fp_plonk_gate_vector_create
 // Requires: plonk_wasm, free_on_finalize
 var caml_bn254_fp_plonk_gate_vector_create = function () {
-  return free_on_finalize(plonk_wasm.caml_bn254_fp_plonk_gate_vector_create());
+  // TODO: rename to `plonk_wasm.caml_bn254_fp_plonk_gate_vector_create`
+  return free_on_finalize(plonk_wasm.caml_pasta_bn254_fp_plonk_gate_vector_create());
 };
 
 // Provides: caml_bn254_fp_plonk_gate_vector_add
 // Requires: plonk_wasm, tsRustConversion
 var caml_bn254_fp_plonk_gate_vector_add = function (v, x) {
-  return plonk_wasm.caml_bn254_fp_plonk_gate_vector_add(
+  // TODO: rename to `plonk_wasm.caml_bn254_fp_plonk_gate_vector_add`
+  return plonk_wasm.caml_pasta_bn254_fp_plonk_gate_vector_add(
     v,
     tsRustConversion.fp.gateToRust(x)
   );
@@ -434,20 +436,23 @@ var caml_bn254_fp_plonk_gate_vector_add = function (v, x) {
 // Requires: plonk_wasm, tsRustConversion
 var caml_bn254_fp_plonk_gate_vector_get = function (v, i) {
   return tsRustConversion.fp.gateFromRust(
-    plonk_wasm.caml_bn254_fp_plonk_gate_vector_get(v, i)
+    // TODO: rename to `plonk_wasm.caml_bn254_fp_plonk_gate_vector_get`
+    plonk_wasm.caml_pasta_bn254_fp_plonk_gate_vector_get(v, i)
   );
 };
 
 // Provides: caml_bn254_fp_plonk_gate_vector_len
 // Requires: plonk_wasm
 var caml_bn254_fp_plonk_gate_vector_len = function (v) {
-  return plonk_wasm.caml_bn254_fp_plonk_gate_vector_len(v);
+  // TODO: rename to `plonk_wasm.caml_bn254_fp_plonk_gate_vector_len`
+  return plonk_wasm.caml_pasta_bn254_fp_plonk_gate_vector_len(v);
 };
 
 // Provides: caml_bn254_fp_plonk_gate_vector_wrap
 // Requires: plonk_wasm, tsRustConversion
 var caml_bn254_fp_plonk_gate_vector_wrap = function (v, x, y) {
-  return plonk_wasm.caml_bn254_fp_plonk_gate_vector_wrap(
+  // TODO: rename to `plonk_wasm.caml_bn254_fp_plonk_gate_vector_wrap`
+  return plonk_wasm.caml_pasta_bn254_fp_plonk_gate_vector_wrap(
     v,
     tsRustConversion.wireToRust(x),
     tsRustConversion.wireToRust(y)
@@ -460,7 +465,8 @@ var caml_bn254_fp_plonk_gate_vector_digest = function (
   public_input_size,
   gate_vector
 ) {
-  var uint8array = plonk_wasm.caml_bn254_fp_plonk_gate_vector_digest(
+  // TODO: rename to `plonk_wasm.caml_bn254_fp_plonk_gate_vector_digest`
+  var uint8array = plonk_wasm.caml_pasta_bn254_fp_plonk_gate_vector_digest(
     public_input_size,
     gate_vector
   );
@@ -473,8 +479,9 @@ var caml_bn254_fp_plonk_circuit_serialize = function (
   public_input_size,
   gate_vector
 ) {
+  // TODO: rename to `plonk_wasm.caml_bn254_fp_plonk_circuit_serialize`
   return caml_string_of_jsstring(
-    plonk_wasm.caml_bn254_fp_plonk_circuit_serialize(
+    plonk_wasm.caml_pasta_bn254_fp_plonk_circuit_serialize(
       public_input_size,
       gate_vector
     )
