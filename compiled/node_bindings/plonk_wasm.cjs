@@ -5,13 +5,13 @@ let { isMainThread, workerData } = require('worker_threads');
 
 let env = {};
 if (isMainThread) {
-  env.memory = new WebAssembly.Memory({
-    initial: 20,
-    maximum: 65536,
-    shared: true,
-  });
+    env.memory = new WebAssembly.Memory({
+        initial: 20,
+        maximum: 65536,
+        shared: true,
+    });
 } else {
-  env.memory = workerData.memory;
+    env.memory = workerData.memory;
 }
 
 imports['env'] = env;
@@ -70,7 +70,7 @@ function debugString(val) {
     // primitive types
     const type = typeof val;
     if (type == 'number' || type == 'boolean' || val == null) {
-        return  `${val}`;
+        return `${val}`;
     }
     if (type == 'string') {
         return `"${val}"`;
@@ -98,7 +98,7 @@ function debugString(val) {
         if (length > 0) {
             debug += debugString(val[0]);
         }
-        for(let i = 1; i < length; i++) {
+        for (let i = 1; i < length; i++) {
             debug += ', ' + debugString(val[i]);
         }
         debug += ']';
@@ -195,7 +195,7 @@ function getInt32Memory0() {
 * @param {string} worker_source
 * @returns {Promise<any>}
 */
-module.exports.initThreadPool = function(num_threads, worker_source) {
+module.exports.initThreadPool = function (num_threads, worker_source) {
     const ret = wasm.initThreadPool(num_threads, addHeapObject(worker_source));
     return takeObject(ret);
 };
@@ -203,7 +203,7 @@ module.exports.initThreadPool = function(num_threads, worker_source) {
 /**
 * @returns {Promise<any>}
 */
-module.exports.exitThreadPool = function() {
+module.exports.exitThreadPool = function () {
     const ret = wasm.exitThreadPool();
     return takeObject(ret);
 };
@@ -211,7 +211,7 @@ module.exports.exitThreadPool = function() {
 /**
 * @param {number} receiver
 */
-module.exports.wbg_rayon_start_worker = function(receiver) {
+module.exports.wbg_rayon_start_worker = function (receiver) {
     wasm.wbg_rayon_start_worker(receiver);
 };
 
@@ -225,7 +225,7 @@ function _assertClass(instance, klass) {
 * @param {number} depth
 * @returns {WasmFpSrs}
 */
-module.exports.caml_fp_srs_create = function(depth) {
+module.exports.caml_fp_srs_create = function (depth) {
     const ret = wasm.caml_fp_srs_create(depth);
     return WasmFpSrs.__wrap(ret);
 };
@@ -234,7 +234,7 @@ module.exports.caml_fp_srs_create = function(depth) {
 * @param {WasmFpSrs} srs
 * @param {number} log2_size
 */
-module.exports.caml_fp_srs_add_lagrange_basis = function(srs, log2_size) {
+module.exports.caml_fp_srs_add_lagrange_basis = function (srs, log2_size) {
     _assertClass(srs, WasmFpSrs);
     wasm.caml_fp_srs_add_lagrange_basis(srs.__wbg_ptr, log2_size);
 };
@@ -247,7 +247,7 @@ function isLikeNone(x) {
 * @param {WasmFpSrs} srs
 * @param {string} path
 */
-module.exports.caml_fp_srs_write = function(append, srs, path) {
+module.exports.caml_fp_srs_write = function (append, srs, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFpSrs);
@@ -269,7 +269,7 @@ module.exports.caml_fp_srs_write = function(append, srs, path) {
 * @param {string} path
 * @returns {WasmFpSrs | undefined}
 */
-module.exports.caml_fp_srs_read = function(offset, path) {
+module.exports.caml_fp_srs_read = function (offset, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -293,7 +293,7 @@ module.exports.caml_fp_srs_read = function(offset, path) {
 * @param {number} i
 * @returns {WasmFpPolyComm}
 */
-module.exports.caml_fp_srs_lagrange_commitment = function(srs, domain_size, i) {
+module.exports.caml_fp_srs_lagrange_commitment = function (srs, domain_size, i) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFpSrs);
@@ -322,7 +322,7 @@ function passArray8ToWasm0(arg, malloc) {
 * @param {Uint8Array} evals
 * @returns {WasmFpPolyComm}
 */
-module.exports.caml_fp_srs_commit_evaluations = function(srs, domain_size, evals) {
+module.exports.caml_fp_srs_commit_evaluations = function (srs, domain_size, evals) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFpSrs);
@@ -346,7 +346,7 @@ module.exports.caml_fp_srs_commit_evaluations = function(srs, domain_size, evals
 * @param {Uint8Array} chals
 * @returns {WasmFpPolyComm}
 */
-module.exports.caml_fp_srs_b_poly_commitment = function(srs, chals) {
+module.exports.caml_fp_srs_b_poly_commitment = function (srs, chals) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFpSrs);
@@ -386,7 +386,7 @@ function passArray32ToWasm0(arg, malloc) {
 * @param {Uint8Array} chals
 * @returns {boolean}
 */
-module.exports.caml_fp_srs_batch_accumulator_check = function(srs, comms, chals) {
+module.exports.caml_fp_srs_batch_accumulator_check = function (srs, comms, chals) {
     _assertClass(srs, WasmFpSrs);
     const ptr0 = passArray32ToWasm0(comms, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
@@ -406,7 +406,7 @@ function getArrayU32FromWasm0(ptr, len) {
 * @param {Uint8Array} chals
 * @returns {Uint32Array}
 */
-module.exports.caml_fp_srs_batch_accumulator_generate = function(srs, comms, chals) {
+module.exports.caml_fp_srs_batch_accumulator_generate = function (srs, comms, chals) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFpSrs);
@@ -427,7 +427,7 @@ module.exports.caml_fp_srs_batch_accumulator_generate = function(srs, comms, cha
 * @param {WasmFpSrs} srs
 * @returns {WasmGVesta}
 */
-module.exports.caml_fp_srs_h = function(srs) {
+module.exports.caml_fp_srs_h = function (srs) {
     _assertClass(srs, WasmFpSrs);
     const ret = wasm.caml_bn254_fp_srs_h(srs.__wbg_ptr);
     return WasmGVesta.__wrap(ret);
@@ -437,7 +437,7 @@ module.exports.caml_fp_srs_h = function(srs) {
 * @param {number} depth
 * @returns {WasmFqSrs}
 */
-module.exports.caml_fq_srs_create = function(depth) {
+module.exports.caml_fq_srs_create = function (depth) {
     const ret = wasm.caml_fq_srs_create(depth);
     return WasmFqSrs.__wrap(ret);
 };
@@ -446,7 +446,7 @@ module.exports.caml_fq_srs_create = function(depth) {
 * @param {WasmFqSrs} srs
 * @param {number} log2_size
 */
-module.exports.caml_fq_srs_add_lagrange_basis = function(srs, log2_size) {
+module.exports.caml_fq_srs_add_lagrange_basis = function (srs, log2_size) {
     _assertClass(srs, WasmFqSrs);
     wasm.caml_fq_srs_add_lagrange_basis(srs.__wbg_ptr, log2_size);
 };
@@ -456,7 +456,7 @@ module.exports.caml_fq_srs_add_lagrange_basis = function(srs, log2_size) {
 * @param {WasmFqSrs} srs
 * @param {string} path
 */
-module.exports.caml_fq_srs_write = function(append, srs, path) {
+module.exports.caml_fq_srs_write = function (append, srs, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFqSrs);
@@ -478,7 +478,7 @@ module.exports.caml_fq_srs_write = function(append, srs, path) {
 * @param {string} path
 * @returns {WasmFqSrs | undefined}
 */
-module.exports.caml_fq_srs_read = function(offset, path) {
+module.exports.caml_fq_srs_read = function (offset, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -502,7 +502,7 @@ module.exports.caml_fq_srs_read = function(offset, path) {
 * @param {number} i
 * @returns {WasmFqPolyComm}
 */
-module.exports.caml_fq_srs_lagrange_commitment = function(srs, domain_size, i) {
+module.exports.caml_fq_srs_lagrange_commitment = function (srs, domain_size, i) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFqSrs);
@@ -525,7 +525,7 @@ module.exports.caml_fq_srs_lagrange_commitment = function(srs, domain_size, i) {
 * @param {Uint8Array} evals
 * @returns {WasmFqPolyComm}
 */
-module.exports.caml_fq_srs_commit_evaluations = function(srs, domain_size, evals) {
+module.exports.caml_fq_srs_commit_evaluations = function (srs, domain_size, evals) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFqSrs);
@@ -549,7 +549,7 @@ module.exports.caml_fq_srs_commit_evaluations = function(srs, domain_size, evals
 * @param {Uint8Array} chals
 * @returns {WasmFqPolyComm}
 */
-module.exports.caml_fq_srs_b_poly_commitment = function(srs, chals) {
+module.exports.caml_fq_srs_b_poly_commitment = function (srs, chals) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFqSrs);
@@ -574,7 +574,7 @@ module.exports.caml_fq_srs_b_poly_commitment = function(srs, chals) {
 * @param {Uint8Array} chals
 * @returns {boolean}
 */
-module.exports.caml_fq_srs_batch_accumulator_check = function(srs, comms, chals) {
+module.exports.caml_fq_srs_batch_accumulator_check = function (srs, comms, chals) {
     _assertClass(srs, WasmFqSrs);
     const ptr0 = passArray32ToWasm0(comms, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
@@ -590,7 +590,7 @@ module.exports.caml_fq_srs_batch_accumulator_check = function(srs, comms, chals)
 * @param {Uint8Array} chals
 * @returns {Uint32Array}
 */
-module.exports.caml_fq_srs_batch_accumulator_generate = function(srs, comms, chals) {
+module.exports.caml_fq_srs_batch_accumulator_generate = function (srs, comms, chals) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFqSrs);
@@ -611,7 +611,7 @@ module.exports.caml_fq_srs_batch_accumulator_generate = function(srs, comms, cha
 * @param {WasmFqSrs} srs
 * @returns {WasmGPallas}
 */
-module.exports.caml_fq_srs_h = function(srs) {
+module.exports.caml_fq_srs_h = function (srs) {
     _assertClass(srs, WasmFqSrs);
     const ret = wasm.caml_bn254_fp_srs_h(srs.__wbg_ptr);
     return WasmGPallas.__wrap(ret);
@@ -621,7 +621,7 @@ module.exports.caml_fq_srs_h = function(srs) {
 * @param {number} depth
 * @returns {WasmBn254FpSrs}
 */
-module.exports.caml_bn254_fp_srs_create = function(depth) {
+module.exports.caml_bn254_fp_srs_create = function (depth) {
     const ret = wasm.caml_bn254_fp_srs_create(depth);
     return WasmBn254FpSrs.__wrap(ret);
 };
@@ -630,7 +630,7 @@ module.exports.caml_bn254_fp_srs_create = function(depth) {
 * @param {WasmBn254FpSrs} srs
 * @param {number} log2_size
 */
-module.exports.caml_bn254_fp_srs_add_lagrange_basis = function(srs, log2_size) {
+module.exports.caml_bn254_fp_srs_add_lagrange_basis = function (srs, log2_size) {
     _assertClass(srs, WasmBn254FpSrs);
     wasm.caml_bn254_fp_srs_add_lagrange_basis(srs.__wbg_ptr, log2_size);
 };
@@ -640,7 +640,7 @@ module.exports.caml_bn254_fp_srs_add_lagrange_basis = function(srs, log2_size) {
 * @param {WasmBn254FpSrs} srs
 * @param {string} path
 */
-module.exports.caml_bn254_fp_srs_write = function(append, srs, path) {
+module.exports.caml_bn254_fp_srs_write = function (append, srs, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmBn254FpSrs);
@@ -662,7 +662,7 @@ module.exports.caml_bn254_fp_srs_write = function(append, srs, path) {
 * @param {string} path
 * @returns {WasmBn254FpSrs | undefined}
 */
-module.exports.caml_bn254_fp_srs_read = function(offset, path) {
+module.exports.caml_bn254_fp_srs_read = function (offset, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -686,7 +686,7 @@ module.exports.caml_bn254_fp_srs_read = function(offset, path) {
 * @param {number} i
 * @returns {WasmBn254FpPolyComm}
 */
-module.exports.caml_bn254_fp_srs_lagrange_commitment = function(srs, domain_size, i) {
+module.exports.caml_bn254_fp_srs_lagrange_commitment = function (srs, domain_size, i) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmBn254FpSrs);
@@ -709,7 +709,7 @@ module.exports.caml_bn254_fp_srs_lagrange_commitment = function(srs, domain_size
 * @param {Uint8Array} evals
 * @returns {WasmBn254FpPolyComm}
 */
-module.exports.caml_bn254_fp_srs_commit_evaluations = function(srs, domain_size, evals) {
+module.exports.caml_bn254_fp_srs_commit_evaluations = function (srs, domain_size, evals) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmBn254FpSrs);
@@ -733,7 +733,7 @@ module.exports.caml_bn254_fp_srs_commit_evaluations = function(srs, domain_size,
 * @param {Uint8Array} chals
 * @returns {WasmBn254FpPolyComm}
 */
-module.exports.caml_bn254_fp_srs_b_poly_commitment = function(srs, chals) {
+module.exports.caml_bn254_fp_srs_b_poly_commitment = function (srs, chals) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmBn254FpSrs);
@@ -758,7 +758,7 @@ module.exports.caml_bn254_fp_srs_b_poly_commitment = function(srs, chals) {
 * @param {Uint8Array} chals
 * @returns {boolean}
 */
-module.exports.caml_bn254_fp_srs_batch_accumulator_check = function(srs, comms, chals) {
+module.exports.caml_bn254_fp_srs_batch_accumulator_check = function (srs, comms, chals) {
     _assertClass(srs, WasmBn254FpSrs);
     const ptr0 = passArray32ToWasm0(comms, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
@@ -774,7 +774,7 @@ module.exports.caml_bn254_fp_srs_batch_accumulator_check = function(srs, comms, 
 * @param {Uint8Array} chals
 * @returns {Uint32Array}
 */
-module.exports.caml_bn254_fp_srs_batch_accumulator_generate = function(srs, comms, chals) {
+module.exports.caml_bn254_fp_srs_batch_accumulator_generate = function (srs, comms, chals) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmBn254FpSrs);
@@ -795,7 +795,7 @@ module.exports.caml_bn254_fp_srs_batch_accumulator_generate = function(srs, comm
 * @param {WasmBn254FpSrs} srs
 * @returns {WasmGBn254}
 */
-module.exports.caml_bn254_fp_srs_h = function(srs) {
+module.exports.caml_bn254_fp_srs_h = function (srs) {
     _assertClass(srs, WasmBn254FpSrs);
     const ret = wasm.caml_bn254_fp_srs_h(srs.__wbg_ptr);
     return WasmGBn254.__wrap(ret);
@@ -810,7 +810,7 @@ module.exports.caml_bn254_fp_srs_h = function(srs) {
 * @param {WasmBn254FpSrs} srs
 * @returns {WasmBn254FpPlonkIndex}
 */
-module.exports.caml_bn254_fp_plonk_index_create = function(gates, public_, lookup_tables, runtime_table_cfgs, prev_challenges, srs) {
+module.exports.caml_bn254_fp_plonk_index_create = function (gates, public_, lookup_tables, runtime_table_cfgs, prev_challenges, srs) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(gates, WasmBn254FpGateVector);
@@ -836,7 +836,7 @@ module.exports.caml_bn254_fp_plonk_index_create = function(gates, public_, looku
 * @param {WasmBn254FpPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_bn254_fp_plonk_index_max_degree = function(index) {
+module.exports.caml_bn254_fp_plonk_index_max_degree = function (index) {
     _assertClass(index, WasmBn254FpPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_max_degree(index.__wbg_ptr);
     return ret;
@@ -846,7 +846,7 @@ module.exports.caml_bn254_fp_plonk_index_max_degree = function(index) {
 * @param {WasmBn254FpPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_bn254_fp_plonk_index_public_inputs = function(index) {
+module.exports.caml_bn254_fp_plonk_index_public_inputs = function (index) {
     _assertClass(index, WasmBn254FpPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_public_inputs(index.__wbg_ptr);
     return ret;
@@ -856,7 +856,7 @@ module.exports.caml_bn254_fp_plonk_index_public_inputs = function(index) {
 * @param {WasmBn254FpPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_bn254_fp_plonk_index_domain_d1_size = function(index) {
+module.exports.caml_bn254_fp_plonk_index_domain_d1_size = function (index) {
     _assertClass(index, WasmBn254FpPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_domain_d1_size(index.__wbg_ptr);
     return ret;
@@ -866,7 +866,7 @@ module.exports.caml_bn254_fp_plonk_index_domain_d1_size = function(index) {
 * @param {WasmBn254FpPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_bn254_fp_plonk_index_domain_d4_size = function(index) {
+module.exports.caml_bn254_fp_plonk_index_domain_d4_size = function (index) {
     _assertClass(index, WasmBn254FpPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_domain_d4_size(index.__wbg_ptr);
     return ret;
@@ -876,7 +876,7 @@ module.exports.caml_bn254_fp_plonk_index_domain_d4_size = function(index) {
 * @param {WasmBn254FpPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_bn254_fp_plonk_index_domain_d8_size = function(index) {
+module.exports.caml_bn254_fp_plonk_index_domain_d8_size = function (index) {
     _assertClass(index, WasmBn254FpPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_domain_d8_size(index.__wbg_ptr);
     return ret;
@@ -888,7 +888,7 @@ module.exports.caml_bn254_fp_plonk_index_domain_d8_size = function(index) {
 * @param {string} path
 * @returns {WasmBn254FpPlonkIndex}
 */
-module.exports.caml_bn254_fp_plonk_index_read = function(offset, srs, path) {
+module.exports.caml_bn254_fp_plonk_index_read = function (offset, srs, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmBn254FpSrs);
@@ -912,7 +912,7 @@ module.exports.caml_bn254_fp_plonk_index_read = function(offset, srs, path) {
 * @param {WasmBn254FpPlonkIndex} index
 * @param {string} path
 */
-module.exports.caml_bn254_fp_plonk_index_write = function(append, index, path) {
+module.exports.caml_bn254_fp_plonk_index_write = function (append, index, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(index, WasmBn254FpPlonkIndex);
@@ -933,7 +933,7 @@ module.exports.caml_bn254_fp_plonk_index_write = function(append, index, path) {
 * @param {WasmBn254FpPlonkIndex} index
 * @returns {string}
 */
-module.exports.caml_bn254_fp_plonk_index_serialize = function(index) {
+module.exports.caml_bn254_fp_plonk_index_serialize = function (index) {
     let deferred1_0;
     let deferred1_1;
     try {
@@ -960,7 +960,7 @@ module.exports.caml_bn254_fp_plonk_index_serialize = function(index) {
 * @param {WasmFpSrs} srs
 * @returns {WasmPastaFpPlonkIndex}
 */
-module.exports.caml_pasta_fp_plonk_index_create = function(gates, public_, lookup_tables, runtime_table_cfgs, prev_challenges, srs) {
+module.exports.caml_pasta_fp_plonk_index_create = function (gates, public_, lookup_tables, runtime_table_cfgs, prev_challenges, srs) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(gates, WasmFpGateVector);
@@ -986,7 +986,7 @@ module.exports.caml_pasta_fp_plonk_index_create = function(gates, public_, looku
 * @param {WasmPastaFpPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_pasta_fp_plonk_index_max_degree = function(index) {
+module.exports.caml_pasta_fp_plonk_index_max_degree = function (index) {
     _assertClass(index, WasmPastaFpPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_max_degree(index.__wbg_ptr);
     return ret;
@@ -996,7 +996,7 @@ module.exports.caml_pasta_fp_plonk_index_max_degree = function(index) {
 * @param {WasmPastaFpPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_pasta_fp_plonk_index_public_inputs = function(index) {
+module.exports.caml_pasta_fp_plonk_index_public_inputs = function (index) {
     _assertClass(index, WasmPastaFpPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_public_inputs(index.__wbg_ptr);
     return ret;
@@ -1006,7 +1006,7 @@ module.exports.caml_pasta_fp_plonk_index_public_inputs = function(index) {
 * @param {WasmPastaFpPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_pasta_fp_plonk_index_domain_d1_size = function(index) {
+module.exports.caml_pasta_fp_plonk_index_domain_d1_size = function (index) {
     _assertClass(index, WasmPastaFpPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_domain_d1_size(index.__wbg_ptr);
     return ret;
@@ -1016,7 +1016,7 @@ module.exports.caml_pasta_fp_plonk_index_domain_d1_size = function(index) {
 * @param {WasmPastaFpPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_pasta_fp_plonk_index_domain_d4_size = function(index) {
+module.exports.caml_pasta_fp_plonk_index_domain_d4_size = function (index) {
     _assertClass(index, WasmPastaFpPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_domain_d4_size(index.__wbg_ptr);
     return ret;
@@ -1026,7 +1026,7 @@ module.exports.caml_pasta_fp_plonk_index_domain_d4_size = function(index) {
 * @param {WasmPastaFpPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_pasta_fp_plonk_index_domain_d8_size = function(index) {
+module.exports.caml_pasta_fp_plonk_index_domain_d8_size = function (index) {
     _assertClass(index, WasmPastaFpPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_domain_d8_size(index.__wbg_ptr);
     return ret;
@@ -1038,7 +1038,7 @@ module.exports.caml_pasta_fp_plonk_index_domain_d8_size = function(index) {
 * @param {string} path
 * @returns {WasmPastaFpPlonkIndex}
 */
-module.exports.caml_pasta_fp_plonk_index_read = function(offset, srs, path) {
+module.exports.caml_pasta_fp_plonk_index_read = function (offset, srs, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFpSrs);
@@ -1062,7 +1062,7 @@ module.exports.caml_pasta_fp_plonk_index_read = function(offset, srs, path) {
 * @param {WasmPastaFpPlonkIndex} index
 * @param {string} path
 */
-module.exports.caml_pasta_fp_plonk_index_write = function(append, index, path) {
+module.exports.caml_pasta_fp_plonk_index_write = function (append, index, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(index, WasmPastaFpPlonkIndex);
@@ -1083,7 +1083,7 @@ module.exports.caml_pasta_fp_plonk_index_write = function(append, index, path) {
 * @param {WasmPastaFpPlonkIndex} index
 * @returns {string}
 */
-module.exports.caml_pasta_fp_plonk_index_serialize = function(index) {
+module.exports.caml_pasta_fp_plonk_index_serialize = function (index) {
     let deferred1_0;
     let deferred1_1;
     try {
@@ -1110,7 +1110,7 @@ module.exports.caml_pasta_fp_plonk_index_serialize = function(index) {
 * @param {WasmFqSrs} srs
 * @returns {WasmPastaFqPlonkIndex}
 */
-module.exports.caml_pasta_fq_plonk_index_create = function(gates, public_, lookup_tables, runtime_table_cfgs, prev_challenges, srs) {
+module.exports.caml_pasta_fq_plonk_index_create = function (gates, public_, lookup_tables, runtime_table_cfgs, prev_challenges, srs) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(gates, WasmFqGateVector);
@@ -1136,7 +1136,7 @@ module.exports.caml_pasta_fq_plonk_index_create = function(gates, public_, looku
 * @param {WasmPastaFqPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_pasta_fq_plonk_index_max_degree = function(index) {
+module.exports.caml_pasta_fq_plonk_index_max_degree = function (index) {
     _assertClass(index, WasmPastaFqPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_max_degree(index.__wbg_ptr);
     return ret;
@@ -1146,7 +1146,7 @@ module.exports.caml_pasta_fq_plonk_index_max_degree = function(index) {
 * @param {WasmPastaFqPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_pasta_fq_plonk_index_public_inputs = function(index) {
+module.exports.caml_pasta_fq_plonk_index_public_inputs = function (index) {
     _assertClass(index, WasmPastaFqPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_public_inputs(index.__wbg_ptr);
     return ret;
@@ -1156,7 +1156,7 @@ module.exports.caml_pasta_fq_plonk_index_public_inputs = function(index) {
 * @param {WasmPastaFqPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_pasta_fq_plonk_index_domain_d1_size = function(index) {
+module.exports.caml_pasta_fq_plonk_index_domain_d1_size = function (index) {
     _assertClass(index, WasmPastaFqPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_domain_d1_size(index.__wbg_ptr);
     return ret;
@@ -1166,7 +1166,7 @@ module.exports.caml_pasta_fq_plonk_index_domain_d1_size = function(index) {
 * @param {WasmPastaFqPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_pasta_fq_plonk_index_domain_d4_size = function(index) {
+module.exports.caml_pasta_fq_plonk_index_domain_d4_size = function (index) {
     _assertClass(index, WasmPastaFqPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_domain_d4_size(index.__wbg_ptr);
     return ret;
@@ -1176,7 +1176,7 @@ module.exports.caml_pasta_fq_plonk_index_domain_d4_size = function(index) {
 * @param {WasmPastaFqPlonkIndex} index
 * @returns {number}
 */
-module.exports.caml_pasta_fq_plonk_index_domain_d8_size = function(index) {
+module.exports.caml_pasta_fq_plonk_index_domain_d8_size = function (index) {
     _assertClass(index, WasmPastaFqPlonkIndex);
     const ret = wasm.caml_bn254_fp_plonk_index_domain_d8_size(index.__wbg_ptr);
     return ret;
@@ -1188,7 +1188,7 @@ module.exports.caml_pasta_fq_plonk_index_domain_d8_size = function(index) {
 * @param {string} path
 * @returns {WasmPastaFqPlonkIndex}
 */
-module.exports.caml_pasta_fq_plonk_index_read = function(offset, srs, path) {
+module.exports.caml_pasta_fq_plonk_index_read = function (offset, srs, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFqSrs);
@@ -1212,7 +1212,7 @@ module.exports.caml_pasta_fq_plonk_index_read = function(offset, srs, path) {
 * @param {WasmPastaFqPlonkIndex} index
 * @param {string} path
 */
-module.exports.caml_pasta_fq_plonk_index_write = function(append, index, path) {
+module.exports.caml_pasta_fq_plonk_index_write = function (append, index, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(index, WasmPastaFqPlonkIndex);
@@ -1233,7 +1233,7 @@ module.exports.caml_pasta_fq_plonk_index_write = function(append, index, path) {
 * @param {WasmPastaFqPlonkIndex} index
 * @returns {string}
 */
-module.exports.caml_pasta_fq_plonk_index_serialize = function(index) {
+module.exports.caml_pasta_fq_plonk_index_serialize = function (index) {
     let deferred1_0;
     let deferred1_1;
     try {
@@ -1261,7 +1261,7 @@ function getArrayU8FromWasm0(ptr, len) {
 * @param {string} path
 * @returns {WasmFpPlonkVerifierIndex}
 */
-module.exports.caml_pasta_fp_plonk_verifier_index_read = function(offset, srs, path) {
+module.exports.caml_pasta_fp_plonk_verifier_index_read = function (offset, srs, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFpSrs);
@@ -1285,7 +1285,7 @@ module.exports.caml_pasta_fp_plonk_verifier_index_read = function(offset, srs, p
 * @param {WasmFpPlonkVerifierIndex} index
 * @param {string} path
 */
-module.exports.caml_pasta_fp_plonk_verifier_index_write = function(append, index, path) {
+module.exports.caml_pasta_fp_plonk_verifier_index_write = function (append, index, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(index, WasmFpPlonkVerifierIndex);
@@ -1307,7 +1307,7 @@ module.exports.caml_pasta_fp_plonk_verifier_index_write = function(append, index
 * @param {WasmFpPlonkVerifierIndex} index
 * @returns {string}
 */
-module.exports.caml_pasta_fp_plonk_verifier_index_serialize = function(index) {
+module.exports.caml_pasta_fp_plonk_verifier_index_serialize = function (index) {
     let deferred2_0;
     let deferred2_1;
     try {
@@ -1331,7 +1331,7 @@ module.exports.caml_pasta_fp_plonk_verifier_index_serialize = function(index) {
 * @param {string} index
 * @returns {WasmFpPlonkVerifierIndex}
 */
-module.exports.caml_pasta_fp_plonk_verifier_index_deserialize = function(srs, index) {
+module.exports.caml_pasta_fp_plonk_verifier_index_deserialize = function (srs, index) {
     _assertClass(srs, WasmFpSrs);
     const ptr0 = passStringToWasm0(index, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
@@ -1343,7 +1343,7 @@ module.exports.caml_pasta_fp_plonk_verifier_index_deserialize = function(srs, in
 * @param {WasmPastaFpPlonkIndex} index
 * @returns {WasmFpPlonkVerifierIndex}
 */
-module.exports.caml_pasta_fp_plonk_verifier_index_create = function(index) {
+module.exports.caml_pasta_fp_plonk_verifier_index_create = function (index) {
     _assertClass(index, WasmPastaFpPlonkIndex);
     const ret = wasm.caml_pasta_fp_plonk_verifier_index_create(index.__wbg_ptr);
     return WasmFpPlonkVerifierIndex.__wrap(ret);
@@ -1353,7 +1353,7 @@ module.exports.caml_pasta_fp_plonk_verifier_index_create = function(index) {
 * @param {number} log2_size
 * @returns {WasmFpShifts}
 */
-module.exports.caml_pasta_fp_plonk_verifier_index_shifts = function(log2_size) {
+module.exports.caml_pasta_fp_plonk_verifier_index_shifts = function (log2_size) {
     const ret = wasm.caml_pasta_fp_plonk_verifier_index_shifts(log2_size);
     return WasmFpShifts.__wrap(ret);
 };
@@ -1361,7 +1361,7 @@ module.exports.caml_pasta_fp_plonk_verifier_index_shifts = function(log2_size) {
 /**
 * @returns {WasmFpPlonkVerifierIndex}
 */
-module.exports.caml_pasta_fp_plonk_verifier_index_dummy = function() {
+module.exports.caml_pasta_fp_plonk_verifier_index_dummy = function () {
     const ret = wasm.caml_pasta_fp_plonk_verifier_index_dummy();
     return WasmFpPlonkVerifierIndex.__wrap(ret);
 };
@@ -1370,7 +1370,7 @@ module.exports.caml_pasta_fp_plonk_verifier_index_dummy = function() {
 * @param {WasmFpPlonkVerifierIndex} x
 * @returns {WasmFpPlonkVerifierIndex}
 */
-module.exports.caml_pasta_fp_plonk_verifier_index_deep_copy = function(x) {
+module.exports.caml_pasta_fp_plonk_verifier_index_deep_copy = function (x) {
     _assertClass(x, WasmFpPlonkVerifierIndex);
     const ret = wasm.caml_pasta_fp_plonk_verifier_index_deep_copy(x.__wbg_ptr);
     return WasmFpPlonkVerifierIndex.__wrap(ret);
@@ -1382,7 +1382,7 @@ module.exports.caml_pasta_fp_plonk_verifier_index_deep_copy = function(x) {
 * @param {string} path
 * @returns {WasmFqPlonkVerifierIndex}
 */
-module.exports.caml_pasta_fq_plonk_verifier_index_read = function(offset, srs, path) {
+module.exports.caml_pasta_fq_plonk_verifier_index_read = function (offset, srs, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(srs, WasmFqSrs);
@@ -1406,7 +1406,7 @@ module.exports.caml_pasta_fq_plonk_verifier_index_read = function(offset, srs, p
 * @param {WasmFqPlonkVerifierIndex} index
 * @param {string} path
 */
-module.exports.caml_pasta_fq_plonk_verifier_index_write = function(append, index, path) {
+module.exports.caml_pasta_fq_plonk_verifier_index_write = function (append, index, path) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(index, WasmFqPlonkVerifierIndex);
@@ -1428,7 +1428,7 @@ module.exports.caml_pasta_fq_plonk_verifier_index_write = function(append, index
 * @param {WasmFqPlonkVerifierIndex} index
 * @returns {string}
 */
-module.exports.caml_pasta_fq_plonk_verifier_index_serialize = function(index) {
+module.exports.caml_pasta_fq_plonk_verifier_index_serialize = function (index) {
     let deferred2_0;
     let deferred2_1;
     try {
@@ -1452,7 +1452,7 @@ module.exports.caml_pasta_fq_plonk_verifier_index_serialize = function(index) {
 * @param {string} index
 * @returns {WasmFqPlonkVerifierIndex}
 */
-module.exports.caml_pasta_fq_plonk_verifier_index_deserialize = function(srs, index) {
+module.exports.caml_pasta_fq_plonk_verifier_index_deserialize = function (srs, index) {
     _assertClass(srs, WasmFqSrs);
     const ptr0 = passStringToWasm0(index, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
@@ -1464,7 +1464,7 @@ module.exports.caml_pasta_fq_plonk_verifier_index_deserialize = function(srs, in
 * @param {WasmPastaFqPlonkIndex} index
 * @returns {WasmFqPlonkVerifierIndex}
 */
-module.exports.caml_pasta_fq_plonk_verifier_index_create = function(index) {
+module.exports.caml_pasta_fq_plonk_verifier_index_create = function (index) {
     _assertClass(index, WasmPastaFqPlonkIndex);
     const ret = wasm.caml_pasta_fq_plonk_verifier_index_create(index.__wbg_ptr);
     return WasmFqPlonkVerifierIndex.__wrap(ret);
@@ -1474,7 +1474,7 @@ module.exports.caml_pasta_fq_plonk_verifier_index_create = function(index) {
 * @param {number} log2_size
 * @returns {WasmFqShifts}
 */
-module.exports.caml_pasta_fq_plonk_verifier_index_shifts = function(log2_size) {
+module.exports.caml_pasta_fq_plonk_verifier_index_shifts = function (log2_size) {
     const ret = wasm.caml_pasta_fq_plonk_verifier_index_shifts(log2_size);
     return WasmFqShifts.__wrap(ret);
 };
@@ -1482,7 +1482,7 @@ module.exports.caml_pasta_fq_plonk_verifier_index_shifts = function(log2_size) {
 /**
 * @returns {WasmFqPlonkVerifierIndex}
 */
-module.exports.caml_pasta_fq_plonk_verifier_index_dummy = function() {
+module.exports.caml_pasta_fq_plonk_verifier_index_dummy = function () {
     const ret = wasm.caml_pasta_fq_plonk_verifier_index_dummy();
     return WasmFqPlonkVerifierIndex.__wrap(ret);
 };
@@ -1491,7 +1491,7 @@ module.exports.caml_pasta_fq_plonk_verifier_index_dummy = function() {
 * @param {WasmFqPlonkVerifierIndex} x
 * @returns {WasmFqPlonkVerifierIndex}
 */
-module.exports.caml_pasta_fq_plonk_verifier_index_deep_copy = function(x) {
+module.exports.caml_pasta_fq_plonk_verifier_index_deep_copy = function (x) {
     _assertClass(x, WasmFqPlonkVerifierIndex);
     const ret = wasm.caml_pasta_fq_plonk_verifier_index_deep_copy(x.__wbg_ptr);
     return WasmFqPlonkVerifierIndex.__wrap(ret);
@@ -1505,7 +1505,7 @@ module.exports.caml_pasta_fq_plonk_verifier_index_deep_copy = function(x) {
 * @param {Uint32Array} prev_sgs
 * @returns {WasmFpProverProof}
 */
-module.exports.caml_pasta_fp_plonk_proof_create = function(index, witness, wasm_runtime_tables, prev_challenges, prev_sgs) {
+module.exports.caml_pasta_fp_plonk_proof_create = function (index, witness, wasm_runtime_tables, prev_challenges, prev_sgs) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(index, WasmPastaFpPlonkIndex);
@@ -1535,7 +1535,7 @@ module.exports.caml_pasta_fp_plonk_proof_create = function(index, witness, wasm_
 * @param {WasmFpProverProof} proof
 * @returns {boolean}
 */
-module.exports.caml_pasta_fp_plonk_proof_verify = function(index, proof) {
+module.exports.caml_pasta_fp_plonk_proof_verify = function (index, proof) {
     _assertClass(index, WasmFpPlonkVerifierIndex);
     var ptr0 = index.__destroy_into_raw();
     _assertClass(proof, WasmFpProverProof);
@@ -1549,7 +1549,7 @@ module.exports.caml_pasta_fp_plonk_proof_verify = function(index, proof) {
 * @param {Uint32Array} proofs
 * @returns {boolean}
 */
-module.exports.caml_pasta_fp_plonk_proof_batch_verify = function(indexes, proofs) {
+module.exports.caml_pasta_fp_plonk_proof_batch_verify = function (indexes, proofs) {
     const ptr0 = passArray32ToWasm0(indexes, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray32ToWasm0(proofs, wasm.__wbindgen_malloc);
@@ -1561,7 +1561,7 @@ module.exports.caml_pasta_fp_plonk_proof_batch_verify = function(indexes, proofs
 /**
 * @returns {WasmFpProverProof}
 */
-module.exports.caml_pasta_fp_plonk_proof_dummy = function() {
+module.exports.caml_pasta_fp_plonk_proof_dummy = function () {
     const ret = wasm.caml_pasta_fp_plonk_proof_dummy();
     return WasmFpProverProof.__wrap(ret);
 };
@@ -1570,7 +1570,7 @@ module.exports.caml_pasta_fp_plonk_proof_dummy = function() {
 * @param {WasmFpProverProof} x
 * @returns {WasmFpProverProof}
 */
-module.exports.caml_pasta_fp_plonk_proof_deep_copy = function(x) {
+module.exports.caml_pasta_fp_plonk_proof_deep_copy = function (x) {
     _assertClass(x, WasmFpProverProof);
     var ptr0 = x.__destroy_into_raw();
     const ret = wasm.caml_pasta_fp_plonk_proof_deep_copy(ptr0);
@@ -1581,7 +1581,7 @@ module.exports.caml_pasta_fp_plonk_proof_deep_copy = function(x) {
 * @param {Uint8Array} state
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_poseidon_block_cipher = function(state) {
+module.exports.caml_pasta_fp_poseidon_block_cipher = function (state) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(state, wasm.__wbindgen_malloc);
@@ -1601,7 +1601,7 @@ module.exports.caml_pasta_fp_poseidon_block_cipher = function(state) {
 * @param {Uint8Array} state
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_poseidon_block_cipher = function(state) {
+module.exports.caml_pasta_fq_poseidon_block_cipher = function (state) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(state, wasm.__wbindgen_malloc);
@@ -1620,7 +1620,7 @@ module.exports.caml_pasta_fq_poseidon_block_cipher = function(state) {
 /**
 * @returns {WasmGPallas}
 */
-module.exports.caml_pallas_affine_one = function() {
+module.exports.caml_pallas_affine_one = function () {
     const ret = wasm.caml_pallas_affine_one();
     return WasmGPallas.__wrap(ret);
 };
@@ -1628,7 +1628,7 @@ module.exports.caml_pallas_affine_one = function() {
 /**
 * @returns {WasmGVesta}
 */
-module.exports.caml_vesta_affine_one = function() {
+module.exports.caml_vesta_affine_one = function () {
     const ret = wasm.caml_vesta_affine_one();
     return WasmGVesta.__wrap(ret);
 };
@@ -1636,7 +1636,7 @@ module.exports.caml_vesta_affine_one = function() {
 /**
 * @returns {WasmGBn254}
 */
-module.exports.caml_bn254_affine_one = function() {
+module.exports.caml_bn254_affine_one = function () {
     const ret = wasm.caml_bn254_affine_one();
     return WasmGBn254.__wrap(ret);
 };
@@ -1647,7 +1647,7 @@ module.exports.caml_bn254_affine_one = function() {
 * @param {number} base
 * @returns {Uint8Array}
 */
-module.exports.caml_bigint_256_of_numeral = function(s, _len, base) {
+module.exports.caml_bigint_256_of_numeral = function (s, _len, base) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -1667,7 +1667,7 @@ module.exports.caml_bigint_256_of_numeral = function(s, _len, base) {
 * @param {string} s
 * @returns {Uint8Array}
 */
-module.exports.caml_bigint_256_of_decimal_string = function(s) {
+module.exports.caml_bigint_256_of_decimal_string = function (s) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -1686,7 +1686,7 @@ module.exports.caml_bigint_256_of_decimal_string = function(s) {
 /**
 * @returns {number}
 */
-module.exports.caml_bigint_256_num_limbs = function() {
+module.exports.caml_bigint_256_num_limbs = function () {
     const ret = wasm.caml_bigint_256_num_limbs();
     return ret;
 };
@@ -1694,7 +1694,7 @@ module.exports.caml_bigint_256_num_limbs = function() {
 /**
 * @returns {number}
 */
-module.exports.caml_bigint_256_bytes_per_limb = function() {
+module.exports.caml_bigint_256_bytes_per_limb = function () {
     const ret = wasm.caml_bigint_256_bytes_per_limb();
     return ret;
 };
@@ -1704,7 +1704,7 @@ module.exports.caml_bigint_256_bytes_per_limb = function() {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_bigint_256_div = function(x, y) {
+module.exports.caml_bigint_256_div = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -1727,7 +1727,7 @@ module.exports.caml_bigint_256_div = function(x, y) {
 * @param {Uint8Array} y
 * @returns {number}
 */
-module.exports.caml_bigint_256_compare = function(x, y) {
+module.exports.caml_bigint_256_compare = function (x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
@@ -1739,7 +1739,7 @@ module.exports.caml_bigint_256_compare = function(x, y) {
 /**
 * @param {Uint8Array} x
 */
-module.exports.caml_bigint_256_print = function(x) {
+module.exports.caml_bigint_256_print = function (x) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.caml_bigint_256_print(ptr0, len0);
@@ -1749,7 +1749,7 @@ module.exports.caml_bigint_256_print = function(x) {
 * @param {Uint8Array} x
 * @returns {string}
 */
-module.exports.caml_bigint_256_to_string = function(x) {
+module.exports.caml_bigint_256_to_string = function (x) {
     let deferred2_0;
     let deferred2_1;
     try {
@@ -1773,7 +1773,7 @@ module.exports.caml_bigint_256_to_string = function(x) {
 * @param {number} i
 * @returns {boolean}
 */
-module.exports.caml_bigint_256_test_bit = function(x, i) {
+module.exports.caml_bigint_256_test_bit = function (x, i) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.caml_bigint_256_test_bit(ptr0, len0, i);
@@ -1784,7 +1784,7 @@ module.exports.caml_bigint_256_test_bit = function(x, i) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bigint_256_to_bytes = function(x) {
+module.exports.caml_bigint_256_to_bytes = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -1804,7 +1804,7 @@ module.exports.caml_bigint_256_to_bytes = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bigint_256_of_bytes = function(x) {
+module.exports.caml_bigint_256_of_bytes = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -1824,7 +1824,7 @@ module.exports.caml_bigint_256_of_bytes = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bigint_256_deep_copy = function(x) {
+module.exports.caml_bigint_256_deep_copy = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -1843,7 +1843,7 @@ module.exports.caml_bigint_256_deep_copy = function(x) {
 /**
 * @returns {WasmFqGateVector}
 */
-module.exports.caml_pasta_fq_plonk_gate_vector_create = function() {
+module.exports.caml_pasta_fq_plonk_gate_vector_create = function () {
     const ret = wasm.caml_pasta_fq_plonk_gate_vector_create();
     return WasmFqGateVector.__wrap(ret);
 };
@@ -1852,7 +1852,7 @@ module.exports.caml_pasta_fq_plonk_gate_vector_create = function() {
 * @param {WasmFqGateVector} v
 * @param {WasmFqGate} gate
 */
-module.exports.caml_pasta_fq_plonk_gate_vector_add = function(v, gate) {
+module.exports.caml_pasta_fq_plonk_gate_vector_add = function (v, gate) {
     _assertClass(v, WasmFqGateVector);
     _assertClass(gate, WasmFqGate);
     var ptr0 = gate.__destroy_into_raw();
@@ -1864,7 +1864,7 @@ module.exports.caml_pasta_fq_plonk_gate_vector_add = function(v, gate) {
 * @param {number} i
 * @returns {WasmFqGate}
 */
-module.exports.caml_pasta_fq_plonk_gate_vector_get = function(v, i) {
+module.exports.caml_pasta_fq_plonk_gate_vector_get = function (v, i) {
     _assertClass(v, WasmFqGateVector);
     const ret = wasm.caml_pasta_fq_plonk_gate_vector_get(v.__wbg_ptr, i);
     return WasmFqGate.__wrap(ret);
@@ -1874,7 +1874,7 @@ module.exports.caml_pasta_fq_plonk_gate_vector_get = function(v, i) {
 * @param {WasmFqGateVector} v
 * @returns {number}
 */
-module.exports.caml_pasta_fq_plonk_gate_vector_len = function(v) {
+module.exports.caml_pasta_fq_plonk_gate_vector_len = function (v) {
     _assertClass(v, WasmFqGateVector);
     const ret = wasm.caml_pasta_fq_plonk_gate_vector_len(v.__wbg_ptr);
     return ret >>> 0;
@@ -1885,7 +1885,7 @@ module.exports.caml_pasta_fq_plonk_gate_vector_len = function(v) {
 * @param {Wire} t
 * @param {Wire} h
 */
-module.exports.caml_pasta_fq_plonk_gate_vector_wrap = function(v, t, h) {
+module.exports.caml_pasta_fq_plonk_gate_vector_wrap = function (v, t, h) {
     _assertClass(v, WasmFqGateVector);
     _assertClass(t, Wire);
     var ptr0 = t.__destroy_into_raw();
@@ -1899,7 +1899,7 @@ module.exports.caml_pasta_fq_plonk_gate_vector_wrap = function(v, t, h) {
 * @param {WasmFqGateVector} v
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_plonk_gate_vector_digest = function(public_input_size, v) {
+module.exports.caml_pasta_fq_plonk_gate_vector_digest = function (public_input_size, v) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(v, WasmFqGateVector);
@@ -1919,7 +1919,7 @@ module.exports.caml_pasta_fq_plonk_gate_vector_digest = function(public_input_si
 * @param {WasmFqGateVector} v
 * @returns {string}
 */
-module.exports.caml_pasta_fq_plonk_circuit_serialize = function(public_input_size, v) {
+module.exports.caml_pasta_fq_plonk_circuit_serialize = function (public_input_size, v) {
     let deferred1_0;
     let deferred1_1;
     try {
@@ -1943,7 +1943,7 @@ module.exports.caml_pasta_fq_plonk_circuit_serialize = function(public_input_siz
 * @param {WasmFqProverProof} proof
 * @returns {WasmFqOracles}
 */
-module.exports.fq_oracles_create = function(lgr_comm, index, proof) {
+module.exports.fq_oracles_create = function (lgr_comm, index, proof) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray32ToWasm0(lgr_comm, wasm.__wbindgen_malloc);
@@ -1968,7 +1968,7 @@ module.exports.fq_oracles_create = function(lgr_comm, index, proof) {
 /**
 * @returns {WasmFqOracles}
 */
-module.exports.fq_oracles_dummy = function() {
+module.exports.fq_oracles_dummy = function () {
     const ret = wasm.fq_oracles_dummy();
     return WasmFqOracles.__wrap(ret);
 };
@@ -1977,7 +1977,7 @@ module.exports.fq_oracles_dummy = function() {
 * @param {WasmFqProverProof} x
 * @returns {WasmFqProverProof}
 */
-module.exports.fq_oracles_deep_copy = function(x) {
+module.exports.fq_oracles_deep_copy = function (x) {
     _assertClass(x, WasmFqProverProof);
     var ptr0 = x.__destroy_into_raw();
     const ret = wasm.caml_pasta_fq_plonk_proof_deep_copy(ptr0);
@@ -1992,7 +1992,7 @@ module.exports.fq_oracles_deep_copy = function(x) {
 * @param {Uint32Array} prev_sgs
 * @returns {WasmFqProverProof}
 */
-module.exports.caml_pasta_fq_plonk_proof_create = function(index, witness, wasm_runtime_tables, prev_challenges, prev_sgs) {
+module.exports.caml_pasta_fq_plonk_proof_create = function (index, witness, wasm_runtime_tables, prev_challenges, prev_sgs) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(index, WasmPastaFqPlonkIndex);
@@ -2022,7 +2022,7 @@ module.exports.caml_pasta_fq_plonk_proof_create = function(index, witness, wasm_
 * @param {WasmFqProverProof} proof
 * @returns {boolean}
 */
-module.exports.caml_pasta_fq_plonk_proof_verify = function(index, proof) {
+module.exports.caml_pasta_fq_plonk_proof_verify = function (index, proof) {
     _assertClass(index, WasmFqPlonkVerifierIndex);
     var ptr0 = index.__destroy_into_raw();
     _assertClass(proof, WasmFqProverProof);
@@ -2036,7 +2036,7 @@ module.exports.caml_pasta_fq_plonk_proof_verify = function(index, proof) {
 * @param {Uint32Array} proofs
 * @returns {boolean}
 */
-module.exports.caml_pasta_fq_plonk_proof_batch_verify = function(indexes, proofs) {
+module.exports.caml_pasta_fq_plonk_proof_batch_verify = function (indexes, proofs) {
     const ptr0 = passArray32ToWasm0(indexes, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray32ToWasm0(proofs, wasm.__wbindgen_malloc);
@@ -2048,7 +2048,7 @@ module.exports.caml_pasta_fq_plonk_proof_batch_verify = function(indexes, proofs
 /**
 * @returns {WasmFqProverProof}
 */
-module.exports.caml_pasta_fq_plonk_proof_dummy = function() {
+module.exports.caml_pasta_fq_plonk_proof_dummy = function () {
     const ret = wasm.caml_pasta_fq_plonk_proof_dummy();
     return WasmFqProverProof.__wrap(ret);
 };
@@ -2057,7 +2057,7 @@ module.exports.caml_pasta_fq_plonk_proof_dummy = function() {
 * @param {WasmFqProverProof} x
 * @returns {WasmFqProverProof}
 */
-module.exports.caml_pasta_fq_plonk_proof_deep_copy = function(x) {
+module.exports.caml_pasta_fq_plonk_proof_deep_copy = function (x) {
     _assertClass(x, WasmFqProverProof);
     var ptr0 = x.__destroy_into_raw();
     const ret = wasm.caml_pasta_fq_plonk_proof_deep_copy(ptr0);
@@ -2068,7 +2068,7 @@ module.exports.caml_pasta_fq_plonk_proof_deep_copy = function(x) {
 * @param {WasmPastaFpPlonkIndex} prover_index
 * @returns {string}
 */
-module.exports.prover_to_json = function(prover_index) {
+module.exports.prover_to_json = function (prover_index) {
     let deferred1_0;
     let deferred1_1;
     try {
@@ -2089,7 +2089,7 @@ module.exports.prover_to_json = function(prover_index) {
 /**
 * @returns {number}
 */
-module.exports.caml_pasta_fp_size_in_bits = function() {
+module.exports.caml_pasta_fp_size_in_bits = function () {
     const ret = wasm.caml_pasta_fp_size_in_bits();
     return ret;
 };
@@ -2097,7 +2097,7 @@ module.exports.caml_pasta_fp_size_in_bits = function() {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_size = function() {
+module.exports.caml_pasta_fp_size = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pasta_fp_size(retptr);
@@ -2116,7 +2116,7 @@ module.exports.caml_pasta_fp_size = function() {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_add = function(x, y) {
+module.exports.caml_pasta_fp_add = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2139,7 +2139,7 @@ module.exports.caml_pasta_fp_add = function(x, y) {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_sub = function(x, y) {
+module.exports.caml_pasta_fp_sub = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2161,7 +2161,7 @@ module.exports.caml_pasta_fp_sub = function(x, y) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_negate = function(x) {
+module.exports.caml_pasta_fp_negate = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2182,7 +2182,7 @@ module.exports.caml_pasta_fp_negate = function(x) {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_mul = function(x, y) {
+module.exports.caml_pasta_fp_mul = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2205,7 +2205,7 @@ module.exports.caml_pasta_fp_mul = function(x, y) {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_div = function(x, y) {
+module.exports.caml_pasta_fp_div = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2227,7 +2227,7 @@ module.exports.caml_pasta_fp_div = function(x, y) {
 * @param {Uint8Array} x
 * @returns {Uint8Array | undefined}
 */
-module.exports.caml_pasta_fp_inv = function(x) {
+module.exports.caml_pasta_fp_inv = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2250,7 +2250,7 @@ module.exports.caml_pasta_fp_inv = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_square = function(x) {
+module.exports.caml_pasta_fp_square = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2270,7 +2270,7 @@ module.exports.caml_pasta_fp_square = function(x) {
 * @param {Uint8Array} x
 * @returns {boolean}
 */
-module.exports.caml_pasta_fp_is_square = function(x) {
+module.exports.caml_pasta_fp_is_square = function (x) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.caml_pasta_fp_is_square(ptr0, len0);
@@ -2281,7 +2281,7 @@ module.exports.caml_pasta_fp_is_square = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array | undefined}
 */
-module.exports.caml_pasta_fp_sqrt = function(x) {
+module.exports.caml_pasta_fp_sqrt = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2304,7 +2304,7 @@ module.exports.caml_pasta_fp_sqrt = function(x) {
 * @param {number} i
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_of_int = function(i) {
+module.exports.caml_pasta_fp_of_int = function (i) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pasta_fp_of_int(retptr, i);
@@ -2322,7 +2322,7 @@ module.exports.caml_pasta_fp_of_int = function(i) {
 * @param {Uint8Array} x
 * @returns {string}
 */
-module.exports.caml_pasta_fp_to_string = function(x) {
+module.exports.caml_pasta_fp_to_string = function (x) {
     let deferred2_0;
     let deferred2_1;
     try {
@@ -2345,7 +2345,7 @@ module.exports.caml_pasta_fp_to_string = function(x) {
 * @param {string} s
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_of_string = function(s) {
+module.exports.caml_pasta_fp_of_string = function (s) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -2369,7 +2369,7 @@ module.exports.caml_pasta_fp_of_string = function(s) {
 /**
 * @param {Uint8Array} x
 */
-module.exports.caml_pasta_fp_print = function(x) {
+module.exports.caml_pasta_fp_print = function (x) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.caml_pasta_fp_print(ptr0, len0);
@@ -2380,7 +2380,7 @@ module.exports.caml_pasta_fp_print = function(x) {
 * @param {Uint8Array} y
 * @returns {number}
 */
-module.exports.caml_pasta_fp_compare = function(x, y) {
+module.exports.caml_pasta_fp_compare = function (x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
@@ -2394,7 +2394,7 @@ module.exports.caml_pasta_fp_compare = function(x, y) {
 * @param {Uint8Array} y
 * @returns {boolean}
 */
-module.exports.caml_pasta_fp_equal = function(x, y) {
+module.exports.caml_pasta_fp_equal = function (x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
@@ -2406,7 +2406,7 @@ module.exports.caml_pasta_fp_equal = function(x, y) {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_random = function() {
+module.exports.caml_pasta_fp_random = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pasta_fp_random(retptr);
@@ -2424,7 +2424,7 @@ module.exports.caml_pasta_fp_random = function() {
 * @param {number} i
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_rng = function(i) {
+module.exports.caml_pasta_fp_rng = function (i) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pasta_fp_rng(retptr, i);
@@ -2442,7 +2442,7 @@ module.exports.caml_pasta_fp_rng = function(i) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_to_bigint = function(x) {
+module.exports.caml_pasta_fp_to_bigint = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2462,7 +2462,7 @@ module.exports.caml_pasta_fp_to_bigint = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_of_bigint = function(x) {
+module.exports.caml_pasta_fp_of_bigint = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2486,7 +2486,7 @@ module.exports.caml_pasta_fp_of_bigint = function(x) {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_two_adic_root_of_unity = function() {
+module.exports.caml_pasta_fp_two_adic_root_of_unity = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pasta_fp_two_adic_root_of_unity(retptr);
@@ -2504,7 +2504,7 @@ module.exports.caml_pasta_fp_two_adic_root_of_unity = function() {
 * @param {number} log2_size
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_domain_generator = function(log2_size) {
+module.exports.caml_pasta_fp_domain_generator = function (log2_size) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pasta_fp_domain_generator(retptr, log2_size);
@@ -2522,7 +2522,7 @@ module.exports.caml_pasta_fp_domain_generator = function(log2_size) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_to_bytes = function(x) {
+module.exports.caml_pasta_fp_to_bytes = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2542,7 +2542,7 @@ module.exports.caml_pasta_fp_to_bytes = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_of_bytes = function(x) {
+module.exports.caml_pasta_fp_of_bytes = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2562,7 +2562,7 @@ module.exports.caml_pasta_fp_of_bytes = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_deep_copy = function(x) {
+module.exports.caml_pasta_fp_deep_copy = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2581,7 +2581,7 @@ module.exports.caml_pasta_fp_deep_copy = function(x) {
 /**
 * @returns {number}
 */
-module.exports.caml_pasta_fq_size_in_bits = function() {
+module.exports.caml_pasta_fq_size_in_bits = function () {
     const ret = wasm.caml_pasta_fp_size_in_bits();
     return ret;
 };
@@ -2589,7 +2589,7 @@ module.exports.caml_pasta_fq_size_in_bits = function() {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_size = function() {
+module.exports.caml_pasta_fq_size = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pasta_fq_size(retptr);
@@ -2608,7 +2608,7 @@ module.exports.caml_pasta_fq_size = function() {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_add = function(x, y) {
+module.exports.caml_pasta_fq_add = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2631,7 +2631,7 @@ module.exports.caml_pasta_fq_add = function(x, y) {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_sub = function(x, y) {
+module.exports.caml_pasta_fq_sub = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2653,7 +2653,7 @@ module.exports.caml_pasta_fq_sub = function(x, y) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_negate = function(x) {
+module.exports.caml_pasta_fq_negate = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2674,7 +2674,7 @@ module.exports.caml_pasta_fq_negate = function(x) {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_mul = function(x, y) {
+module.exports.caml_pasta_fq_mul = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2697,7 +2697,7 @@ module.exports.caml_pasta_fq_mul = function(x, y) {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_div = function(x, y) {
+module.exports.caml_pasta_fq_div = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2719,7 +2719,7 @@ module.exports.caml_pasta_fq_div = function(x, y) {
 * @param {Uint8Array} x
 * @returns {Uint8Array | undefined}
 */
-module.exports.caml_pasta_fq_inv = function(x) {
+module.exports.caml_pasta_fq_inv = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2742,7 +2742,7 @@ module.exports.caml_pasta_fq_inv = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_square = function(x) {
+module.exports.caml_pasta_fq_square = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2762,7 +2762,7 @@ module.exports.caml_pasta_fq_square = function(x) {
 * @param {Uint8Array} x
 * @returns {boolean}
 */
-module.exports.caml_pasta_fq_is_square = function(x) {
+module.exports.caml_pasta_fq_is_square = function (x) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.caml_pasta_fq_is_square(ptr0, len0);
@@ -2773,7 +2773,7 @@ module.exports.caml_pasta_fq_is_square = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array | undefined}
 */
-module.exports.caml_pasta_fq_sqrt = function(x) {
+module.exports.caml_pasta_fq_sqrt = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2796,7 +2796,7 @@ module.exports.caml_pasta_fq_sqrt = function(x) {
 * @param {number} i
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_of_int = function(i) {
+module.exports.caml_pasta_fq_of_int = function (i) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pasta_fq_of_int(retptr, i);
@@ -2814,7 +2814,7 @@ module.exports.caml_pasta_fq_of_int = function(i) {
 * @param {Uint8Array} x
 * @returns {string}
 */
-module.exports.caml_pasta_fq_to_string = function(x) {
+module.exports.caml_pasta_fq_to_string = function (x) {
     let deferred2_0;
     let deferred2_1;
     try {
@@ -2837,7 +2837,7 @@ module.exports.caml_pasta_fq_to_string = function(x) {
 * @param {string} s
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_of_string = function(s) {
+module.exports.caml_pasta_fq_of_string = function (s) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -2861,7 +2861,7 @@ module.exports.caml_pasta_fq_of_string = function(s) {
 /**
 * @param {Uint8Array} x
 */
-module.exports.caml_pasta_fq_print = function(x) {
+module.exports.caml_pasta_fq_print = function (x) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.caml_pasta_fq_print(ptr0, len0);
@@ -2872,7 +2872,7 @@ module.exports.caml_pasta_fq_print = function(x) {
 * @param {Uint8Array} y
 * @returns {number}
 */
-module.exports.caml_pasta_fq_compare = function(x, y) {
+module.exports.caml_pasta_fq_compare = function (x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
@@ -2886,7 +2886,7 @@ module.exports.caml_pasta_fq_compare = function(x, y) {
 * @param {Uint8Array} y
 * @returns {boolean}
 */
-module.exports.caml_pasta_fq_equal = function(x, y) {
+module.exports.caml_pasta_fq_equal = function (x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
@@ -2898,7 +2898,7 @@ module.exports.caml_pasta_fq_equal = function(x, y) {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_random = function() {
+module.exports.caml_pasta_fq_random = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pasta_fq_random(retptr);
@@ -2916,7 +2916,7 @@ module.exports.caml_pasta_fq_random = function() {
 * @param {number} i
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_rng = function(i) {
+module.exports.caml_pasta_fq_rng = function (i) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pasta_fq_rng(retptr, i);
@@ -2934,7 +2934,7 @@ module.exports.caml_pasta_fq_rng = function(i) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_to_bigint = function(x) {
+module.exports.caml_pasta_fq_to_bigint = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2954,7 +2954,7 @@ module.exports.caml_pasta_fq_to_bigint = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_of_bigint = function(x) {
+module.exports.caml_pasta_fq_of_bigint = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -2978,7 +2978,7 @@ module.exports.caml_pasta_fq_of_bigint = function(x) {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_two_adic_root_of_unity = function() {
+module.exports.caml_pasta_fq_two_adic_root_of_unity = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pasta_fq_two_adic_root_of_unity(retptr);
@@ -2996,7 +2996,7 @@ module.exports.caml_pasta_fq_two_adic_root_of_unity = function() {
 * @param {number} log2_size
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_domain_generator = function(log2_size) {
+module.exports.caml_pasta_fq_domain_generator = function (log2_size) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pasta_fq_domain_generator(retptr, log2_size);
@@ -3014,7 +3014,7 @@ module.exports.caml_pasta_fq_domain_generator = function(log2_size) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_to_bytes = function(x) {
+module.exports.caml_pasta_fq_to_bytes = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3034,7 +3034,7 @@ module.exports.caml_pasta_fq_to_bytes = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_of_bytes = function(x) {
+module.exports.caml_pasta_fq_of_bytes = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3054,7 +3054,7 @@ module.exports.caml_pasta_fq_of_bytes = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fq_deep_copy = function(x) {
+module.exports.caml_pasta_fq_deep_copy = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3073,7 +3073,7 @@ module.exports.caml_pasta_fq_deep_copy = function(x) {
 /**
 * @returns {WasmFpGateVector}
 */
-module.exports.caml_pasta_fp_plonk_gate_vector_create = function() {
+module.exports.caml_pasta_fp_plonk_gate_vector_create = function () {
     const ret = wasm.caml_pasta_fp_plonk_gate_vector_create();
     return WasmFpGateVector.__wrap(ret);
 };
@@ -3082,7 +3082,7 @@ module.exports.caml_pasta_fp_plonk_gate_vector_create = function() {
 * @param {WasmFpGateVector} v
 * @param {WasmFpGate} gate
 */
-module.exports.caml_pasta_fp_plonk_gate_vector_add = function(v, gate) {
+module.exports.caml_pasta_fp_plonk_gate_vector_add = function (v, gate) {
     _assertClass(v, WasmFpGateVector);
     _assertClass(gate, WasmFpGate);
     var ptr0 = gate.__destroy_into_raw();
@@ -3094,7 +3094,7 @@ module.exports.caml_pasta_fp_plonk_gate_vector_add = function(v, gate) {
 * @param {number} i
 * @returns {WasmFpGate}
 */
-module.exports.caml_pasta_fp_plonk_gate_vector_get = function(v, i) {
+module.exports.caml_pasta_fp_plonk_gate_vector_get = function (v, i) {
     _assertClass(v, WasmFpGateVector);
     const ret = wasm.caml_pasta_fp_plonk_gate_vector_get(v.__wbg_ptr, i);
     return WasmFpGate.__wrap(ret);
@@ -3104,7 +3104,7 @@ module.exports.caml_pasta_fp_plonk_gate_vector_get = function(v, i) {
 * @param {WasmFpGateVector} v
 * @returns {number}
 */
-module.exports.caml_pasta_fp_plonk_gate_vector_len = function(v) {
+module.exports.caml_pasta_fp_plonk_gate_vector_len = function (v) {
     _assertClass(v, WasmFpGateVector);
     const ret = wasm.caml_pasta_fp_plonk_gate_vector_len(v.__wbg_ptr);
     return ret >>> 0;
@@ -3115,7 +3115,7 @@ module.exports.caml_pasta_fp_plonk_gate_vector_len = function(v) {
 * @param {Wire} t
 * @param {Wire} h
 */
-module.exports.caml_pasta_fp_plonk_gate_vector_wrap = function(v, t, h) {
+module.exports.caml_pasta_fp_plonk_gate_vector_wrap = function (v, t, h) {
     _assertClass(v, WasmFpGateVector);
     _assertClass(t, Wire);
     var ptr0 = t.__destroy_into_raw();
@@ -3129,7 +3129,7 @@ module.exports.caml_pasta_fp_plonk_gate_vector_wrap = function(v, t, h) {
 * @param {WasmFpGateVector} v
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_fp_plonk_gate_vector_digest = function(public_input_size, v) {
+module.exports.caml_pasta_fp_plonk_gate_vector_digest = function (public_input_size, v) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(v, WasmFpGateVector);
@@ -3149,7 +3149,7 @@ module.exports.caml_pasta_fp_plonk_gate_vector_digest = function(public_input_si
 * @param {WasmFpGateVector} v
 * @returns {string}
 */
-module.exports.caml_pasta_fp_plonk_circuit_serialize = function(public_input_size, v) {
+module.exports.caml_pasta_fp_plonk_circuit_serialize = function (public_input_size, v) {
     let deferred1_0;
     let deferred1_1;
     try {
@@ -3170,7 +3170,7 @@ module.exports.caml_pasta_fp_plonk_circuit_serialize = function(public_input_siz
 /**
 * @returns {WasmPallasGProjective}
 */
-module.exports.caml_pallas_one = function() {
+module.exports.caml_pallas_one = function () {
     const ret = wasm.caml_pallas_one();
     return WasmPallasGProjective.__wrap(ret);
 };
@@ -3180,7 +3180,7 @@ module.exports.caml_pallas_one = function() {
 * @param {WasmPallasGProjective} y
 * @returns {WasmPallasGProjective}
 */
-module.exports.caml_pallas_add = function(x, y) {
+module.exports.caml_pallas_add = function (x, y) {
     _assertClass(x, WasmPallasGProjective);
     _assertClass(y, WasmPallasGProjective);
     const ret = wasm.caml_pallas_add(x.__wbg_ptr, y.__wbg_ptr);
@@ -3192,7 +3192,7 @@ module.exports.caml_pallas_add = function(x, y) {
 * @param {WasmPallasGProjective} y
 * @returns {WasmPallasGProjective}
 */
-module.exports.caml_pallas_sub = function(x, y) {
+module.exports.caml_pallas_sub = function (x, y) {
     _assertClass(x, WasmPallasGProjective);
     _assertClass(y, WasmPallasGProjective);
     const ret = wasm.caml_pallas_sub(x.__wbg_ptr, y.__wbg_ptr);
@@ -3203,7 +3203,7 @@ module.exports.caml_pallas_sub = function(x, y) {
 * @param {WasmPallasGProjective} x
 * @returns {WasmPallasGProjective}
 */
-module.exports.caml_pallas_negate = function(x) {
+module.exports.caml_pallas_negate = function (x) {
     _assertClass(x, WasmPallasGProjective);
     const ret = wasm.caml_pallas_negate(x.__wbg_ptr);
     return WasmPallasGProjective.__wrap(ret);
@@ -3213,7 +3213,7 @@ module.exports.caml_pallas_negate = function(x) {
 * @param {WasmPallasGProjective} x
 * @returns {WasmPallasGProjective}
 */
-module.exports.caml_pallas_double = function(x) {
+module.exports.caml_pallas_double = function (x) {
     _assertClass(x, WasmPallasGProjective);
     const ret = wasm.caml_pallas_double(x.__wbg_ptr);
     return WasmPallasGProjective.__wrap(ret);
@@ -3224,7 +3224,7 @@ module.exports.caml_pallas_double = function(x) {
 * @param {Uint8Array} y
 * @returns {WasmPallasGProjective}
 */
-module.exports.caml_pallas_scale = function(x, y) {
+module.exports.caml_pallas_scale = function (x, y) {
     _assertClass(x, WasmPallasGProjective);
     const ptr0 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
@@ -3235,7 +3235,7 @@ module.exports.caml_pallas_scale = function(x, y) {
 /**
 * @returns {WasmPallasGProjective}
 */
-module.exports.caml_pallas_random = function() {
+module.exports.caml_pallas_random = function () {
     const ret = wasm.caml_pallas_random();
     return WasmPallasGProjective.__wrap(ret);
 };
@@ -3244,7 +3244,7 @@ module.exports.caml_pallas_random = function() {
 * @param {number} i
 * @returns {WasmPallasGProjective}
 */
-module.exports.caml_pallas_rng = function(i) {
+module.exports.caml_pallas_rng = function (i) {
     const ret = wasm.caml_pallas_rng(i);
     return WasmPallasGProjective.__wrap(ret);
 };
@@ -3252,7 +3252,7 @@ module.exports.caml_pallas_rng = function(i) {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_pallas_endo_base = function() {
+module.exports.caml_pallas_endo_base = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pallas_endo_base(retptr);
@@ -3269,7 +3269,7 @@ module.exports.caml_pallas_endo_base = function() {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_pallas_endo_scalar = function() {
+module.exports.caml_pallas_endo_scalar = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_pallas_endo_scalar(retptr);
@@ -3287,7 +3287,7 @@ module.exports.caml_pallas_endo_scalar = function() {
 * @param {WasmPallasGProjective} x
 * @returns {WasmGPallas}
 */
-module.exports.caml_pallas_to_affine = function(x) {
+module.exports.caml_pallas_to_affine = function (x) {
     _assertClass(x, WasmPallasGProjective);
     const ret = wasm.caml_pallas_to_affine(x.__wbg_ptr);
     return WasmGPallas.__wrap(ret);
@@ -3297,7 +3297,7 @@ module.exports.caml_pallas_to_affine = function(x) {
 * @param {WasmGPallas} x
 * @returns {WasmPallasGProjective}
 */
-module.exports.caml_pallas_of_affine = function(x) {
+module.exports.caml_pallas_of_affine = function (x) {
     _assertClass(x, WasmGPallas);
     var ptr0 = x.__destroy_into_raw();
     const ret = wasm.caml_pallas_of_affine(ptr0);
@@ -3309,7 +3309,7 @@ module.exports.caml_pallas_of_affine = function(x) {
 * @param {Uint8Array} y
 * @returns {WasmPallasGProjective}
 */
-module.exports.caml_pallas_of_affine_coordinates = function(x, y) {
+module.exports.caml_pallas_of_affine_coordinates = function (x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
@@ -3322,7 +3322,7 @@ module.exports.caml_pallas_of_affine_coordinates = function(x, y) {
 * @param {WasmGPallas} x
 * @returns {WasmGPallas}
 */
-module.exports.caml_pallas_affine_deep_copy = function(x) {
+module.exports.caml_pallas_affine_deep_copy = function (x) {
     _assertClass(x, WasmGPallas);
     var ptr0 = x.__destroy_into_raw();
     const ret = wasm.caml_pallas_affine_deep_copy(ptr0);
@@ -3332,7 +3332,7 @@ module.exports.caml_pallas_affine_deep_copy = function(x) {
 /**
 * @returns {WasmVestaGProjective}
 */
-module.exports.caml_vesta_one = function() {
+module.exports.caml_vesta_one = function () {
     const ret = wasm.caml_vesta_one();
     return WasmVestaGProjective.__wrap(ret);
 };
@@ -3342,7 +3342,7 @@ module.exports.caml_vesta_one = function() {
 * @param {WasmVestaGProjective} y
 * @returns {WasmVestaGProjective}
 */
-module.exports.caml_vesta_add = function(x, y) {
+module.exports.caml_vesta_add = function (x, y) {
     _assertClass(x, WasmVestaGProjective);
     _assertClass(y, WasmVestaGProjective);
     const ret = wasm.caml_vesta_add(x.__wbg_ptr, y.__wbg_ptr);
@@ -3354,7 +3354,7 @@ module.exports.caml_vesta_add = function(x, y) {
 * @param {WasmVestaGProjective} y
 * @returns {WasmVestaGProjective}
 */
-module.exports.caml_vesta_sub = function(x, y) {
+module.exports.caml_vesta_sub = function (x, y) {
     _assertClass(x, WasmVestaGProjective);
     _assertClass(y, WasmVestaGProjective);
     const ret = wasm.caml_vesta_sub(x.__wbg_ptr, y.__wbg_ptr);
@@ -3365,7 +3365,7 @@ module.exports.caml_vesta_sub = function(x, y) {
 * @param {WasmVestaGProjective} x
 * @returns {WasmVestaGProjective}
 */
-module.exports.caml_vesta_negate = function(x) {
+module.exports.caml_vesta_negate = function (x) {
     _assertClass(x, WasmVestaGProjective);
     const ret = wasm.caml_vesta_negate(x.__wbg_ptr);
     return WasmVestaGProjective.__wrap(ret);
@@ -3375,7 +3375,7 @@ module.exports.caml_vesta_negate = function(x) {
 * @param {WasmVestaGProjective} x
 * @returns {WasmVestaGProjective}
 */
-module.exports.caml_vesta_double = function(x) {
+module.exports.caml_vesta_double = function (x) {
     _assertClass(x, WasmVestaGProjective);
     const ret = wasm.caml_vesta_double(x.__wbg_ptr);
     return WasmVestaGProjective.__wrap(ret);
@@ -3386,7 +3386,7 @@ module.exports.caml_vesta_double = function(x) {
 * @param {Uint8Array} y
 * @returns {WasmVestaGProjective}
 */
-module.exports.caml_vesta_scale = function(x, y) {
+module.exports.caml_vesta_scale = function (x, y) {
     _assertClass(x, WasmVestaGProjective);
     const ptr0 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
@@ -3397,7 +3397,7 @@ module.exports.caml_vesta_scale = function(x, y) {
 /**
 * @returns {WasmVestaGProjective}
 */
-module.exports.caml_vesta_random = function() {
+module.exports.caml_vesta_random = function () {
     const ret = wasm.caml_vesta_random();
     return WasmVestaGProjective.__wrap(ret);
 };
@@ -3406,7 +3406,7 @@ module.exports.caml_vesta_random = function() {
 * @param {number} i
 * @returns {WasmVestaGProjective}
 */
-module.exports.caml_vesta_rng = function(i) {
+module.exports.caml_vesta_rng = function (i) {
     const ret = wasm.caml_vesta_rng(i);
     return WasmVestaGProjective.__wrap(ret);
 };
@@ -3414,7 +3414,7 @@ module.exports.caml_vesta_rng = function(i) {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_vesta_endo_base = function() {
+module.exports.caml_vesta_endo_base = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_vesta_endo_base(retptr);
@@ -3431,7 +3431,7 @@ module.exports.caml_vesta_endo_base = function() {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_vesta_endo_scalar = function() {
+module.exports.caml_vesta_endo_scalar = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_vesta_endo_scalar(retptr);
@@ -3449,7 +3449,7 @@ module.exports.caml_vesta_endo_scalar = function() {
 * @param {WasmVestaGProjective} x
 * @returns {WasmGVesta}
 */
-module.exports.caml_vesta_to_affine = function(x) {
+module.exports.caml_vesta_to_affine = function (x) {
     _assertClass(x, WasmVestaGProjective);
     const ret = wasm.caml_vesta_to_affine(x.__wbg_ptr);
     return WasmGVesta.__wrap(ret);
@@ -3459,7 +3459,7 @@ module.exports.caml_vesta_to_affine = function(x) {
 * @param {WasmGVesta} x
 * @returns {WasmVestaGProjective}
 */
-module.exports.caml_vesta_of_affine = function(x) {
+module.exports.caml_vesta_of_affine = function (x) {
     _assertClass(x, WasmGVesta);
     var ptr0 = x.__destroy_into_raw();
     const ret = wasm.caml_vesta_of_affine(ptr0);
@@ -3471,7 +3471,7 @@ module.exports.caml_vesta_of_affine = function(x) {
 * @param {Uint8Array} y
 * @returns {WasmVestaGProjective}
 */
-module.exports.caml_vesta_of_affine_coordinates = function(x, y) {
+module.exports.caml_vesta_of_affine_coordinates = function (x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
@@ -3484,7 +3484,7 @@ module.exports.caml_vesta_of_affine_coordinates = function(x, y) {
 * @param {WasmGVesta} x
 * @returns {WasmGVesta}
 */
-module.exports.caml_vesta_affine_deep_copy = function(x) {
+module.exports.caml_vesta_affine_deep_copy = function (x) {
     _assertClass(x, WasmGVesta);
     var ptr0 = x.__destroy_into_raw();
     const ret = wasm.caml_pallas_affine_deep_copy(ptr0);
@@ -3494,7 +3494,7 @@ module.exports.caml_vesta_affine_deep_copy = function(x) {
 /**
 * @returns {number}
 */
-module.exports.caml_bn254_fq_size_in_bits = function() {
+module.exports.caml_bn254_fq_size_in_bits = function () {
     const ret = wasm.caml_bn254_fq_size_in_bits();
     return ret;
 };
@@ -3502,7 +3502,7 @@ module.exports.caml_bn254_fq_size_in_bits = function() {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_size = function() {
+module.exports.caml_bn254_fq_size = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_bn254_fq_size(retptr);
@@ -3521,7 +3521,7 @@ module.exports.caml_bn254_fq_size = function() {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_add = function(x, y) {
+module.exports.caml_bn254_fq_add = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3544,7 +3544,7 @@ module.exports.caml_bn254_fq_add = function(x, y) {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_sub = function(x, y) {
+module.exports.caml_bn254_fq_sub = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3566,7 +3566,7 @@ module.exports.caml_bn254_fq_sub = function(x, y) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_negate = function(x) {
+module.exports.caml_bn254_fq_negate = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3587,7 +3587,7 @@ module.exports.caml_bn254_fq_negate = function(x) {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_mul = function(x, y) {
+module.exports.caml_bn254_fq_mul = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3610,7 +3610,7 @@ module.exports.caml_bn254_fq_mul = function(x, y) {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_div = function(x, y) {
+module.exports.caml_bn254_fq_div = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3632,7 +3632,7 @@ module.exports.caml_bn254_fq_div = function(x, y) {
 * @param {Uint8Array} x
 * @returns {Uint8Array | undefined}
 */
-module.exports.caml_bn254_fq_inv = function(x) {
+module.exports.caml_bn254_fq_inv = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3655,7 +3655,7 @@ module.exports.caml_bn254_fq_inv = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_square = function(x) {
+module.exports.caml_bn254_fq_square = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3675,7 +3675,7 @@ module.exports.caml_bn254_fq_square = function(x) {
 * @param {Uint8Array} x
 * @returns {boolean}
 */
-module.exports.caml_bn254_fq_is_square = function(x) {
+module.exports.caml_bn254_fq_is_square = function (x) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.caml_bn254_fq_is_square(ptr0, len0);
@@ -3686,7 +3686,7 @@ module.exports.caml_bn254_fq_is_square = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array | undefined}
 */
-module.exports.caml_bn254_fq_sqrt = function(x) {
+module.exports.caml_bn254_fq_sqrt = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3709,7 +3709,7 @@ module.exports.caml_bn254_fq_sqrt = function(x) {
 * @param {number} i
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_of_int = function(i) {
+module.exports.caml_bn254_fq_of_int = function (i) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_bn254_fq_of_int(retptr, i);
@@ -3727,7 +3727,7 @@ module.exports.caml_bn254_fq_of_int = function(i) {
 * @param {Uint8Array} x
 * @returns {string}
 */
-module.exports.caml_bn254_fq_to_string = function(x) {
+module.exports.caml_bn254_fq_to_string = function (x) {
     let deferred2_0;
     let deferred2_1;
     try {
@@ -3750,7 +3750,7 @@ module.exports.caml_bn254_fq_to_string = function(x) {
 * @param {string} s
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_of_string = function(s) {
+module.exports.caml_bn254_fq_of_string = function (s) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -3774,7 +3774,7 @@ module.exports.caml_bn254_fq_of_string = function(s) {
 /**
 * @param {Uint8Array} x
 */
-module.exports.caml_bn254_fq_print = function(x) {
+module.exports.caml_bn254_fq_print = function (x) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.caml_bn254_fq_print(ptr0, len0);
@@ -3785,7 +3785,7 @@ module.exports.caml_bn254_fq_print = function(x) {
 * @param {Uint8Array} y
 * @returns {number}
 */
-module.exports.caml_bn254_fq_compare = function(x, y) {
+module.exports.caml_bn254_fq_compare = function (x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
@@ -3799,7 +3799,7 @@ module.exports.caml_bn254_fq_compare = function(x, y) {
 * @param {Uint8Array} y
 * @returns {boolean}
 */
-module.exports.caml_bn254_fq_equal = function(x, y) {
+module.exports.caml_bn254_fq_equal = function (x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
@@ -3811,7 +3811,7 @@ module.exports.caml_bn254_fq_equal = function(x, y) {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_random = function() {
+module.exports.caml_bn254_fq_random = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_bn254_fq_random(retptr);
@@ -3829,7 +3829,7 @@ module.exports.caml_bn254_fq_random = function() {
 * @param {number} i
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_rng = function(i) {
+module.exports.caml_bn254_fq_rng = function (i) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_bn254_fq_rng(retptr, i);
@@ -3847,7 +3847,7 @@ module.exports.caml_bn254_fq_rng = function(i) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_to_bigint = function(x) {
+module.exports.caml_bn254_fq_to_bigint = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3867,7 +3867,7 @@ module.exports.caml_bn254_fq_to_bigint = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_of_bigint = function(x) {
+module.exports.caml_bn254_fq_of_bigint = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3891,7 +3891,7 @@ module.exports.caml_bn254_fq_of_bigint = function(x) {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_two_adic_root_of_unity = function() {
+module.exports.caml_bn254_fq_two_adic_root_of_unity = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_bn254_fq_two_adic_root_of_unity(retptr);
@@ -3909,7 +3909,7 @@ module.exports.caml_bn254_fq_two_adic_root_of_unity = function() {
 * @param {number} log2_size
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_domain_generator = function(log2_size) {
+module.exports.caml_bn254_fq_domain_generator = function (log2_size) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_bn254_fq_domain_generator(retptr, log2_size);
@@ -3927,7 +3927,7 @@ module.exports.caml_bn254_fq_domain_generator = function(log2_size) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_to_bytes = function(x) {
+module.exports.caml_bn254_fq_to_bytes = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3947,7 +3947,7 @@ module.exports.caml_bn254_fq_to_bytes = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_of_bytes = function(x) {
+module.exports.caml_bn254_fq_of_bytes = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3967,7 +3967,7 @@ module.exports.caml_bn254_fq_of_bytes = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fq_deep_copy = function(x) {
+module.exports.caml_bn254_fq_deep_copy = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -3986,7 +3986,7 @@ module.exports.caml_bn254_fq_deep_copy = function(x) {
 /**
 * @returns {WasmBn254FpGateVector}
 */
-module.exports.caml_pasta_bn254_fp_plonk_gate_vector_create = function() {
+module.exports.caml_pasta_bn254_fp_plonk_gate_vector_create = function () {
     const ret = wasm.caml_pasta_bn254_fp_plonk_gate_vector_create();
     return WasmBn254FpGateVector.__wrap(ret);
 };
@@ -3995,7 +3995,7 @@ module.exports.caml_pasta_bn254_fp_plonk_gate_vector_create = function() {
 * @param {WasmBn254FpGateVector} v
 * @param {WasmBn254FpGate} gate
 */
-module.exports.caml_pasta_bn254_fp_plonk_gate_vector_add = function(v, gate) {
+module.exports.caml_pasta_bn254_fp_plonk_gate_vector_add = function (v, gate) {
     _assertClass(v, WasmBn254FpGateVector);
     _assertClass(gate, WasmBn254FpGate);
     var ptr0 = gate.__destroy_into_raw();
@@ -4007,7 +4007,7 @@ module.exports.caml_pasta_bn254_fp_plonk_gate_vector_add = function(v, gate) {
 * @param {number} i
 * @returns {WasmBn254FpGate}
 */
-module.exports.caml_pasta_bn254_fp_plonk_gate_vector_get = function(v, i) {
+module.exports.caml_pasta_bn254_fp_plonk_gate_vector_get = function (v, i) {
     _assertClass(v, WasmBn254FpGateVector);
     const ret = wasm.caml_pasta_bn254_fp_plonk_gate_vector_get(v.__wbg_ptr, i);
     return WasmBn254FpGate.__wrap(ret);
@@ -4017,7 +4017,7 @@ module.exports.caml_pasta_bn254_fp_plonk_gate_vector_get = function(v, i) {
 * @param {WasmBn254FpGateVector} v
 * @returns {number}
 */
-module.exports.caml_pasta_bn254_fp_plonk_gate_vector_len = function(v) {
+module.exports.caml_pasta_bn254_fp_plonk_gate_vector_len = function (v) {
     _assertClass(v, WasmBn254FpGateVector);
     const ret = wasm.caml_pasta_bn254_fp_plonk_gate_vector_len(v.__wbg_ptr);
     return ret >>> 0;
@@ -4028,7 +4028,7 @@ module.exports.caml_pasta_bn254_fp_plonk_gate_vector_len = function(v) {
 * @param {Wire} t
 * @param {Wire} h
 */
-module.exports.caml_pasta_bn254_fp_plonk_gate_vector_wrap = function(v, t, h) {
+module.exports.caml_pasta_bn254_fp_plonk_gate_vector_wrap = function (v, t, h) {
     _assertClass(v, WasmBn254FpGateVector);
     _assertClass(t, Wire);
     var ptr0 = t.__destroy_into_raw();
@@ -4042,7 +4042,7 @@ module.exports.caml_pasta_bn254_fp_plonk_gate_vector_wrap = function(v, t, h) {
 * @param {WasmBn254FpGateVector} v
 * @returns {Uint8Array}
 */
-module.exports.caml_pasta_bn254_fp_plonk_gate_vector_digest = function(public_input_size, v) {
+module.exports.caml_pasta_bn254_fp_plonk_gate_vector_digest = function (public_input_size, v) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(v, WasmBn254FpGateVector);
@@ -4062,7 +4062,7 @@ module.exports.caml_pasta_bn254_fp_plonk_gate_vector_digest = function(public_in
 * @param {WasmBn254FpGateVector} v
 * @returns {string}
 */
-module.exports.caml_pasta_bn254_fp_plonk_circuit_serialize = function(public_input_size, v) {
+module.exports.caml_pasta_bn254_fp_plonk_circuit_serialize = function (public_input_size, v) {
     let deferred1_0;
     let deferred1_1;
     try {
@@ -4083,7 +4083,7 @@ module.exports.caml_pasta_bn254_fp_plonk_circuit_serialize = function(public_inp
 /**
 * @param {string} name
 */
-module.exports.greet = function(name) {
+module.exports.greet = function (name) {
     const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.greet(ptr0, len0);
@@ -4092,7 +4092,7 @@ module.exports.greet = function(name) {
 /**
 * @param {string} s
 */
-module.exports.console_log = function(s) {
+module.exports.console_log = function (s) {
     const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.console_log(ptr0, len0);
@@ -4101,7 +4101,7 @@ module.exports.console_log = function(s) {
 /**
 * @returns {number}
 */
-module.exports.create_zero_u32_ptr = function() {
+module.exports.create_zero_u32_ptr = function () {
     const ret = wasm.create_zero_u32_ptr();
     return ret;
 };
@@ -4109,7 +4109,7 @@ module.exports.create_zero_u32_ptr = function() {
 /**
 * @param {number} ptr
 */
-module.exports.free_u32_ptr = function(ptr) {
+module.exports.free_u32_ptr = function (ptr) {
     wasm.free_u32_ptr(ptr);
 };
 
@@ -4117,7 +4117,7 @@ module.exports.free_u32_ptr = function(ptr) {
 * @param {number} ptr
 * @param {number} arg
 */
-module.exports.set_u32_ptr = function(ptr, arg) {
+module.exports.set_u32_ptr = function (ptr, arg) {
     wasm.set_u32_ptr(ptr, arg);
 };
 
@@ -4125,7 +4125,7 @@ module.exports.set_u32_ptr = function(ptr, arg) {
 * @param {number} ptr
 * @returns {number}
 */
-module.exports.wait_until_non_zero = function(ptr) {
+module.exports.wait_until_non_zero = function (ptr) {
     const ret = wasm.wait_until_non_zero(ptr);
     return ret >>> 0;
 };
@@ -4136,7 +4136,7 @@ module.exports.wait_until_non_zero = function(ptr) {
 * @param {WasmFpProverProof} proof
 * @returns {WasmFpOracles}
 */
-module.exports.fp_oracles_create = function(lgr_comm, index, proof) {
+module.exports.fp_oracles_create = function (lgr_comm, index, proof) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray32ToWasm0(lgr_comm, wasm.__wbindgen_malloc);
@@ -4161,7 +4161,7 @@ module.exports.fp_oracles_create = function(lgr_comm, index, proof) {
 /**
 * @returns {WasmFpOracles}
 */
-module.exports.fp_oracles_dummy = function() {
+module.exports.fp_oracles_dummy = function () {
     const ret = wasm.fp_oracles_dummy();
     return WasmFpOracles.__wrap(ret);
 };
@@ -4170,7 +4170,7 @@ module.exports.fp_oracles_dummy = function() {
 * @param {WasmFpProverProof} x
 * @returns {WasmFpProverProof}
 */
-module.exports.fp_oracles_deep_copy = function(x) {
+module.exports.fp_oracles_deep_copy = function (x) {
     _assertClass(x, WasmFpProverProof);
     var ptr0 = x.__destroy_into_raw();
     const ret = wasm.fp_oracles_deep_copy(ptr0);
@@ -4180,7 +4180,7 @@ module.exports.fp_oracles_deep_copy = function(x) {
 /**
 * @returns {number}
 */
-module.exports.caml_bn254_fp_size_in_bits = function() {
+module.exports.caml_bn254_fp_size_in_bits = function () {
     const ret = wasm.caml_bn254_fp_size_in_bits();
     return ret;
 };
@@ -4188,7 +4188,7 @@ module.exports.caml_bn254_fp_size_in_bits = function() {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_size = function() {
+module.exports.caml_bn254_fp_size = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_bn254_fp_size(retptr);
@@ -4207,7 +4207,7 @@ module.exports.caml_bn254_fp_size = function() {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_add = function(x, y) {
+module.exports.caml_bn254_fp_add = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4230,7 +4230,7 @@ module.exports.caml_bn254_fp_add = function(x, y) {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_sub = function(x, y) {
+module.exports.caml_bn254_fp_sub = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4252,7 +4252,7 @@ module.exports.caml_bn254_fp_sub = function(x, y) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_negate = function(x) {
+module.exports.caml_bn254_fp_negate = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4273,7 +4273,7 @@ module.exports.caml_bn254_fp_negate = function(x) {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_mul = function(x, y) {
+module.exports.caml_bn254_fp_mul = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4296,7 +4296,7 @@ module.exports.caml_bn254_fp_mul = function(x, y) {
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_div = function(x, y) {
+module.exports.caml_bn254_fp_div = function (x, y) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4318,7 +4318,7 @@ module.exports.caml_bn254_fp_div = function(x, y) {
 * @param {Uint8Array} x
 * @returns {Uint8Array | undefined}
 */
-module.exports.caml_bn254_fp_inv = function(x) {
+module.exports.caml_bn254_fp_inv = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4341,7 +4341,7 @@ module.exports.caml_bn254_fp_inv = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_square = function(x) {
+module.exports.caml_bn254_fp_square = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4361,7 +4361,7 @@ module.exports.caml_bn254_fp_square = function(x) {
 * @param {Uint8Array} x
 * @returns {boolean}
 */
-module.exports.caml_bn254_fp_is_square = function(x) {
+module.exports.caml_bn254_fp_is_square = function (x) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.caml_bn254_fp_is_square(ptr0, len0);
@@ -4372,7 +4372,7 @@ module.exports.caml_bn254_fp_is_square = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array | undefined}
 */
-module.exports.caml_bn254_fp_sqrt = function(x) {
+module.exports.caml_bn254_fp_sqrt = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4395,7 +4395,7 @@ module.exports.caml_bn254_fp_sqrt = function(x) {
 * @param {number} i
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_of_int = function(i) {
+module.exports.caml_bn254_fp_of_int = function (i) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_bn254_fp_of_int(retptr, i);
@@ -4413,7 +4413,7 @@ module.exports.caml_bn254_fp_of_int = function(i) {
 * @param {Uint8Array} x
 * @returns {string}
 */
-module.exports.caml_bn254_fp_to_string = function(x) {
+module.exports.caml_bn254_fp_to_string = function (x) {
     let deferred2_0;
     let deferred2_1;
     try {
@@ -4436,7 +4436,7 @@ module.exports.caml_bn254_fp_to_string = function(x) {
 * @param {string} s
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_of_string = function(s) {
+module.exports.caml_bn254_fp_of_string = function (s) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -4460,7 +4460,7 @@ module.exports.caml_bn254_fp_of_string = function(s) {
 /**
 * @param {Uint8Array} x
 */
-module.exports.caml_bn254_fp_print = function(x) {
+module.exports.caml_bn254_fp_print = function (x) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.caml_bn254_fp_print(ptr0, len0);
@@ -4471,7 +4471,7 @@ module.exports.caml_bn254_fp_print = function(x) {
 * @param {Uint8Array} y
 * @returns {number}
 */
-module.exports.caml_bn254_fp_compare = function(x, y) {
+module.exports.caml_bn254_fp_compare = function (x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
@@ -4485,7 +4485,7 @@ module.exports.caml_bn254_fp_compare = function(x, y) {
 * @param {Uint8Array} y
 * @returns {boolean}
 */
-module.exports.caml_bn254_fp_equal = function(x, y) {
+module.exports.caml_bn254_fp_equal = function (x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
@@ -4497,7 +4497,7 @@ module.exports.caml_bn254_fp_equal = function(x, y) {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_random = function() {
+module.exports.caml_bn254_fp_random = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_bn254_fp_random(retptr);
@@ -4515,7 +4515,7 @@ module.exports.caml_bn254_fp_random = function() {
 * @param {number} i
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_rng = function(i) {
+module.exports.caml_bn254_fp_rng = function (i) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_bn254_fp_rng(retptr, i);
@@ -4533,7 +4533,7 @@ module.exports.caml_bn254_fp_rng = function(i) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_to_bigint = function(x) {
+module.exports.caml_bn254_fp_to_bigint = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4553,7 +4553,7 @@ module.exports.caml_bn254_fp_to_bigint = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_of_bigint = function(x) {
+module.exports.caml_bn254_fp_of_bigint = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4577,7 +4577,7 @@ module.exports.caml_bn254_fp_of_bigint = function(x) {
 /**
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_two_adic_root_of_unity = function() {
+module.exports.caml_bn254_fp_two_adic_root_of_unity = function () {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_bn254_fp_two_adic_root_of_unity(retptr);
@@ -4595,7 +4595,7 @@ module.exports.caml_bn254_fp_two_adic_root_of_unity = function() {
 * @param {number} log2_size
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_domain_generator = function(log2_size) {
+module.exports.caml_bn254_fp_domain_generator = function (log2_size) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.caml_bn254_fp_domain_generator(retptr, log2_size);
@@ -4613,7 +4613,7 @@ module.exports.caml_bn254_fp_domain_generator = function(log2_size) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_to_bytes = function(x) {
+module.exports.caml_bn254_fp_to_bytes = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4633,7 +4633,7 @@ module.exports.caml_bn254_fp_to_bytes = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_of_bytes = function(x) {
+module.exports.caml_bn254_fp_of_bytes = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4653,7 +4653,7 @@ module.exports.caml_bn254_fp_of_bytes = function(x) {
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-module.exports.caml_bn254_fp_deep_copy = function(x) {
+module.exports.caml_bn254_fp_deep_copy = function (x) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
@@ -4680,7 +4680,7 @@ function handleError(f, args) {
 * A row accessible from a given row, corresponds to the fact that we open all polynomials
 * at `zeta` **and** `omega * zeta`.
 */
-module.exports.CurrOrNext = Object.freeze({ Curr:0,"0":"Curr",Next:1,"1":"Next", });
+module.exports.CurrOrNext = Object.freeze({ Curr: 0, "0": "Curr", Next: 1, "1": "Next", });
 /**
 * The different types of gates the system supports.
 * Note that all the gates are mutually exclusive:
@@ -4689,42 +4689,43 @@ module.exports.CurrOrNext = Object.freeze({ Curr:0,"0":"Curr",Next:1,"1":"Next",
 * not to re-use powers of alpha across constraints.
 */
 module.exports.GateType = Object.freeze({
-/**
-* Zero gate
-*/
-Zero:0,"0":"Zero",
-/**
-* Generic arithmetic gate
-*/
-Generic:1,"1":"Generic",
-/**
-* Poseidon permutation gate
-*/
-Poseidon:2,"2":"Poseidon",
-/**
-* Complete EC addition in Affine form
-*/
-CompleteAdd:3,"3":"CompleteAdd",
-/**
-* EC variable base scalar multiplication
-*/
-VarBaseMul:4,"4":"VarBaseMul",
-/**
-* EC variable base scalar multiplication with group endomorphim optimization
-*/
-EndoMul:5,"5":"EndoMul",
-/**
-* Gate for computing the scalar corresponding to an endoscaling
-*/
-EndoMulScalar:6,"6":"EndoMulScalar",Lookup:7,"7":"Lookup",
-/**
-* Cairo
-*/
-CairoClaim:8,"8":"CairoClaim",CairoInstruction:9,"9":"CairoInstruction",CairoFlags:10,"10":"CairoFlags",CairoTransition:11,"11":"CairoTransition",
-/**
-* Range check
-*/
-RangeCheck0:12,"12":"RangeCheck0",RangeCheck1:13,"13":"RangeCheck1",ForeignFieldAdd:14,"14":"ForeignFieldAdd",ForeignFieldMul:15,"15":"ForeignFieldMul",Xor16:16,"16":"Xor16",Rot64:17,"17":"Rot64",KeccakRound:18,"18":"KeccakRound",KeccakSponge:19,"19":"KeccakSponge", });
+    /**
+    * Zero gate
+    */
+    Zero: 0, "0": "Zero",
+    /**
+    * Generic arithmetic gate
+    */
+    Generic: 1, "1": "Generic",
+    /**
+    * Poseidon permutation gate
+    */
+    Poseidon: 2, "2": "Poseidon",
+    /**
+    * Complete EC addition in Affine form
+    */
+    CompleteAdd: 3, "3": "CompleteAdd",
+    /**
+    * EC variable base scalar multiplication
+    */
+    VarBaseMul: 4, "4": "VarBaseMul",
+    /**
+    * EC variable base scalar multiplication with group endomorphim optimization
+    */
+    EndoMul: 5, "5": "EndoMul",
+    /**
+    * Gate for computing the scalar corresponding to an endoscaling
+    */
+    EndoMulScalar: 6, "6": "EndoMulScalar", Lookup: 7, "7": "Lookup",
+    /**
+    * Cairo
+    */
+    CairoClaim: 8, "8": "CairoClaim", CairoInstruction: 9, "9": "CairoInstruction", CairoFlags: 10, "10": "CairoFlags", CairoTransition: 11, "11": "CairoTransition",
+    /**
+    * Range check
+    */
+    RangeCheck0: 12, "12": "RangeCheck0", RangeCheck1: 13, "13": "RangeCheck1", ForeignFieldAdd: 14, "14": "ForeignFieldAdd", ForeignFieldMul: 15, "15": "ForeignFieldMul", Xor16: 16, "16": "Xor16", Rot64: 17, "17": "Rot64", KeccakRound: 18, "18": "KeccakRound", KeccakSponge: 19, "19": "KeccakSponge",
+});
 /**
 * Flags for optional features in the constraint system
 */
@@ -11296,49 +11297,49 @@ class Wire {
 }
 module.exports.Wire = Wire;
 
-module.exports.__wbindgen_object_drop_ref = function(arg0) {
+module.exports.__wbindgen_object_drop_ref = function (arg0) {
     takeObject(arg0);
 };
 
-module.exports.__wbg_startWorkers_f430e3766320935f = function(arg0, arg1, arg2) {
+module.exports.__wbg_startWorkers_f430e3766320935f = function (arg0, arg1, arg2) {
     const ret = startWorkers(takeObject(arg0), takeObject(arg1), PoolBuilder.__wrap(arg2));
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_terminateWorkers_bf82de78d64704cb = function() {
+module.exports.__wbg_terminateWorkers_bf82de78d64704cb = function () {
     const ret = terminateWorkers();
     return addHeapObject(ret);
 };
 
-module.exports.__wbindgen_string_new = function(arg0, arg1) {
+module.exports.__wbindgen_string_new = function (arg0, arg1) {
     const ret = getStringFromWasm0(arg0, arg1);
     return addHeapObject(ret);
 };
 
-module.exports.__wbindgen_error_new = function(arg0, arg1) {
+module.exports.__wbindgen_error_new = function (arg0, arg1) {
     const ret = new Error(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
 };
 
-module.exports.__wbindgen_number_new = function(arg0) {
+module.exports.__wbindgen_number_new = function (arg0) {
     const ret = arg0;
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_alert_ceb64c1bad1f3790 = function(arg0, arg1) {
+module.exports.__wbg_alert_ceb64c1bad1f3790 = function (arg0, arg1) {
     alert(getStringFromWasm0(arg0, arg1));
 };
 
-module.exports.__wbg_log_bb81d0229855b402 = function(arg0, arg1) {
+module.exports.__wbg_log_bb81d0229855b402 = function (arg0, arg1) {
     console.log(getStringFromWasm0(arg0, arg1));
 };
 
-module.exports.__wbg_new_abda76e883ba8a5f = function() {
+module.exports.__wbg_new_abda76e883ba8a5f = function () {
     const ret = new Error();
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_stack_658279fe44541cf6 = function(arg0, arg1) {
+module.exports.__wbg_stack_658279fe44541cf6 = function (arg0, arg1) {
     const ret = getObject(arg1).stack;
     const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len1 = WASM_VECTOR_LEN;
@@ -11346,7 +11347,7 @@ module.exports.__wbg_stack_658279fe44541cf6 = function(arg0, arg1) {
     getInt32Memory0()[arg0 / 4 + 0] = ptr1;
 };
 
-module.exports.__wbg_error_f851667af71bcfc6 = function(arg0, arg1) {
+module.exports.__wbg_error_f851667af71bcfc6 = function (arg0, arg1) {
     let deferred0_0;
     let deferred0_1;
     try {
@@ -11358,125 +11359,141 @@ module.exports.__wbg_error_f851667af71bcfc6 = function(arg0, arg1) {
     }
 };
 
-module.exports.__wbindgen_is_object = function(arg0) {
+module.exports.__wbindgen_is_object = function (arg0) {
     const val = getObject(arg0);
-    const ret = typeof(val) === 'object' && val !== null;
+    const ret = typeof (val) === 'object' && val !== null;
     return ret;
 };
 
-module.exports.__wbindgen_object_clone_ref = function(arg0) {
+module.exports.__wbindgen_object_clone_ref = function (arg0) {
     const ret = getObject(arg0);
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_crypto_c48a774b022d20ac = function(arg0) {
+module.exports.__wbg_crypto_c48a774b022d20ac = function (arg0) {
     const ret = getObject(arg0).crypto;
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_process_298734cf255a885d = function(arg0) {
+module.exports.__wbg_process_298734cf255a885d = function (arg0) {
     const ret = getObject(arg0).process;
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_versions_e2e78e134e3e5d01 = function(arg0) {
+module.exports.__wbg_versions_e2e78e134e3e5d01 = function (arg0) {
     const ret = getObject(arg0).versions;
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_node_1cd7a5d853dbea79 = function(arg0) {
+module.exports.__wbg_node_1cd7a5d853dbea79 = function (arg0) {
     const ret = getObject(arg0).node;
     return addHeapObject(ret);
 };
 
-module.exports.__wbindgen_is_string = function(arg0) {
-    const ret = typeof(getObject(arg0)) === 'string';
+module.exports.__wbindgen_is_string = function (arg0) {
+    const ret = typeof (getObject(arg0)) === 'string';
     return ret;
 };
 
-module.exports.__wbg_msCrypto_bcb970640f50a1e8 = function(arg0) {
+module.exports.__wbg_msCrypto_bcb970640f50a1e8 = function (arg0) {
     const ret = getObject(arg0).msCrypto;
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_require_8f08ceecec0f4fee = function() { return handleError(function () {
-    const ret = module.require;
-    return addHeapObject(ret);
-}, arguments) };
+module.exports.__wbg_require_8f08ceecec0f4fee = function () {
+    return handleError(function () {
+        const ret = module.require;
+        return addHeapObject(ret);
+    }, arguments)
+};
 
-module.exports.__wbindgen_is_function = function(arg0) {
-    const ret = typeof(getObject(arg0)) === 'function';
+module.exports.__wbindgen_is_function = function (arg0) {
+    const ret = typeof (getObject(arg0)) === 'function';
     return ret;
 };
 
-module.exports.__wbg_getRandomValues_37fa2ca9e4e07fab = function() { return handleError(function (arg0, arg1) {
-    getObject(arg0).getRandomValues(getObject(arg1));
-}, arguments) };
+module.exports.__wbg_getRandomValues_37fa2ca9e4e07fab = function () {
+    return handleError(function (arg0, arg1) {
+        getObject(arg0).getRandomValues(getObject(arg1));
+    }, arguments)
+};
 
-module.exports.__wbg_randomFillSync_dc1e9a60c158336d = function() { return handleError(function (arg0, arg1) {
-    getObject(arg0).randomFillSync(takeObject(arg1));
-}, arguments) };
+module.exports.__wbg_randomFillSync_dc1e9a60c158336d = function () {
+    return handleError(function (arg0, arg1) {
+        getObject(arg0).randomFillSync(takeObject(arg1));
+    }, arguments)
+};
 
-module.exports.__wbg_get_44be0491f933a435 = function(arg0, arg1) {
+module.exports.__wbg_get_44be0491f933a435 = function (arg0, arg1) {
     const ret = getObject(arg0)[arg1 >>> 0];
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_length_fff51ee6522a1a18 = function(arg0) {
+module.exports.__wbg_length_fff51ee6522a1a18 = function (arg0) {
     const ret = getObject(arg0).length;
     return ret;
 };
 
-module.exports.__wbg_new_898a68150f225f2e = function() {
+module.exports.__wbg_new_898a68150f225f2e = function () {
     const ret = new Array();
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_newnoargs_581967eacc0e2604 = function(arg0, arg1) {
+module.exports.__wbg_newnoargs_581967eacc0e2604 = function (arg0, arg1) {
     const ret = new Function(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_call_cb65541d95d71282 = function() { return handleError(function (arg0, arg1) {
-    const ret = getObject(arg0).call(getObject(arg1));
-    return addHeapObject(ret);
-}, arguments) };
+module.exports.__wbg_call_cb65541d95d71282 = function () {
+    return handleError(function (arg0, arg1) {
+        const ret = getObject(arg0).call(getObject(arg1));
+        return addHeapObject(ret);
+    }, arguments)
+};
 
-module.exports.__wbg_self_1ff1d729e9aae938 = function() { return handleError(function () {
-    const ret = self.self;
-    return addHeapObject(ret);
-}, arguments) };
+module.exports.__wbg_self_1ff1d729e9aae938 = function () {
+    return handleError(function () {
+        const ret = self.self;
+        return addHeapObject(ret);
+    }, arguments)
+};
 
-module.exports.__wbg_window_5f4faef6c12b79ec = function() { return handleError(function () {
-    const ret = window.window;
-    return addHeapObject(ret);
-}, arguments) };
+module.exports.__wbg_window_5f4faef6c12b79ec = function () {
+    return handleError(function () {
+        const ret = window.window;
+        return addHeapObject(ret);
+    }, arguments)
+};
 
-module.exports.__wbg_globalThis_1d39714405582d3c = function() { return handleError(function () {
-    const ret = globalThis.globalThis;
-    return addHeapObject(ret);
-}, arguments) };
+module.exports.__wbg_globalThis_1d39714405582d3c = function () {
+    return handleError(function () {
+        const ret = globalThis.globalThis;
+        return addHeapObject(ret);
+    }, arguments)
+};
 
-module.exports.__wbg_global_651f05c6a0944d1c = function() { return handleError(function () {
-    const ret = global.global;
-    return addHeapObject(ret);
-}, arguments) };
+module.exports.__wbg_global_651f05c6a0944d1c = function () {
+    return handleError(function () {
+        const ret = global.global;
+        return addHeapObject(ret);
+    }, arguments)
+};
 
-module.exports.__wbindgen_is_undefined = function(arg0) {
+module.exports.__wbindgen_is_undefined = function (arg0) {
     const ret = getObject(arg0) === undefined;
     return ret;
 };
 
-module.exports.__wbg_set_502d29070ea18557 = function(arg0, arg1, arg2) {
+module.exports.__wbg_set_502d29070ea18557 = function (arg0, arg1, arg2) {
     getObject(arg0)[arg1 >>> 0] = takeObject(arg2);
 };
 
-module.exports.__wbg_isArray_4c24b343cb13cfb1 = function(arg0) {
+module.exports.__wbg_isArray_4c24b343cb13cfb1 = function (arg0) {
     const ret = Array.isArray(getObject(arg0));
     return ret;
 };
 
-module.exports.__wbg_instanceof_ArrayBuffer_39ac22089b74fddb = function(arg0) {
+module.exports.__wbg_instanceof_ArrayBuffer_39ac22089b74fddb = function (arg0) {
     let result;
     try {
         result = getObject(arg0) instanceof ArrayBuffer;
@@ -11487,36 +11504,38 @@ module.exports.__wbg_instanceof_ArrayBuffer_39ac22089b74fddb = function(arg0) {
     return ret;
 };
 
-module.exports.__wbg_call_01734de55d61e11d = function() { return handleError(function (arg0, arg1, arg2) {
-    const ret = getObject(arg0).call(getObject(arg1), getObject(arg2));
-    return addHeapObject(ret);
-}, arguments) };
+module.exports.__wbg_call_01734de55d61e11d = function () {
+    return handleError(function (arg0, arg1, arg2) {
+        const ret = getObject(arg0).call(getObject(arg1), getObject(arg2));
+        return addHeapObject(ret);
+    }, arguments)
+};
 
-module.exports.__wbg_buffer_085ec1f694018c4f = function(arg0) {
+module.exports.__wbg_buffer_085ec1f694018c4f = function (arg0) {
     const ret = getObject(arg0).buffer;
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_newwithbyteoffsetandlength_6da8e527659b86aa = function(arg0, arg1, arg2) {
+module.exports.__wbg_newwithbyteoffsetandlength_6da8e527659b86aa = function (arg0, arg1, arg2) {
     const ret = new Uint8Array(getObject(arg0), arg1 >>> 0, arg2 >>> 0);
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_new_8125e318e6245eed = function(arg0) {
+module.exports.__wbg_new_8125e318e6245eed = function (arg0) {
     const ret = new Uint8Array(getObject(arg0));
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_set_5cf90238115182c3 = function(arg0, arg1, arg2) {
+module.exports.__wbg_set_5cf90238115182c3 = function (arg0, arg1, arg2) {
     getObject(arg0).set(getObject(arg1), arg2 >>> 0);
 };
 
-module.exports.__wbg_length_72e2208bbc0efc61 = function(arg0) {
+module.exports.__wbg_length_72e2208bbc0efc61 = function (arg0) {
     const ret = getObject(arg0).length;
     return ret;
 };
 
-module.exports.__wbg_instanceof_Uint8Array_d8d9cb2b8e8ac1d4 = function(arg0) {
+module.exports.__wbg_instanceof_Uint8Array_d8d9cb2b8e8ac1d4 = function (arg0) {
     let result;
     try {
         result = getObject(arg0) instanceof Uint8Array;
@@ -11527,17 +11546,17 @@ module.exports.__wbg_instanceof_Uint8Array_d8d9cb2b8e8ac1d4 = function(arg0) {
     return ret;
 };
 
-module.exports.__wbg_newwithlength_e5d69174d6984cd7 = function(arg0) {
+module.exports.__wbg_newwithlength_e5d69174d6984cd7 = function (arg0) {
     const ret = new Uint8Array(arg0 >>> 0);
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_subarray_13db269f57aa838d = function(arg0, arg1, arg2) {
+module.exports.__wbg_subarray_13db269f57aa838d = function (arg0, arg1, arg2) {
     const ret = getObject(arg0).subarray(arg1 >>> 0, arg2 >>> 0);
     return addHeapObject(ret);
 };
 
-module.exports.__wbindgen_debug_string = function(arg0, arg1) {
+module.exports.__wbindgen_debug_string = function (arg0, arg1) {
     const ret = debugString(getObject(arg1));
     const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len1 = WASM_VECTOR_LEN;
@@ -11545,11 +11564,11 @@ module.exports.__wbindgen_debug_string = function(arg0, arg1) {
     getInt32Memory0()[arg0 / 4 + 0] = ptr1;
 };
 
-module.exports.__wbindgen_throw = function(arg0, arg1) {
+module.exports.__wbindgen_throw = function (arg0, arg1) {
     throw new Error(getStringFromWasm0(arg0, arg1));
 };
 
-module.exports.__wbindgen_memory = function() {
+module.exports.__wbindgen_memory = function () {
     const ret = wasm.memory;
     return addHeapObject(ret);
 };

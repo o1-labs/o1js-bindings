@@ -111,6 +111,16 @@ function proofConversion(wasm: wasm, core: ConversionCores) {
       RuntimeTableCfg: wasm.WasmPastaFqRuntimeTableCfg,
       LookupTable: wasm.WasmPastaFqLookupTable,
     }),
+    bn254Fp: proofConversionPerField(core.bn254Fp, {
+      ProverCommitments: wasm.WasmFpProverCommitments,
+      OpeningProof: wasm.WasmFpOpeningProof,
+      VecVec: wasm.WasmVecVecBn254Fp,
+      ProverProof: wasm.WasmFpProverProof,
+      LookupCommitments: wasm.WasmFpLookupCommitments,
+      RuntimeTable: wasm.WasmFpRuntimeTable,
+      RuntimeTableCfg: wasm.WasmPastaFpRuntimeTableCfg,
+      LookupTable: wasm.WasmBn254FpLookupTable,
+    }),
   };
 }
 
