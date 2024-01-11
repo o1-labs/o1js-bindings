@@ -2,14 +2,13 @@
  * This file is a TS representation of kimchi_types.ml
  */
 import type { Lookup } from './lookup.js';
-import type { MlArray, MlOption } from '../../../lib/ml/base.js';
+import type { MlArray, MlOption, MlTuple } from '../../../lib/ml/base.js';
 import type { OrInfinity } from './curve.js';
 import type { Field } from './field.js';
 import type {
   WasmFpSrs,
   WasmFqSrs,
 } from '../../compiled/node_bindings/plonk_wasm.cjs';
-import type { MlTupleN } from './util.js';
 
 export {
   Field,
@@ -127,7 +126,7 @@ type LookupCommitments = [
 ];
 type ProverCommitments = [
   _: 0,
-  w_comm: MlTupleN<PolyComm, 15>,
+  w_comm: MlTuple<PolyComm, 15>,
   z_comm: PolyComm,
   t_comm: PolyComm,
   lookup: MlOption<LookupCommitments>
@@ -151,10 +150,10 @@ type nPermutsMinus1 = 6;
 
 type ProofEvaluations<Field> = [
   _: 0,
-  w: MlTupleN<PointEvaluations<Field>, nColumns>,
+  w: MlTuple<PointEvaluations<Field>, nColumns>,
   z: PointEvaluations<Field>,
-  s: MlTupleN<PointEvaluations<Field>, nPermutsMinus1>,
-  coefficients: MlTupleN<PointEvaluations<Field>, nColumns>,
+  s: MlTuple<PointEvaluations<Field>, nPermutsMinus1>,
+  coefficients: MlTuple<PointEvaluations<Field>, nColumns>,
   generic_selector: PointEvaluations<Field>,
   poseidon_selector: PointEvaluations<Field>,
   complete_add_selector: PointEvaluations<Field>,

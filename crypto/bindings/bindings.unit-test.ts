@@ -16,6 +16,13 @@ import {
   toMlStringAscii,
 } from './bigint256.js';
 import { wasm } from '../../js/node/node-backend.js';
+import {
+  Spec,
+  ToSpec,
+  FromSpec,
+  defaultAssertEqual,
+  id,
+} from '../../../lib/testing/equivalent.js';
 import { Random } from '../../../lib/testing/property.js';
 import {
   WasmAffine,
@@ -25,14 +32,7 @@ import {
   fieldFromRust,
   fieldToRust,
 } from './conversion-base.js';
-import {
-  id,
-  equivalentRecord,
-  Spec,
-  ToSpec,
-  FromSpec,
-  defaultAssertEqual,
-} from './test-utils.js';
+import { equivalentRecord } from './test-utils.js';
 import { Field, FpBindings, FqBindings } from './field.js';
 import { MlBool, MlOption } from '../../../lib/ml/base.js';
 import {
@@ -57,11 +57,11 @@ import { FiniteField, Fp, Fq } from '../finite_field.js';
 
 let number: ToSpec<number, number> = { back: id };
 let numberLessThan = (max: number): FromSpec<number, number> => ({
-  rng: Random.map(Random.nat(max - 1), id),
+  rng: Random.nat(max - 1),
   there: id,
 });
 let uint31: Spec<number, number> = {
-  rng: Random.map(Random.nat(0x7fffffff), id),
+  rng: Random.nat(0x7fffffff),
   there: id,
   back: id,
 };

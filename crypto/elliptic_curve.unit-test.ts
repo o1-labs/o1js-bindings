@@ -107,6 +107,9 @@ for (let [G, Field, Scalar] of [
         'efficient endomorphism'
       );
 
+      // subgroup
+      assert(G.isInSubgroup(X), 'subgroup check');
+
       // affine
       let affineX = G.toAffine(X);
       assert(

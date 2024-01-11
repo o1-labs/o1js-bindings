@@ -4,13 +4,15 @@ module Impl = Pickles.Impls.Step
 module Field = Impl.Field
 module Boolean = Impl.Boolean
 
+type field = Impl.field
+
 module Poseidon : sig
   type sponge
 end
 
 val snarky :
-  < exists : (int -> (unit -> Impl.field array) -> Field.t array) Js.meth
-  ; existsVar : ((unit -> Impl.field) -> Field.t) Js.meth
+  < exists : (int -> (unit -> field array) -> Field.t array) Js.meth
+  ; existsVar : ((unit -> field) -> Field.t) Js.meth
   ; run :
       < asProver : ((unit -> unit) -> unit) Js.meth
       ; constraintSystem :
@@ -35,19 +37,176 @@ val snarky :
           (int -> Field.t -> Field.t -> Boolean.var * Boolean.var) Js.meth
       ; fromBits : (Boolean.var array -> Field.t) Js.meth
       ; mul : (Field.t -> Field.t -> Field.t) Js.meth
-      ; readVar : (Field.t -> Impl.field) Js.meth
-      ; scale : (Impl.field -> Field.t -> Field.t) Js.meth
+      ; readVar : (Field.t -> field) Js.meth
+      ; scale : (field -> Field.t -> Field.t) Js.meth
       ; seal :
-          (   Impl.field Snarky_backendless.Cvar.t
-           -> Impl.field Snarky_backendless.Cvar.t )
+          (field Snarky_backendless.Cvar.t -> field Snarky_backendless.Cvar.t)
           Js.meth
       ; toBits : (int -> Field.t -> Boolean.var array) Js.meth
       ; toConstantAndTerms :
-          (Field.t -> Impl.field option * (Impl.field * int) list) Js.meth
+          (Field.t -> field option * (field * int) list) Js.meth
       ; truncateToBits16 :
           (   int
-           -> Impl.field Snarky_backendless.Cvar.t
-           -> Impl.field Snarky_backendless.Cvar.t )
+           -> field Snarky_backendless.Cvar.t
+           -> field Snarky_backendless.Cvar.t )
+          Js.meth >
+      Js.t
+      Js.readonly_prop
+  ; gates :
+      < zero : (Field.t -> Field.t -> Field.t -> unit) Js.meth
+      ; generic :
+          (   field
+           -> Field.t
+           -> field
+           -> Field.t
+           -> field
+           -> Field.t
+           -> field
+           -> field
+           -> unit )
+          Js.meth
+      ; poseidon : (Field.t array array -> unit) Js.meth
+      ; ecAdd :
+          (   Field.t * Field.t
+           -> Field.t * Field.t
+           -> Field.t * Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t * Field.t )
+          Js.meth
+      ; ecScale :
+          (Field.t Kimchi_backend_common.Scale_round.t array -> unit) Js.meth
+      ; ecEndoscale :
+          (   Field.t Kimchi_backend_common.Endoscale_round.t array
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> unit )
+          Js.meth
+      ; ecEndoscalar :
+          (Field.t Kimchi_backend_common.Endoscale_scalar_round.t array -> unit)
+          Js.meth
+      ; lookup :
+          (   Field.t * Field.t * Field.t * Field.t * Field.t * Field.t * Field.t
+           -> unit )
+          Js.meth
+      ; rangeCheck0 :
+          (   Field.t
+           -> Field.t * Field.t * Field.t * Field.t * Field.t * Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> field
+           -> unit )
+          Js.meth
+      ; rangeCheck1 :
+          (   Field.t
+           -> Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> unit )
+          Js.meth
+      ; xor :
+          (   Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t
+           -> unit )
+          Js.meth
+      ; foreignFieldAdd :
+          (   Field.t * Field.t * Field.t
+           -> Field.t * Field.t * Field.t
+           -> Field.t
+           -> Field.t
+           -> field * field * field
+           -> field
+           -> unit )
+          Js.meth
+      ; foreignFieldMul :
+          (   Field.t * Field.t * Field.t
+           -> Field.t * Field.t * Field.t
+           -> Field.t * Field.t
+           -> Field.t * Field.t * Field.t
+           -> Field.t
+           -> Field.t * Field.t * Field.t
+           -> Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> Field.t * Field.t * Field.t * Field.t
+           -> field
+           -> field * field * field
+           -> unit )
+          Js.meth
+      ; rotate :
+          (   Field.t
+           -> Field.t
+           -> Field.t
+           -> Field.t * Field.t * Field.t * Field.t
+           -> Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+              * Field.t
+           -> field
+           -> unit )
+          Js.meth
+      ; addFixedLookupTable : (int32 -> field array array -> unit) Js.meth
+      ; addRuntimeTableConfig : (int32 -> field array -> unit) Js.meth
+      ; raw :
+          (Kimchi_types.gate_type -> Field.t array -> field array -> unit)
           Js.meth >
       Js.t
       Js.readonly_prop
@@ -60,19 +219,8 @@ val snarky :
       Js.t
       Js.readonly_prop
   ; group :
-      < ecadd :
-          (   Field.t * Field.t
-           -> Field.t * Field.t
-           -> Field.t * Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t
-           -> Field.t * Field.t )
-          Js.meth
-      ; scale :
-          (   Impl.field Snarky_backendless.Cvar.t Tuple_lib.Double.t
+      < scale :
+          (   field Snarky_backendless.Cvar.t Tuple_lib.Double.t
            -> Boolean.var array
            -> Pickles.Step_main_inputs.Inner_curve.t )
           Js.meth >
@@ -86,8 +234,8 @@ val snarky :
           Js.meth
       ; hashToGroup :
           (   Field.t array
-           -> Impl.field Snarky_backendless.Cvar.t
-              * Impl.field Snarky_backendless.Cvar.t )
+           -> field Snarky_backendless.Cvar.t * field Snarky_backendless.Cvar.t
+          )
           Js.meth
       ; sponge :
           < absorb : (Poseidon.sponge -> Field.t -> unit) Js.meth
@@ -108,14 +256,14 @@ val snarky :
       ; prove :
           (   (Field.t array -> unit)
            -> int
-           -> Impl.field array
+           -> field array
            -> Impl.Keypair.t
            -> Backend.Proof.with_public_evals )
           Js.meth
       ; verify :
-          (   Impl.field array
+          (   field array
            -> Backend.Proof.with_public_evals
-           -> ( Impl.field
+           -> ( field
               , Kimchi_bindings.Protocol.SRS.Fp.t
               , Pasta_bindings.Fq.t Kimchi_types.or_infinity
                 Kimchi_types.poly_comm )

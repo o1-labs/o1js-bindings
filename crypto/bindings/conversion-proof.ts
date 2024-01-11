@@ -32,8 +32,7 @@ import type {
   RuntimeTableCfg,
   LookupTable,
 } from './kimchi-types.js';
-import { MlTupleN, mapMlTuple } from './util.js';
-import { MlArray, MlOption } from '../../../lib/ml/base.js';
+import { MlArray, MlOption, MlTuple } from '../../../lib/ml/base.js';
 import {
   fieldToRust,
   fieldFromRust,
@@ -144,7 +143,7 @@ function proofConversionPerField(
     let tComm = core.polyCommFromRust(commitments.t_comm);
     let lookup = MlOption.mapTo(commitments.lookup, lookupCommitmentsFromRust);
     commitments.free();
-    return [0, wComm as MlTupleN<PolyComm, 15>, zComm, tComm, lookup];
+    return [0, wComm as MlTuple<PolyComm, 15>, zComm, tComm, lookup];
   }
 
   function lookupCommitmentsToRust(
@@ -362,10 +361,10 @@ function mapProofEvaluations<Field1, Field2>(map: (x: Field1) => Field2) {
     ] = evals;
     return [
       0,
-      mapMlTuple(w, mapPointEvals),
+      MlTuple.map(w, mapPointEvals),
       mapPointEvals(z),
-      mapMlTuple(s, mapPointEvals),
-      mapMlTuple(coeffs, mapPointEvals),
+      MlTuple.map(s, mapPointEvals),
+      MlTuple.map(coeffs, mapPointEvals),
       mapPointEvals(genericSelector),
       mapPointEvals(poseidonSelector),
       mapPointEvals(completeAddSelector),
