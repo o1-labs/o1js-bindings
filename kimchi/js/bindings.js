@@ -986,6 +986,13 @@ var caml_pasta_fq_plonk_verifier_index_deep_copy = function (x) {
   );
 };
 
+// Provides: caml_pasta_fp_plonk_verifier_index_create
+// Requires: plonk_wasm, tsRustConversion
+var caml_bn254_fp_plonk_verifier_index_create = function (x) {
+  var vk = plonk_wasm.caml_bn254_fp_plonk_verifier_index_create(x);
+  return tsRustConversion.bn254Fp.verifierIndexFromRust(vk);
+};
+
 // proof
 
 // Provides: caml_pasta_fp_plonk_proof_create

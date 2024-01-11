@@ -78,7 +78,15 @@ function verifierIndexConversion(wasm: wasm, core: ConversionCores) {
       VerifierIndex: wasm.WasmFqPlonkVerifierIndex,
       LookupVerifierIndex: wasm.WasmFqLookupVerifierIndex,
       LookupSelector: wasm.WasmFqLookupSelectors,
-    })
+    }),
+    bn254Fp: verifierIndexConversionPerField(wasm, core.bn254Fp, {
+      Domain: wasm.WasmBn254FpDomain,
+      VerificationEvals: wasm.WasmBn254FpPlonkVerificationEvals,
+      Shifts: wasm.WasmBn254FpShifts,
+      VerifierIndex: wasm.WasmBn254FpPlonkVerifierIndex,
+      LookupVerifierIndex: wasm.WasmBn254FpLookupVerifierIndex,
+      LookupSelector: wasm.WasmBn254FpLookupSelectors,
+    }),
   };
 }
 

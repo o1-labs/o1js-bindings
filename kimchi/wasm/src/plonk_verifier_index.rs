@@ -27,7 +27,7 @@ macro_rules! impl_verification_key {
      $F: ty,
      $WasmPolyComm: ty,
      $WasmSrs: ty,
-     $GOther: ty,
+     $endo_q: expr,
      $FrSpongeParams: path,
      $FqSpongeParams: path,
      $WasmIndex: ty,
@@ -734,7 +734,6 @@ macro_rules! impl_verification_key {
                     // Rc<_>s into weak pointers.
                     SRSValue::Ref(unsafe { &*Rc::into_raw(urs_copy) })
                 }; */
-                let (endo_q, _endo_r) = poly_commitment::srs::endos::<$GOther>();
                 let domain = Domain::<$F>::new(1 << log_size_of_group).unwrap();
 
                 let feature_flags =
@@ -786,7 +785,7 @@ macro_rules! impl_verification_key {
                             res.set(zk_w(domain, 3)).unwrap();
                             res
                         },
-                        endo: endo_q,
+                        endo: $endo_q,
                         max_poly_size: max_poly_size as usize,
                         public: public_ as usize,
                         prev_challenges: prev_challenges as usize,
@@ -840,12 +839,11 @@ macro_rules! impl_verification_key {
                 path: String,
             ) -> Result<DlogVerifierIndex<$G, OpeningProof<$G>>, JsValue> {
                 let path = Path::new(&path);
-                let (endo_q, _endo_r) = poly_commitment::srs::endos::<GAffineOther>();
                 DlogVerifierIndex::<$G, OpeningProof<$G>>::from_file(
                     srs.0.clone(),
                     path,
                     offset.map(|x| x as u64),
-                    endo_q,
+                    $endo_q,
                 ).map_err(|e| JsValue::from_str(format!("read_raw: {}", e).as_str()))
             }
 
@@ -1019,7 +1017,7 @@ pub mod fp {
         Fp,
         WasmPolyComm,
         WasmFpSrs,
-        GAffineOther,
+        poly_commitment::srs::endos::<GAffineOther>().0,
         mina_poseidon::pasta::fp_kimchi,
         mina_poseidon::pasta::fq_kimchi,
         WasmPastaFpPlonkIndex,
@@ -1043,10 +1041,34 @@ pub mod fq {
         Fq,
         WasmPolyComm,
         WasmFqSrs,
-        GAffineOther,
+        poly_commitment::srs::endos::<GAffineOther>().0,
         mina_poseidon::pasta::fq_kimchi,
         mina_poseidon::pasta::fp_kimchi,
         WasmPastaFqPlonkIndex,
         Fq
+    );
+}
+
+pub mod bn254_fp {
+    use super::*;
+    use crate::arkworks::{WasmBn254Fp, WasmGBn254};
+    use crate::bn254_fp_plonk_index::WasmBn254FpPlonkIndex;
+    use crate::poly_comm::bn254::WasmBn254FpPolyComm as WasmPolyComm;
+    use crate::srs::bn254_fp::WasmBn254FpSrs;
+    use mina_curves::bn254::{Bn254 as GAffine, Bn254 as GAffineOther, Fp};
+
+    impl_verification_key!(
+        caml_bn254_fp_plonk_verifier_index,
+        WasmGBn254,
+        GAffine,
+        WasmBn254Fp,
+        Fp,
+        WasmPolyComm,
+        WasmBn254FpSrs,
+        poly_commitment::srs::endos::<GAffineOther>().1,
+        mina_poseidon::bn128,
+        mina_poseidon::bn128,
+        WasmBn254FpPlonkIndex,
+        Bn254Fp
     );
 }
