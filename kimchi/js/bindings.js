@@ -986,11 +986,68 @@ var caml_pasta_fq_plonk_verifier_index_deep_copy = function (x) {
   );
 };
 
-// Provides: caml_pasta_fp_plonk_verifier_index_create
+// Provides: caml_bn254_fp_plonk_verifier_index_create
 // Requires: plonk_wasm, tsRustConversion
 var caml_bn254_fp_plonk_verifier_index_create = function (x) {
   var vk = plonk_wasm.caml_bn254_fp_plonk_verifier_index_create(x);
   return tsRustConversion.bn254Fp.verifierIndexFromRust(vk);
+};
+
+// Provides: caml_bn254_fp_plonk_verifier_index_read
+// Requires: plonk_wasm, caml_jsstring_of_string, tsRustConversion
+var caml_bn254_fp_plonk_verifier_index_read = function (offset, urs, path) {
+  if (offset === 0) {
+    offset = undefined;
+  } else {
+    offset = offset[1];
+  }
+  return tsRustConversion.bn254Fp.verifierIndexFromRust(
+    plonk_wasm.caml_bn254_fp_plonk_verifier_index_read(
+      offset,
+      urs,
+      caml_jsstring_of_string(path)
+    )
+  );
+};
+
+// Provides: caml_bn254_fp_plonk_verifier_index_write
+// Requires: plonk_wasm, caml_jsstring_of_string, tsRustConversion
+var caml_bn254_fp_plonk_verifier_index_write = function (append, t, path) {
+  if (append === 0) {
+    append = undefined;
+  } else {
+    append = append[1];
+  }
+  return plonk_wasm.caml_bn254_fp_plonk_verifier_index_write(
+    append,
+    tsRustConversion.bn254Fp.verifierIndexToRust(t),
+    caml_jsstring_of_string(path)
+  );
+};
+
+// Provides: caml_bn254_fp_plonk_verifier_index_shifts
+// Requires: plonk_wasm, tsRustConversion
+var caml_bn254_fp_plonk_verifier_index_shifts = function (log2_size) {
+  return tsRustConversion.bn254Fp.shiftsFromRust(
+    plonk_wasm.caml_bn254_fp_plonk_verifier_index_shifts(log2_size)
+  );
+};
+
+// Provides: caml_bn254_fp_plonk_verifier_index_dummy
+// Requires: plonk_wasm, tsRustConversion
+var caml_bn254_fp_plonk_verifier_index_dummy = function () {
+  var res = plonk_wasm.caml_bn254_fp_plonk_verifier_index_dummy();
+  return tsRustConversion.bn254Fp.verifierIndexFromRust(res);
+};
+
+// Provides: caml_bn254_fp_plonk_verifier_index_deep_copy
+// Requires: plonk_wasm, tsRustConversion
+var caml_bn254_fp_plonk_verifier_index_deep_copy = function (x) {
+  return tsRustConversion.bn254Fp.verifierIndexFromRust(
+    plonk_wasm.caml_bn254_fp_plonk_verifier_index_deep_copy(
+      tsRustConversion.bn254Fp.verifierIndexToRust(x)
+    )
+  );
 };
 
 // proof
