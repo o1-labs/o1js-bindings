@@ -136,6 +136,12 @@ val snarky :
               (Impl.Keypair.t -> Impl.Verification_key.t) Js.meth >
           Js.t
           Js.readonly_prop
+      ; keypairBn254 :
+          < getConstraintSystemJSON : (Bn254_impl.Keypair.t -> 'a) Js.meth
+          ; getVerificationKey :
+              (Bn254_impl.Keypair.t -> Bn254_impl.Verification_key.t) Js.meth >
+          Js.t
+          Js.readonly_prop
       ; prove :
           (   (Field.t array -> unit)
            -> int

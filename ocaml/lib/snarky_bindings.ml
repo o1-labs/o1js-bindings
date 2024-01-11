@@ -203,6 +203,17 @@ module Circuit = struct
     let get_cs_json t =
       (Impl.Keypair.pk t).index |> prover_to_json |> Util.json_parse
   end
+
+  module Keypair_bn254 = struct
+    let get_vk t = Bn254_impl.Keypair.vk t
+
+    external prover_to_json :
+      Kimchi_bindings.Protocol.Index.Bn254Fp.t -> Js.js_string Js.t
+      = "prover_to_json_bn254"
+
+    let get_cs_json t =
+      (Bn254_impl.Keypair.pk t).index |> prover_to_json |> Util.json_parse
+  end
 end
 
 module Poseidon = struct
@@ -494,6 +505,13 @@ let snarky =
             method getVerificationKey = Circuit.Keypair.get_vk
 
             method getConstraintSystemJSON = Circuit.Keypair.get_cs_json
+          end
+
+        val keypairBn254 =
+          object%js
+            method getVerificationKey = Circuit.Keypair_bn254.get_vk
+
+            method getConstraintSystemJSON = Circuit.Keypair_bn254.get_cs_json
           end
       end
 

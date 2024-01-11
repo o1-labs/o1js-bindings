@@ -1304,6 +1304,10 @@ function caml_pasta_fp_plonk_proof_example_with_lookup() {
 // Requires: plonk_wasm
 var prover_to_json = plonk_wasm.prover_to_json;
 
+// Provides: prover_to_json_bn254
+// Requires: plonk_wasm
+var prover_to_json_bn254 = plonk_wasm.prover_to_json_bn254;
+
 // Provides: integers_uint64_of_uint32
 // Requires: UInt64, caml_int64_of_int32
 function integers_uint64_of_uint32(i) {
