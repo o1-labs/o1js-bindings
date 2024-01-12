@@ -72,7 +72,8 @@ val snarky :
       Js.t
       Js.readonly_prop
   ; fieldBn254 :
-      < assertEqual : (Bn254_impl.Field.t -> Bn254_impl.Field.t -> unit) Js.meth >
+      < assertEqual : (Bn254_impl.Field.t -> Bn254_impl.Field.t -> unit) Js.meth
+      ; readVar : (Bn254_impl.Field.t -> Bn254_impl.field) Js.meth >
       Js.t
       Js.readonly_prop
   ; bool :
@@ -156,6 +157,13 @@ val snarky :
       Js.readonly_prop
   ; circuitBn254 :
       < compile : ((Bn254_impl.Field.t array -> unit) -> int -> Bn254_impl.Keypair.t) Js.meth
+      ; prove :
+          (   (Bn254_impl.Field.t array -> unit)
+           -> int
+           -> Bn254_impl.field array
+           -> Bn254_impl.Keypair.t
+           -> Js.js_string Js.t )
+          Js.meth
       ; keypair :
           < getConstraintSystemJSON : (Bn254_impl.Keypair.t -> 'a) Js.meth
           ; getVerificationKey :

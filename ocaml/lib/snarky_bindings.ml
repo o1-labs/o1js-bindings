@@ -122,6 +122,9 @@ end
 module Bn254_field = struct
   (** x === y without handling of constants *)
   let assert_equal x y = Bn254_impl.assert_ (Bn254_impl.Constraint.equal x y)
+
+  (** evaluates a CVar by unfolding the AST and reading Vars from a list of public input + aux values *)
+  let read_var (x : Bn254_impl.Field.t) = Bn254_impl.As_prover.read_var x
 end
 
 module Bool = struct
@@ -207,6 +210,17 @@ module Circuit_bn254 = struct
     let return_typ = Bn254_impl.Typ.unit in
     let cs = Bn254_impl.constraint_system ~input_typ ~return_typ (Main.of_js main) in
     Bn254_impl.Keypair.generate ~prev_challenges:0 cs
+
+  let prove main public_input_size public_input keypair =
+    let pk = Bn254_impl.Keypair.pk keypair in
+    let input_typ = bn254_typ public_input_size in
+    let return_typ = Bn254_impl.Typ.unit in
+    let proof = Bn254_impl.generate_witness_conv ~input_typ ~return_typ
+      ~f:(fun { Bn254_impl.Proof_inputs.auxiliary_inputs; public_inputs } () ->
+        Kimchi_backend.Bn254.Bn254_based_plonk.Proof.create pk ~auxiliary:auxiliary_inputs
+          ~primary:public_inputs )
+      (Main.of_js main) public_input in
+    Js.string proof
 
   module Keypair = struct
     let get_vk t = Bn254_impl.Keypair.vk t
@@ -472,6 +486,8 @@ let snarky =
       let open Bn254_field in
       object%js
         method assertEqual = assert_equal
+
+        method readVar = read_var
       end
 
     val bool =
@@ -513,6 +529,8 @@ let snarky =
     val circuitBn254 =
       object%js
         method compile = Circuit_bn254.compile
+
+        method prove = Circuit_bn254.prove
 
         val keypair =
           object%js
