@@ -159,10 +159,6 @@ module Circuit = struct
     let of_js (main : Field.t array -> unit) =
       let main' public_input () = main public_input in
       main'
-    
-    let bn254_of_js (main : Bn254_impl.Field.t array -> unit) =
-      let main' public_input () = main public_input in
-      main'
   end
 
   let compile main public_input_size =
@@ -187,12 +183,6 @@ module Circuit = struct
         Backend.Field.Vector.emplace_back public_input_vec x ) ;
     Backend.Proof.verify proof vk public_input_vec |> Js.bool
 
-  let compile_bn254 main public_input_size =
-    let input_typ = bn254_typ public_input_size in
-    let return_typ = Bn254_impl.Typ.unit in
-    let cs = Bn254_impl.constraint_system ~input_typ ~return_typ (Main.bn254_of_js main) in
-    Bn254_impl.Keypair.generate ~prev_challenges:0 cs
-
   module Keypair = struct
     let get_vk t = Impl.Keypair.vk t
 
@@ -203,8 +193,22 @@ module Circuit = struct
     let get_cs_json t =
       (Impl.Keypair.pk t).index |> prover_to_json |> Util.json_parse
   end
+end
 
-  module Keypair_bn254 = struct
+module Circuit_bn254 = struct
+  module Main = struct
+    let of_js (main : Bn254_impl.Field.t array -> unit) =
+      let main' public_input () = main public_input in
+      main'
+  end
+
+  let compile main public_input_size =
+    let input_typ = bn254_typ public_input_size in
+    let return_typ = Bn254_impl.Typ.unit in
+    let cs = Bn254_impl.constraint_system ~input_typ ~return_typ (Main.of_js main) in
+    Bn254_impl.Keypair.generate ~prev_challenges:0 cs
+
+  module Keypair = struct
     let get_vk t = Bn254_impl.Keypair.vk t
 
     external prover_to_json :
@@ -494,8 +498,6 @@ let snarky =
       object%js
         method compile = Circuit.compile
 
-        method compileBn254 = Circuit.compile_bn254
-
         method prove = Circuit.prove
 
         method verify = Circuit.verify
@@ -506,12 +508,17 @@ let snarky =
 
             method getConstraintSystemJSON = Circuit.Keypair.get_cs_json
           end
+      end
+    
+    val circuitBn254 =
+      object%js
+        method compile = Circuit_bn254.compile
 
-        val keypairBn254 =
+        val keypair =
           object%js
-            method getVerificationKey = Circuit.Keypair_bn254.get_vk
+            method getVerificationKey = Circuit_bn254.Keypair.get_vk
 
-            method getConstraintSystemJSON = Circuit.Keypair_bn254.get_cs_json
+            method getConstraintSystemJSON = Circuit_bn254.Keypair.get_cs_json
           end
       end
 

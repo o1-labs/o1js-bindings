@@ -30,6 +30,10 @@ export default [
         type: 'object',
       },
       {
+        name: 'circuitBn254',
+        type: 'object',
+      },
+      {
         name: 'poseidon',
         type: 'object',
       },

@@ -129,17 +129,10 @@ val snarky :
       Js.readonly_prop
   ; circuit :
       < compile : ((Field.t array -> unit) -> int -> Impl.Keypair.t) Js.meth
-      ; compileBn254 : ((Bn254_impl.Field.t array -> unit) -> int -> Bn254_impl.Keypair.t) Js.meth
       ; keypair :
           < getConstraintSystemJSON : (Impl.Keypair.t -> 'a) Js.meth
           ; getVerificationKey :
               (Impl.Keypair.t -> Impl.Verification_key.t) Js.meth >
-          Js.t
-          Js.readonly_prop
-      ; keypairBn254 :
-          < getConstraintSystemJSON : (Bn254_impl.Keypair.t -> 'a) Js.meth
-          ; getVerificationKey :
-              (Bn254_impl.Keypair.t -> Bn254_impl.Verification_key.t) Js.meth >
           Js.t
           Js.readonly_prop
       ; prove :
@@ -159,6 +152,16 @@ val snarky :
               Kimchi_types.VerifierIndex.verifier_index
            -> bool Js.t )
           Js.meth >
+      Js.t
+      Js.readonly_prop
+  ; circuitBn254 :
+      < compile : ((Bn254_impl.Field.t array -> unit) -> int -> Bn254_impl.Keypair.t) Js.meth
+      ; keypair :
+          < getConstraintSystemJSON : (Bn254_impl.Keypair.t -> 'a) Js.meth
+          ; getVerificationKey :
+              (Bn254_impl.Keypair.t -> Bn254_impl.Verification_key.t) Js.meth >
+          Js.t
+          Js.readonly_prop>
       Js.t
       Js.readonly_prop
   ; foreignField :
