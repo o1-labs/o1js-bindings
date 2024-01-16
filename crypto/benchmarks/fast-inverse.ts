@@ -4,93 +4,102 @@ import { mod, inverse } from '../finite_field.js';
 
 export { createFastInverse };
 
-const w = 24n;
+const w = 31n;
 const wMask = (1n << w) - 1n;
-const n = Math.ceil(255 / Number(w));
-const hiBits = 32n;
-const Kmax = 2n * BigInt(n) * w;
-const verbose = false;
-
-console.log({ w, n, hiBits, Kmax });
+const hiBits = 31;
 
 function createFastInverse(p: bigint) {
+  const n = Math.ceil(255 / Number(w));
+  const kmax = 2n * BigInt(n) * w;
+
   // precomputed constant for correcting 2^k/x -> 1/x, by multiplying with 2^-kmax * 2^(kmax - k)
-  const twoToMinusKmax = inverse(1n << Kmax, p)!;
-  return (x: bigint) => fastInverse(x, p, twoToMinusKmax);
+  const twoToMinusKmax = inverse(1n << kmax, p)!;
+
+  return (x: bigint) => fastInverse(x, p, n, kmax, twoToMinusKmax);
 }
 
-function fastInverse(x: bigint, p: bigint, twoToMinusKmax: bigint) {
+function fastInverse(
+  x: bigint,
+  p: bigint,
+  n: number,
+  kmax: bigint,
+  twoToMinusKmax: bigint
+) {
   let u = p;
   let v = x;
   let r = 0n;
   let s = 1n;
-  let signFlip = false;
 
   let i = 0;
 
   for (; i < 2 * n; i++) {
-    let f0 = 1n;
-    let g0 = 0n;
-    let f1 = 0n;
-    let g1 = 1n;
+    let f0 = 1;
+    let g0 = 0;
+    let f1 = 0;
+    let g1 = 1;
 
-    let ulo = u & wMask;
-    let vlo = v & wMask;
+    let ulo = Number(u & wMask);
+    let vlo = Number(v & wMask);
 
-    let shift = BigInt(Math.max(log2(u), log2(v))) - hiBits;
+    let len = Math.max(log2(u), log2(v));
+    let shift = BigInt(Math.max(len - hiBits, 0));
 
-    let uhi = u >> shift;
-    let vhi = v >> shift;
+    let uhi = Number(u >> shift);
+    let vhi = Number(v >> shift);
 
-    for (let j = 0n; j < w; j++) {
-      if ((ulo & 1n) === 0n) {
-        uhi >>= 1n;
-        ulo >>= 1n;
-        f1 <<= 1n;
-        g1 <<= 1n;
-      } else if ((vlo & 1n) === 0n) {
-        vhi >>= 1n;
-        vlo >>= 1n;
-        f0 <<= 1n;
-        g0 <<= 1n;
+    for (let j = 0; j < w; j++) {
+      if ((ulo & 1) === 0) {
+        uhi >>= 1;
+        ulo >>= 1;
+        f1 <<= 1;
+        g1 <<= 1;
+      } else if ((vlo & 1) === 0) {
+        vhi >>= 1;
+        vlo >>= 1;
+        f0 <<= 1;
+        g0 <<= 1;
       } else {
-        let mhi = vhi - uhi;
-        if (mhi <= 0n) {
-          uhi = -mhi >> 1n;
-          ulo = (ulo - vlo) >> 1n;
+        let mhi_ = vhi - uhi;
+        if (mhi_ <= 0) {
+          uhi = -mhi_ >> 1;
+          ulo = (ulo - vlo) >> 1;
           f0 = f0 + f1;
           g0 = g0 + g1;
-          f1 <<= 1n;
-          g1 <<= 1n;
+          f1 <<= 1;
+          g1 <<= 1;
         } else {
-          vhi = mhi >> 1n;
-          vlo = (vlo - ulo) >> 1n;
+          vhi = mhi_ >> 1;
+          vlo = (vlo - ulo) >> 1;
           f1 = f0 + f1;
           g1 = g0 + g1;
-          f0 <<= 1n;
-          g0 <<= 1n;
+          f0 <<= 1;
+          g0 <<= 1;
         }
       }
     }
 
-    let unew = u * f0 - v * g0;
-    let vnew = v * g1 - u * f1;
+    let f0n = BigInt(f0);
+    let g0n = BigInt(g0);
+    let f1n = BigInt(f1);
+    let g1n = BigInt(g1);
+
+    let unew = u * f0n - v * g0n;
+    let vnew = v * g1n - u * f1n;
     u = unew >> w;
     v = vnew >> w;
 
     if (u < 0) {
-      signFlip = true;
-      [u, f0, g0] = [-u, -f0, -g0];
+      [u, f0n, g0n] = [-u, -f0n, -g0n];
     }
     if (v < 0) {
-      signFlip = true;
-      [v, f1, g1] = [-v, -f1, -g1];
+      [v, f1n, g1n] = [-v, -f1n, -g1n];
     }
-    let rnew = r * f0 + s * g0;
-    let snew = r * f1 + s * g1;
+    let rnew = r * f0n + s * g0n;
+    let snew = r * f1n + s * g1n;
     r = rnew;
     s = snew;
 
+    // these assertions are all true, enable when debugging:
     // let lin = v * r + u * s;
     // let k = BigInt(i + 1) * w;
     // assert(lin === p || lin === -p, 'linear combination');
@@ -98,43 +107,22 @@ function fastInverse(x: bigint, p: bigint, twoToMinusKmax: bigint) {
     // assert(mod(x * s - v * 2n ** k, p) === 0n, 'mod p, s');
 
     if (u === 0n) break;
-    if (v === 0n) throw Error('v = 0');
-  }
 
+    // empirically this never happens, but there might be unlucky edge cases where it does, due to sign flips
+    if (v === 0n) {
+      s = mod(-r, p);
+      break;
+    }
+  }
   let k = BigInt(i + 1) * w;
 
-  if (verbose) console.log({ u, v, rlen: log2(r), slen: log2(s) });
-  // second case can only happen when sign flips and by chance v becomes 0
-  // return [u === 0n ? s : mod(-r, p), k, signFlip] as const;
-
   // now s = 2^k/x mod p
-
   // correction step to go from 2^k/x to 1/x
   s = mod(s * twoToMinusKmax, p); // s <- s * 2^(-kmax) = 2^(k - kmax)/x
-  s = mod(s * (1n << (Kmax - k)), p); // s <- s * 2^(kmax-k) = 2^k/x
+  s = mod(s * (1n << (kmax - k)), p); // s <- s * 2^(kmax - k) = 1/x
 
+  // yes this has a slight cost and the assert is never triggered,
+  // but it's worth it for the sake of safety
   assert(mod(x * s - 1n, p) === 0n, 'mod p');
-  if (signFlip) console.log('sign flip');
-
   return s;
 }
-
-// TODO remove this commented code
-
-// const N = 100;
-
-// let signFlips = 0;
-
-// for (let i = 0; i < N; i++) {
-//   let x = Fp.random();
-
-//   let [s, k, signFlip] = fastInverse(x, p, BigInt(w), n);
-//   signFlips += Number(signFlip);
-
-//   assert(k + 1 >= b && k <= Kmax, 'k bounds');
-//   assert(mod(x * s - 1n, p) === 0n, 'inverse');
-
-//   if (verbose) console.log({ i, k, s });
-// }
-
-// console.log(`${(signFlips / N) * 100}% flips`);
