@@ -370,7 +370,9 @@ module EC_group = struct
         (Js.Optdef.get (Js.array_get curve 5) (fun () ->
              raise OrderNotFoundInCurve ) ) in
 
-    Curve_params.from_strings (module Bn254_impl) a b modulus gen_x gen_y order
+    let curve_params = Curve_params.from_strings (module Bn254_impl) a b modulus gen_x gen_y order in
+    let ia = ECG.compute_ia_points curve_params in
+      Curve_params.to_circuit_constants (module Bn254_impl) { curve_params with ia = ia }
 
   let add (left_input : t) (right_input : t)
       (curve : Js.js_string Js.t Js.js_array Js.t) =
