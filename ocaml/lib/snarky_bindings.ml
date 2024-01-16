@@ -371,6 +371,10 @@ module EC_group = struct
              raise OrderNotFoundInCurve ) ) in
 
     let curve_params = Curve_params.from_strings (module Bn254_impl) a b modulus gen_x gen_y order in
+    (* Ia points are neccessary for scalar multiplication, because it implies adding with accumulation
+       which it checks that the accumulator is not the point at infinity.
+       The default for ia points are the point at infinity, so letting the default would make the scalar
+       multiplication fail. *)
     let ia = ECG.compute_ia_points curve_params in
       Curve_params.to_circuit_constants (module Bn254_impl) { curve_params with ia = ia }
 
