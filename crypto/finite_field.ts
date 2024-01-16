@@ -76,6 +76,7 @@ function fastInverse(
   kmax: bigint,
   twoToMinusKmax: bigint
 ) {
+  x = mod(x, p);
   if (x === 0n) return undefined;
 
   // fixed constants
