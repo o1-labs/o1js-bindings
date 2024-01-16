@@ -3,6 +3,7 @@ import { tic, toc } from '../../../examples/utils/tic-toc.node.js';
 import { createFastInverse } from './fast-inverse.js';
 
 const N = 10000;
+
 let fields: bigint[] = Array(N);
 const fastInverse = createFastInverse(Fp.modulus);
 
@@ -13,6 +14,8 @@ bench('inverse', fillRandomFields, () => {
 bench('fast inverse', fillRandomFields, () => {
   for (let i = 0; i < N; i++) fields[i] = fastInverse(fields[i]);
 });
+
+// helpers
 
 function fillRandomFields() {
   for (let i = 0; i < N; i++) fields[i] = Fp.random();
