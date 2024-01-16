@@ -59,16 +59,15 @@ function fastInverse(
         f0 <<= 1;
         g0 <<= 1;
       } else {
-        let mhi_ = vhi - uhi;
-        if (mhi_ <= 0) {
-          uhi = -mhi_ >> 1;
+        if (vhi <= uhi) {
+          uhi = (uhi - vhi) >> 1;
           ulo = (ulo - vlo) >> 1;
           f0 = f0 + f1;
           g0 = g0 + g1;
           f1 <<= 1;
           g1 <<= 1;
         } else {
-          vhi = mhi_ >> 1;
+          vhi = (vhi - uhi) >> 1;
           vlo = (vlo - ulo) >> 1;
           f1 = f0 + f1;
           g1 = g0 + g1;
