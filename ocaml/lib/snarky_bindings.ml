@@ -358,8 +358,6 @@ module EC_group = struct
       |> Bn254_bindings.Bn254Fq.to_string
       |> Bigint.of_string in
       let ia_input = (ia_x_bigint, ia_y_bigint) in
-    let () = Js_of_ocaml.Firebug.console##log (Js.string "IS ON CURVE") in
-    let () = Js_of_ocaml.Firebug.console##log (Js.bool (ECG.is_on_curve_bignum_point curve_params ia_input)) in
     let ia = ECG.compute_ia_points ~point:ia_input curve_params in
     Curve_params.to_circuit_constants (module Bn254_impl) { curve_params with ia = ia }
   
@@ -394,6 +392,19 @@ module EC_group = struct
       Js.to_string
         (Js.Optdef.get (Js.array_get curve 5) (fun () ->
              raise OrderNotFoundInCurve ) ) in
+    
+    let () = Js_of_ocaml.Firebug.console##log (Js.string "a") in
+        let () = Js_of_ocaml.Firebug.console##log (Js.string a) in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string "b") in
+        let () = Js_of_ocaml.Firebug.console##log (Js.string b) in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string "modulus") in
+        let () = Js_of_ocaml.Firebug.console##log (Js.string modulus) in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string "gen_x") in
+        let () = Js_of_ocaml.Firebug.console##log (Js.string gen_x) in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string "gen_y") in
+        let () = Js_of_ocaml.Firebug.console##log (Js.string gen_y) in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string "order") in
+        let () = Js_of_ocaml.Firebug.console##log (Js.string order) in
 
     let curve_params = Curve_params.from_strings (module Bn254_impl) a b modulus gen_x gen_y order in
     curve_params_with_ia_points curve_params
