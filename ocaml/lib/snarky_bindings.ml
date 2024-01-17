@@ -338,6 +338,29 @@ module EC_group = struct
 
   exception OrderNotFoundInCurve
 
+  (* Ia points are neccessary for scalar multiplication, because it implies adding with accumulation
+    which it checks that the accumulator is not the point at infinity.
+    The default for ia points are the point at infinity, so letting the default would make the scalar
+    multiplication fail.
+    We first select a random point in the curve as the input for the ia points computation.*)
+  let curve_params_with_ia_points curve_params =
+    let ia_input_fq = Bn254_bindings.Bn254.random () in
+    let ia_x, ia_y = match Bn254_bindings.Bn254.to_affine ia_input_fq with
+      | Finite (x, y) -> (x, y)
+      | Infinity -> failwith "Randomly generated Bn254 point is the point at infinity" in
+    (* TODO: is there a better way to convert arkworks bigint to OCaml bigint? *)
+    let ia_x_bigint =
+      ia_x
+      |> Bn254_bindings.Bn254Fq.to_string
+      |> Bigint.of_string in
+    let ia_y_bigint =
+      ia_y
+      |> Bn254_bindings.Bn254Fq.to_string
+      |> Bigint.of_string in
+    let ia_input = (ia_x_bigint, ia_y_bigint) in
+    let ia = ECG.compute_ia_points ~point:ia_input curve_params in
+    Curve_params.to_circuit_constants (module Bn254_impl) { curve_params with ia = ia }
+  
   (* curve = [a, b, modulus, gen_x, gen_y, order] *)
   let parse_ec curve =
     let a =
@@ -371,12 +394,7 @@ module EC_group = struct
              raise OrderNotFoundInCurve ) ) in
 
     let curve_params = Curve_params.from_strings (module Bn254_impl) a b modulus gen_x gen_y order in
-    (* Ia points are neccessary for scalar multiplication, because it implies adding with accumulation
-       which it checks that the accumulator is not the point at infinity.
-       The default for ia points are the point at infinity, so letting the default would make the scalar
-       multiplication fail. *)
-    let ia = ECG.compute_ia_points curve_params in
-      Curve_params.to_circuit_constants (module Bn254_impl) { curve_params with ia = ia }
+    curve_params_with_ia_points curve_params
 
   let add (left_input : t) (right_input : t)
       (curve : Js.js_string Js.t Js.js_array Js.t) =
