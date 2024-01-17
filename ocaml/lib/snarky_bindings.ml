@@ -65,26 +65,6 @@ module Run = struct
 
   let in_prover_block () = As_prover.in_prover_block () |> Js.bool
 
-  (* TODO recreate this in JS *)
-  let run_circuit num_inputs eval_constraints with_witness log_constraint
-      (f : unit -> unit) =
-    let state, _, _, _ =
-      Low_level.create_state num_inputs eval_constraints with_witness
-        log_constraint
-    in
-    let old_state = !Low_level.state in
-    Low_level.state := state ;
-    let counters = Impl.Low_level.push_active_counter () in
-    try
-      let result = f () in
-      Impl.Low_level.reset_active_counter counters ;
-      Low_level.state := old_state ;
-      result
-    with exn ->
-      Impl.Low_level.reset_active_counter counters ;
-      Low_level.state := old_state ;
-      Util.raise_exn exn
-
   let run_and_check (f : unit -> unit) =
     try
       Impl.run_and_check_exn (fun () ->
@@ -571,8 +551,6 @@ let snarky =
         method runAndCheck = run_and_check
 
         method runUnchecked = run_unchecked
-
-        method runCircuit = run_circuit
 
         method constraintSystem = constraint_system
       end

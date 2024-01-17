@@ -52,20 +52,6 @@ val snarky :
               Js.t )
           Js.meth
       ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
-      ; runCircuit :
-          (   int
-           -> bool
-           -> bool
-           -> (   ?at_label_boundary:[ `End | `Start ] * string
-               -> ( field Snarky_backendless.Cvar.t
-                  , field )
-                  Snarky_backendless.Constraint.t
-                  option
-               -> unit )
-              option
-           -> (unit -> unit)
-           -> unit )
-          Js.meth
       ; runAndCheck : ((unit -> unit) -> unit) Js.meth
       ; runUnchecked : ((unit -> unit) -> unit) Js.meth >
       Js.t
