@@ -176,7 +176,7 @@ function fastInverse(
   // now s = 2^k/x mod p
   // correction step to go from 2^k/x to 1/x
   s = mod(s * twoToMinusKmax, p); // s <- s * 2^(-kmax) = 2^(k - kmax)/x
-  s = mod(s * (1n << (kmax - k)), p); // s <- s * 2^(kmax - k) = 1/x
+  s = mod(s << (kmax - k), p); // s <- s * 2^(kmax - k) = 1/x
 
   // yes this has a slight cost and the assert is never triggered,
   // but it's worth having for the sake of assurance
