@@ -1,5 +1,5 @@
 import { Fp, p, inverse } from '../finite_field.js';
-import { tic, toc } from '../../../examples/utils/tic-toc.node.js';
+import { tic, toc } from '../../../lib/util/tic-toc.js';
 
 const N = 10000;
 
