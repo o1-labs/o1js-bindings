@@ -357,6 +357,12 @@ module EC_group = struct
       ia_y
       |> Bn254_bindings.Bn254Fq.to_string
       |> Bigint.of_string in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string "FIELDS") in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string (Bn254_bindings.Bn254Fq.to_string ia_x)) in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string (Bn254_bindings.Bn254Fq.to_string ia_y)) in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string "BIGINTS") in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string (Bigint.to_string ia_x_bigint)) in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string (Bigint.to_string ia_y_bigint)) in
     let ia_input = (ia_x_bigint, ia_y_bigint) in
     let ia = ECG.compute_ia_points ~point:ia_input curve_params in
     Curve_params.to_circuit_constants (module Bn254_impl) { curve_params with ia = ia }
