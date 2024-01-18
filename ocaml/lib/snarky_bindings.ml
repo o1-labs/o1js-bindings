@@ -357,7 +357,7 @@ module EC_group = struct
       ia_y
       |> Bn254_bindings.Bn254Fq.to_string
       |> Bigint.of_string in
-      let ia_input = (ia_x_bigint, ia_y_bigint) in
+    let ia_input = (ia_x_bigint, ia_y_bigint) in
     let ia = ECG.compute_ia_points ~point:ia_input curve_params in
     Curve_params.to_circuit_constants (module Bn254_impl) { curve_params with ia = ia }
   
