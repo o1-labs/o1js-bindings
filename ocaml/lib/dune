@@ -1,5 +1,5 @@
 (library
- (name snarky_js_bindings_lib)
+ (name o1js_bindings_lib)
  (libraries
   ;; opam libraries ;;
   core_kernel

@@ -1,4 +1,4 @@
-// Please keep it in sync with snarkyjs.
+// Please keep it in sync with o1js.
 module.exports = {
   // Important for js_of_ocaml to avoid adding comma in parameters
   trailingComma: 'es5',
