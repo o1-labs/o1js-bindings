@@ -63,7 +63,7 @@ function provableTuple<T extends Tuple<any>>(types: T): InferredProvable<T> {
 }
 
 function provableFromClass<A, T extends InferProvable<A>>(
-  Class: Constructor<T> & { check?: (x: T) => void },
+  Class: Constructor<T> & { check?: (x: T) => void; empty?: () => T },
   typeObj: A
 ): IsPure<A> extends true
   ? ProvablePureExtended<T, InferJson<A>>
@@ -77,11 +77,7 @@ function provableFromClass<A, T extends InferProvable<A>>(
       return construct(Class, raw.fromFields(fields, aux));
     },
     check(value) {
-      if (Class.check !== undefined) {
-        Class.check(value);
-      } else {
-        raw.check(value);
-      }
+      Class.check?.(value) ?? raw.check(value);
     },
     toInput: raw.toInput,
     toJSON: raw.toJSON,
@@ -89,7 +85,7 @@ function provableFromClass<A, T extends InferProvable<A>>(
       return construct(Class, raw.fromJSON(x));
     },
     empty() {
-      return construct(Class, raw.empty());
+      return Class.empty?.() ?? construct(Class, raw.empty());
     },
   } satisfies ProvableExtended<T, InferJson<A>> as any;
 }
