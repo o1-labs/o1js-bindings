@@ -6,7 +6,7 @@ import {
   inlineWorker,
   waitForMessage,
 } from './worker-helpers.js';
-import o1jsWebSrc from 'string:../../../web_bindings/snarky_js_web.bc.js';
+import o1jsWebSrc from 'string:../../../web_bindings/o1js_web.bc.js';
 
 export { initO1, withThreadPool };
 
