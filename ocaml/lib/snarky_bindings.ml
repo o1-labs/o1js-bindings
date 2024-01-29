@@ -30,6 +30,36 @@ let exists (size_in_fields : int) (compute : unit -> Field.Constant.t array) =
 let exists_var (compute : unit -> Field.Constant.t) =
   Impl.exists Field.typ ~compute
 
+module Low_level = struct
+  let state = Impl.Low_level.state
+
+  let create_state num_inputs eval_constraints with_witness log_constraint =
+    let input = Field.Constant.Vector.create () in
+    let next_auxiliary = ref num_inputs in
+    let aux = Field.Constant.Vector.create () in
+    let system = Backend.R1CS_constraint_system.create () in
+    let state =
+      Impl.Low_level.make_state ~num_inputs ~input ~next_auxiliary ~aux ~system
+        ~eval_constraints ~with_witness ?log_constraint ()
+    in
+    (state, input, aux, system)
+
+  let push_active_counter () = Impl.Low_level.push_active_counter ()
+
+  let reset_active_counter counters =
+    Impl.Low_level.reset_active_counter counters
+
+  module Constraint_system = struct
+    let get_rows cs = Backend.R1CS_constraint_system.get_rows_len cs
+
+    let digest cs =
+      Backend.R1CS_constraint_system.digest cs |> Md5.to_hex |> Js.string
+
+    let to_json cs =
+      Backend.R1CS_constraint_system.to_json cs |> Js.string |> Util.json_parse
+  end
+end
+
 module Run = struct
   let as_prover = Impl.as_prover
 
@@ -490,6 +520,26 @@ let snarky =
     method exists = exists
 
     method existsVar = exists_var
+
+    val lowLevel =
+      object%js
+        val state = Low_level.state
+
+        method createState = Low_level.create_state
+
+        val pushActiveCounter = Low_level.push_active_counter
+
+        method resetActiveCounter = Low_level.reset_active_counter
+
+        val constraintSystem =
+          object%js
+            method getRows = Low_level.Constraint_system.get_rows
+
+            method digest = Low_level.Constraint_system.digest
+
+            method toJson = Low_level.Constraint_system.to_json
+          end
+      end
 
     val run =
       let open Run in

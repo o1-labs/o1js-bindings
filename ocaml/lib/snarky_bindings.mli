@@ -13,6 +13,35 @@ end
 val snarky :
   < exists : (int -> (unit -> field array) -> Field.t array) Js.meth
   ; existsVar : ((unit -> field) -> Field.t) Js.meth
+  ; lowLevel :
+      < state : Impl.Low_level.state ref Js.readonly_prop
+      ; createState :
+          (   int
+           -> bool
+           -> bool
+           -> (   ?at_label_boundary:[ `End | `Start ] * string
+               -> ( field Snarky_backendless.Cvar.t
+                  , field )
+                  Snarky_backendless.Constraint.t
+                  option
+               -> unit )
+              option
+           -> Impl.Low_level.state
+              * Field.Constant.Vector.t
+              * Field.Constant.Vector.t
+              * Backend.R1CS_constraint_system.t )
+          Js.meth
+      ; pushActiveCounter : (unit -> int list) Js.readonly_prop
+      ; resetActiveCounter : (int list -> unit) Js.meth
+      ; constraintSystem :
+          < getRows : (Backend.R1CS_constraint_system.t -> int) Js.meth
+          ; digest :
+              (Backend.R1CS_constraint_system.t -> Js.js_string Js.t) Js.meth
+          ; toJson : (Backend.R1CS_constraint_system.t -> 'a) Js.meth >
+          Js.t
+          Js.readonly_prop >
+      Js.t
+      Js.readonly_prop
   ; run :
       < asProver : ((unit -> unit) -> unit) Js.meth
       ; constraintSystem :
