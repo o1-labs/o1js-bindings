@@ -33,6 +33,7 @@ val snarky :
   ; existsBn254 : (int -> (unit -> Bn254_impl.field array) -> Bn254_impl.Field.t array) Js.meth
   ; run :
       < asProver : ((unit -> unit) -> unit) Js.meth
+      ; asProverBn254 : ((unit -> unit) -> unit) Js.meth
       ; constraintSystem :
           (   (unit -> unit)
            -> < digest : Js.js_string Js.t Js.readonly_prop

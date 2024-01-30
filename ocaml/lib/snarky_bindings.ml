@@ -26,6 +26,8 @@ let exists_bn254 (size_in_fields : int) (compute : unit -> Bn254_impl.Field.Cons
 module Run = struct
   let as_prover = Impl.as_prover
 
+  let as_prover_bn254 = Bn254_impl.as_prover
+
   let in_prover_block () = As_prover.in_prover_block () |> Js.bool
 
   let run_and_check (f : unit -> unit) =
@@ -464,6 +466,8 @@ let snarky =
       let open Run in
       object%js
         method asProver = as_prover
+
+        method asProverBn254 = as_prover_bn254
 
         val inProverBlock = in_prover_block
 
