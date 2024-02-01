@@ -77,7 +77,11 @@ function provableFromClass<A, T extends InferProvable<A>>(
       return construct(Class, raw.fromFields(fields, aux));
     },
     check(value) {
-      Class.check?.(value) ?? raw.check(value);
+      if (Class.check !== undefined) {
+        Class.check(value);
+      } else {
+        raw.check(value);
+      }
     },
     toInput: raw.toInput,
     toJSON: raw.toJSON,
@@ -85,7 +89,9 @@ function provableFromClass<A, T extends InferProvable<A>>(
       return construct(Class, raw.fromJSON(x));
     },
     empty() {
-      return Class.empty?.() ?? construct(Class, raw.empty());
+      return Class.empty !== undefined
+        ? Class.empty()
+        : construct(Class, raw.empty());
     },
   } satisfies ProvableExtended<T, InferJson<A>> as any;
 }
