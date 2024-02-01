@@ -22,6 +22,10 @@ export default [
         type: 'object',
       },
       {
+        name: 'boolBn254',
+        type: 'object',
+      },
+      {
         name: 'group',
         type: 'object',
       },
@@ -39,6 +43,10 @@ export default [
       },
       {
         name: 'foreignField',
+        type: 'object',
+      },
+      {
+        name: 'foreignFieldBn254',
         type: 'object',
       },
       {

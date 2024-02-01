@@ -1,7 +1,7 @@
 module Js = Js_of_ocaml.Js
 module Backend = Kimchi_backend.Pasta.Vesta_based_plonk
 module Impl = Pickles.Impls.Step
-module Bn254_impl = Pickles.Impls.Bn254
+module Impl_bn254 = Pickles.Impls.Bn254
 module Field = Impl.Field
 module Boolean = Impl.Boolean
 
@@ -21,6 +21,14 @@ module Foreign_field : sig
   type op_mode
 end
 
+module Foreign_field_bn254 : sig
+  type t
+
+  type t_const
+
+  type op_mode
+end
+
 module EC_group : sig
   type t
 
@@ -30,7 +38,7 @@ end
 val snarky :
   < exists : (int -> (unit -> Impl.field array) -> Field.t array) Js.meth
   ; existsVar : ((unit -> Impl.field) -> Field.t) Js.meth
-  ; existsBn254 : (int -> (unit -> Bn254_impl.field array) -> Bn254_impl.Field.t array) Js.meth
+  ; existsBn254 : (int -> (unit -> Impl_bn254.field array) -> Impl_bn254.Field.t array) Js.meth
   ; run :
       < asProver : ((unit -> unit) -> unit) Js.meth
       ; asProverBn254 : ((unit -> unit) -> unit) Js.meth
@@ -73,8 +81,13 @@ val snarky :
       Js.t
       Js.readonly_prop
   ; fieldBn254 :
-      < assertEqual : (Bn254_impl.Field.t -> Bn254_impl.Field.t -> unit) Js.meth
-      ; readVar : (Bn254_impl.Field.t -> Bn254_impl.field) Js.meth >
+      < assertEqual : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
+      ; assertMul : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
+      ; readVar : (Impl_bn254.Field.t -> Impl_bn254.field) Js.meth
+      ; toBits : (int -> Impl_bn254.Field.t -> Impl_bn254.Boolean.var array) Js.meth
+      ; fromBits : (Impl_bn254.Boolean.var array -> Impl_bn254.Field.t) Js.meth
+      ; add : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t) Js.meth
+      ; scale : (Impl_bn254.field -> Impl_bn254.Field.t -> Impl_bn254.Field.t) Js.meth >
       Js.t
       Js.readonly_prop
   ; bool :
@@ -83,6 +96,14 @@ val snarky :
       ; equals : (Boolean.var -> Boolean.var -> Boolean.var) Js.meth
       ; not : (Boolean.var -> Boolean.var) Js.meth
       ; or_ : (Boolean.var -> Boolean.var -> Boolean.var) Js.meth >
+      Js.t
+      Js.readonly_prop
+  ; boolBn254 :
+      < and_ : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth
+      ; assertEqual : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> unit) Js.meth
+      ; equals : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth
+      ; not : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth
+      ; or_ : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth >
       Js.t
       Js.readonly_prop
   ; group :
@@ -122,9 +143,9 @@ val snarky :
           Js.t
           Js.readonly_prop
       ; foreignSponge :
-          < absorb : (Foreign_poseidon.sponge -> Foreign_field.t -> unit) Js.meth
+          < absorb : (Foreign_poseidon.sponge -> Foreign_field_bn254.t -> unit) Js.meth
           ; create : (bool Js.t -> Foreign_poseidon.sponge) Js.meth
-          ; squeeze : (Foreign_poseidon.sponge -> Foreign_field.t) Js.meth >
+          ; squeeze : (Foreign_poseidon.sponge -> Foreign_field_bn254.t) Js.meth >
           Js.t
           Js.readonly_prop >
       Js.t
@@ -157,18 +178,18 @@ val snarky :
       Js.t
       Js.readonly_prop
   ; circuitBn254 :
-      < compile : ((Bn254_impl.Field.t array -> unit) -> int -> Bn254_impl.Keypair.t) Js.meth
+      < compile : ((Impl_bn254.Field.t array -> unit) -> int -> Impl_bn254.Keypair.t) Js.meth
       ; prove :
-          (   (Bn254_impl.Field.t array -> unit)
+          (   (Impl_bn254.Field.t array -> unit)
            -> int
-           -> Bn254_impl.field array
-           -> Bn254_impl.Keypair.t
+           -> Impl_bn254.field array
+           -> Impl_bn254.Keypair.t
            -> Js.js_string Js.t )
           Js.meth
       ; keypair :
-          < getConstraintSystemJSON : (Bn254_impl.Keypair.t -> 'a) Js.meth
+          < getConstraintSystemJSON : (Impl_bn254.Keypair.t -> 'a) Js.meth
           ; getVerificationKey :
-              (Bn254_impl.Keypair.t -> Bn254_impl.Verification_key.t) Js.meth >
+              (Impl_bn254.Keypair.t -> Impl_bn254.Verification_key.t) Js.meth >
           Js.t
           Js.readonly_prop>
       Js.t
@@ -190,6 +211,23 @@ val snarky :
           Js.readonly_prop >
       Js.t
       Js.readonly_prop
+  ; foreignFieldBn254 :
+      < assertValidElement :
+          (Foreign_field_bn254.t -> Foreign_field_bn254.t_const -> unit) Js.readonly_prop
+      ; mul :
+          (   Foreign_field_bn254.t
+           -> Foreign_field_bn254.t
+           -> Foreign_field_bn254.t_const
+           -> Foreign_field_bn254.t )
+          Js.readonly_prop
+      ; sumChain :
+          (   Foreign_field_bn254.t array
+           -> Foreign_field_bn254.op_mode array
+           -> Foreign_field_bn254.t_const
+           -> Foreign_field_bn254.t )
+          Js.readonly_prop >
+      Js.t
+      Js.readonly_prop
   ; foreignGroup :
       < add :
           (   EC_group.t
@@ -199,7 +237,7 @@ val snarky :
           Js.readonly_prop
       ; scale :
           (   EC_group.t
-           -> Bn254_impl.Boolean.var array
+           -> Impl_bn254.Boolean.var array
            -> Js.js_string Js.t Js.js_array Js.t
            -> EC_group.t )
           Js.readonly_prop >
