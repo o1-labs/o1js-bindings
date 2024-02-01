@@ -30,6 +30,8 @@ module Run = struct
 
   let in_prover_block () = As_prover.in_prover_block () |> Js.bool
 
+  let in_prover_block_bn254 () = Impl_bn254.As_prover.in_prover_block () |> Js.bool
+
   let run_and_check (f : unit -> unit) =
     try
       Impl.run_and_check_exn (fun () ->
@@ -531,6 +533,8 @@ let snarky =
         method asProverBn254 = as_prover_bn254
 
         val inProverBlock = in_prover_block
+
+        val inProverBlockBn254 = in_prover_block_bn254
 
         method runAndCheck = run_and_check
 
