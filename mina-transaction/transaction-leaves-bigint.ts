@@ -71,5 +71,5 @@ const ReceiptChainHash = {
 type TransactionVersion = Field;
 const TransactionVersion = {
   ...UInt32,
-  emptyValue: () => UInt32(protocolVersions.txnVersion),
+  empty: () => UInt32(protocolVersions.txnVersion),
 };

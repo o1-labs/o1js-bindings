@@ -68,5 +68,5 @@ const ReceiptChainHash = {
 type TransactionVersion = Field;
 const TransactionVersion = {
   ...provable(UInt32),
-  emptyValue: () => UInt32.from(protocolVersions.txnVersion),
+  empty: () => UInt32.from(protocolVersions.txnVersion),
 };
