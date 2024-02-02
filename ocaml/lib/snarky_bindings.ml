@@ -409,18 +409,18 @@ module EC_group = struct
     multiplication fail.
     We first select a random point in the curve as the input for the ia points computation.*)
   let curve_params_with_ia_points curve_params =
-    let ia_input_fq = Bn254_bindings.Bn254.random () in
-    let ia_x, ia_y = match Bn254_bindings.Bn254.to_affine ia_input_fq with
+    let ia_input_fq = Pasta_bindings.Pallas.random () in
+    let ia_x, ia_y = match Pasta_bindings.Pallas.to_affine ia_input_fq with
       | Finite (x, y) -> (x, y)
-      | Infinity -> failwith "Randomly generated Bn254 point is the point at infinity" in
+      | Infinity -> failwith "Randomly generated Pallas point is the point at infinity" in
     (* TODO: is there a better way to convert arkworks bigint to OCaml bigint? *)
     let ia_x_bigint =
       ia_x
-      |> Bn254_bindings.Bn254Fq.to_string
+      |> Pasta_bindings.Fp.to_string
       |> Bigint.of_string in
     let ia_y_bigint =
       ia_y
-      |> Bn254_bindings.Bn254Fq.to_string
+      |> Pasta_bindings.Fp.to_string
       |> Bigint.of_string in
     let ia_input = (ia_x_bigint, ia_y_bigint) in
     let ia = ECG.compute_ia_points ~point:ia_input curve_params in
