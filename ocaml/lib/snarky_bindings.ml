@@ -139,7 +139,9 @@ module Field_bn254 = struct
   let from_bits bits = Array.to_list bits |> Impl_bn254.Field.project
     
   (** add x, y to get a new AST node Add(x, y); handles if x, y are constants *)
-  let add x y = Impl_bn254.Field.add x y
+  let add x y =
+    let () = Js_of_ocaml.Firebug.console##log (Js.string "ADD") in
+    Impl_bn254.Field.add x y
 
   (** scale x by a constant to get a new AST node Scale(c, x); handles if x is a constant; handles c=0,1 *)
   let scale c x = Impl_bn254.Field.scale x c
