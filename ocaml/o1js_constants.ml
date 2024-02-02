@@ -119,6 +119,10 @@ let version_bytes =
     ; ("signedCommandV1", `Int (Char.to_int signed_command_v1))
     ]
 
+let protocol_versions =
+  let open Protocol_version in
+  `Assoc [ ("txnVersion", `Int (transaction current)) ]
+
 let poseidon_params_kimchi =
   `Assoc
     [ ("mds", array (array string) Sponge.Params.pasta_p_kimchi.mds)
@@ -160,6 +164,7 @@ let constants =
   ; ("prefixHashes", prefix_hashes)
   ; ("prefixHashesLegacy", prefix_hashes_legacy)
   ; ("versionBytes", version_bytes)
+  ; ("protocolVersions", protocol_versions)
   ; ("poseidonParamsKimchiFp", poseidon_params_kimchi)
   ; ("poseidonParamsLegacyFp", poseidon_params_legacy)
   ; ("mocks", mocks)

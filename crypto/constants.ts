@@ -1,5 +1,5 @@
 // @gen this file is generated from `bindings/ocaml/o1js_constants.ml` - don't edit it directly
-export { prefixes, prefixHashes, prefixHashesLegacy, versionBytes, poseidonParamsKimchiFp, poseidonParamsLegacyFp, mocks }
+export { prefixes, prefixHashes, prefixHashesLegacy, versionBytes, protocolVersions, poseidonParamsKimchiFp, poseidonParamsLegacyFp, mocks }
 
 let prefixes = {
   "event": "MinaZkappEvent******",
@@ -271,6 +271,7 @@ let versionBytes = {
   "transactionHash": 29,
   "signedCommandV1": 19
 };
+let protocolVersions = { "txnVersion": 2 };
 let poseidonParamsKimchiFp = {
   "mds": [
     [
