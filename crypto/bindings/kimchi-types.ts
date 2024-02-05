@@ -87,7 +87,8 @@ type VerifierIndex = [
   srs: WasmSrs,
   evals: VerificationEvals,
   shifts: MlArray<Field>,
-  lookup_index: MlOption<Lookup<PolyComm>>
+  lookup_index: MlOption<Lookup<PolyComm>>,
+  zk_rows: number,
 ];
 
 // oracles
