@@ -560,20 +560,6 @@ let nat_add_module (i : int) : (module Pickles_types.Nat.Add.Intf) =
 
 let name = "smart-contract"
 
-let constraint_constants =
-  (* TODO these are dummy values *)
-  { Snark_keys_header.Constraint_constants.sub_windows_per_window = 0
-  ; ledger_depth = 0
-  ; work_delay = 0
-  ; block_window_duration_ms = 0
-  ; transaction_capacity = Log_2 0
-  ; pending_coinbase_depth = 0
-  ; coinbase_amount = Unsigned.UInt64.of_int 0
-  ; supercharged_coinbase_factor = 0
-  ; account_creation_fee = Unsigned.UInt64.of_int 0
-  ; fork = None
-  }
-
 let pickles_compile (choices : pickles_rule_js array)
     (config :
       < publicInputSize : int Js.prop
@@ -620,7 +606,7 @@ let pickles_compile (choices : pickles_rule_js array)
       ~auxiliary_typ:Typ.unit
       ~branches:(module Branches)
       ~max_proofs_verified:(module Max_proofs_verified)
-      ~name ~constraint_constants ?storables ?cache
+      ~name ?storables ?cache
   in
 
   (* translate returned prover and verify functions to JS *)

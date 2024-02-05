@@ -88,7 +88,7 @@ type VerifierIndex = [
   evals: VerificationEvals,
   shifts: MlArray<Field>,
   lookup_index: MlOption<Lookup<PolyComm>>,
-  zk_rows: number,
+  zk_rows: number
 ];
 
 // oracles
