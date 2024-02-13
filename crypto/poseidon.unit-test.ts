@@ -1,6 +1,6 @@
 import { Poseidon, PoseidonLegacy } from './poseidon.js';
-import { testPoseidonKimchiFp } from './test-vectors/poseidonKimchi.js';
-import { testPoseidonLegacyFp } from './test-vectors/poseidonLegacy.js';
+import { testPoseidonKimchiFp } from './test-vectors/poseidon-kimchi.js';
+import { testPoseidonLegacyFp } from './test-vectors/poseidon-legacy.js';
 import { expect } from 'expect';
 import { bigIntToBytes, parseHexString32 } from './bigint-helpers.js';
 import { test, Random } from '../../lib/testing/property.js';
