@@ -1,7 +1,7 @@
 /**
  * This file contains some examples of finite fields, to be used for tests
  */
-import { Fp, Fq, createField } from './finite_field.js';
+import { Fp, Fq, createField } from './finite-field.js';
 
 export { exampleFields };
 

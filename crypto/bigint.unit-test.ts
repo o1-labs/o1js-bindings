@@ -6,7 +6,7 @@ import {
   bytesToBigint32,
   parseHexString32,
 } from './bigint-helpers.js';
-import { Fp } from './finite_field.js';
+import { Fp } from './finite-field.js';
 import { Random, test } from '../../lib/testing/property.js';
 
 function testBigintRoundtrip(x: bigint, size: number) {

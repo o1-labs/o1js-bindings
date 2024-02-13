@@ -7,7 +7,7 @@ import {
   mod,
   p,
   q,
-} from './finite_field.js';
+} from './finite-field.js';
 import { Endomorphism } from './elliptic-curve-endomorphism.js';
 export {
   Pallas,
