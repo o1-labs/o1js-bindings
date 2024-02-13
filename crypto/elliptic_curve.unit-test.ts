@@ -1,4 +1,4 @@
-import { Pallas, Vesta } from './elliptic_curve.js';
+import { Pallas, Vesta } from './elliptic-curve.js';
 import { Fp, Fq } from './finite_field.js';
 import assert from 'node:assert/strict';
 import { test, Random } from '../../lib/testing/property.js';

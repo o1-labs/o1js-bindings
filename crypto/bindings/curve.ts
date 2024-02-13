@@ -9,7 +9,7 @@ import {
   ProjectiveCurve,
   GroupProjective,
   GroupAffine,
-} from '../elliptic_curve.js';
+} from '../elliptic-curve.js';
 import { withPrefix } from './util.js';
 
 export {

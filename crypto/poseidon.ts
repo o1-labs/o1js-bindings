@@ -1,7 +1,7 @@
-import { assertPositiveInteger } from "./non-negative.js";
-import { poseidonParamsKimchiFp, poseidonParamsLegacyFp } from "./constants.js";
-import { FiniteField, Fp } from "./finite_field.js";
-import { GroupMapPallas } from "./elliptic_curve.js";
+import { assertPositiveInteger } from './non-negative.js';
+import { poseidonParamsKimchiFp, poseidonParamsLegacyFp } from './constants.js';
+import { FiniteField, Fp } from './finite_field.js';
+import { GroupMapPallas } from './elliptic-curve.js';
 
 export { Poseidon, PoseidonLegacy };
 
@@ -66,9 +66,9 @@ function createPoseidon(
   if (partialRounds !== 0) {
     throw Error("we don't support partial rounds");
   }
-  assertPositiveInteger(rate, "rate must be a positive integer");
-  assertPositiveInteger(fullRounds, "fullRounds must be a positive integer");
-  assertPositiveInteger(power_, "power must be a positive integer");
+  assertPositiveInteger(rate, 'rate must be a positive integer');
+  assertPositiveInteger(fullRounds, 'fullRounds must be a positive integer');
+  assertPositiveInteger(power_, 'power must be a positive integer');
   let power = BigInt(power_);
   let roundConstants = roundConstants_.map((arr) => arr.map(BigInt));
   let mds = mds_.map((arr) => arr.map(BigInt));

@@ -10,7 +10,7 @@ import {
   projectiveNeg,
   projectiveToAffine,
   projectiveZero,
-} from './elliptic_curve.js';
+} from './elliptic-curve.js';
 import { FiniteField, mod } from './finite_field.js';
 
 export {

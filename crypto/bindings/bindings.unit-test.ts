@@ -46,7 +46,7 @@ import {
   Pallas,
   ProjectiveCurve,
   Vesta,
-} from '../elliptic_curve.js';
+} from '../elliptic-curve.js';
 import {
   WasmGPallas,
   WasmGVesta,
