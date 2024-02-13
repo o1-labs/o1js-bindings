@@ -53,7 +53,7 @@ import {
   WasmPallasGProjective,
   WasmVestaGProjective,
 } from '../../compiled/node_bindings/plonk_wasm.cjs';
-import { FiniteField, Fp, Fq } from '../finite_field.js';
+import { FiniteField, Fp, Fq } from '../finite-field.js';
 
 let number: ToSpec<number, number> = { back: id };
 let numberLessThan = (max: number): FromSpec<number, number> => ({

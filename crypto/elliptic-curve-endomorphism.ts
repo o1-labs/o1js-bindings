@@ -11,7 +11,7 @@ import {
   projectiveToAffine,
   projectiveZero,
 } from './elliptic-curve.js';
-import { FiniteField, mod } from './finite_field.js';
+import { FiniteField, mod } from './finite-field.js';
 
 export {
   Endomorphism,
