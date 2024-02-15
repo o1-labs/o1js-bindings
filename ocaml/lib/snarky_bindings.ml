@@ -241,15 +241,9 @@ module Circuit_bn254 = struct
     let cs = Impl_bn254.constraint_system ~input_typ ~return_typ (Main.of_js main) in
     Impl_bn254.Keypair.generate ~prev_challenges:0 cs
 
-  let prove main public_input_size public_input keypair =
+  let prove _main _public_input_size _public_input keypair =
     let pk = Impl_bn254.Keypair.pk keypair in
-    let input_typ = bn254_typ public_input_size in
-    let return_typ = Impl_bn254.Typ.unit in
-    let proof = Impl_bn254.generate_witness_conv ~input_typ ~return_typ
-      ~f:(fun { Impl_bn254.Proof_inputs.auxiliary_inputs; public_inputs } () ->
-        Kimchi_backend.Bn254.Bn254_based_plonk.Proof.create pk ~auxiliary:auxiliary_inputs
-          ~primary:public_inputs )
-      (Main.of_js main) public_input in
+    let proof = Kimchi_backend.Bn254.Bn254_based_plonk.Proof.create pk in
     Js.string proof
 
   module Keypair = struct
