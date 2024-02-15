@@ -151,8 +151,17 @@ module To_fields = struct
 end
 
 module Hash_from_json = struct
-  let account_update (p : Js.js_string Js.t) =
-    p |> account_update_of_json |> Account_update.digest
+  let account_update (p : Js.js_string Js.t) (network_id : Js.js_string Js.t) =
+    let chain =
+      match Js.to_string network_id with
+      | "mainnet" ->
+          Mina_signature_kind.Mainnet
+      | "testnet" ->
+          Mina_signature_kind.Testnet
+      | _ ->
+          failwith "Unsupported network type"
+    in
+    p |> account_update_of_json |> Account_update.digest ~chain
 
   let transaction_commitments (tx_json : Js.js_string Js.t) =
     let tx =
