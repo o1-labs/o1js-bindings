@@ -799,187 +799,6 @@ export function caml_bn254_fp_of_bytes(x: Uint8Array): Uint8Array;
 */
 export function caml_bn254_fp_deep_copy(x: Uint8Array): Uint8Array;
 /**
-* @param {WasmBn254FpGateVector} gates
-* @param {number} public_
-* @param {Uint32Array} lookup_tables
-* @param {Uint32Array} runtime_table_cfgs
-* @param {number} prev_challenges
-* @param {WasmBn254FpSrs} srs
-* @returns {WasmBn254FpPlonkIndex}
-*/
-export function caml_bn254_fp_plonk_index_create(gates: WasmBn254FpGateVector, public_: number, lookup_tables: Uint32Array, runtime_table_cfgs: Uint32Array, prev_challenges: number, srs: WasmBn254FpSrs): WasmBn254FpPlonkIndex;
-/**
-* @param {WasmBn254FpPlonkIndex} index
-* @returns {number}
-*/
-export function caml_bn254_fp_plonk_index_max_degree(index: WasmBn254FpPlonkIndex): number;
-/**
-* @param {WasmBn254FpPlonkIndex} index
-* @returns {number}
-*/
-export function caml_bn254_fp_plonk_index_public_inputs(index: WasmBn254FpPlonkIndex): number;
-/**
-* @param {WasmBn254FpPlonkIndex} index
-* @returns {number}
-*/
-export function caml_bn254_fp_plonk_index_domain_d1_size(index: WasmBn254FpPlonkIndex): number;
-/**
-* @param {WasmBn254FpPlonkIndex} index
-* @returns {number}
-*/
-export function caml_bn254_fp_plonk_index_domain_d4_size(index: WasmBn254FpPlonkIndex): number;
-/**
-* @param {WasmBn254FpPlonkIndex} index
-* @returns {number}
-*/
-export function caml_bn254_fp_plonk_index_domain_d8_size(index: WasmBn254FpPlonkIndex): number;
-/**
-* @param {number | undefined} offset
-* @param {WasmBn254FpSrs} srs
-* @param {string} path
-* @returns {WasmBn254FpPlonkIndex}
-*/
-export function caml_bn254_fp_plonk_index_read(offset: number | undefined, srs: WasmBn254FpSrs, path: string): WasmBn254FpPlonkIndex;
-/**
-* @param {boolean | undefined} append
-* @param {WasmBn254FpPlonkIndex} index
-* @param {string} path
-*/
-export function caml_bn254_fp_plonk_index_write(append: boolean | undefined, index: WasmBn254FpPlonkIndex, path: string): void;
-/**
-* @param {WasmBn254FpPlonkIndex} index
-* @returns {string}
-*/
-export function caml_bn254_fp_plonk_index_serialize(index: WasmBn254FpPlonkIndex): string;
-/**
-* @param {Uint32Array} lgr_comm
-* @param {WasmFpPlonkVerifierIndex} index
-* @param {WasmFpProverProof} proof
-* @returns {WasmFpOracles}
-*/
-export function fp_oracles_create(lgr_comm: Uint32Array, index: WasmFpPlonkVerifierIndex, proof: WasmFpProverProof): WasmFpOracles;
-/**
-* @returns {WasmFpOracles}
-*/
-export function fp_oracles_dummy(): WasmFpOracles;
-/**
-* @param {WasmFpProverProof} x
-* @returns {WasmFpProverProof}
-*/
-export function fp_oracles_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
-/**
-* @param {WasmPastaFpPlonkIndex} index
-* @param {WasmVecVecFp} witness
-* @param {Uint32Array} wasm_runtime_tables
-* @param {Uint8Array} prev_challenges
-* @param {Uint32Array} prev_sgs
-* @returns {WasmFpProverProof}
-*/
-export function caml_pasta_fp_plonk_proof_create(index: WasmPastaFpPlonkIndex, witness: WasmVecVecFp, wasm_runtime_tables: Uint32Array, prev_challenges: Uint8Array, prev_sgs: Uint32Array): WasmFpProverProof;
-/**
-* @param {WasmFpPlonkVerifierIndex} index
-* @param {WasmFpProverProof} proof
-* @returns {boolean}
-*/
-export function caml_pasta_fp_plonk_proof_verify(index: WasmFpPlonkVerifierIndex, proof: WasmFpProverProof): boolean;
-/**
-* @param {Uint32Array} indexes
-* @param {Uint32Array} proofs
-* @returns {boolean}
-*/
-export function caml_pasta_fp_plonk_proof_batch_verify(indexes: Uint32Array, proofs: Uint32Array): boolean;
-/**
-* @returns {WasmFpProverProof}
-*/
-export function caml_pasta_fp_plonk_proof_dummy(): WasmFpProverProof;
-/**
-* @param {WasmFpProverProof} x
-* @returns {WasmFpProverProof}
-*/
-export function caml_pasta_fp_plonk_proof_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
-/**
-* @param {WasmBn254FpPlonkIndex} index
-* @param {WasmVecVecBn254Fp} witness
-* @param {Uint32Array} wasm_runtime_tables
-* @param {Uint8Array} prev_challenges
-* @param {Uint32Array} prev_sgs
-* @returns {WasmBn254FpProverProof}
-*/
-export function caml_bn254_fp_plonk_proof_create(index: WasmBn254FpPlonkIndex, witness: WasmVecVecBn254Fp, wasm_runtime_tables: Uint32Array, prev_challenges: Uint8Array, prev_sgs: Uint32Array): WasmBn254FpProverProof;
-/**
-* @param {WasmBn254FpPlonkVerifierIndex} index
-* @param {WasmBn254FpProverProof} proof
-* @returns {boolean}
-*/
-export function caml_bn254_fp_plonk_proof_verify(index: WasmBn254FpPlonkVerifierIndex, proof: WasmBn254FpProverProof): boolean;
-/**
-* @param {Uint32Array} indexes
-* @param {Uint32Array} proofs
-* @returns {boolean}
-*/
-export function caml_bn254_fp_plonk_proof_batch_verify(indexes: Uint32Array, proofs: Uint32Array): boolean;
-/**
-* @returns {WasmBn254FpProverProof}
-*/
-export function caml_bn254_fp_plonk_proof_dummy(): WasmBn254FpProverProof;
-/**
-* @param {WasmBn254FpProverProof} x
-* @returns {WasmBn254FpProverProof}
-*/
-export function caml_bn254_fp_plonk_proof_deep_copy(x: WasmBn254FpProverProof): WasmBn254FpProverProof;
-/**
-* @param {WasmPastaFpPlonkIndex} prover_index
-* @returns {string}
-*/
-export function prover_to_json(prover_index: WasmPastaFpPlonkIndex): string;
-/**
-* @param {WasmBn254FpPlonkIndex} prover_index
-* @returns {string}
-*/
-export function prover_to_json_bn254(prover_index: WasmBn254FpPlonkIndex): string;
-/**
-* @returns {WasmGPallas}
-*/
-export function caml_pallas_affine_one(): WasmGPallas;
-/**
-* @returns {WasmGVesta}
-*/
-export function caml_vesta_affine_one(): WasmGVesta;
-/**
-* @returns {WasmGBn254}
-*/
-export function caml_bn254_affine_one(): WasmGBn254;
-/**
-* @param {WasmPastaFqPlonkIndex} index
-* @param {WasmVecVecFq} witness
-* @param {Uint32Array} wasm_runtime_tables
-* @param {Uint8Array} prev_challenges
-* @param {Uint32Array} prev_sgs
-* @returns {WasmFqProverProof}
-*/
-export function caml_pasta_fq_plonk_proof_create(index: WasmPastaFqPlonkIndex, witness: WasmVecVecFq, wasm_runtime_tables: Uint32Array, prev_challenges: Uint8Array, prev_sgs: Uint32Array): WasmFqProverProof;
-/**
-* @param {WasmFqPlonkVerifierIndex} index
-* @param {WasmFqProverProof} proof
-* @returns {boolean}
-*/
-export function caml_pasta_fq_plonk_proof_verify(index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): boolean;
-/**
-* @param {Uint32Array} indexes
-* @param {Uint32Array} proofs
-* @returns {boolean}
-*/
-export function caml_pasta_fq_plonk_proof_batch_verify(indexes: Uint32Array, proofs: Uint32Array): boolean;
-/**
-* @returns {WasmFqProverProof}
-*/
-export function caml_pasta_fq_plonk_proof_dummy(): WasmFqProverProof;
-/**
-* @param {WasmFqProverProof} x
-* @returns {WasmFqProverProof}
-*/
-export function caml_pasta_fq_plonk_proof_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
-/**
 * @returns {number}
 */
 export function caml_bn254_fq_size_in_bits(): number;
@@ -1110,6 +929,199 @@ export function caml_bn254_fq_of_bytes(x: Uint8Array): Uint8Array;
 * @returns {Uint8Array}
 */
 export function caml_bn254_fq_deep_copy(x: Uint8Array): Uint8Array;
+/**
+* @param {string} s
+* @param {number} _len
+* @param {number} base
+* @returns {Uint8Array}
+*/
+export function caml_bigint_256_of_numeral(s: string, _len: number, base: number): Uint8Array;
+/**
+* @param {string} s
+* @returns {Uint8Array}
+*/
+export function caml_bigint_256_of_decimal_string(s: string): Uint8Array;
+/**
+* @returns {number}
+*/
+export function caml_bigint_256_num_limbs(): number;
+/**
+* @returns {number}
+*/
+export function caml_bigint_256_bytes_per_limb(): number;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+export function caml_bigint_256_div(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {number}
+*/
+export function caml_bigint_256_compare(x: Uint8Array, y: Uint8Array): number;
+/**
+* @param {Uint8Array} x
+*/
+export function caml_bigint_256_print(x: Uint8Array): void;
+/**
+* @param {Uint8Array} x
+* @returns {string}
+*/
+export function caml_bigint_256_to_string(x: Uint8Array): string;
+/**
+* @param {Uint8Array} x
+* @param {number} i
+* @returns {boolean}
+*/
+export function caml_bigint_256_test_bit(x: Uint8Array, i: number): boolean;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_bigint_256_to_bytes(x: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_bigint_256_of_bytes(x: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_bigint_256_deep_copy(x: Uint8Array): Uint8Array;
+/**
+* @returns {number}
+*/
+export function caml_pasta_fq_size_in_bits(): number;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_size(): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_add(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_sub(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_negate(x: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_mul(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_div(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array | undefined}
+*/
+export function caml_pasta_fq_inv(x: Uint8Array): Uint8Array | undefined;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_square(x: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {boolean}
+*/
+export function caml_pasta_fq_is_square(x: Uint8Array): boolean;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array | undefined}
+*/
+export function caml_pasta_fq_sqrt(x: Uint8Array): Uint8Array | undefined;
+/**
+* @param {number} i
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_of_int(i: number): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {string}
+*/
+export function caml_pasta_fq_to_string(x: Uint8Array): string;
+/**
+* @param {string} s
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_of_string(s: string): Uint8Array;
+/**
+* @param {Uint8Array} x
+*/
+export function caml_pasta_fq_print(x: Uint8Array): void;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {number}
+*/
+export function caml_pasta_fq_compare(x: Uint8Array, y: Uint8Array): number;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {boolean}
+*/
+export function caml_pasta_fq_equal(x: Uint8Array, y: Uint8Array): boolean;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_random(): Uint8Array;
+/**
+* @param {number} i
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_rng(i: number): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_to_bigint(x: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_of_bigint(x: Uint8Array): Uint8Array;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_two_adic_root_of_unity(): Uint8Array;
+/**
+* @param {number} log2_size
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_domain_generator(log2_size: number): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_to_bytes(x: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_of_bytes(x: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_deep_copy(x: Uint8Array): Uint8Array;
 /**
 * @returns {number}
 */
@@ -1312,198 +1324,186 @@ export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): 
 */
 export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
 /**
-* @param {string} s
-* @param {number} _len
-* @param {number} base
-* @returns {Uint8Array}
+* @param {WasmBn254FpGateVector} gates
+* @param {number} public_
+* @param {Uint32Array} lookup_tables
+* @param {Uint32Array} runtime_table_cfgs
+* @param {number} prev_challenges
+* @param {WasmBn254FpSrs} srs
+* @returns {WasmBn254FpPlonkIndex}
 */
-export function caml_bigint_256_of_numeral(s: string, _len: number, base: number): Uint8Array;
+export function caml_bn254_fp_plonk_index_create(gates: WasmBn254FpGateVector, public_: number, lookup_tables: Uint32Array, runtime_table_cfgs: Uint32Array, prev_challenges: number, srs: WasmBn254FpSrs): WasmBn254FpPlonkIndex;
 /**
-* @param {string} s
-* @returns {Uint8Array}
-*/
-export function caml_bigint_256_of_decimal_string(s: string): Uint8Array;
-/**
+* @param {WasmBn254FpPlonkIndex} index
 * @returns {number}
 */
-export function caml_bigint_256_num_limbs(): number;
+export function caml_bn254_fp_plonk_index_max_degree(index: WasmBn254FpPlonkIndex): number;
 /**
+* @param {WasmBn254FpPlonkIndex} index
 * @returns {number}
 */
-export function caml_bigint_256_bytes_per_limb(): number;
+export function caml_bn254_fp_plonk_index_public_inputs(index: WasmBn254FpPlonkIndex): number;
 /**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-export function caml_bigint_256_div(x: Uint8Array, y: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
+* @param {WasmBn254FpPlonkIndex} index
 * @returns {number}
 */
-export function caml_bigint_256_compare(x: Uint8Array, y: Uint8Array): number;
+export function caml_bn254_fp_plonk_index_domain_d1_size(index: WasmBn254FpPlonkIndex): number;
 /**
-* @param {Uint8Array} x
+* @param {WasmBn254FpPlonkIndex} index
+* @returns {number}
 */
-export function caml_bigint_256_print(x: Uint8Array): void;
+export function caml_bn254_fp_plonk_index_domain_d4_size(index: WasmBn254FpPlonkIndex): number;
 /**
-* @param {Uint8Array} x
+* @param {WasmBn254FpPlonkIndex} index
+* @returns {number}
+*/
+export function caml_bn254_fp_plonk_index_domain_d8_size(index: WasmBn254FpPlonkIndex): number;
+/**
+* @param {number | undefined} offset
+* @param {WasmBn254FpSrs} srs
+* @param {string} path
+* @returns {WasmBn254FpPlonkIndex}
+*/
+export function caml_bn254_fp_plonk_index_read(offset: number | undefined, srs: WasmBn254FpSrs, path: string): WasmBn254FpPlonkIndex;
+/**
+* @param {boolean | undefined} append
+* @param {WasmBn254FpPlonkIndex} index
+* @param {string} path
+*/
+export function caml_bn254_fp_plonk_index_write(append: boolean | undefined, index: WasmBn254FpPlonkIndex, path: string): void;
+/**
+* @param {WasmBn254FpPlonkIndex} index
 * @returns {string}
 */
-export function caml_bigint_256_to_string(x: Uint8Array): string;
+export function caml_bn254_fp_plonk_index_serialize(index: WasmBn254FpPlonkIndex): string;
 /**
-* @param {Uint8Array} x
-* @param {number} i
+* @param {Uint32Array} lgr_comm
+* @param {WasmFpPlonkVerifierIndex} index
+* @param {WasmFpProverProof} proof
+* @returns {WasmFpOracles}
+*/
+export function fp_oracles_create(lgr_comm: Uint32Array, index: WasmFpPlonkVerifierIndex, proof: WasmFpProverProof): WasmFpOracles;
+/**
+* @returns {WasmFpOracles}
+*/
+export function fp_oracles_dummy(): WasmFpOracles;
+/**
+* @param {WasmFpProverProof} x
+* @returns {WasmFpProverProof}
+*/
+export function fp_oracles_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
+/**
+* @param {WasmPastaFpPlonkIndex} index
+* @param {WasmVecVecFp} witness
+* @param {Uint32Array} wasm_runtime_tables
+* @param {Uint8Array} prev_challenges
+* @param {Uint32Array} prev_sgs
+* @returns {WasmFpProverProof}
+*/
+export function caml_pasta_fp_plonk_proof_create(index: WasmPastaFpPlonkIndex, witness: WasmVecVecFp, wasm_runtime_tables: Uint32Array, prev_challenges: Uint8Array, prev_sgs: Uint32Array): WasmFpProverProof;
+/**
+* @param {WasmFpPlonkVerifierIndex} index
+* @param {WasmFpProverProof} proof
 * @returns {boolean}
 */
-export function caml_bigint_256_test_bit(x: Uint8Array, i: number): boolean;
+export function caml_pasta_fp_plonk_proof_verify(index: WasmFpPlonkVerifierIndex, proof: WasmFpProverProof): boolean;
 /**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-export function caml_bigint_256_to_bytes(x: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-export function caml_bigint_256_of_bytes(x: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-export function caml_bigint_256_deep_copy(x: Uint8Array): Uint8Array;
-/**
-* @returns {number}
-*/
-export function caml_pasta_fq_size_in_bits(): number;
-/**
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_size(): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_add(x: Uint8Array, y: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_sub(x: Uint8Array, y: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_negate(x: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_mul(x: Uint8Array, y: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_div(x: Uint8Array, y: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array | undefined}
-*/
-export function caml_pasta_fq_inv(x: Uint8Array): Uint8Array | undefined;
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_square(x: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
+* @param {Uint32Array} indexes
+* @param {Uint32Array} proofs
 * @returns {boolean}
 */
-export function caml_pasta_fq_is_square(x: Uint8Array): boolean;
+export function caml_pasta_fp_plonk_proof_batch_verify(indexes: Uint32Array, proofs: Uint32Array): boolean;
 /**
-* @param {Uint8Array} x
-* @returns {Uint8Array | undefined}
+* @returns {WasmFpProverProof}
 */
-export function caml_pasta_fq_sqrt(x: Uint8Array): Uint8Array | undefined;
+export function caml_pasta_fp_plonk_proof_dummy(): WasmFpProverProof;
 /**
-* @param {number} i
-* @returns {Uint8Array}
+* @param {WasmFpProverProof} x
+* @returns {WasmFpProverProof}
 */
-export function caml_pasta_fq_of_int(i: number): Uint8Array;
+export function caml_pasta_fp_plonk_proof_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
 /**
-* @param {Uint8Array} x
+* @param {WasmBn254FpPlonkIndex} index
+* @param {WasmVecVecBn254Fp} witness
+* @param {Uint32Array} wasm_runtime_tables
+* @param {Uint8Array} prev_challenges
+* @param {Uint32Array} prev_sgs
+* @returns {WasmBn254FpProverProof}
+*/
+export function caml_bn254_fp_plonk_proof_create(index: WasmBn254FpPlonkIndex, witness: WasmVecVecBn254Fp, wasm_runtime_tables: Uint32Array, prev_challenges: Uint8Array, prev_sgs: Uint32Array): WasmBn254FpProverProof;
+/**
+* @param {WasmBn254FpPlonkVerifierIndex} index
+* @param {WasmBn254FpProverProof} proof
+* @returns {boolean}
+*/
+export function caml_bn254_fp_plonk_proof_verify(index: WasmBn254FpPlonkVerifierIndex, proof: WasmBn254FpProverProof): boolean;
+/**
+* @param {Uint32Array} indexes
+* @param {Uint32Array} proofs
+* @returns {boolean}
+*/
+export function caml_bn254_fp_plonk_proof_batch_verify(indexes: Uint32Array, proofs: Uint32Array): boolean;
+/**
+* @returns {WasmBn254FpProverProof}
+*/
+export function caml_bn254_fp_plonk_proof_dummy(): WasmBn254FpProverProof;
+/**
+* @param {WasmBn254FpProverProof} x
+* @returns {WasmBn254FpProverProof}
+*/
+export function caml_bn254_fp_plonk_proof_deep_copy(x: WasmBn254FpProverProof): WasmBn254FpProverProof;
+/**
+* @param {WasmPastaFpPlonkIndex} prover_index
 * @returns {string}
 */
-export function caml_pasta_fq_to_string(x: Uint8Array): string;
+export function prover_to_json(prover_index: WasmPastaFpPlonkIndex): string;
 /**
-* @param {string} s
-* @returns {Uint8Array}
+* @param {WasmBn254FpPlonkIndex} prover_index
+* @returns {string}
 */
-export function caml_pasta_fq_of_string(s: string): Uint8Array;
+export function prover_to_json_bn254(prover_index: WasmBn254FpPlonkIndex): string;
 /**
-* @param {Uint8Array} x
+* @returns {WasmGPallas}
 */
-export function caml_pasta_fq_print(x: Uint8Array): void;
+export function caml_pallas_affine_one(): WasmGPallas;
 /**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {number}
+* @returns {WasmGVesta}
 */
-export function caml_pasta_fq_compare(x: Uint8Array, y: Uint8Array): number;
+export function caml_vesta_affine_one(): WasmGVesta;
 /**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
+* @returns {WasmGBn254}
+*/
+export function caml_bn254_affine_one(): WasmGBn254;
+/**
+* @param {WasmPastaFqPlonkIndex} index
+* @param {WasmVecVecFq} witness
+* @param {Uint32Array} wasm_runtime_tables
+* @param {Uint8Array} prev_challenges
+* @param {Uint32Array} prev_sgs
+* @returns {WasmFqProverProof}
+*/
+export function caml_pasta_fq_plonk_proof_create(index: WasmPastaFqPlonkIndex, witness: WasmVecVecFq, wasm_runtime_tables: Uint32Array, prev_challenges: Uint8Array, prev_sgs: Uint32Array): WasmFqProverProof;
+/**
+* @param {WasmFqPlonkVerifierIndex} index
+* @param {WasmFqProverProof} proof
 * @returns {boolean}
 */
-export function caml_pasta_fq_equal(x: Uint8Array, y: Uint8Array): boolean;
+export function caml_pasta_fq_plonk_proof_verify(index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): boolean;
 /**
-* @returns {Uint8Array}
+* @param {Uint32Array} indexes
+* @param {Uint32Array} proofs
+* @returns {boolean}
 */
-export function caml_pasta_fq_random(): Uint8Array;
+export function caml_pasta_fq_plonk_proof_batch_verify(indexes: Uint32Array, proofs: Uint32Array): boolean;
 /**
-* @param {number} i
-* @returns {Uint8Array}
+* @returns {WasmFqProverProof}
 */
-export function caml_pasta_fq_rng(i: number): Uint8Array;
+export function caml_pasta_fq_plonk_proof_dummy(): WasmFqProverProof;
 /**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
+* @param {WasmFqProverProof} x
+* @returns {WasmFqProverProof}
 */
-export function caml_pasta_fq_to_bigint(x: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_of_bigint(x: Uint8Array): Uint8Array;
-/**
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_two_adic_root_of_unity(): Uint8Array;
-/**
-* @param {number} log2_size
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_domain_generator(log2_size: number): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_to_bytes(x: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_of_bytes(x: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_deep_copy(x: Uint8Array): Uint8Array;
+export function caml_pasta_fq_plonk_proof_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
 /**
 * A row accessible from a given row, corresponds to the fact that we open all polynomials
 * at `zeta` **and** `omega * zeta`.
@@ -3812,8 +3812,6 @@ export interface InitOutput {
   readonly caml_pallas_of_affine: (a: number) => number;
   readonly caml_pallas_of_affine_coordinates: (a: number, b: number, c: number, d: number) => number;
   readonly caml_pallas_affine_deep_copy: (a: number) => number;
-  readonly __wbg_wasmpallasgprojective_free: (a: number) => void;
-  readonly __wbg_wasmvestagprojective_free: (a: number) => void;
   readonly caml_bn254_fp_size_in_bits: () => number;
   readonly caml_bn254_fp_size: (a: number) => void;
   readonly caml_bn254_fp_add: (a: number, b: number, c: number, d: number, e: number) => void;
@@ -3840,6 +3838,135 @@ export interface InitOutput {
   readonly caml_bn254_fp_to_bytes: (a: number, b: number, c: number) => void;
   readonly caml_bn254_fp_of_bytes: (a: number, b: number, c: number) => void;
   readonly caml_bn254_fp_deep_copy: (a: number, b: number, c: number) => void;
+  readonly __wbg_wasmvecvecfq_free: (a: number) => void;
+  readonly wasmvecvecfq_create: (a: number) => number;
+  readonly wasmvecvecfq_push: (a: number, b: number, c: number) => void;
+  readonly wasmvecvecfq_get: (a: number, b: number, c: number) => void;
+  readonly wasmvecvecfq_set: (a: number, b: number, c: number, d: number) => void;
+  readonly caml_bn254_fq_size_in_bits: () => number;
+  readonly caml_bn254_fq_size: (a: number) => void;
+  readonly caml_bn254_fq_add: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_bn254_fq_sub: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_bn254_fq_negate: (a: number, b: number, c: number) => void;
+  readonly caml_bn254_fq_mul: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_bn254_fq_div: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_bn254_fq_inv: (a: number, b: number, c: number) => void;
+  readonly caml_bn254_fq_square: (a: number, b: number, c: number) => void;
+  readonly caml_bn254_fq_is_square: (a: number, b: number) => number;
+  readonly caml_bn254_fq_sqrt: (a: number, b: number, c: number) => void;
+  readonly caml_bn254_fq_of_int: (a: number, b: number) => void;
+  readonly caml_bn254_fq_to_string: (a: number, b: number, c: number) => void;
+  readonly caml_bn254_fq_of_string: (a: number, b: number, c: number) => void;
+  readonly caml_bn254_fq_print: (a: number, b: number) => void;
+  readonly caml_bn254_fq_compare: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_bn254_fq_equal: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_bn254_fq_random: (a: number) => void;
+  readonly caml_bn254_fq_rng: (a: number, b: number) => void;
+  readonly caml_bn254_fq_to_bigint: (a: number, b: number, c: number) => void;
+  readonly caml_bn254_fq_of_bigint: (a: number, b: number, c: number) => void;
+  readonly caml_bn254_fq_two_adic_root_of_unity: (a: number) => void;
+  readonly caml_bn254_fq_domain_generator: (a: number, b: number) => void;
+  readonly caml_bn254_fq_to_bytes: (a: number, b: number, c: number) => void;
+  readonly caml_bn254_fq_of_bytes: (a: number, b: number, c: number) => void;
+  readonly caml_bn254_fq_deep_copy: (a: number, b: number, c: number) => void;
+  readonly wasmbn254fppolycomm_new: (a: number, b: number, c: number) => number;
+  readonly wasmbn254fppolycomm_unshifted: (a: number, b: number) => void;
+  readonly wasmbn254fppolycomm_set_unshifted: (a: number, b: number, c: number) => void;
+  readonly __wbg_wasmbn254fppolycomm_free: (a: number) => void;
+  readonly __wbg_get_wasmbn254fppolycomm_shifted: (a: number) => number;
+  readonly __wbg_set_wasmbn254fppolycomm_shifted: (a: number, b: number) => void;
+  readonly wasmfppolycomm_new: (a: number, b: number, c: number) => number;
+  readonly wasmfppolycomm_unshifted: (a: number, b: number) => void;
+  readonly wasmfppolycomm_set_unshifted: (a: number, b: number, c: number) => void;
+  readonly wasmfqpolycomm_new: (a: number, b: number, c: number) => number;
+  readonly wasmfqpolycomm_unshifted: (a: number, b: number) => void;
+  readonly wasmfqpolycomm_set_unshifted: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfppolycomm_shifted: (a: number) => number;
+  readonly __wbg_get_wasmfqpolycomm_shifted: (a: number) => number;
+  readonly __wbg_wasmfppolycomm_free: (a: number) => void;
+  readonly __wbg_wasmfqpolycomm_free: (a: number) => void;
+  readonly __wbg_set_wasmfppolycomm_shifted: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqpolycomm_shifted: (a: number, b: number) => void;
+  readonly __wbg_wasmpallasgprojective_free: (a: number) => void;
+  readonly __wbg_wasmvestagprojective_free: (a: number) => void;
+  readonly caml_bigint_256_of_numeral: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_bigint_256_of_decimal_string: (a: number, b: number, c: number) => void;
+  readonly caml_bigint_256_num_limbs: () => number;
+  readonly caml_bigint_256_bytes_per_limb: () => number;
+  readonly caml_bigint_256_div: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_bigint_256_compare: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_bigint_256_print: (a: number, b: number) => void;
+  readonly caml_bigint_256_to_string: (a: number, b: number, c: number) => void;
+  readonly caml_bigint_256_test_bit: (a: number, b: number, c: number) => number;
+  readonly caml_bigint_256_to_bytes: (a: number, b: number, c: number) => void;
+  readonly caml_bigint_256_of_bytes: (a: number, b: number, c: number) => void;
+  readonly caml_bigint_256_deep_copy: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_size_in_bits: () => number;
+  readonly caml_pasta_fq_size: (a: number) => void;
+  readonly caml_pasta_fq_add: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fq_sub: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fq_negate: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_mul: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fq_div: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fq_inv: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_square: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_is_square: (a: number, b: number) => number;
+  readonly caml_pasta_fq_sqrt: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_of_int: (a: number, b: number) => void;
+  readonly caml_pasta_fq_to_string: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_of_string: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_print: (a: number, b: number) => void;
+  readonly caml_pasta_fq_compare: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_pasta_fq_equal: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_pasta_fq_random: (a: number) => void;
+  readonly caml_pasta_fq_rng: (a: number, b: number) => void;
+  readonly caml_pasta_fq_to_bigint: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_of_bigint: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_two_adic_root_of_unity: (a: number) => void;
+  readonly caml_pasta_fq_domain_generator: (a: number, b: number) => void;
+  readonly caml_pasta_fq_to_bytes: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_of_bytes: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_deep_copy: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_size_in_bits: () => number;
+  readonly caml_pasta_fp_size: (a: number) => void;
+  readonly caml_pasta_fp_add: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fp_sub: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fp_negate: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_mul: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fp_div: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fp_inv: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_square: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_is_square: (a: number, b: number) => number;
+  readonly caml_pasta_fp_sqrt: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_of_int: (a: number, b: number) => void;
+  readonly caml_pasta_fp_to_string: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_of_string: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_print: (a: number, b: number) => void;
+  readonly caml_pasta_fp_compare: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_pasta_fp_equal: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_pasta_fp_random: (a: number) => void;
+  readonly caml_pasta_fp_rng: (a: number, b: number) => void;
+  readonly caml_pasta_fp_to_bigint: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_of_bigint: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_two_adic_root_of_unity: (a: number) => void;
+  readonly caml_pasta_fp_domain_generator: (a: number, b: number) => void;
+  readonly caml_pasta_fp_to_bytes: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_of_bytes: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_deep_copy: (a: number, b: number, c: number) => void;
+  readonly caml_vesta_one: () => number;
+  readonly caml_vesta_add: (a: number, b: number) => number;
+  readonly caml_vesta_sub: (a: number, b: number) => number;
+  readonly caml_vesta_negate: (a: number) => number;
+  readonly caml_vesta_double: (a: number) => number;
+  readonly caml_vesta_scale: (a: number, b: number, c: number) => number;
+  readonly caml_vesta_random: () => number;
+  readonly caml_vesta_rng: (a: number) => number;
+  readonly caml_vesta_endo_base: (a: number) => void;
+  readonly caml_vesta_endo_scalar: (a: number) => void;
+  readonly caml_vesta_to_affine: (a: number) => number;
+  readonly caml_vesta_of_affine: (a: number) => number;
+  readonly caml_vesta_of_affine_coordinates: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_vesta_affine_deep_copy: (a: number) => number;
   readonly wasmvecvecfp_push: (a: number, b: number, c: number) => void;
   readonly wasmvecvecfp_get: (a: number, b: number, c: number) => void;
   readonly wasmvecvecfp_set: (a: number, b: number, c: number, d: number) => void;
@@ -4108,133 +4235,6 @@ export interface InitOutput {
   readonly __wbg_set_wasmgvesta_y: (a: number, b: number, c: number) => void;
   readonly __wbg_get_wasmgvesta_infinity: (a: number) => number;
   readonly __wbg_get_wasmgpallas_infinity: (a: number) => number;
-  readonly __wbg_wasmvecvecfq_free: (a: number) => void;
-  readonly wasmvecvecfq_create: (a: number) => number;
-  readonly wasmvecvecfq_push: (a: number, b: number, c: number) => void;
-  readonly wasmvecvecfq_get: (a: number, b: number, c: number) => void;
-  readonly wasmvecvecfq_set: (a: number, b: number, c: number, d: number) => void;
-  readonly caml_bn254_fq_size_in_bits: () => number;
-  readonly caml_bn254_fq_size: (a: number) => void;
-  readonly caml_bn254_fq_add: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_bn254_fq_sub: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_bn254_fq_negate: (a: number, b: number, c: number) => void;
-  readonly caml_bn254_fq_mul: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_bn254_fq_div: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_bn254_fq_inv: (a: number, b: number, c: number) => void;
-  readonly caml_bn254_fq_square: (a: number, b: number, c: number) => void;
-  readonly caml_bn254_fq_is_square: (a: number, b: number) => number;
-  readonly caml_bn254_fq_sqrt: (a: number, b: number, c: number) => void;
-  readonly caml_bn254_fq_of_int: (a: number, b: number) => void;
-  readonly caml_bn254_fq_to_string: (a: number, b: number, c: number) => void;
-  readonly caml_bn254_fq_of_string: (a: number, b: number, c: number) => void;
-  readonly caml_bn254_fq_print: (a: number, b: number) => void;
-  readonly caml_bn254_fq_compare: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_bn254_fq_equal: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_bn254_fq_random: (a: number) => void;
-  readonly caml_bn254_fq_rng: (a: number, b: number) => void;
-  readonly caml_bn254_fq_to_bigint: (a: number, b: number, c: number) => void;
-  readonly caml_bn254_fq_of_bigint: (a: number, b: number, c: number) => void;
-  readonly caml_bn254_fq_two_adic_root_of_unity: (a: number) => void;
-  readonly caml_bn254_fq_domain_generator: (a: number, b: number) => void;
-  readonly caml_bn254_fq_to_bytes: (a: number, b: number, c: number) => void;
-  readonly caml_bn254_fq_of_bytes: (a: number, b: number, c: number) => void;
-  readonly caml_bn254_fq_deep_copy: (a: number, b: number, c: number) => void;
-  readonly wasmbn254fppolycomm_new: (a: number, b: number, c: number) => number;
-  readonly wasmbn254fppolycomm_unshifted: (a: number, b: number) => void;
-  readonly wasmbn254fppolycomm_set_unshifted: (a: number, b: number, c: number) => void;
-  readonly __wbg_wasmbn254fppolycomm_free: (a: number) => void;
-  readonly __wbg_get_wasmbn254fppolycomm_shifted: (a: number) => number;
-  readonly __wbg_set_wasmbn254fppolycomm_shifted: (a: number, b: number) => void;
-  readonly wasmfppolycomm_new: (a: number, b: number, c: number) => number;
-  readonly wasmfppolycomm_unshifted: (a: number, b: number) => void;
-  readonly wasmfppolycomm_set_unshifted: (a: number, b: number, c: number) => void;
-  readonly wasmfqpolycomm_new: (a: number, b: number, c: number) => number;
-  readonly wasmfqpolycomm_unshifted: (a: number, b: number) => void;
-  readonly wasmfqpolycomm_set_unshifted: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfppolycomm_shifted: (a: number) => number;
-  readonly __wbg_get_wasmfqpolycomm_shifted: (a: number) => number;
-  readonly __wbg_wasmfppolycomm_free: (a: number) => void;
-  readonly __wbg_wasmfqpolycomm_free: (a: number) => void;
-  readonly __wbg_set_wasmfppolycomm_shifted: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqpolycomm_shifted: (a: number, b: number) => void;
-  readonly caml_pasta_fp_size_in_bits: () => number;
-  readonly caml_pasta_fp_size: (a: number) => void;
-  readonly caml_pasta_fp_add: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fp_sub: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fp_negate: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fp_mul: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fp_div: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fp_inv: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fp_square: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fp_is_square: (a: number, b: number) => number;
-  readonly caml_pasta_fp_sqrt: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fp_of_int: (a: number, b: number) => void;
-  readonly caml_pasta_fp_to_string: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fp_of_string: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fp_print: (a: number, b: number) => void;
-  readonly caml_pasta_fp_compare: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_pasta_fp_equal: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_pasta_fp_random: (a: number) => void;
-  readonly caml_pasta_fp_rng: (a: number, b: number) => void;
-  readonly caml_pasta_fp_to_bigint: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fp_of_bigint: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fp_two_adic_root_of_unity: (a: number) => void;
-  readonly caml_pasta_fp_domain_generator: (a: number, b: number) => void;
-  readonly caml_pasta_fp_to_bytes: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fp_of_bytes: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fp_deep_copy: (a: number, b: number, c: number) => void;
-  readonly caml_vesta_one: () => number;
-  readonly caml_vesta_add: (a: number, b: number) => number;
-  readonly caml_vesta_sub: (a: number, b: number) => number;
-  readonly caml_vesta_negate: (a: number) => number;
-  readonly caml_vesta_double: (a: number) => number;
-  readonly caml_vesta_scale: (a: number, b: number, c: number) => number;
-  readonly caml_vesta_random: () => number;
-  readonly caml_vesta_rng: (a: number) => number;
-  readonly caml_vesta_endo_base: (a: number) => void;
-  readonly caml_vesta_endo_scalar: (a: number) => void;
-  readonly caml_vesta_to_affine: (a: number) => number;
-  readonly caml_vesta_of_affine: (a: number) => number;
-  readonly caml_vesta_of_affine_coordinates: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_vesta_affine_deep_copy: (a: number) => number;
-  readonly caml_bigint_256_of_numeral: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_bigint_256_of_decimal_string: (a: number, b: number, c: number) => void;
-  readonly caml_bigint_256_num_limbs: () => number;
-  readonly caml_bigint_256_bytes_per_limb: () => number;
-  readonly caml_bigint_256_div: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_bigint_256_compare: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_bigint_256_print: (a: number, b: number) => void;
-  readonly caml_bigint_256_to_string: (a: number, b: number, c: number) => void;
-  readonly caml_bigint_256_test_bit: (a: number, b: number, c: number) => number;
-  readonly caml_bigint_256_to_bytes: (a: number, b: number, c: number) => void;
-  readonly caml_bigint_256_of_bytes: (a: number, b: number, c: number) => void;
-  readonly caml_bigint_256_deep_copy: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_size_in_bits: () => number;
-  readonly caml_pasta_fq_size: (a: number) => void;
-  readonly caml_pasta_fq_add: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fq_sub: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fq_negate: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_mul: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fq_div: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fq_inv: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_square: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_is_square: (a: number, b: number) => number;
-  readonly caml_pasta_fq_sqrt: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_of_int: (a: number, b: number) => void;
-  readonly caml_pasta_fq_to_string: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_of_string: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_print: (a: number, b: number) => void;
-  readonly caml_pasta_fq_compare: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_pasta_fq_equal: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_pasta_fq_random: (a: number) => void;
-  readonly caml_pasta_fq_rng: (a: number, b: number) => void;
-  readonly caml_pasta_fq_to_bigint: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_of_bigint: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_two_adic_root_of_unity: (a: number) => void;
-  readonly caml_pasta_fq_domain_generator: (a: number, b: number) => void;
-  readonly caml_pasta_fq_to_bytes: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_of_bytes: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_deep_copy: (a: number, b: number, c: number) => void;
   readonly __wbg_lookuppatterns_free: (a: number) => void;
   readonly __wbg_get_lookuppatterns_xor: (a: number) => number;
   readonly __wbg_set_lookuppatterns_xor: (a: number, b: number) => void;
