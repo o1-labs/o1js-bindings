@@ -1193,19 +1193,17 @@ var caml_pasta_fq_plonk_proof_deep_copy = function (proof) {
 var caml_bn254_fp_plonk_proof_create = function (
   index,
   witness_cols,
-  caml_runtime_tables,
-  prev_challenges,
-  prev_sgs
+  caml_runtime_tables
 ) {
   var w = new plonk_wasm.WasmVecVecBn254Fp(witness_cols.length - 1);
   for (var i = 1; i < witness_cols.length; i++) {
     w.push(tsRustConversion.bn254Fp.vectorToRust(witness_cols[i]));
   }
   witness_cols = w;
-  prev_challenges = tsRustConversion.bn254Fp.vectorToRust(prev_challenges);
+  prev_challenges = tsRustConversion.bn254Fp.vectorToRust([]);
   var wasm_runtime_tables =
     tsRustConversion.bn254Fp.runtimeTablesToRust(caml_runtime_tables);
-  prev_sgs = tsRustConversion.bn254Fp.pointsToRust(prev_sgs);
+  prev_sgs = tsRustConversion.bn254Fp.pointsToRust([]);
   var proof = plonk_wasm.caml_bn254_fp_plonk_proof_create(
     index,
     witness_cols,
