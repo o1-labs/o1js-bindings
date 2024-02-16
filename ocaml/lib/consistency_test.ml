@@ -170,14 +170,12 @@ module Hash_from_json = struct
     let tx =
       Zkapp_command.of_json @@ Yojson.Safe.from_string @@ Js.to_string tx_json
     in
-
     let get_account_updates_hash xs =
       let hash_account_update (p : Account_update.t) =
         Zkapp_command.Digest.Account_update.create ~chain p
       in
       Zkapp_command.Call_forest.accumulate_hashes ~hash_account_update xs
     in
-
     let commitment =
       let account_updates_hash =
         Zkapp_command.Call_forest.hash
@@ -185,7 +183,6 @@ module Hash_from_json = struct
       in
       Zkapp_command.Transaction_commitment.create ~account_updates_hash
     in
-
     let fee_payer = Account_update.of_fee_payer tx.fee_payer in
     let fee_payer_hash =
       Zkapp_command.Digest.Account_update.create ~chain fee_payer
