@@ -158,8 +158,8 @@ module Hash_from_json = struct
           Mina_signature_kind.Mainnet
       | "testnet" ->
           Mina_signature_kind.Testnet
-      | _ ->
-          failwith "Unsupported network type"
+      | other ->
+          Mina_signature_kind.Other_network other
     in
     p |> account_update_of_json |> Account_update.digest ~chain
 
