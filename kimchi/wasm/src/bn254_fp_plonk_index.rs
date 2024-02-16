@@ -122,7 +122,7 @@ pub fn caml_bn254_fp_plonk_index_create(
             lookup_tables.into_iter().map(Into::into).collect();
 
         // create constraint system
-        let cs = match ConstraintSystem::<Fp>::create(gates)
+        let mut cs = match ConstraintSystem::<Fp>::create(gates)
             .public(public_ as usize)
             .prev_challenges(prev_challenges as usize)
             .lookup(rust_lookup_tables)
@@ -138,6 +138,8 @@ pub fn caml_bn254_fp_plonk_index_create(
             }
             Ok(cs) => cs,
         };
+        // INFO: Hack
+        cs.lookup_constraint_system = None;
 
         // endo
         let (_endo_r, endo_q) = poly_commitment::srs::endos::<GAffine>();
