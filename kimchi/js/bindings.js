@@ -1200,10 +1200,10 @@ var caml_bn254_fp_plonk_proof_create = function (
     w.push(tsRustConversion.bn254Fp.vectorToRust(witness_cols[i]));
   }
   witness_cols = w;
-  prev_challenges = tsRustConversion.bn254Fp.vectorToRust([]);
+  var prev_challenges = tsRustConversion.bn254Fp.vectorToRust([]);
   var wasm_runtime_tables =
     tsRustConversion.bn254Fp.runtimeTablesToRust(caml_runtime_tables);
-  prev_sgs = tsRustConversion.bn254Fp.pointsToRust([]);
+  var prev_sgs = tsRustConversion.bn254Fp.pointsToRust([]);
   var proof = plonk_wasm.caml_bn254_fp_plonk_proof_create(
     index,
     witness_cols,
