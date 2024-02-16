@@ -260,8 +260,11 @@ function createField(
   const kmax = BigInt(2 * n * w);
 
   // constant for correcting 2^k/x -> 1/x, by multiplying with 2^-kmax * 2^(kmax - k)
-  const twoToMinusKmax = inverse(1n << kmax, p)!;
-  assert(twoToMinusKmax !== undefined, '2^-kmax exists');
+  const twoToMinusKmax = inverse(1n << kmax, p);
+  const exportedInverse =
+    twoToMinusKmax !== undefined
+      ? (x: bigint) => fastInverse(x, p, n, kmax, twoToMinusKmax)
+      : (x: bigint) => inverse(x, p);
 
   return {
     modulus: p,
@@ -287,12 +290,9 @@ function createField(
     mul(x: bigint, y: bigint) {
       return mod(x * y, p);
     },
-    inverse(x: bigint) {
-      // return inverse(x, p);
-      return fastInverse(x, p, n, kmax, twoToMinusKmax);
-    },
+    inverse: exportedInverse,
     div(x: bigint, y: bigint) {
-      let yinv = fastInverse(y, p, n, kmax, twoToMinusKmax);
+      let yinv = exportedInverse(y);
       if (yinv === undefined) return;
       return mod(x * yinv, p);
     },
