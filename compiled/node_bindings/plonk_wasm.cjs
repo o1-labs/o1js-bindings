@@ -13279,11 +13279,6 @@ module.exports.__wbindgen_string_new = function(arg0, arg1) {
     return addHeapObject(ret);
 };
 
-module.exports.__wbindgen_bigint_from_u64 = function(arg0) {
-    const ret = BigInt.asUintN(64, arg0);
-    return addHeapObject(ret);
-};
-
 module.exports.__wbindgen_error_new = function(arg0, arg1) {
     const ret = new Error(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
@@ -13335,10 +13330,6 @@ module.exports.__wbg_error_f851667af71bcfc6 = function(arg0, arg1) {
     } finally {
         wasm.__wbindgen_free(deferred0_0, deferred0_1, 1);
     }
-};
-
-module.exports.__wbg_log_576ca876af0d4a77 = function(arg0, arg1) {
-    console.log(getObject(arg0), getObject(arg1));
 };
 
 module.exports.__wbindgen_is_object = function(arg0) {

@@ -144,12 +144,6 @@ pub fn caml_bn254_fq_of_int(i: i32) -> WasmBn254Fq {
 
 #[wasm_bindgen]
 pub fn caml_bn254_fq_to_string(x: WasmBn254Fq) -> String {
-    web_sys::console::log_2(
-        &"FQ_ONE =".into(),
-        &bigint_256::to_biguint(&ark_bn254::fq::FQ_ONE.into_repr())
-            .to_string()
-            .into(),
-    );
     bigint_256::to_biguint(&x.0.into_repr()).to_string()
 }
 
