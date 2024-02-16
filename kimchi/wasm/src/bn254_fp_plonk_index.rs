@@ -140,6 +140,7 @@ pub fn caml_bn254_fp_plonk_index_create(
         };
         // INFO: Hack
         cs.lookup_constraint_system = None;
+        web_sys::console::log_2(&"zk_rows:".into(), &cs.zk_rows.into());
 
         // endo
         let (_endo_r, endo_q) = poly_commitment::srs::endos::<GAffine>();
