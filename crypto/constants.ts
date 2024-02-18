@@ -1,11 +1,12 @@
 // @gen this file is generated from `bindings/ocaml/o1js_constants.ml` - don't edit it directly
-export { prefixes, prefixHashes, prefixHashesLegacy, versionBytes, poseidonParamsKimchiFp, poseidonParamsLegacyFp, mocks }
+export { prefixes, prefixHashes, prefixHashesLegacy, versionBytes, protocolVersions, poseidonParamsKimchiFp, poseidonParamsLegacyFp, mocks }
 
 let prefixes = {
   "event": "MinaZkappEvent******",
   "events": "MinaZkappEvents*****",
   "sequenceEvents": "MinaZkappSeqEvents**",
-  "body": "TestnetZkappBody****",
+  "zkappBodyMainnet": "MainnetZkappBody****",
+  "zkappBodyTestnet": "TestnetZkappBody****",
   "accountUpdateCons": "MinaAcctUpdateCons**",
   "accountUpdateNode": "MinaAcctUpdateNode**",
   "zkappMemo": "MinaZkappMemo*******",
@@ -129,6 +130,11 @@ let prefixHashes = {
     "15735138827391397348912010094577234813869450438840158969759900004702547928125",
     "25095612872941242247876048162039143509752212627701285511972307921367391645919",
     "7245494597725009330136300549232949784423520250577599502394596645257342395146"
+  ],
+  "MainnetZkappBody****": [
+    "10214915150831852734808709087755641273868350720962413399868532305813227181967",
+    "19231103515031626108540280352804904215178644233964839448405623573586547300771",
+    "3202185325412846279878024015439663797323768206239602518916650099275135615824"
   ],
   "TestnetZkappBody****": [
     "20037733640875789833090442509053816933966165101372309054048970230906793051053",
@@ -271,6 +277,7 @@ let versionBytes = {
   "transactionHash": 29,
   "signedCommandV1": 19
 };
+let protocolVersions = { "txnVersion": 2 };
 let poseidonParamsKimchiFp = {
   "mds": [
     [

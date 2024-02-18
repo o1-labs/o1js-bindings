@@ -1,5 +1,5 @@
 (rule
- (targets poseidonKimchi.ts poseidonLegacy.ts)
+ (targets poseidon-kimchi.ts poseidon-legacy.ts)
  (mode promote)
  (enabled_if
   (<> %{env:NO_JS_BUILD=0} 1))
@@ -11,4 +11,4 @@
  (action
   (progn
    (run chmod -R +w ../../../mina/src/lib/crypto/proof-systems/ .)
-   (run %{script} poseidonKimchi.ts poseidonLegacy.ts))))
+   (run %{script} poseidon-kimchi.ts poseidon-legacy.ts))))

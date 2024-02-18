@@ -20,7 +20,8 @@ let prefixes =
     [ ("event", `String (zkapp_event :> string))
     ; ("events", `String (zkapp_events :> string))
     ; ("sequenceEvents", `String (zkapp_actions :> string))
-    ; ("body", `String (zkapp_body ~chain:Mina_signature_kind.t :> string))
+    ; ("zkappBodyMainnet", `String (zkapp_body_mainnet :> string))
+    ; ("zkappBodyTestnet", `String (zkapp_body_testnet :> string))
     ; ("accountUpdateCons", `String (account_update_cons :> string))
     ; ("accountUpdateNode", `String (account_update_node :> string))
     ; ("zkappMemo", `String (zkapp_memo :> string))
@@ -69,7 +70,8 @@ let prefix_hashes =
        ; (side_loaded_vk :> string)
        ; (zkapp_account :> string)
        ; (zkapp_payload :> string)
-       ; (zkapp_body ?chain:None :> string)
+       ; (zkapp_body_mainnet :> string)
+       ; (zkapp_body_testnet :> string)
        ; (zkapp_precondition :> string)
        ; (zkapp_precondition_account :> string)
        ; (zkapp_precondition_protocol_state :> string)
@@ -119,6 +121,10 @@ let version_bytes =
     ; ("signedCommandV1", `Int (Char.to_int signed_command_v1))
     ]
 
+let protocol_versions =
+  let open Protocol_version in
+  `Assoc [ ("txnVersion", `Int (transaction current)) ]
+
 let poseidon_params_kimchi =
   `Assoc
     [ ("mds", array (array string) Sponge.Params.pasta_p_kimchi.mds)
@@ -160,6 +166,7 @@ let constants =
   ; ("prefixHashes", prefix_hashes)
   ; ("prefixHashesLegacy", prefix_hashes_legacy)
   ; ("versionBytes", version_bytes)
+  ; ("protocolVersions", protocol_versions)
   ; ("poseidonParamsKimchiFp", poseidon_params_kimchi)
   ; ("poseidonParamsLegacyFp", poseidon_params_legacy)
   ; ("mocks", mocks)
