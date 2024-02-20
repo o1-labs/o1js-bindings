@@ -108,7 +108,7 @@ module Field' = struct
 
        more efficient than [to_bits] because it uses the [EC_endoscalar] gate;
        does 16 bits per row (vs 1 bits per row that you can do with generic gates).
-    *)
+  *)
   let truncate_to_bits16 (length_div_16 : int) x =
     let _a, _b, x0 =
       Pickles.Scalar_challenge.to_field_checked' ~num_bits:(length_div_16 * 16)
@@ -137,7 +137,7 @@ module Field_bn254 = struct
     Impl_bn254.Field.choose_preimage_var ~length x |> Array.of_list
 
   let from_bits bits = Array.to_list bits |> Impl_bn254.Field.project
-    
+
   (** add x, y to get a new AST node Add(x, y); handles if x, y are constants *)
   let add x y = Impl_bn254.Field.add x y
 
@@ -206,8 +206,8 @@ module Circuit = struct
     let return_typ = Impl.Typ.unit in
     Impl.generate_witness_conv ~input_typ ~return_typ
       ~f:(fun { Impl.Proof_inputs.auxiliary_inputs; public_inputs } () ->
-        Backend.Proof.create pk ~auxiliary:auxiliary_inputs
-          ~primary:public_inputs )
+          Backend.Proof.create pk ~auxiliary:auxiliary_inputs
+            ~primary:public_inputs )
       (Main.of_js main) public_input
 
   let verify public_input proof vk =
@@ -241,9 +241,13 @@ module Circuit_bn254 = struct
     let cs = Impl_bn254.constraint_system ~input_typ ~return_typ (Main.of_js main) in
     Impl_bn254.Keypair.generate ~prev_challenges:0 cs
 
-  let prove _main _public_input_size _public_input keypair =
+  let prove _main public_input_size public_input keypair =
     let pk = Impl_bn254.Keypair.pk keypair in
-    let proof = Kimchi_backend.Bn254.Bn254_based_plonk.Proof.create pk in
+    let input_typ = bn254_typ public_input_size in
+    let return_typ = Impl_bn254.Typ.unit in
+    let external_values = Impl_bn254.External_values.compute input_typ return_typ public_input in
+    let { Impl_bn254.Proof_inputs.public_inputs = primary_inputs; auxiliary_inputs} = external_values in
+    let proof = Kimchi_backend.Bn254.Bn254_based_plonk.Proof.create pk primary_inputs auxiliary_inputs in
     Js.string proof
 
   module Keypair = struct
@@ -260,7 +264,7 @@ end
 
 module Poseidon = struct
   let update (state : Field.t Random_oracle.State.t) (input : Field.t array) :
-      Field.t Random_oracle.State.t =
+    Field.t Random_oracle.State.t =
     Random_oracle.Checked.update ~state input
 
   let hash_to_group (xs : Field.t array) =
@@ -294,16 +298,16 @@ module Poseidon = struct
   let sponge_absorb (sponge : sponge) (field : Field.t) : unit =
     match sponge with
     | Checked s ->
-        Poseidon_sponge_checked.absorb s field
+      Poseidon_sponge_checked.absorb s field
     | Unchecked s ->
-        Poseidon_sponge.absorb s @@ to_unchecked field
+      Poseidon_sponge.absorb s @@ to_unchecked field
 
   let sponge_squeeze (sponge : sponge) : Field.t =
     match sponge with
     | Checked s ->
-        Poseidon_sponge_checked.squeeze s
+      Poseidon_sponge_checked.squeeze s
     | Unchecked s ->
-        Poseidon_sponge.squeeze s |> Impl.Field.constant
+      Poseidon_sponge.squeeze s |> Impl.Field.constant
 end
 
 module Foreign_field = struct
@@ -398,10 +402,10 @@ module EC_group = struct
   exception OrderNotFoundInCurve
 
   (* Ia points are neccessary for scalar multiplication, because it implies adding with accumulation
-    which it checks that the accumulator is not the point at infinity.
-    The default for ia points are the point at infinity, so letting the default would make the scalar
-    multiplication fail.
-    We first select a random point in the curve as the input for the ia points computation.*)
+     which it checks that the accumulator is not the point at infinity.
+     The default for ia points are the point at infinity, so letting the default would make the scalar
+     multiplication fail.
+     We first select a random point in the curve as the input for the ia points computation.*)
   let curve_params_with_ia_points curve_params =
     let ia_input_fq = Pasta_bindings.Pallas.random () in
     let ia_x, ia_y = match Pasta_bindings.Pallas.to_affine ia_input_fq with
@@ -419,7 +423,7 @@ module EC_group = struct
     let ia_input = (ia_x_bigint, ia_y_bigint) in
     let ia = ECG.compute_ia_points ~point:ia_input curve_params in
     Curve_params.to_circuit_constants (module Impl_bn254) { curve_params with ia = ia }
-  
+
   (* curve = [a, b, modulus, gen_x, gen_y, order] *)
   let parse_ec curve =
     let a =
@@ -460,9 +464,9 @@ module EC_group = struct
     let external_checks = External_checks.create (module Impl_bn254) in
     let ec = parse_ec curve in
     ECG.add (module Impl_bn254) external_checks ec left_input right_input
-  
+
   let scale (point : t) (scalar : Impl_bn254.Boolean.var array)
-    (curve : Js.js_string Js.t Js.js_array Js.t) =
+      (curve : Js.js_string Js.t Js.js_array Js.t) =
     let external_checks = External_checks.create (module Impl_bn254) in
     let ec = parse_ec curve in
     let scalar = Array.to_list scalar in
@@ -497,16 +501,16 @@ module Foreign_poseidon = struct
     let (f0, _, _) = Foreign_field_bn254.FF.Element.Standard.to_limbs field in
     match sponge with
     | Checked s ->
-        Poseidon_sponge_checked.absorb s f0
+      Poseidon_sponge_checked.absorb s f0
     | Unchecked s ->
-        Poseidon_sponge.absorb s @@ to_unchecked f0
+      Poseidon_sponge.absorb s @@ to_unchecked f0
 
   let sponge_squeeze (sponge : sponge) : Foreign_field_bn254.t =
     let field = match sponge with
       | Checked s ->
-          Poseidon_sponge_checked.squeeze s
+        Poseidon_sponge_checked.squeeze s
       | Unchecked s ->
-          Poseidon_sponge.squeeze s |> Impl_bn254.Field.constant in
+        Poseidon_sponge.squeeze s |> Impl_bn254.Field.constant in
     let limbs = (field, Impl_bn254.Field.zero, Impl_bn254.Field.zero) in
     Foreign_field_bn254.FF.Element.Standard.of_limbs limbs
 end
@@ -635,7 +639,7 @@ let snarky =
             method getConstraintSystemJSON = Circuit.Keypair.get_cs_json
           end
       end
-    
+
     val circuitBn254 =
       object%js
         method compile = Circuit_bn254.compile
