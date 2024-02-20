@@ -145,7 +145,7 @@ module Choices = struct
               , 'ret_value
               , 'auxiliary_var
               , 'auxiliary_value )
-              Pickles.Inductive_rule.t )
+              Pickles.Inductive_rule.Promise.t )
           -> ( 'var
              , 'value
              , 'width
@@ -251,7 +251,8 @@ module Choices = struct
                 , 'b4 )
                 Pickles.Tag.t ) ->
           let prevs = prevs ~self in
-          { Pickles.Inductive_rule.identifier = Js.to_string rule##.identifier
+          { Pickles.Inductive_rule.Promise.identifier =
+              Js.to_string rule##.identifier
           ; feature_flags = rule##.featureFlags
           ; prevs
           ; main =
@@ -299,10 +300,13 @@ module Choices = struct
                   go 0 previous_public_inputs previous_proofs_should_verify
                     prevs
                 in
-                { previous_proof_statements
-                ; public_output
-                ; auxiliary_output = ()
-                } )
+                let res : _ Pickles.Inductive_rule.main_return =
+                  { previous_proof_statements
+                  ; public_output
+                  ; auxiliary_output = ()
+                  }
+                in
+                Promise.return res )
           } )
   end
 
@@ -329,7 +333,7 @@ module Choices = struct
             , 'ret_value
             , 'auxiliary_var
             , 'auxiliary_value )
-            H4_6.T(Pickles.Inductive_rule).t )
+            H4_6.T(Pickles.Inductive_rule.Promise).t )
         -> ( 'var
            , 'value
            , 'width
@@ -361,7 +365,7 @@ module Choices = struct
           Inductive_rule.create ~public_input_size ~public_output_size
             (Array.get js_rules index)
         in
-        let rules ~self : _ H4_6.T(Pickles.Inductive_rule).t =
+        let rules ~self : _ H4_6.T(Pickles.Inductive_rule.Promise).t =
           rule ~self :: rules ~self
         in
         get_rules (Choices rules) (index - 1)
@@ -663,6 +667,14 @@ let pickles_compile (choices : pickles_rule_js array)
     |> Promise.map ~f:(fun x -> Js.bool (Or_error.is_ok x))
     |> Promise_js_helpers.to_js
   in
+  let get_vk () =
+    let vk = Pickles.Side_loaded.Verification_key.of_compiled_promise tag in
+    Promise.map vk ~f:(fun vk ->
+        let data = Pickles.Side_loaded.Verification_key.to_base64 vk in
+        let hash = Mina_base.Zkapp_account.digest_vk vk in
+        (data |> Js.string, hash) )
+    |> Promise_js_helpers.to_js
+  in
   object%js
     val provers = Obj.magic provers
 
@@ -670,11 +682,7 @@ let pickles_compile (choices : pickles_rule_js array)
 
     val tag = Obj.magic tag
 
-    method getVerificationKey =
-      let vk = Pickles.Side_loaded.Verification_key.of_compiled tag in
-      let data = Pickles.Side_loaded.Verification_key.to_base64 vk in
-      let hash = Mina_base.Zkapp_account.digest_vk vk in
-      (data |> Js.string, hash)
+    val getVerificationKey = get_vk
   end
 
 module Proof0 = Pickles.Proof.Make (Pickles_types.Nat.N0) (Pickles_types.Nat.N0)
