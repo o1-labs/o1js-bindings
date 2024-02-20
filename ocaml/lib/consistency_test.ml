@@ -115,6 +115,15 @@ let body_of_json =
   in
   body_of_json
 
+let get_network_id_of_js_string (network : Js.js_string Js.t) =
+  match Js.to_string network with
+  | "mainnet" ->
+      Mina_signature_kind.Mainnet
+  | "testnet" ->
+      Mina_signature_kind.Testnet
+  | other ->
+      Mina_signature_kind.(Other_network other)
+
 module Poseidon = struct
   let hash_to_group (xs : Impl.field array) =
     let input = Random_oracle.hash xs in
@@ -123,11 +132,10 @@ end
 
 module Signature = struct
   let sign_field_element (x : Impl.field) (key : Other_impl.field)
-      (is_mainnet : bool Js.t) =
-    let network_id =
-      Mina_signature_kind.(if Js.to_bool is_mainnet then Mainnet else Testnet)
-    in
-    Signature_lib.Schnorr.Chunked.sign ~signature_kind:network_id key
+      (network_id : Js.js_string Js.t) =
+    Signature_lib.Schnorr.Chunked.sign
+      ~signature_kind:(get_network_id_of_js_string network_id)
+      key
       (Random_oracle.Input.Chunked.field x)
     |> Mina_base.Signature.to_base58_check |> Js.string
 
@@ -149,15 +157,6 @@ module To_fields = struct
   let account_update =
     fields_of_json (Mina_base.Account_update.Body.typ ()) body_of_json
 end
-
-let get_network_id_of_js_string network =
-  match Js.to_string network with
-  | "mainnet" ->
-      Mina_signature_kind.Mainnet
-  | "testnet" ->
-      Mina_signature_kind.Testnet
-  | other ->
-      Mina_signature_kind.(Other_network other)
 
 module Hash_from_json = struct
   let account_update (p : Js.js_string Js.t) (network_id : Js.js_string Js.t) =
