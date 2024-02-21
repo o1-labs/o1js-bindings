@@ -1,6 +1,6 @@
 import { assert } from '../../lib/errors.js';
 import { CurveParams } from './elliptic-curve-examples.js';
-import { createCurveAffine } from './elliptic_curve.js';
+import { createCurveAffine } from './elliptic-curve.js';
 import { computeGlvData, decompose } from './elliptic-curve-endomorphism.js';
 import { Random, test } from '../../lib/testing/property.js';
 import { log2 } from './bigint-helpers.js';

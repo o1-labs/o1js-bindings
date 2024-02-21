@@ -10,8 +10,8 @@ import {
   projectiveNeg,
   projectiveToAffine,
   projectiveZero,
-} from './elliptic_curve.js';
-import { FiniteField, mod } from './finite_field.js';
+} from './elliptic-curve.js';
+import { FiniteField, mod } from './finite-field.js';
 
 export {
   Endomorphism,
