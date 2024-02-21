@@ -283,6 +283,14 @@ module Transaction_hash = struct
     Mina_transaction.Transaction_hash.(
       command |> hash_signed_command |> to_base58_check |> Js.string)
 
+  let hash_zkapp_command (command : Js.js_string Js.t) =
+    let command : Zkapp_command.t =
+      command |> Js.to_string |> Yojson.Safe.from_string
+      |> Zkapp_command.of_json
+    in
+    Mina_transaction.Transaction_hash.(
+      command |> hash_zkapp_command |> to_base58_check |> Js.string)
+
   let hash_payment_v1 (command : Js.js_string Js.t) =
     let command : Signed_command.t_v1 =
       command |> Js.to_string |> Yojson.Safe.from_string
@@ -419,6 +427,8 @@ let test =
         method serializePayment = serialize_payment
 
         method serializePaymentV1 = serialize_payment_v1
+
+        method hashZkAppCommand = hash_zkapp_command
 
         val examplePayment = example_payment
       end
