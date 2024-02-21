@@ -24,7 +24,19 @@ val snarky :
           Js.meth
       ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
       ; runAndCheck : ((unit -> unit) -> unit) Js.meth
-      ; runUnchecked : ((unit -> unit) -> unit) Js.meth >
+      ; runUnchecked : ((unit -> unit) -> unit) Js.meth
+      ; constraintSystemManual :
+          (   unit
+           -> < finish :
+                  (   unit
+                   -> < digest : Js.js_string Js.t Js.readonly_prop
+                      ; json : 'b Js.readonly_prop
+                      ; rows : int Js.readonly_prop >
+                      Js.t )
+                  Js.readonly_prop
+              ; run : ((unit -> unit) -> unit) Js.readonly_prop >
+              Js.t )
+          Js.readonly_prop >
       Js.t
       Js.readonly_prop
   ; field :

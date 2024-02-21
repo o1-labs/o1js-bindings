@@ -66,6 +66,32 @@ module Run = struct
         Backend.R1CS_constraint_system.to_json cs
         |> Js.string |> Util.json_parse
     end
+
+  let constraint_system_manual () =
+    let builder =
+      Impl.constraint_system_manual ~input_typ:Impl.Typ.unit
+        ~return_typ:Impl.Typ.unit
+    in
+    let run (main : unit -> unit) = builder.run_circuit (fun () -> main) in
+    let finish () =
+      let cs = builder.finish_computation () in
+      object%js
+        val rows = Backend.R1CS_constraint_system.get_rows_len cs
+
+        val digest =
+          Backend.R1CS_constraint_system.digest cs |> Md5.to_hex |> Js.string
+
+        val json =
+          Backend.R1CS_constraint_system.to_json cs
+          |> Js.string |> Util.json_parse
+      end
+    in
+
+    object%js
+      val run = run
+
+      val finish = finish
+    end
 end
 
 module Field' = struct
@@ -503,6 +529,8 @@ let snarky =
         method runUnchecked = run_unchecked
 
         method constraintSystem = constraint_system
+
+        val constraintSystemManual = constraint_system_manual
       end
 
     val field =
