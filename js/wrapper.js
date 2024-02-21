@@ -5,9 +5,9 @@ let snarky;
 // this dynamic import makes jest respect the import order
 // otherwise the cjs file gets imported before its implicit esm dependencies and fails
 CJS: if (typeof require !== 'undefined') {
-  snarky = require('../compiled/_node_bindings/snarky_js_node.bc.cjs');
+  snarky = require('../compiled/_node_bindings/o1js_node.bc.cjs');
 }
-ESM: snarky = (await import('../compiled/_node_bindings/snarky_js_node.bc.cjs'))
+ESM: snarky = (await import('../compiled/_node_bindings/o1js_node.bc.cjs'))
   .default;
 
 export { getSnarky, getWasm, withThreadPool };

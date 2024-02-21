@@ -9,6 +9,7 @@ import {
   Bool,
   AuthRequired,
   Sign,
+  TransactionVersion,
   ZkappUri,
   TokenSymbol,
   StateHash,
@@ -56,6 +57,7 @@ type Signable<T, TJson> = GenericSignable<T, TJson, Field>;
 type Layout = GenericLayout<TypeMap>;
 
 type CustomTypes = {
+  TransactionVersion: Signable<UInt32, Json.TypeMap['UInt32']>;
   ZkappUri: Signable<
     {
       data: string;
@@ -90,6 +92,7 @@ type CustomTypes = {
   ReceiptChainHash: Signable<Field, Json.TypeMap['Field']>;
 };
 let customTypes: CustomTypes = {
+  TransactionVersion,
   ZkappUri,
   TokenSymbol,
   StateHash,
@@ -137,7 +140,10 @@ type ZkappCommand = {
             receive: AuthRequired;
             setDelegate: AuthRequired;
             setPermissions: AuthRequired;
-            setVerificationKey: AuthRequired;
+            setVerificationKey: {
+              auth: AuthRequired;
+              txnVersion: UInt32;
+            };
             setZkappUri: AuthRequired;
             editActionState: AuthRequired;
             setTokenSymbol: AuthRequired;
@@ -340,7 +346,10 @@ type AccountUpdate = {
           receive: AuthRequired;
           setDelegate: AuthRequired;
           setPermissions: AuthRequired;
-          setVerificationKey: AuthRequired;
+          setVerificationKey: {
+            auth: AuthRequired;
+            txnVersion: UInt32;
+          };
           setZkappUri: AuthRequired;
           editActionState: AuthRequired;
           setTokenSymbol: AuthRequired;
@@ -542,7 +551,10 @@ type Account = {
     receive: AuthRequired;
     setDelegate: AuthRequired;
     setPermissions: AuthRequired;
-    setVerificationKey: AuthRequired;
+    setVerificationKey: {
+      auth: AuthRequired;
+      txnVersion: UInt32;
+    };
     setZkappUri: AuthRequired;
     editActionState: AuthRequired;
     setTokenSymbol: AuthRequired;

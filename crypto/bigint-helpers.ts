@@ -3,12 +3,30 @@ export {
   bytesToBigInt,
   bigIntToBytes,
   bigIntToBits,
-  parseHexString,
+  parseHexString32,
   log2,
   max,
   abs,
   sign,
+  bytesToBigint32,
+  bigintToBytes32,
 };
+
+function bytesToBigint32(bytes: Uint8Array) {
+  let words = new BigUint64Array(bytes.buffer, bytes.byteOffset, 4);
+  return words[0] | (words[1] << 64n) | (words[2] << 128n) | (words[3] << 192n);
+}
+
+const mask64 = (1n << 64n) - 1n;
+
+function bigintToBytes32(x: bigint, bytes: Uint8Array): Uint8Array {
+  let words = new BigUint64Array(bytes.buffer, bytes.byteOffset, 4);
+  words[0] = x & mask64;
+  words[1] = (x >> 64n) & mask64;
+  words[2] = (x >> 128n) & mask64;
+  words[3] = x >> 192n;
+  return bytes;
+}
 
 function bytesToBigInt(bytes: Uint8Array | number[]) {
   let x = 0n;
@@ -20,13 +38,21 @@ function bytesToBigInt(bytes: Uint8Array | number[]) {
   return x;
 }
 
-function parseHexString(input: string) {
+let hexToNum: { [hexCharCode: number]: number } = {};
+for (let i = 0; i < 16; i++) hexToNum[i.toString(16).charCodeAt(0)] = i;
+let encoder = new TextEncoder();
+
+const tmpBytes = new Uint8Array(64);
+
+function parseHexString32(input: string) {
   // Parse the bytes explicitly, Bigint endianness is wrong
-  let inputBytes = new Uint8Array(32);
-  for (var j = 0; j < 32; j++) {
-    inputBytes[j] = parseInt(input[2 * j] + input[2 * j + 1], 16);
+  encoder.encodeInto(input, tmpBytes);
+  for (let j = 0; j < 32; j++) {
+    let n1 = hexToNum[tmpBytes[2 * j]];
+    let n0 = hexToNum[tmpBytes[2 * j + 1]];
+    tmpBytes[j] = (n1 << 4) | n0;
   }
-  return bytesToBigInt(inputBytes);
+  return bytesToBigint32(tmpBytes);
 }
 
 /**
