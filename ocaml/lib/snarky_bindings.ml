@@ -417,6 +417,10 @@ module EC_group = struct
     let ia_x, ia_y = match Pasta_bindings.Pallas.to_affine ia_input_fq with
       | Finite (x, y) -> (x, y)
       | Infinity -> failwith "Randomly generated Pallas point is the point at infinity" in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string "ia_x") in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string (Pasta_bindings.Fp.to_string ia_x)) in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string "ia_y") in
+    let () = Js_of_ocaml.Firebug.console##log (Js.string (Pasta_bindings.Fp.to_string ia_y)) in
     (* TODO: is there a better way to convert arkworks bigint to OCaml bigint? *)
     let ia_x_bigint =
       ia_x
