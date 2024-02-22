@@ -413,14 +413,10 @@ module EC_group = struct
      multiplication fail.
      We first select a random point in the curve as the input for the ia points computation.*)
   let curve_params_with_ia_points curve_params =
-    let ia_input_fq = Pasta_bindings.Pallas.one () in
+    let ia_input_fq = Pasta_bindings.Pallas.random () in
     let ia_x, ia_y = match Pasta_bindings.Pallas.to_affine ia_input_fq with
       | Finite (x, y) -> (x, y)
       | Infinity -> failwith "Randomly generated Pallas point is the point at infinity" in
-    let () = Js_of_ocaml.Firebug.console##log (Js.string "ia_x") in
-    let () = Js_of_ocaml.Firebug.console##log (Js.string (Pasta_bindings.Fp.to_string ia_x)) in
-    let () = Js_of_ocaml.Firebug.console##log (Js.string "ia_y") in
-    let () = Js_of_ocaml.Firebug.console##log (Js.string (Pasta_bindings.Fp.to_string ia_y)) in
     (* TODO: is there a better way to convert arkworks bigint to OCaml bigint? *)
     let ia_x_bigint =
       ia_x
