@@ -23,6 +23,9 @@ let exists_var (compute : unit -> Field.Constant.t) =
 let exists_bn254 (size_in_fields : int) (compute : unit -> Impl_bn254.Field.Constant.t array) =
   Impl_bn254.exists (bn254_typ size_in_fields) ~compute
 
+let exists_var_bn254 (compute : unit -> Impl_bn254.Field.Constant.t) =
+  Impl_bn254.exists Impl_bn254.Field.typ ~compute
+
 module Run = struct
   let as_prover = Impl.as_prover
 
@@ -522,6 +525,8 @@ let snarky =
     method existsVar = exists_var
 
     method existsBn254 = exists_bn254
+
+    method existsVarBn254 = exists_var_bn254
 
     val run =
       let open Run in

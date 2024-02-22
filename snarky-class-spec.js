@@ -5,6 +5,7 @@ export default [
       { name: 'exists', type: 'function' },
       { name: 'existsVar', type: 'function' },
       { name: 'existsBn254', type: 'function' },
+      { name: 'existsVarBn254', type: 'function' },
       {
         name: 'run',
         type: 'object',
