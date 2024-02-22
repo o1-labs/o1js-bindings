@@ -133,6 +133,9 @@ module Field_bn254 = struct
   (** x*y === z without handling of constants *)
   let assert_mul x y z = Impl_bn254.assert_ (Impl_bn254.Constraint.r1cs x y z)
 
+  (** x*x === x without handling of constants *)
+  let assert_boolean x = Impl_bn254.assert_ (Impl_bn254.Constraint.boolean x)
+
   (** evaluates a CVar by unfolding the AST and reading Vars from a list of public input + aux values *)
   let read_var (x : Impl_bn254.Field.t) = Impl_bn254.As_prover.read_var x
 
@@ -584,6 +587,8 @@ let snarky =
         method assertEqual = assert_equal
 
         method assertMul = assert_mul
+
+        method assertBoolean = assert_boolean
 
         method readVar = read_var
 

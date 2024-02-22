@@ -85,6 +85,7 @@ val snarky :
   ; fieldBn254 :
       < assertEqual : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
       ; assertMul : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
+      ; assertBoolean : (Impl_bn254.Field.t -> unit) Js.meth
       ; readVar : (Impl_bn254.Field.t -> Impl_bn254.field) Js.meth
       ; toBits : (int -> Impl_bn254.Field.t -> Impl_bn254.Boolean.var array) Js.meth
       ; fromBits : (Impl_bn254.Boolean.var array -> Impl_bn254.Field.t) Js.meth
