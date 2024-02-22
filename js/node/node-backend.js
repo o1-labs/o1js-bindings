@@ -84,7 +84,7 @@ async function initThreadPool() {
   if (!isMainThread) return;
   workersReady = new Promise((resolve) => (workersReadyResolve = resolve));
   await wasm.initThreadPool(
-    workers.numWorkers ?? os.availableParallelism() - 1,
+    Math.max(1, workers.numWorkers ?? (os.availableParallelism() ?? 1) - 1),
     filename
   );
   await workersReady;

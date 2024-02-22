@@ -55,7 +55,7 @@ async function withThreadPool(run) {
   if (workerPromise === undefined)
     throw Error('need to initialize worker first');
   let worker = await workerPromise;
-  numWorkers ??= workers.numWorkers ?? navigator.hardwareConcurrency - 1;
+  numWorkers ??= Math.max(1, workers.numWorkers ?? (navigator.hardwareConcurrency ?? 1) - 1);
   await workerCall(worker, 'initThreadPool', numWorkers);
   let result;
   try {
