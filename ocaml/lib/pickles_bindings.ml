@@ -67,7 +67,8 @@ type pickles_rule_js =
        -> < publicOutput : Public_input.t Js.prop
           ; previousStatements : Statement.t array Js.prop
           ; shouldVerify : Boolean.var array Js.prop >
-          Js.t )
+          Js.t
+          Promise_js_helpers.js_promise )
       Js.prop
   ; featureFlags : bool Pickles_types.Plonk_types.Features.t Js.prop
   ; proofsToVerify :
@@ -243,71 +244,68 @@ module Choices = struct
         , unit )
         t =
       let (Prevs prevs) = Prevs.of_rule rule in
-      Rule
-        (fun ~(self :
-                ( Field.t array * Field.t array
-                , Impl.field array * Impl.field array
-                , 'b3
-                , 'b4 )
-                Pickles.Tag.t ) ->
-          let prevs = prevs ~self in
-          { Pickles.Inductive_rule.Promise.identifier =
-              Js.to_string rule##.identifier
-          ; feature_flags = rule##.featureFlags
-          ; prevs
-          ; main =
-              (fun { public_input } ->
-                dummy_constraints () ;
-                let result = rule##.main public_input in
-                let public_output = result##.publicOutput in
-                let previous_proofs_should_verify =
-                  should_verifys prevs result##.shouldVerify
+
+      (* this is called after `picklesRuleFromFunction()` and finishes the circuit *)
+      let finish_circuit prevs self js_result :
+          _ Pickles.Inductive_rule.main_return =
+        (* add dummy constraints *)
+        dummy_constraints () ;
+
+        (* convert js rule output to pickles rule output *)
+        let public_output = js_result##.publicOutput in
+        let previous_proofs_should_verify =
+          should_verifys prevs js_result##.shouldVerify
+        in
+        let previous_public_inputs =
+          prev_statements ~public_input_size ~public_output_size ~self prevs
+            js_result##.previousStatements
+        in
+        let previous_proof_statements =
+          let rec go :
+              type prev_vars prev_values widths heights.
+                 int
+              -> prev_vars H1.T(Id).t
+              -> prev_vars H1.T(E01(Pickles.Inductive_rule.B)).t
+              -> (prev_vars, prev_values, widths, heights) H4.T(Pickles.Tag).t
+              -> ( prev_vars
+                 , widths )
+                 H2.T(Pickles.Inductive_rule.Previous_proof_statement).t =
+           fun i public_inputs should_verifys tags ->
+            match (public_inputs, should_verifys, tags) with
+            | [], [], [] ->
+                []
+            | ( public_input :: public_inputs
+              , proof_must_verify :: should_verifys
+              , _tag :: tags ) ->
+                let proof =
+                  Impl.exists (Impl.Typ.Internal.ref ()) ~request:(fun () ->
+                      Get_prev_proof i )
                 in
-                let previous_public_inputs =
-                  prev_statements ~public_input_size ~public_output_size ~self
-                    prevs
-                    result##.previousStatements
-                in
-                let previous_proof_statements =
-                  let rec go :
-                      type prev_vars prev_values widths heights.
-                         int
-                      -> prev_vars H1.T(Id).t
-                      -> prev_vars H1.T(E01(Pickles.Inductive_rule.B)).t
-                      -> ( prev_vars
-                         , prev_values
-                         , widths
-                         , heights )
-                         H4.T(Pickles.Tag).t
-                      -> ( prev_vars
-                         , widths )
-                         H2.T(Pickles.Inductive_rule.Previous_proof_statement).t
-                      =
-                   fun i public_inputs should_verifys tags ->
-                    match (public_inputs, should_verifys, tags) with
-                    | [], [], [] ->
-                        []
-                    | ( public_input :: public_inputs
-                      , proof_must_verify :: should_verifys
-                      , _tag :: tags ) ->
-                        let proof =
-                          Impl.exists (Impl.Typ.Internal.ref ())
-                            ~request:(fun () -> Get_prev_proof i)
-                        in
-                        { public_input; proof; proof_must_verify }
-                        :: go (i + 1) public_inputs should_verifys tags
-                  in
-                  go 0 previous_public_inputs previous_proofs_should_verify
-                    prevs
-                in
-                let res : _ Pickles.Inductive_rule.main_return =
-                  { previous_proof_statements
-                  ; public_output
-                  ; auxiliary_output = ()
-                  }
-                in
-                Promise.return res )
-          } )
+                { public_input; proof; proof_must_verify }
+                :: go (i + 1) public_inputs should_verifys tags
+          in
+          go 0 previous_public_inputs previous_proofs_should_verify prevs
+        in
+        { previous_proof_statements; public_output; auxiliary_output = () }
+      in
+
+      let rule ~(self : (Statement.t, Statement.Constant.t, _, _) Pickles.Tag.t)
+          : _ Pickles.Inductive_rule.Promise.t =
+        let prevs = prevs ~self in
+
+        let main ({ public_input } : _ Pickles.Inductive_rule.main_input) =
+          rule##.main public_input
+          |> Promise_js_helpers.of_js
+          |> Promise.map ~f:(finish_circuit prevs self)
+        in
+
+        { identifier = Js.to_string rule##.identifier
+        ; feature_flags = rule##.featureFlags
+        ; prevs
+        ; main
+        }
+      in
+      Rule rule
   end
 
   type ( 'var

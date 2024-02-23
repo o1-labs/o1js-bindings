@@ -28,7 +28,8 @@ type pickles_rule_js =
        -> < publicOutput : Public_input.t Js.prop
           ; previousStatements : Statement.t array Js.prop
           ; shouldVerify : Boolean.var array Js.prop >
-          Js.t )
+          Js.t
+          Promise_js_helpers.js_promise )
       Js.prop
   ; featureFlags : bool Pickles_types.Plonk_types.Features.t Js.prop
   ; proofsToVerify :
