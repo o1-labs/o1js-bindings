@@ -42,6 +42,13 @@ module Run = struct
           fun () -> () )
     with exn -> Util.raise_exn exn
 
+  let run_and_check_bn254 (f : unit -> unit) =
+    try
+      Impl_bn254.run_and_check_exn (fun () ->
+          f () ;
+          fun () -> () )
+    with exn -> Util.raise_exn exn
+
   let run_unchecked (f : unit -> unit) =
     try
       Impl.run_and_check_exn (fun () ->
@@ -546,6 +553,8 @@ let snarky =
         val inProverBlockBn254 = in_prover_block_bn254
 
         method runAndCheck = run_and_check
+
+        method runAndCheckBn254 = run_and_check_bn254
 
         method runUnchecked = run_unchecked
 

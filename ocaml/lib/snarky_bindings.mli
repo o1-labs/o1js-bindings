@@ -53,6 +53,7 @@ val snarky :
       ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
       ; inProverBlockBn254 : (unit -> bool Js.t) Js.readonly_prop
       ; runAndCheck : ((unit -> unit) -> unit) Js.meth
+      ; runAndCheckBn254 : ((unit -> unit) -> unit) Js.meth
       ; runUnchecked : ((unit -> unit) -> unit) Js.meth >
         Js.t
         Js.readonly_prop
