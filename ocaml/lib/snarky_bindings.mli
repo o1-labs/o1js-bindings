@@ -26,7 +26,10 @@ val snarky :
       ; runAndCheck : ((unit -> unit) -> unit) Js.meth
       ; runUnchecked : ((unit -> unit) -> unit) Js.meth
       ; enterConstraintSystem :
-          (unit -> unit -> Backend.R1CS_constraint_system.t) Js.readonly_prop >
+          (unit -> unit -> Backend.R1CS_constraint_system.t) Js.readonly_prop
+      ; enterGenerateWitness :
+          (unit -> unit -> Impl.Proof_inputs.t) Js.readonly_prop
+      ; setEvalConstraints : (bool -> unit) Js.readonly_prop >
       Js.t
       Js.readonly_prop
   ; constraintSystem :

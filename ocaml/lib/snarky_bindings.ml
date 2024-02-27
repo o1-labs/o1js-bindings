@@ -74,6 +74,17 @@ module Run = struct
     in
     builder.run_circuit (fun () () -> ()) ;
     builder.finish_computation
+
+  let enter_generate_witness () =
+    let builder =
+      Impl.generate_witness_manual ~input_typ:Impl.Typ.unit
+        ~return_typ:Impl.Typ.unit ()
+    in
+    builder.run_circuit (fun () () -> ()) ;
+    let finish () = builder.finish_computation () |> fst in
+    finish
+
+  let set_eval_constraints b = Snarky_backendless.Snark0.set_eval_constraints b
 end
 
 module Constraint_system = struct
@@ -523,6 +534,10 @@ let snarky =
         method constraintSystem = constraint_system
 
         val enterConstraintSystem = enter_constraint_system
+
+        val enterGenerateWitness = enter_generate_witness
+
+        val setEvalConstraints = set_eval_constraints
       end
 
     val constraintSystem =
