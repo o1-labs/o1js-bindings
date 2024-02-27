@@ -115,6 +115,15 @@ let body_of_json =
   in
   body_of_json
 
+let get_network_id_of_js_string (network : Js.js_string Js.t) =
+  match Js.to_string network with
+  | "mainnet" ->
+      Mina_signature_kind.Mainnet
+  | "testnet" ->
+      Mina_signature_kind.Testnet
+  | other ->
+      Mina_signature_kind.(Other_network other)
+
 module Poseidon = struct
   let hash_to_group (xs : Impl.field array) =
     let input = Random_oracle.hash xs in
@@ -123,11 +132,10 @@ end
 
 module Signature = struct
   let sign_field_element (x : Impl.field) (key : Other_impl.field)
-      (is_mainnet : bool Js.t) =
-    let network_id =
-      Mina_signature_kind.(if Js.to_bool is_mainnet then Mainnet else Testnet)
-    in
-    Signature_lib.Schnorr.Chunked.sign ~signature_kind:network_id key
+      (network_id : Js.js_string Js.t) =
+    Signature_lib.Schnorr.Chunked.sign
+      ~signature_kind:(get_network_id_of_js_string network_id)
+      key
       (Random_oracle.Input.Chunked.field x)
     |> Mina_base.Signature.to_base58_check |> Js.string
 
@@ -149,15 +157,6 @@ module To_fields = struct
   let account_update =
     fields_of_json (Mina_base.Account_update.Body.typ ()) body_of_json
 end
-
-let get_network_id_of_js_string network =
-  match Js.to_string network with
-  | "mainnet" ->
-      Mina_signature_kind.Mainnet
-  | "testnet" ->
-      Mina_signature_kind.Testnet
-  | other ->
-      Mina_signature_kind.(Other_network other)
 
 module Hash_from_json = struct
   let account_update (p : Js.js_string Js.t) (network_id : Js.js_string Js.t) =
@@ -283,6 +282,14 @@ module Transaction_hash = struct
     in
     Mina_transaction.Transaction_hash.(
       command |> hash_signed_command |> to_base58_check |> Js.string)
+
+  let hash_zkapp_command (command : Js.js_string Js.t) =
+    let command : Zkapp_command.t =
+      command |> Js.to_string |> Yojson.Safe.from_string
+      |> Zkapp_command.of_json
+    in
+    Mina_transaction.Transaction_hash.(
+      command |> hash_zkapp_command |> to_base58_check |> Js.string)
 
   let hash_payment_v1 (command : Js.js_string Js.t) =
     let command : Signed_command.t_v1 =
@@ -420,6 +427,8 @@ let test =
         method serializePayment = serialize_payment
 
         method serializePaymentV1 = serialize_payment_v1
+
+        method hashZkAppCommand = hash_zkapp_command
 
         val examplePayment = example_payment
       end
