@@ -32,6 +32,10 @@ export default [
         name: 'poseidon',
         type: 'object',
       },
+      {
+        name: 'lowLevel',
+        type: 'object',
+      },
     ],
   },
   {
