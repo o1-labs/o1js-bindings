@@ -67,31 +67,23 @@ module Run = struct
         |> Js.string |> Util.json_parse
     end
 
-  let constraint_system_manual () =
+  let enter_constraint_system () =
     let builder =
       Impl.constraint_system_manual ~input_typ:Impl.Typ.unit
         ~return_typ:Impl.Typ.unit
     in
-    let run (main : unit -> unit) = builder.run_circuit (fun () -> main) in
-    let finish () =
-      let cs = builder.finish_computation () in
-      object%js
-        val rows = Backend.R1CS_constraint_system.get_rows_len cs
+    builder.run_circuit (fun () () -> ()) ;
+    builder.finish_computation
+end
 
-        val digest =
-          Backend.R1CS_constraint_system.digest cs |> Md5.to_hex |> Js.string
+module Constraint_system = struct
+  let rows cs = Backend.R1CS_constraint_system.get_rows_len cs
 
-        val json =
-          Backend.R1CS_constraint_system.to_json cs
-          |> Js.string |> Util.json_parse
-      end
-    in
+  let digest cs =
+    Backend.R1CS_constraint_system.digest cs |> Md5.to_hex |> Js.string
 
-    object%js
-      val run = run
-
-      val finish = finish
-    end
+  let to_json cs =
+    Backend.R1CS_constraint_system.to_json cs |> Js.string |> Util.json_parse
 end
 
 module Field' = struct
@@ -530,7 +522,16 @@ let snarky =
 
         method constraintSystem = constraint_system
 
-        val constraintSystemManual = constraint_system_manual
+        val enterConstraintSystem = enter_constraint_system
+      end
+
+    val constraintSystem =
+      object%js
+        method rows = Constraint_system.rows
+
+        method digest = Constraint_system.digest
+
+        method toJson = Constraint_system.to_json
       end
 
     val field =

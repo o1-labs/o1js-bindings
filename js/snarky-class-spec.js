@@ -9,6 +9,10 @@ export default [
         type: 'object',
       },
       {
+        name: 'constraintSystem',
+        type: 'object',
+      },
+      {
         name: 'field',
         type: 'object',
       },
