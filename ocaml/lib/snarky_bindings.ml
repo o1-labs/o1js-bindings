@@ -35,37 +35,7 @@ module Run = struct
 
   let in_prover_block () = As_prover.in_prover_block () |> Js.bool
 
-  let run_and_check (f : unit -> unit) =
-    try
-      Impl.run_and_check_exn (fun () ->
-          f () ;
-          fun () -> () )
-    with exn -> Util.raise_exn exn
-
-  let run_unchecked (f : unit -> unit) =
-    try
-      Impl.run_and_check_exn (fun () ->
-          Snarky_backendless.Snark0.set_eval_constraints false ;
-          f () ;
-          Snarky_backendless.Snark0.set_eval_constraints true ;
-          fun () -> () )
-    with exn -> Util.raise_exn exn
-
-  let constraint_system (main : unit -> unit) =
-    let cs =
-      Impl.constraint_system ~input_typ:Impl.Typ.unit ~return_typ:Impl.Typ.unit
-        (fun () -> main)
-    in
-    object%js
-      val rows = Backend.R1CS_constraint_system.get_rows_len cs
-
-      val digest =
-        Backend.R1CS_constraint_system.digest cs |> Md5.to_hex |> Js.string
-
-      val json =
-        Backend.R1CS_constraint_system.to_json cs
-        |> Js.string |> Util.json_parse
-    end
+  let set_eval_constraints b = Snarky_backendless.Snark0.set_eval_constraints b
 
   let enter_constraint_system () =
     let builder =
@@ -83,8 +53,6 @@ module Run = struct
     builder.run_circuit (fun () () -> ()) ;
     let finish () = builder.finish_computation () |> fst in
     finish
-
-  let set_eval_constraints b = Snarky_backendless.Snark0.set_eval_constraints b
 end
 
 module Constraint_system = struct
@@ -527,17 +495,11 @@ let snarky =
 
         val inProverBlock = in_prover_block
 
-        method runAndCheck = run_and_check
-
-        method runUnchecked = run_unchecked
-
-        method constraintSystem = constraint_system
+        val setEvalConstraints = set_eval_constraints
 
         val enterConstraintSystem = enter_constraint_system
 
         val enterGenerateWitness = enter_generate_witness
-
-        val setEvalConstraints = set_eval_constraints
       end
 
     val constraintSystem =
