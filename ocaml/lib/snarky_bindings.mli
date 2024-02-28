@@ -3,6 +3,7 @@ module Backend = Kimchi_backend.Pasta.Vesta_based_plonk
 module Impl = Pickles.Impls.Step
 module Field = Impl.Field
 module Boolean = Impl.Boolean
+module Run_state = Snarky_backendless.Run_state
 
 type field = Impl.field
 
@@ -14,7 +15,21 @@ val snarky :
   < exists : (int -> (unit -> field array) -> Field.t array) Js.meth
   ; existsVar : ((unit -> field) -> Field.t) Js.meth
   ; run :
-      < asProver : ((unit -> unit) -> unit) Js.meth
+      < state :
+          < state : field Run_state.t ref Js.readonly_prop
+          ; allocVar :
+              (field Run_state.t -> unit -> field Snarky_backendless.Cvar.t)
+              Js.readonly_prop
+          ; storeFieldElt :
+              (field Run_state.t -> field -> field Snarky_backendless.Cvar.t)
+              Js.readonly_prop
+          ; setAsProver : (field Run_state.t -> bool -> unit) Js.readonly_prop
+          ; hasWitness : (field Run_state.t -> bool) Js.readonly_prop
+          ; getVariableValue :
+              (field Run_state.t -> int -> field) Js.readonly_prop >
+          Js.t
+          Js.readonly_prop
+      ; asProver : ((unit -> unit) -> unit) Js.meth
       ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
       ; setEvalConstraints : (bool -> unit) Js.readonly_prop
       ; enterConstraintSystem :

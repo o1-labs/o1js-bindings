@@ -6,6 +6,7 @@ module Field = Impl.Field
 module Boolean = Impl.Boolean
 module As_prover = Impl.As_prover
 module Typ = Impl.Typ
+module Run_state = Snarky_backendless.Run_state
 
 type field = Impl.field
 
@@ -31,6 +32,20 @@ let exists_var (compute : unit -> Field.Constant.t) =
   Impl.exists Field.typ ~compute
 
 module Run = struct
+  module State = struct
+    let state = Impl.state
+
+    let alloc_var state () = Run_state.alloc_var state ()
+
+    let store_field_elt state x = Run_state.store_field_elt state x
+
+    let set_as_prover state b = Run_state.set_as_prover state b
+
+    let has_witness state = Run_state.has_witness state
+
+    let get_variable_value state i = Run_state.get_variable_value state i
+  end
+
   let as_prover = Impl.as_prover
 
   let in_prover_block () = As_prover.in_prover_block () |> Js.bool
@@ -491,6 +506,21 @@ let snarky =
     val run =
       let open Run in
       object%js
+        val state =
+          object%js
+            val state = State.state
+
+            val allocVar = State.alloc_var
+
+            val storeFieldElt = State.store_field_elt
+
+            val setAsProver = State.set_as_prover
+
+            val hasWitness = State.has_witness
+
+            val getVariableValue = State.get_variable_value
+          end
+
         method asProver = as_prover
 
         val inProverBlock = in_prover_block
