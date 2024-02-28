@@ -4255,9 +4255,7 @@ export interface InitOutput {
   readonly __wbg_set_featureflags_rot: (a: number, b: number) => void;
   readonly __wbg_get_featureflags_lookup_features: (a: number) => number;
   readonly __wbg_set_featureflags_lookup_features: (a: number, b: number) => void;
-  readonly lookuppatterns_new: (a: number, b: number, c: number, d: number) => number;
-  readonly lookupfeatures_new: (a: number, b: number, c: number) => number;
-  readonly lookupinfo_new: (a: number, b: number, c: number) => number;
+  readonly wire_create: (a: number, b: number) => number;
   readonly __wbg_lookuppatterns_free: (a: number) => void;
   readonly __wbg_get_lookuppatterns_xor: (a: number) => number;
   readonly __wbg_set_lookuppatterns_xor: (a: number, b: number) => void;
@@ -4281,7 +4279,9 @@ export interface InitOutput {
   readonly __wbg_set_lookupinfo_max_joint_size: (a: number, b: number) => void;
   readonly __wbg_get_lookupinfo_features: (a: number) => number;
   readonly __wbg_set_lookupinfo_features: (a: number, b: number) => void;
-  readonly wire_create: (a: number, b: number) => number;
+  readonly lookuppatterns_new: (a: number, b: number, c: number, d: number) => number;
+  readonly lookupfeatures_new: (a: number, b: number, c: number) => number;
+  readonly lookupinfo_new: (a: number, b: number, c: number) => number;
   readonly memory: WebAssembly.Memory;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
