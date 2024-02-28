@@ -615,7 +615,6 @@ dependencies = [
  "thiserror",
  "turshi",
  "wasm-bindgen",
- "web-sys",
 ]
 
 [[package]]

@@ -188,7 +188,7 @@ val snarky :
               -> int
               -> Impl_bn254.field array
               -> Impl_bn254.Keypair.t
-              -> Js.js_string Js.t )
+              -> Kimchi_backend.Bn254.Bn254_based_plonk.Proof.with_public_evals )
             Js.meth
       ; keypair :
           < getConstraintSystemJSON : (Impl_bn254.Keypair.t -> 'a) Js.meth
