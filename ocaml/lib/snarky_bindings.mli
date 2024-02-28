@@ -18,11 +18,12 @@ val snarky :
       < state :
           < state : field Run_state.t ref Js.readonly_prop
           ; allocVar :
-              (field Run_state.t -> unit -> field Snarky_backendless.Cvar.t)
+              (field Run_state.t -> field Snarky_backendless.Cvar.t)
               Js.readonly_prop
           ; storeFieldElt :
               (field Run_state.t -> field -> field Snarky_backendless.Cvar.t)
               Js.readonly_prop
+          ; asProver : (field Run_state.t -> bool) Js.readonly_prop
           ; setAsProver : (field Run_state.t -> bool -> unit) Js.readonly_prop
           ; hasWitness : (field Run_state.t -> bool) Js.readonly_prop
           ; getVariableValue :

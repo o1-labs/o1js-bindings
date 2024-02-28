@@ -35,9 +35,11 @@ module Run = struct
   module State = struct
     let state = Impl.state
 
-    let alloc_var state () = Run_state.alloc_var state ()
+    let alloc_var state = Run_state.alloc_var state ()
 
     let store_field_elt state x = Run_state.store_field_elt state x
+
+    let as_prover state = Run_state.as_prover state
 
     let set_as_prover state b = Run_state.set_as_prover state b
 
@@ -513,6 +515,8 @@ let snarky =
             val allocVar = State.alloc_var
 
             val storeFieldElt = State.store_field_elt
+
+            val asProver = State.as_prover
 
             val setAsProver = State.set_as_prover
 
