@@ -13307,6 +13307,10 @@ module.exports.__wbg_terminateWorkers_bf82de78d64704cb = function() {
     return addHeapObject(ret);
 };
 
+module.exports.__wbg_log_dc06ec929fc95a20 = function(arg0) {
+    console.log(getObject(arg0));
+};
+
 module.exports.__wbg_new_abda76e883ba8a5f = function() {
     const ret = new Error();
     return addHeapObject(ret);

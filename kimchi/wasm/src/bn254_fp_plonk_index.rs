@@ -139,6 +139,8 @@ pub fn caml_bn254_fp_plonk_index_create(
             Ok(cs) => cs,
         };
 
+        web_sys::console::log_1(&format!("public input size: {}", cs.public).into());
+
         // endo
         let (_endo_r, endo_q) = poly_commitment::srs::endos::<GAffine>();
 
