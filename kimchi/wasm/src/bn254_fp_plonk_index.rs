@@ -139,6 +139,7 @@ pub fn caml_bn254_fp_plonk_index_create(
             Ok(cs) => cs,
         };
 
+        cs.zk_rows = 0;
         web_sys::console::log_1(&format!("cs zk_rows: {}", cs.zk_rows).into());
 
         // endo
