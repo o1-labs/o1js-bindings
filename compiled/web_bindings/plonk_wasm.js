@@ -13237,9 +13237,6 @@ function __wbg_get_imports() {
         const ret = terminateWorkers();
         return addHeapObject(ret);
     };
-    imports.wbg.__wbg_log_dc06ec929fc95a20 = function(arg0) {
-        console.log(getObject(arg0));
-    };
     imports.wbg.__wbg_new_abda76e883ba8a5f = function() {
         const ret = new Error();
         return addHeapObject(ret);
