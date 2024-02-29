@@ -1028,76 +1028,6 @@ export function caml_bn254_fp_plonk_proof_dummy(): WasmBn254FpProverProof;
 */
 export function caml_bn254_fp_plonk_proof_deep_copy(x: WasmBn254FpProverProof): WasmBn254FpProverProof;
 /**
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_one(): WasmVestaGProjective;
-/**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_add(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
-/**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_sub(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
-/**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_negate(x: WasmVestaGProjective): WasmVestaGProjective;
-/**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_double(x: WasmVestaGProjective): WasmVestaGProjective;
-/**
-* @param {WasmVestaGProjective} x
-* @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_scale(x: WasmVestaGProjective, y: Uint8Array): WasmVestaGProjective;
-/**
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_random(): WasmVestaGProjective;
-/**
-* @param {number} i
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_rng(i: number): WasmVestaGProjective;
-/**
-* @returns {Uint8Array}
-*/
-export function caml_vesta_endo_base(): Uint8Array;
-/**
-* @returns {Uint8Array}
-*/
-export function caml_vesta_endo_scalar(): Uint8Array;
-/**
-* @param {WasmVestaGProjective} x
-* @returns {WasmGVesta}
-*/
-export function caml_vesta_to_affine(x: WasmVestaGProjective): WasmGVesta;
-/**
-* @param {WasmGVesta} x
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_of_affine(x: WasmGVesta): WasmVestaGProjective;
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmVestaGProjective;
-/**
-* @param {WasmGVesta} x
-* @returns {WasmGVesta}
-*/
-export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
-/**
 * @returns {WasmPallasGProjective}
 */
 export function caml_pallas_one(): WasmPallasGProjective;
@@ -1167,6 +1097,76 @@ export function caml_pallas_of_affine_coordinates(x: Uint8Array, y: Uint8Array):
 * @returns {WasmGPallas}
 */
 export function caml_pallas_affine_deep_copy(x: WasmGPallas): WasmGPallas;
+/**
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_one(): WasmVestaGProjective;
+/**
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_add(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
+/**
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_sub(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
+/**
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_negate(x: WasmVestaGProjective): WasmVestaGProjective;
+/**
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_double(x: WasmVestaGProjective): WasmVestaGProjective;
+/**
+* @param {WasmVestaGProjective} x
+* @param {Uint8Array} y
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_scale(x: WasmVestaGProjective, y: Uint8Array): WasmVestaGProjective;
+/**
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_random(): WasmVestaGProjective;
+/**
+* @param {number} i
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_rng(i: number): WasmVestaGProjective;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_vesta_endo_base(): Uint8Array;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_vesta_endo_scalar(): Uint8Array;
+/**
+* @param {WasmVestaGProjective} x
+* @returns {WasmGVesta}
+*/
+export function caml_vesta_to_affine(x: WasmVestaGProjective): WasmGVesta;
+/**
+* @param {WasmGVesta} x
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_of_affine(x: WasmGVesta): WasmVestaGProjective;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmVestaGProjective;
+/**
+* @param {WasmGVesta} x
+* @returns {WasmGVesta}
+*/
+export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
 /**
 * @param {string} s
 * @param {number} _len
@@ -4095,6 +4095,22 @@ export interface InitOutput {
   readonly wasmfqprovercommitments_set_lookup: (a: number, b: number) => void;
   readonly wasmfqproverproof_set_commitments: (a: number, b: number) => void;
   readonly __wbg_wasmfqproverproof_free: (a: number) => void;
+  readonly __wbg_wasmpallasgprojective_free: (a: number) => void;
+  readonly caml_pallas_one: () => number;
+  readonly caml_pallas_add: (a: number, b: number) => number;
+  readonly caml_pallas_sub: (a: number, b: number) => number;
+  readonly caml_pallas_negate: (a: number) => number;
+  readonly caml_pallas_double: (a: number) => number;
+  readonly caml_pallas_scale: (a: number, b: number, c: number) => number;
+  readonly caml_pallas_random: () => number;
+  readonly caml_pallas_rng: (a: number) => number;
+  readonly caml_pallas_endo_base: (a: number) => void;
+  readonly caml_pallas_endo_scalar: (a: number) => void;
+  readonly caml_pallas_to_affine: (a: number) => number;
+  readonly caml_pallas_of_affine: (a: number) => number;
+  readonly caml_pallas_of_affine_coordinates: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_pallas_affine_deep_copy: (a: number) => number;
+  readonly __wbg_wasmvestagprojective_free: (a: number) => void;
   readonly __wbg_wasmvecvecbn254fp_free: (a: number) => void;
   readonly wasmvecvecbn254fp_create: (a: number) => number;
   readonly wasmvecvecbn254fp_push: (a: number, b: number, c: number) => void;
@@ -4132,22 +4148,6 @@ export interface InitOutput {
   readonly __wbg_wasmfqpolycomm_free: (a: number) => void;
   readonly __wbg_set_wasmfppolycomm_shifted: (a: number, b: number) => void;
   readonly __wbg_set_wasmfqpolycomm_shifted: (a: number, b: number) => void;
-  readonly __wbg_wasmpallasgprojective_free: (a: number) => void;
-  readonly caml_pallas_one: () => number;
-  readonly caml_pallas_add: (a: number, b: number) => number;
-  readonly caml_pallas_sub: (a: number, b: number) => number;
-  readonly caml_pallas_negate: (a: number) => number;
-  readonly caml_pallas_double: (a: number) => number;
-  readonly caml_pallas_scale: (a: number, b: number, c: number) => number;
-  readonly caml_pallas_random: () => number;
-  readonly caml_pallas_rng: (a: number) => number;
-  readonly caml_pallas_endo_base: (a: number) => void;
-  readonly caml_pallas_endo_scalar: (a: number) => void;
-  readonly caml_pallas_to_affine: (a: number) => number;
-  readonly caml_pallas_of_affine: (a: number) => number;
-  readonly caml_pallas_of_affine_coordinates: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_pallas_affine_deep_copy: (a: number) => number;
-  readonly __wbg_wasmvestagprojective_free: (a: number) => void;
   readonly caml_bigint_256_of_numeral: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly caml_bigint_256_of_decimal_string: (a: number, b: number, c: number) => void;
   readonly caml_bigint_256_num_limbs: () => number;
@@ -4255,6 +4255,7 @@ export interface InitOutput {
   readonly __wbg_set_featureflags_rot: (a: number, b: number) => void;
   readonly __wbg_get_featureflags_lookup_features: (a: number) => number;
   readonly __wbg_set_featureflags_lookup_features: (a: number, b: number) => void;
+  readonly wire_create: (a: number, b: number) => number;
   readonly __wbg_lookuppatterns_free: (a: number) => void;
   readonly __wbg_get_lookuppatterns_xor: (a: number) => number;
   readonly __wbg_set_lookuppatterns_xor: (a: number, b: number) => void;
@@ -4278,7 +4279,6 @@ export interface InitOutput {
   readonly __wbg_set_lookupinfo_max_joint_size: (a: number, b: number) => void;
   readonly __wbg_get_lookupinfo_features: (a: number) => number;
   readonly __wbg_set_lookupinfo_features: (a: number, b: number) => void;
-  readonly wire_create: (a: number, b: number) => number;
   readonly lookuppatterns_new: (a: number, b: number, c: number, d: number) => number;
   readonly lookupfeatures_new: (a: number, b: number, c: number) => number;
   readonly lookupinfo_new: (a: number, b: number, c: number) => number;
