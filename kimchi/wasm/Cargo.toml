@@ -75,3 +75,6 @@ rustflags = ["-C", "target-feature=+atomics,+bulk-memory", "-C", "link-arg=--no-
 
 [target.wasm32-unknown-unknown]
 rustflags = ["-C", "target-feature=+atomics,+bulk-memory", "-C", "link-arg=--no-check-features"]
+
+[patch.crates-io]
+bumpalo = { git = 'https://github.com/lambdaclass/bumpalo.git', branch = 'downgrade_rust_version' }
