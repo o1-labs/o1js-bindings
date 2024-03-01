@@ -5,6 +5,7 @@ use crate::wasm_vector::bn254_fp::WasmVecVecBn254Fp;
 use crate::wasm_vector::fp::WasmVecVecFp;
 use crate::wasm_vector::fq::WasmVecVecFq;
 use crate::wasm_vector::WasmVector;
+use ark_ff::Zero;
 use o1_utils::FieldHelpers;
 use paste::paste;
 use std::convert::TryInto;
@@ -666,13 +667,22 @@ macro_rules! impl_proof {
             ) -> Result<WasmProverProof, JsError> {
                 console_error_panic_hook::set_once();
                 let (maybe_proof, public_input) = crate::rayon::run_in_pool(|| {
-                    let witness_as_str = witness.0.iter().fold(String::new(), |col_acc, col| {
+                    let mut trasposed_witness = vec![];
+                    trasposed_witness.resize_with(witness.0[0].len(), || vec![]);
+                    for (col_idx, col) in witness.0.iter().enumerate() {
+                        for (cell_idx, cell) in col.iter().enumerate() {
+                            trasposed_witness[cell_idx].resize(witness.0.len(), $F::zero());
+                            trasposed_witness[cell_idx][col_idx] = *cell;
+                        }
+                    }
+                    let witness_as_str = trasposed_witness.iter().fold(String::new(), |col_acc, col| {
                         let col_as_str = col.iter().fold(String::new(), |cell_acc, cell| {
-                            format!("{}{}", cell_acc, cell.to_biguint().to_string())
+                            format!("{} {}", cell_acc, cell.to_biguint().to_string())
                         });
                         format!("{}{}", col_acc, col_as_str)
                     });
                     web_sys::console::log_1(&format!("witness: {}", witness_as_str).into());
+
                     {
                         let ptr: &mut poly_commitment::srs::SRS<$G> =
                             unsafe { &mut *(std::sync::Arc::as_ptr(&index.0.as_ref().srs) as *mut _) };
