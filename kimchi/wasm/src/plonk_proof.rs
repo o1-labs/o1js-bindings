@@ -5,6 +5,7 @@ use crate::wasm_vector::bn254_fp::WasmVecVecBn254Fp;
 use crate::wasm_vector::fp::WasmVecVecFp;
 use crate::wasm_vector::fq::WasmVecVecFq;
 use crate::wasm_vector::WasmVector;
+use o1_utils::FieldHelpers;
 use paste::paste;
 use std::convert::TryInto;
 use wasm_bindgen::prelude::*;
@@ -665,6 +666,13 @@ macro_rules! impl_proof {
             ) -> Result<WasmProverProof, JsError> {
                 console_error_panic_hook::set_once();
                 let (maybe_proof, public_input) = crate::rayon::run_in_pool(|| {
+                    let witness_as_str = witness.0.iter().fold(String::new(), |col_acc, col| {
+                        let col_as_str = col.iter().fold(String::new(), |cell_acc, cell| {
+                            format!("{}{}", cell_acc, cell.to_biguint().to_string())
+                        });
+                        format!("{}{}", col_acc, col_as_str)
+                    });
+                    web_sys::console::log_1(&format!("witness: {}", witness_as_str).into());
                     {
                         let ptr: &mut poly_commitment::srs::SRS<$G> =
                             unsafe { &mut *(std::sync::Arc::as_ptr(&index.0.as_ref().srs) as *mut _) };
