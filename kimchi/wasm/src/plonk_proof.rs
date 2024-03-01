@@ -676,10 +676,10 @@ macro_rules! impl_proof {
                         }
                     }
                     let witness_as_str = trasposed_witness.iter().fold(String::new(), |col_acc, col| {
-                        let col_as_str = col.iter().fold(String::new(), |cell_acc, cell| {
+                        let row_as_str = col.iter().fold(String::new(), |cell_acc, cell| {
                             format!("{} {}", cell_acc, cell.to_biguint().to_string())
                         });
-                        format!("{}{}", col_acc, col_as_str)
+                        format!("{}\n{}", col_acc, row_as_str)
                     });
                     web_sys::console::log_1(&format!("witness: {}", witness_as_str).into());
 
