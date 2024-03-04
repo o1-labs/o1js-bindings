@@ -100,9 +100,12 @@ function conversionCorePerField(
       return new Gate(typ, rustWires, rustCoeffs);
     },
     gateFromRust(wasmGate: WasmFpGate | WasmFqGate) {
-      // note: this was never used and the old implementation was wrong
-      // (accessed non-existent fields on wasmGate)
-      throw Error('gateFromRust not implemented');
+      let { typ, wires: rustWires } = wasmGate;
+
+      let wires = [0, rustWires[0], rustWires[1], rustWires[2], rustWires[3], rustWires[4], rustWires[5], rustWires[6]];
+      let coeffs = [0, ...wasmGate.get_coeffs_bigint().map((coeff) => [0, coeff])];
+
+      return [0, typ, wires, coeffs];
     },
 
     pointToRust(point: OrInfinity) {

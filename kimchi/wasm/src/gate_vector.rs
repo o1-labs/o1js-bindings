@@ -1,12 +1,15 @@
 //! A GateVector: this is used to represent a list of gates.
 
 use crate::wasm_flat_vector::WasmFlatVector;
+use js_sys::BigInt;
 use kimchi::circuits::{
     gate::GateType,
     gate::{Circuit, CircuitGate},
     wires::Wire,
 };
 use o1_utils::hasher::CryptoDigest;
+use o1_utils::FieldHelpers;
+use std::str::FromStr;
 use wasm_bindgen::prelude::*;
 
 use paste::paste;
@@ -46,6 +49,7 @@ macro_rules! impl_gate_vector {
             pub struct [<Wasm $field_name:camel Gate>] {
                 pub typ: GateType, // type of the gate
                 pub wires: WasmGateWires,  // gate wires
+                coeffs_bigint: Vec<BigInt>,
                 #[wasm_bindgen(skip)] pub coeffs: Vec<$WasmF>,  // constraints vector
             }
 
@@ -56,11 +60,17 @@ macro_rules! impl_gate_vector {
                     typ: GateType,
                     wires: WasmGateWires,
                     coeffs: WasmFlatVector<$WasmF>) -> Self {
+                    let coeffs_vec: Vec<_> = coeffs.clone().into();
                     Self {
                         typ,
                         wires,
+                        coeffs_bigint: coeffs_vec.iter().map(|coeff| BigInt::from_str(&coeff.0.to_biguint().to_string()).unwrap()).collect(),
                         coeffs: coeffs.into(),
                     }
+                }
+
+                pub fn get_coeffs_bigint(&self) -> Vec<BigInt> {
+                    self.coeffs_bigint.clone()
                 }
             }
 
@@ -77,6 +87,7 @@ macro_rules! impl_gate_vector {
                             cg.wires[4],
                             cg.wires[5],
                             cg.wires[6]),
+                        coeffs_bigint: cg.coeffs.iter().map(|coeff| BigInt::from_str(&coeff.to_biguint().to_string()).unwrap()).collect(),
                         coeffs: cg.coeffs.into_iter().map(Into::into).collect(),
                     }
                 }
@@ -95,6 +106,7 @@ macro_rules! impl_gate_vector {
                             cg.wires[4],
                             cg.wires[5],
                             cg.wires[6]),
+                        coeffs_bigint: cg.coeffs.iter().map(|coeff| BigInt::from_str(&coeff.to_biguint().to_string()).unwrap()).collect(),
                         coeffs: cg.coeffs.clone().into_iter().map(Into::into).collect(),
                     }
                 }
