@@ -263,14 +263,15 @@ module Circuit_bn254 = struct
       ~return_typ
       ~f:(fun { Impl_bn254.Proof_inputs.auxiliary_inputs; public_inputs } () ->
           let gates = match pk.cs.gates with
-              Unfinalized_rev unfinalized_gates -> unfinalized_gates
-            | Compiled _ -> failwith "gates must not be compiled" in
-          let _ = List.map gates ~f:(fun gate ->
-              Array.map gate.coeffs ~f:(fun coeff ->
-                  Js_of_ocaml.Firebug.console##log (Js.string (Kimchi_backend.Bn254.Bn254.Fp.to_string coeff))
-                )
-            )
-          in
+              Unfinalized_rev _ -> failwith "gates must be compiled"
+            | Compiled (_, compiled_gates) -> compiled_gates in
+          for i = 0 to Kimchi_bindings.Protocol.Gates.Vector.Bn254Fp.len gates do
+            let gate = Kimchi_bindings.Protocol.Gates.Vector.Bn254Fp.get gates i in
+            let _ = Array.map gate.coeffs ~f:(fun coeff ->
+                Js_of_ocaml.Firebug.console##log (Js.string (Kimchi_backend.Bn254.Bn254.Fp.to_string coeff))
+              ) in
+            ();
+          done;
           Kimchi_backend.Bn254.Bn254_based_plonk.Proof.create pk public_inputs auxiliary_inputs )
       (Main.of_js main) public_input
 
