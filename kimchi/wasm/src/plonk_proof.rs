@@ -727,25 +727,6 @@ macro_rules! impl_proof {
 
                     // Release the runtime lock so that other threads can run using it while we generate the proof.
                     let group_map: BWParameters<$FParams> = GroupMap::<$FOther>::setup();
-
-                    let group_map_str = format!("group_map: u: {}, fu: {}, sqrt_neg_three_u_squared_minus_u_over_2: {}, sqrt_neg_three_u_squared: {}, inv_three_u_squared: {}",
-                        group_map.u.to_biguint().to_string(),
-                        group_map.fu.to_biguint().to_string(),
-                        group_map.sqrt_neg_three_u_squared_minus_u_over_2.to_biguint().to_string(),
-                        group_map.sqrt_neg_three_u_squared.to_biguint().to_string(),
-                        group_map.inv_three_u_squared.to_biguint().to_string(),
-                    );
-                    web_sys::console::log_1(&group_map_str.into());
-
-                    let runtime_tables_str = format!("runtime_tables: {:?}", rust_runtime_tables);
-                    web_sys::console::log_1(&runtime_tables_str.into());
-
-                    let index_str = format!("index: {:?}", index);
-                    web_sys::console::log_1(&index_str.into());
-
-                    let prev_str = format!("prev: {:?}", prev);
-                    web_sys::console::log_1(&prev_str.into());
-
                     let maybe_proof = ProverProof::create_recursive::<
                         DefaultFqSponge<_, PlonkSpongeConstantsKimchi>,
                         DefaultFrSponge<_, PlonkSpongeConstantsKimchi>,
