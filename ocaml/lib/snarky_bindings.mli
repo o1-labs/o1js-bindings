@@ -16,8 +16,7 @@ val snarky :
   ; existsVar : ((unit -> field) -> Field.t) Js.meth
   ; run :
       < state :
-          < state : field Run_state.t ref Js.readonly_prop
-          ; allocVar :
+          < allocVar :
               (field Run_state.t -> field Snarky_backendless.Cvar.t)
               Js.readonly_prop
           ; storeFieldElt :
@@ -30,13 +29,16 @@ val snarky :
               (field Run_state.t -> int -> field) Js.readonly_prop >
           Js.t
           Js.readonly_prop
+      ; inProver : (unit -> bool) Js.readonly_prop
       ; asProver : ((unit -> unit) -> unit) Js.meth
       ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
       ; setEvalConstraints : (bool -> unit) Js.readonly_prop
       ; enterConstraintSystem :
           (unit -> unit -> Backend.R1CS_constraint_system.t) Js.readonly_prop
       ; enterGenerateWitness :
-          (unit -> unit -> Impl.Proof_inputs.t) Js.readonly_prop >
+          (unit -> unit -> Impl.Proof_inputs.t) Js.readonly_prop
+      ; enterAsProver :
+          (int -> field array option -> Field.t array) Js.readonly_prop >
       Js.t
       Js.readonly_prop
   ; constraintSystem :

@@ -33,8 +33,6 @@ let exists_var (compute : unit -> Field.Constant.t) =
 
 module Run = struct
   module State = struct
-    let state = Impl.state
-
     let alloc_var state = Run_state.alloc_var state ()
 
     let store_field_elt state x = Run_state.store_field_elt state x
@@ -47,6 +45,8 @@ module Run = struct
 
     let get_variable_value state i = Run_state.get_variable_value state i
   end
+
+  let in_prover () = Impl.in_prover ()
 
   let as_prover = Impl.as_prover
 
@@ -70,6 +70,8 @@ module Run = struct
     builder.run_circuit (fun () () -> ()) ;
     let finish () = builder.finish_computation () |> fst in
     finish
+
+  let enter_as_prover size = Impl.as_prover_manual size
 end
 
 module Constraint_system = struct
@@ -510,8 +512,6 @@ let snarky =
       object%js
         val state =
           object%js
-            val state = State.state
-
             val allocVar = State.alloc_var
 
             val storeFieldElt = State.store_field_elt
@@ -525,6 +525,8 @@ let snarky =
             val getVariableValue = State.get_variable_value
           end
 
+        val inProver = in_prover
+
         method asProver = as_prover
 
         val inProverBlock = in_prover_block
@@ -534,6 +536,8 @@ let snarky =
         val enterConstraintSystem = enter_constraint_system
 
         val enterGenerateWitness = enter_generate_witness
+
+        val enterAsProver = enter_as_prover
       end
 
     val constraintSystem =
