@@ -71,7 +71,7 @@ module Run = struct
     let finish () = builder.finish_computation () |> fst in
     finish
 
-  let enter_as_prover size = Impl.as_prover_manual size
+  let enter_as_prover size = Impl.as_prover_manual size |> Staged.unstage
 end
 
 module Constraint_system = struct
