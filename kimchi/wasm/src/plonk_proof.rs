@@ -22,7 +22,7 @@ use kimchi::circuits::wires::COLUMNS;
 use kimchi::verifier::Context;
 use std::array;
 // use std::path::Path;
-use groupmap::GroupMap;
+use groupmap::{BWParameters, GroupMap};
 use kimchi::proof::{
     LookupCommitments, PointEvaluations, ProofEvaluations, ProverCommitments, ProverProof,
     RecursionChallenge,
@@ -59,7 +59,9 @@ macro_rules! impl_proof {
      $FqSpongeParams: path,
      $WasmIndex: ty,
      $WasmVerifierIndex: ty,
-     $field_name: ident
+     $field_name: ident,
+     $FOther: ty,
+     $FParams: ty,
      ) => {
         paste! {
             type WasmVecVecF = [<WasmVecVec $field_name:camel>];
@@ -666,7 +668,7 @@ macro_rules! impl_proof {
                 prev_sgs: WasmVector<$WasmG>,
             ) -> Result<WasmProverProof, JsError> {
                 console_error_panic_hook::set_once();
-                let (maybe_proof, public_input) = crate::rayon::run_in_pool(|| {
+                let (maybe_proof, public_input) =  {
                     let mut trasposed_witness = vec![];
                     trasposed_witness.resize_with(witness.0[0].len(), || vec![]);
                     for (col_idx, col) in witness.0.iter().enumerate() {
@@ -724,13 +726,32 @@ macro_rules! impl_proof {
                     let public_input = witness[0][0..index.cs.public].to_vec();
 
                     // Release the runtime lock so that other threads can run using it while we generate the proof.
-                    let group_map = GroupMap::<_>::setup();
+                    let group_map: BWParameters<$FParams> = GroupMap::<$FOther>::setup();
+
+                    let group_map_str = format!("group_map: u: {}, fu: {}, sqrt_neg_three_u_squared_minus_u_over_2: {}, sqrt_neg_three_u_squared: {}, inv_three_u_squared: {}",
+                        group_map.u.to_biguint().to_string(),
+                        group_map.fu.to_biguint().to_string(),
+                        group_map.sqrt_neg_three_u_squared_minus_u_over_2.to_biguint().to_string(),
+                        group_map.sqrt_neg_three_u_squared.to_biguint().to_string(),
+                        group_map.inv_three_u_squared.to_biguint().to_string(),
+                    );
+                    web_sys::console::log_1(&group_map_str.into());
+
+                    let runtime_tables_str = format!("runtime_tables: {:?}", rust_runtime_tables);
+                    web_sys::console::log_1(&runtime_tables_str.into());
+
+                    let index_str = format!("index: {:?}", index);
+                    web_sys::console::log_1(&index_str.into());
+
+                    let prev_str = format!("prev: {:?}", prev);
+                    web_sys::console::log_1(&prev_str.into());
+
                     let maybe_proof = ProverProof::create_recursive::<
                         DefaultFqSponge<_, PlonkSpongeConstantsKimchi>,
                         DefaultFrSponge<_, PlonkSpongeConstantsKimchi>,
                         >(&group_map, witness, &rust_runtime_tables, index, prev, None);
                     (maybe_proof, public_input)
-                });
+                };
 
                 return match maybe_proof {
                     Ok(proof) => Ok((proof, public_input).into()),
@@ -889,7 +910,7 @@ pub mod fp {
     use crate::pasta_fp_plonk_index::WasmPastaFpPlonkIndex;
     use crate::plonk_verifier_index::fp::WasmFpPlonkVerifierIndex as WasmPlonkVerifierIndex;
     use crate::poly_comm::vesta::WasmFpPolyComm as WasmPolyComm;
-    use mina_curves::pasta::{Fp, Vesta as GAffine};
+    use mina_curves::pasta::{Fp, Fq, Vesta as GAffine, VestaParameters};
 
     impl_proof!(
         caml_pasta_fp_plonk_proof,
@@ -904,7 +925,9 @@ pub mod fp {
         mina_poseidon::pasta::fq_kimchi,
         WasmPastaFpPlonkIndex,
         WasmPlonkVerifierIndex,
-        Fp
+        Fp,
+        Fq,
+        VestaParameters,
     );
 }
 
@@ -914,7 +937,7 @@ pub mod fq {
     use crate::pasta_fq_plonk_index::WasmPastaFqPlonkIndex;
     use crate::plonk_verifier_index::fq::WasmFqPlonkVerifierIndex as WasmPlonkVerifierIndex;
     use crate::poly_comm::pallas::WasmFqPolyComm as WasmPolyComm;
-    use mina_curves::pasta::{Fq, Pallas as GAffine};
+    use mina_curves::pasta::{Fp, Fq, Pallas as GAffine, PallasParameters};
 
     impl_proof!(
         caml_pasta_fq_plonk_proof,
@@ -929,7 +952,9 @@ pub mod fq {
         mina_poseidon::pasta::fp_kimchi,
         WasmPastaFqPlonkIndex,
         WasmPlonkVerifierIndex,
-        Fq
+        Fq,
+        Fp,
+        PallasParameters,
     );
 }
 
@@ -939,7 +964,7 @@ pub mod bn254_fp {
     use crate::bn254_fp_plonk_index::WasmBn254FpPlonkIndex;
     use crate::plonk_verifier_index::bn254_fp::WasmBn254FpPlonkVerifierIndex as WasmPlonkVerifierIndex;
     use crate::poly_comm::bn254::WasmBn254FpPolyComm as WasmPolyComm;
-    use mina_curves::bn254::{Bn254 as GAffine, Fp};
+    use mina_curves::bn254::{Bn254 as GAffine, Bn254Parameters, Fp, Fq};
 
     impl_proof!(
         caml_bn254_fp_plonk_proof,
@@ -954,6 +979,8 @@ pub mod bn254_fp {
         mina_poseidon::bn128,
         WasmBn254FpPlonkIndex,
         WasmPlonkVerifierIndex,
-        Bn254Fp
+        Bn254Fp,
+        Fq,
+        Bn254Parameters,
     );
 }
