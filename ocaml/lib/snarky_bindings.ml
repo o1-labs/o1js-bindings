@@ -90,9 +90,6 @@ module Field' = struct
   (** x*x === y without handling of constants *)
   let assert_square x y = Impl.assert_ (Impl.Constraint.square x y)
 
-  (** x*x === x without handling of constants *)
-  let assert_boolean x = Impl.assert_ (Impl.Constraint.boolean x)
-
   (** check x < y and x <= y.
         this is used in all comparisons, including with assert *)
   let compare (bit_length : int) x y =
@@ -378,18 +375,6 @@ module Gates = struct
   let raw kind values coeffs = add_gate "raw" (Raw { kind; values; coeffs })
 end
 
-module Bool = struct
-  let not x = Boolean.not x
-
-  let and_ x y = Boolean.(x &&& y)
-
-  let or_ x y = Boolean.(x ||| y)
-
-  let assert_equal x y = Boolean.Assert.(x = y)
-
-  let equals x y = Boolean.equal x y
-end
-
 module Group = struct
   let scale p (scalar_bits : Boolean.var array) =
     Pickles.Step_main_inputs.Ops.scale_fast_msb_bits p
@@ -522,8 +507,6 @@ let snarky =
 
         method assertSquare = assert_square
 
-        method assertBoolean = assert_boolean
-
         method compare = compare
 
         method toBits = to_bits
@@ -572,19 +555,6 @@ let snarky =
         method addRuntimeTableConfig = Gates.add_runtime_table_config
 
         method raw = Gates.raw
-      end
-
-    val bool =
-      object%js
-        method not = Bool.not
-
-        method and_ = Bool.and_
-
-        method or_ = Bool.or_
-
-        method assertEqual = Bool.assert_equal
-
-        method equals = Bool.equals
       end
 
     val group =

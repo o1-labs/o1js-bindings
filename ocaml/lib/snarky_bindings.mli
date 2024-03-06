@@ -29,7 +29,6 @@ val snarky :
       Js.readonly_prop
   ; field :
       < add : (Field.t -> Field.t -> Field.t) Js.meth
-      ; assertBoolean : (Field.t -> unit) Js.meth
       ; assertEqual : (Field.t -> Field.t -> unit) Js.meth
       ; assertMul : (Field.t -> Field.t -> Field.t -> unit) Js.meth
       ; assertSquare : (Field.t -> Field.t -> unit) Js.meth
@@ -208,14 +207,6 @@ val snarky :
       ; raw :
           (Kimchi_types.gate_type -> Field.t array -> field array -> unit)
           Js.meth >
-      Js.t
-      Js.readonly_prop
-  ; bool :
-      < and_ : (Boolean.var -> Boolean.var -> Boolean.var) Js.meth
-      ; assertEqual : (Boolean.var -> Boolean.var -> unit) Js.meth
-      ; equals : (Boolean.var -> Boolean.var -> Boolean.var) Js.meth
-      ; not : (Boolean.var -> Boolean.var) Js.meth
-      ; or_ : (Boolean.var -> Boolean.var -> Boolean.var) Js.meth >
       Js.t
       Js.readonly_prop
   ; group :
