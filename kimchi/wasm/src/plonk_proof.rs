@@ -669,21 +669,21 @@ macro_rules! impl_proof {
             ) -> Result<WasmProverProof, JsError> {
                 console_error_panic_hook::set_once();
                 let (maybe_proof, public_input) =  {
-                    let mut trasposed_witness = vec![];
-                    trasposed_witness.resize_with(witness.0[0].len(), || vec![]);
-                    for (col_idx, col) in witness.0.iter().enumerate() {
-                        for (cell_idx, cell) in col.iter().enumerate() {
-                            trasposed_witness[cell_idx].resize(witness.0.len(), $F::zero());
-                            trasposed_witness[cell_idx][col_idx] = *cell;
-                        }
-                    }
-                    let witness_as_str = trasposed_witness.iter().fold(String::new(), |col_acc, col| {
-                        let row_as_str = col.iter().fold(String::new(), |cell_acc, cell| {
-                            format!("{} {}", cell_acc, cell.to_biguint().to_string())
-                        });
-                        format!("{}\n{}", col_acc, row_as_str)
-                    });
-                    web_sys::console::log_1(&format!("witness: {}", witness_as_str).into());
+                    // let mut trasposed_witness = vec![];
+                    // trasposed_witness.resize_with(witness.0[0].len(), || vec![]);
+                    // for (col_idx, col) in witness.0.iter().enumerate() {
+                    //     for (cell_idx, cell) in col.iter().enumerate() {
+                    //         trasposed_witness[cell_idx].resize(witness.0.len(), $F::zero());
+                    //         trasposed_witness[cell_idx][col_idx] = *cell;
+                    //     }
+                    // }
+                    // let witness_as_str = trasposed_witness.iter().fold(String::new(), |col_acc, col| {
+                    //     let row_as_str = col.iter().fold(String::new(), |cell_acc, cell| {
+                    //         format!("{} {}", cell_acc, cell.to_biguint().to_string())
+                    //     });
+                    //     format!("{}\n{}", col_acc, row_as_str)
+                    // });
+                    // web_sys::console::log_1(&format!("witness: {}", witness_as_str).into());
 
                     {
                         let ptr: &mut poly_commitment::srs::SRS<$G> =
