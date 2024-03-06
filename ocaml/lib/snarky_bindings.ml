@@ -402,9 +402,9 @@ module EC_group = struct
   module Curve_params = Kimchi_gadgets.Curve_params
   module Bignum_bigint = Snarky_backendless.Backend_extended.Bignum_bigint
 
-  type t = Impl_bn254.field Kimchi_gadgets.Affine.t
+  type t = Impl.field Kimchi_gadgets.Affine.t
 
-  type curve_t = Impl_bn254.field Kimchi_gadgets.Curve_params.InCircuit.t
+  type curve_t = Impl.field Kimchi_gadgets.Curve_params.InCircuit.t
 
   exception ANotFoundInCurve
 
@@ -437,7 +437,7 @@ module EC_group = struct
       |> Bigint.of_string in
     let ia_input = (ia_x_bigint, ia_y_bigint) in
     let ia = ECG.compute_ia_points ~point:ia_input curve_params in
-    Curve_params.to_circuit_constants (module Impl_bn254) { curve_params with ia = ia }
+    Curve_params.to_circuit_constants (module Impl) { curve_params with ia = ia }
 
   (* curve = [a, b, modulus, gen_x, gen_y, order] *)
   let parse_ec curve =
@@ -471,21 +471,21 @@ module EC_group = struct
         (Js.Optdef.get (Js.array_get curve 5) (fun () ->
              raise OrderNotFoundInCurve ) ) in
 
-    let curve_params = Curve_params.from_strings (module Impl_bn254) a b modulus gen_x gen_y order in
+    let curve_params = Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order in
     curve_params_with_ia_points curve_params
 
   let add (left_input : t) (right_input : t)
       (curve : Js.js_string Js.t Js.js_array Js.t) =
-    let external_checks = External_checks.create (module Impl_bn254) in
+    let external_checks = External_checks.create (module Impl) in
     let ec = parse_ec curve in
-    ECG.add (module Impl_bn254) external_checks ec left_input right_input
+    ECG.add (module Impl) external_checks ec left_input right_input
 
-  let scale (point : t) (scalar : Impl_bn254.Boolean.var array)
+  let scale (point : t) (scalar : Impl.Boolean.var array)
       (curve : Js.js_string Js.t Js.js_array Js.t) =
-    let external_checks = External_checks.create (module Impl_bn254) in
+    let external_checks = External_checks.create (module Impl) in
     let ec = parse_ec curve in
     let scalar = Array.to_list scalar in
-    ECG.scalar_mul (module Impl_bn254) external_checks ec scalar point
+    ECG.scalar_mul (module Impl) external_checks ec scalar point
 end
 
 module Foreign_poseidon = struct
