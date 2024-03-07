@@ -15,7 +15,13 @@
  (link_flags
   (-noautolink -g))
  (js_of_ocaml
-  (flags +toplevel.js +dynlink.js --pretty --source-map)
+  (flags
+   +toplevel.js
+   +dynlink.js
+   --pretty
+   --source-map
+   --debug-info
+   --no-inline)
   (link_flags --source-map)
   (javascript_files overrides.js))
  (libraries o1js_bindings_lib bindings_js.node_backend)
@@ -34,7 +40,7 @@
  (modes js)
  (link_flags (-noautolink))
  (js_of_ocaml
-  (flags +toplevel.js +dynlink.js --pretty)
+  (flags +toplevel.js +dynlink.js --pretty --debug-info --no-inline)
   (javascript_files overrides.js))
  (libraries o1js_bindings_lib bindings_js.web_backend)
  (link_deps

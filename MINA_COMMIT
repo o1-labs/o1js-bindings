@@ -1,2 +1,6 @@
 The mina commit used to generate the backends for node and web is
+<<<<<<< HEAD
 f1ffe88373f173b0e68ffef9fa0632a28f1bfb3c
+=======
+ca32aec5d38733c2aab560766c70799b6c4690cc
+>>>>>>> origin/wasm_kzg_prover

@@ -58,10 +58,17 @@ function conversionCore(wasm: wasm) {
     Gate: wasm.WasmFqGate,
     PolyComm: wasm.WasmFqPolyComm,
   });
+  const bn254Fp = conversionCorePerField(wasm, {
+    CommitmentCurve: wasm.WasmGBn254,
+    makeAffine: wasm.caml_bn254_affine_one,
+    Gate: wasm.WasmBn254FpGate,
+    PolyComm: wasm.WasmBn254FpPolyComm,
+  });
 
   return {
     fp,
     fq,
+    bn254Fp,
     wireToRust: fp.wireToRust, // doesn't depend on the field
     mapMlArrayToRustVector<TMl, TRust extends {}>(
       [, ...array]: MlArray<TMl>,
@@ -93,9 +100,12 @@ function conversionCorePerField(
       return new Gate(typ, rustWires, rustCoeffs);
     },
     gateFromRust(wasmGate: WasmFpGate | WasmFqGate) {
-      // note: this was never used and the old implementation was wrong
-      // (accessed non-existent fields on wasmGate)
-      throw Error('gateFromRust not implemented');
+      let { typ, wires: rustWires } = wasmGate;
+
+      let wires = [0, rustWires[0], rustWires[1], rustWires[2], rustWires[3], rustWires[4], rustWires[5], rustWires[6]];
+      let coeffs = [0, ...wasmGate.get_coeffs_bigint().map((coeff) => [0, coeff])];
+
+      return [0, typ, wires, coeffs];
     },
 
     pointToRust(point: OrInfinity) {

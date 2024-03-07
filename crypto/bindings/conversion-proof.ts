@@ -75,18 +75,18 @@ type WasmLookupTable = WasmPastaFpLookupTable | WasmPastaFqLookupTable;
 
 type WasmClasses = {
   ProverCommitments:
-    | typeof WasmFpProverCommitments
-    | typeof WasmFqProverCommitments;
+  | typeof WasmFpProverCommitments
+  | typeof WasmFqProverCommitments;
   OpeningProof: typeof WasmFpOpeningProof | typeof WasmFqOpeningProof;
   VecVec: typeof WasmVecVecFp | typeof WasmVecVecFq;
   ProverProof: typeof WasmFpProverProof | typeof WasmFqProverProof;
   LookupCommitments:
-    | typeof WasmFpLookupCommitments
-    | typeof WasmFqLookupCommitments;
+  | typeof WasmFpLookupCommitments
+  | typeof WasmFqLookupCommitments;
   RuntimeTable: typeof WasmFpRuntimeTable | typeof WasmFqRuntimeTable;
   RuntimeTableCfg:
-    | typeof WasmPastaFpRuntimeTableCfg
-    | typeof WasmPastaFqRuntimeTableCfg;
+  | typeof WasmPastaFpRuntimeTableCfg
+  | typeof WasmPastaFqRuntimeTableCfg;
   LookupTable: typeof WasmPastaFpLookupTable | typeof WasmPastaFqLookupTable;
 };
 
@@ -111,6 +111,16 @@ function proofConversion(wasm: wasm, core: ConversionCores) {
       RuntimeTable: wasm.WasmFqRuntimeTable,
       RuntimeTableCfg: wasm.WasmPastaFqRuntimeTableCfg,
       LookupTable: wasm.WasmPastaFqLookupTable,
+    }),
+    bn254Fp: proofConversionPerField(core.bn254Fp, {
+      ProverCommitments: wasm.WasmFpProverCommitments,
+      OpeningProof: wasm.WasmFpOpeningProof,
+      VecVec: wasm.WasmVecVecBn254Fp,
+      ProverProof: wasm.WasmFpProverProof,
+      LookupCommitments: wasm.WasmFpLookupCommitments,
+      RuntimeTable: wasm.WasmFpRuntimeTable,
+      RuntimeTableCfg: wasm.WasmPastaFpRuntimeTableCfg,
+      LookupTable: wasm.WasmBn254FpLookupTable,
     }),
   };
 }
@@ -240,6 +250,7 @@ function proofConversionPerField(
       let prevChallengeScalars = new VecVec(n);
       let prevChallengeCommsMl: MlArray<PolyComm> = [0];
       for (let [, scalars, comms] of prevChallenges) {
+        // TODO is .push() correct if we already initialized to the final length?
         prevChallengeScalars.push(fieldsToRustFlat(scalars));
         prevChallengeCommsMl.push(comms);
       }

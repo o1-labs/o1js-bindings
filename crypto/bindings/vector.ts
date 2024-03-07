@@ -5,7 +5,7 @@ import { MlArray } from '../../../lib/ml/base.js';
 import { Field } from './field.js';
 import { withPrefix } from './util.js';
 
-export { FpVectorBindings, FqVectorBindings };
+export { FpVectorBindings, FqVectorBindings, Bn254FpVectorBindings, Bn254FqVectorBindings };
 
 type FieldVector = MlArray<Field>;
 
@@ -37,3 +37,5 @@ const FieldVectorBindings = {
 
 const FpVectorBindings = withPrefix('caml_fp_vector', FieldVectorBindings);
 const FqVectorBindings = withPrefix('caml_fq_vector', FieldVectorBindings);
+const Bn254FpVectorBindings = withPrefix('caml_bn254_fp_vector', FieldVectorBindings);
+const Bn254FqVectorBindings = withPrefix('caml_bn254_fq_vector', FieldVectorBindings);

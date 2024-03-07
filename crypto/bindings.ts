@@ -5,9 +5,9 @@
  */
 import { prefixHashes, prefixHashesLegacy } from '../crypto/constants.js';
 import { Bigint256Bindings } from './bindings/bigint256.js';
-import { PallasBindings, VestaBindings } from './bindings/curve.js';
-import { FpBindings, FqBindings } from './bindings/field.js';
-import { FpVectorBindings, FqVectorBindings } from './bindings/vector.js';
+import { PallasBindings, VestaBindings, Bn254Bindings } from './bindings/curve.js';
+import { FpBindings, FqBindings, Bn254FpBindings, Bn254FqBindings } from './bindings/field.js';
+import { FpVectorBindings, FqVectorBindings, Bn254FpVectorBindings, Bn254FqVectorBindings } from './bindings/vector.js';
 import type * as wasmNamespace from '../compiled/node_bindings/plonk_wasm.cjs';
 import {
   fieldsFromRustFlat,
@@ -29,10 +29,15 @@ const tsBindings = {
   ...Bigint256Bindings,
   ...FpBindings,
   ...FqBindings,
+  ...Bn254FpBindings,
+  ...Bn254FqBindings,
   ...VestaBindings,
   ...PallasBindings,
+  ...Bn254Bindings,
   ...FpVectorBindings,
   ...FqVectorBindings,
+  ...Bn254FpVectorBindings,
+  ...Bn254FqVectorBindings,
   rustConversion: createRustConversion,
   srs: (wasm: Wasm) => srs(wasm, getRustConversion(wasm)),
 };
@@ -51,6 +56,7 @@ function createRustConversion(wasm: Wasm) {
   return {
     fp: { ...core.fp, ...verifierIndex.fp, ...oracles.fp, ...proof.fp },
     fq: { ...core.fq, ...verifierIndex.fq, ...oracles.fq, ...proof.fq },
+    bn254Fp: { ...core.bn254Fp, ...verifierIndex.bn254Fp, ...proof.bn254Fp },
     fieldsToRustFlat,
     fieldsFromRustFlat,
     wireToRust: core.wireToRust,

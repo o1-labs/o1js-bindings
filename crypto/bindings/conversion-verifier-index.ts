@@ -49,15 +49,15 @@ type WasmLookupSelector = WasmFpLookupSelectors | WasmFqLookupSelectors;
 type WasmClasses = {
   Domain: typeof WasmFpDomain | typeof WasmFqDomain;
   VerificationEvals:
-    | typeof WasmFpPlonkVerificationEvals
-    | typeof WasmFqPlonkVerificationEvals;
+  | typeof WasmFpPlonkVerificationEvals
+  | typeof WasmFqPlonkVerificationEvals;
   Shifts: typeof WasmFpShifts | typeof WasmFqShifts;
   VerifierIndex:
-    | typeof WasmFpPlonkVerifierIndex
-    | typeof WasmFqPlonkVerifierIndex;
+  | typeof WasmFpPlonkVerifierIndex
+  | typeof WasmFqPlonkVerifierIndex;
   LookupVerifierIndex:
-    | typeof WasmFpLookupVerifierIndex
-    | typeof WasmFqLookupVerifierIndex;
+  | typeof WasmFpLookupVerifierIndex
+  | typeof WasmFqLookupVerifierIndex;
   LookupSelector: typeof WasmFpLookupSelectors | typeof WasmFqLookupSelectors;
 };
 
@@ -78,6 +78,14 @@ function verifierIndexConversion(wasm: wasm, core: ConversionCores) {
       VerifierIndex: wasm.WasmFqPlonkVerifierIndex,
       LookupVerifierIndex: wasm.WasmFqLookupVerifierIndex,
       LookupSelector: wasm.WasmFqLookupSelectors,
+    }),
+    bn254Fp: verifierIndexConversionPerField(wasm, core.bn254Fp, {
+      Domain: wasm.WasmBn254FpDomain,
+      VerificationEvals: wasm.WasmBn254FpPlonkVerificationEvals,
+      Shifts: wasm.WasmBn254FpShifts,
+      VerifierIndex: wasm.WasmBn254FpPlonkVerifierIndex,
+      LookupVerifierIndex: wasm.WasmBn254FpLookupVerifierIndex,
+      LookupSelector: wasm.WasmBn254FpLookupSelectors,
     }),
   };
 }
@@ -292,6 +300,7 @@ function verifierIndexConversionPerField(
       let evals = verificationEvalsToRust(vk[6]);
       let shifts = self.shiftsToRust(vk[7]);
       let lookupIndex = MlOption.mapFrom(vk[8], lookupVerifierIndexToRust);
+      let zkRows = vk[9];
       return new VerifierIndex(
         domain,
         maxPolySize,
@@ -300,7 +309,8 @@ function verifierIndexConversionPerField(
         srs,
         evals,
         shifts,
-        lookupIndex
+        lookupIndex,
+        zkRows,
       );
     },
     verifierIndexFromRust(vk: WasmVerifierIndex): VerifierIndex {
@@ -314,6 +324,7 @@ function verifierIndexConversionPerField(
         verificationEvalsFromRust(vk.evals),
         self.shiftsFromRust(vk.shifts),
         MlOption.mapTo(vk.lookup_index, lookupVerifierIndexFromRust),
+        vk.zk_rows
       ];
       vk.free();
       return mlVk;

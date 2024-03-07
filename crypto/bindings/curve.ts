@@ -6,15 +6,18 @@ import { Field } from './field.js';
 import {
   Pallas,
   Vesta,
+  Bn254,
   ProjectiveCurve,
   GroupProjective,
   GroupAffine,
 } from '../elliptic-curve.js';
 import { withPrefix } from './util.js';
+import { Bn254Fp, FiniteField, Fp, Fq } from '../finite_field.js';
 
 export {
   VestaBindings,
   PallasBindings,
+  Bn254Bindings,
   Infinity,
   OrInfinity,
   OrInfinityJson,
@@ -22,10 +25,11 @@ export {
   fromMlOrInfinity,
 };
 
-const VestaBindings = withPrefix('caml_vesta', createCurveBindings(Vesta));
-const PallasBindings = withPrefix('caml_pallas', createCurveBindings(Pallas));
+const VestaBindings = withPrefix('caml_vesta', createCurveBindings(Vesta, Fp));
+const PallasBindings = withPrefix('caml_pallas', createCurveBindings(Pallas, Fq));
+const Bn254Bindings = withPrefix('caml_bn254', createCurveBindings(Bn254, Bn254Fp));
 
-function createCurveBindings(Curve: ProjectiveCurve) {
+function createCurveBindings(Curve: ProjectiveCurve, Scalar: FiniteField) {
   return {
     one(): GroupProjective {
       return Curve.one;
@@ -38,7 +42,8 @@ function createCurveBindings(Curve: ProjectiveCurve) {
       return Curve.scale(g, s);
     },
     random(): GroupProjective {
-      throw Error('random not implemented');
+      // FIXME: temporary implementation
+      return Curve.scale(Curve.one, Scalar.random());
     },
     rng(i: number): GroupProjective {
       throw Error('rng not implemented');

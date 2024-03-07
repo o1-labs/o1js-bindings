@@ -2,7 +2,7 @@ import { assert } from '../../lib/util/assert.js';
 import { bytesToBigInt, log2 } from './bigint-helpers.js';
 import { randomBytes } from './random.js';
 
-export { createField, Fp, Fq, FiniteField, p, q, mod, inverse };
+export { createField, Fp, Fq, Bn254Fp, Bn254Fq, FiniteField, p, q, bn254p, bn254q, mod, inverse };
 
 // CONSTANTS
 
@@ -21,6 +21,24 @@ const twoadicRootFp =
   0x2bce74deac30ebda362120830561f81aea322bf2b7bb7584bdad6fabd87ea32fn;
 const twoadicRootFq =
   0x2de6a9b8746d3f589e5c4dfd492ae26e9bb97ea3c106f049a70e2c1102b6d05fn;
+
+// CONSTANTS (Bn254)
+
+// the modulus. called `p` in most of our code.
+const bn254p = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
+const bn254q = 21888242871839275222246405745257275088696311157297823662689037894645226208583n;
+
+// this is `t`, where p = 2^32 * t + 1
+const bn254pMinusOneOddFactor =
+  40770029410420498293352137776570907027550720424234931066070132305055n;
+const bn254qMinusOneOddFactor =
+  5472060717959818805561601436314318772174077789324455915672259473661306552145n;
+
+// primitive roots of unity, computed as (5^t mod p). this works because 5 generates the multiplicative group mod p
+const twoadicRootBn254Fp =
+  11026779196025039675543067535165575398706865421176733435921293210460577938844n;
+const twoadicRootBn254Fq =
+  15537367993719455909907449462855742678907882278146377936676643359958227611562n;
 
 // GENERAL FINITE FIELD ALGORITHMS
 
@@ -240,6 +258,16 @@ const Fq = createField(q, {
   oddFactor: qMinusOneOddFactor,
   twoadicRoot: twoadicRootFq,
   twoadicity: 32n,
+});
+const Bn254Fp = createField(bn254p, {
+  oddFactor: bn254pMinusOneOddFactor,
+  twoadicRoot: twoadicRootBn254Fp,
+  twoadicity: 28n,
+});
+const Bn254Fq = createField(bn254q, {
+  oddFactor: bn254qMinusOneOddFactor,
+  twoadicRoot: twoadicRootBn254Fq,
+  twoadicity: 1n
 });
 type FiniteField = ReturnType<typeof createField>;
 
