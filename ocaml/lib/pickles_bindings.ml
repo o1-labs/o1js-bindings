@@ -248,9 +248,6 @@ module Choices = struct
       (* this is called after `picklesRuleFromFunction()` and finishes the circuit *)
       let finish_circuit prevs self js_result :
           _ Pickles.Inductive_rule.main_return =
-        (* add dummy constraints *)
-        dummy_constraints () ;
-
         (* convert js rule output to pickles rule output *)
         let public_output = js_result##.publicOutput in
         let previous_proofs_should_verify =
@@ -294,6 +291,9 @@ module Choices = struct
         let prevs = prevs ~self in
 
         let main ({ public_input } : _ Pickles.Inductive_rule.main_input) =
+          (* add dummy constraints *)
+          dummy_constraints () ;
+          (* circuit from js *)
           rule##.main public_input
           |> Promise_js_helpers.of_js
           |> Promise.map ~f:(finish_circuit prevs self)
