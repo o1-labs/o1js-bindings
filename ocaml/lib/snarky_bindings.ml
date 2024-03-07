@@ -6,6 +6,7 @@ module Field = Impl.Field
 module Boolean = Impl.Boolean
 module As_prover = Impl.As_prover
 module Typ = Impl.Typ
+module Run_state = Snarky_backendless.Run_state
 
 type field = Impl.field
 
@@ -31,6 +32,22 @@ let exists_var (compute : unit -> Field.Constant.t) =
   Impl.exists Field.typ ~compute
 
 module Run = struct
+  module State = struct
+    let alloc_var state = Run_state.alloc_var state ()
+
+    let store_field_elt state x = Run_state.store_field_elt state x
+
+    let as_prover state = Run_state.as_prover state
+
+    let set_as_prover state b = Run_state.set_as_prover state b
+
+    let has_witness state = Run_state.has_witness state
+
+    let get_variable_value state i = Run_state.get_variable_value state i
+  end
+
+  let in_prover () = Impl.in_prover ()
+
   let as_prover = Impl.as_prover
 
   let in_prover_block () = As_prover.in_prover_block () |> Js.bool
@@ -53,6 +70,8 @@ module Run = struct
     builder.run_circuit (fun () () -> ()) ;
     let finish () = builder.finish_computation () |> fst in
     finish
+
+  let enter_as_prover size = Impl.as_prover_manual size |> Staged.unstage
 end
 
 module Constraint_system = struct
@@ -491,6 +510,23 @@ let snarky =
     val run =
       let open Run in
       object%js
+        val state =
+          object%js
+            val allocVar = State.alloc_var
+
+            val storeFieldElt = State.store_field_elt
+
+            val asProver = State.as_prover
+
+            val setAsProver = State.set_as_prover
+
+            val hasWitness = State.has_witness
+
+            val getVariableValue = State.get_variable_value
+          end
+
+        val inProver = in_prover
+
         method asProver = as_prover
 
         val inProverBlock = in_prover_block
@@ -500,6 +536,8 @@ let snarky =
         val enterConstraintSystem = enter_constraint_system
 
         val enterGenerateWitness = enter_generate_witness
+
+        val enterAsProver = enter_as_prover
       end
 
     val constraintSystem =
