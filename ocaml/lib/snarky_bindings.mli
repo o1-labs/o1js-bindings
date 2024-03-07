@@ -15,16 +15,18 @@ val snarky :
   ; existsVar : ((unit -> field) -> Field.t) Js.meth
   ; run :
       < asProver : ((unit -> unit) -> unit) Js.meth
-      ; constraintSystem :
-          (   (unit -> unit)
-           -> < digest : Js.js_string Js.t Js.readonly_prop
-              ; json : 'b Js.readonly_prop
-              ; rows : int Js.readonly_prop >
-              Js.t )
-          Js.meth
       ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
-      ; runAndCheck : ((unit -> unit) -> unit) Js.meth
-      ; runUnchecked : ((unit -> unit) -> unit) Js.meth >
+      ; setEvalConstraints : (bool -> unit) Js.readonly_prop
+      ; enterConstraintSystem :
+          (unit -> unit -> Backend.R1CS_constraint_system.t) Js.readonly_prop
+      ; enterGenerateWitness :
+          (unit -> unit -> Impl.Proof_inputs.t) Js.readonly_prop >
+      Js.t
+      Js.readonly_prop
+  ; constraintSystem :
+      < rows : (Backend.R1CS_constraint_system.t -> int) Js.meth
+      ; digest : (Backend.R1CS_constraint_system.t -> Js.js_string Js.t) Js.meth
+      ; toJson : (Backend.R1CS_constraint_system.t -> 'a) Js.meth >
       Js.t
       Js.readonly_prop
   ; field :

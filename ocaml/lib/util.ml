@@ -30,6 +30,10 @@ let _console_dir s : unit =
   in
   Js.Unsafe.(fun_call f [| inject s |])
 
+let _console_trace s : unit =
+  let f = Js.Unsafe.eval_string {js|(function(s) { console.trace(s); })|js} in
+  Js.Unsafe.(fun_call f [| inject s |])
+
 let raise_error s =
   Js.Js_error.(raise_ @@ of_error (new%js Js.error_constr (Js.string s)))
 
