@@ -30,7 +30,7 @@
   kimchi_backend.pasta.basic
   kimchi_backend.pasta.constraint_system
   kimchi_backend.common
-  kimchi_gadgets
+  kimchi_backend.gadgets
   kimchi_bindings
   kimchi_types
   pasta_bindings

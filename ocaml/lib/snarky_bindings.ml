@@ -2,7 +2,6 @@ open Core_kernel
 module Js = Js_of_ocaml.Js
 module Backend = Kimchi_backend.Pasta.Vesta_based_plonk
 module Impl = Pickles.Impls.Step
-module Impl_bn254 = Pickles.Impls.Bn254
 module Field = Impl.Field
 module Boolean = Impl.Boolean
 module As_prover = Impl.As_prover
@@ -25,39 +24,20 @@ let empty_typ : (_, _, unit, field, _) Impl.Internal_Basic.Typ.typ' =
 let typ (size_in_field_elements : int) : (Field.t array, field array) Typ.t =
   Typ { empty_typ with size_in_field_elements }
 
-let bn254_typ (size_in_fields : int) = Impl_bn254.Typ.array ~length:size_in_fields Impl_bn254.Field.typ
-
 let exists (size_in_fields : int) (compute : unit -> Field.Constant.t array) =
   Impl.exists (typ size_in_fields) ~compute
 
 let exists_var (compute : unit -> Field.Constant.t) =
   Impl.exists Field.typ ~compute
 
-let exists_bn254 (size_in_fields : int) (compute : unit -> Impl_bn254.Field.Constant.t array) =
-  Impl_bn254.exists (bn254_typ size_in_fields) ~compute
-
-let exists_var_bn254 (compute : unit -> Impl_bn254.Field.Constant.t) =
-  Impl_bn254.exists Impl_bn254.Field.typ ~compute
-
 module Run = struct
   let as_prover = Impl.as_prover
 
-  let as_prover_bn254 = Impl_bn254.as_prover
-
   let in_prover_block () = As_prover.in_prover_block () |> Js.bool
-
-  let in_prover_block_bn254 () = Impl_bn254.As_prover.in_prover_block () |> Js.bool
 
   let run_and_check (f : unit -> unit) =
     try
       Impl.run_and_check_exn (fun () ->
-          f () ;
-          fun () -> () )
-    with exn -> Util.raise_exn exn
-
-  let run_and_check_bn254 (f : unit -> unit) =
-    try
-      Impl_bn254.run_and_check_exn (fun () ->
           f () ;
           fun () -> () )
     with exn -> Util.raise_exn exn
@@ -397,30 +377,6 @@ module Gates = struct
 
   let raw kind values coeffs = add_gate "raw" (Raw { kind; values; coeffs })
 end
-module Field_bn254 = struct
-  (** x === y without handling of constants *)
-  let assert_equal x y = Impl_bn254.assert_ (Impl_bn254.Constraint.equal x y)
-
-  (** x*y === z without handling of constants *)
-  let assert_mul x y z = Impl_bn254.assert_ (Impl_bn254.Constraint.r1cs x y z)
-
-  (** x*x === x without handling of constants *)
-  let assert_boolean x = Impl_bn254.assert_ (Impl_bn254.Constraint.boolean x)
-
-  (** evaluates a CVar by unfolding the AST and reading Vars from a list of public input + aux values *)
-  let read_var (x : Impl_bn254.Field.t) = Impl_bn254.As_prover.read_var x
-
-  let to_bits (length : int) x =
-    Impl_bn254.Field.choose_preimage_var ~length x |> Array.of_list
-
-  let from_bits bits = Array.to_list bits |> Impl_bn254.Field.project
-
-  (** add x, y to get a new AST node Add(x, y); handles if x, y are constants *)
-  let add x y = Impl_bn254.Field.add x y
-
-  (** scale x by a constant to get a new AST node Scale(c, x); handles if x is a constant; handles c=0,1 *)
-  let scale c x = Impl_bn254.Field.scale x c
-end
 
 module Bool = struct
   let not x = Boolean.not x
@@ -432,18 +388,6 @@ module Bool = struct
   let assert_equal x y = Boolean.Assert.(x = y)
 
   let equals x y = Boolean.equal x y
-end
-
-module Bool_bn254 = struct
-  let not x = Impl_bn254.Boolean.not x
-
-  let and_ x y = Impl_bn254.Boolean.(x &&& y)
-
-  let or_ x y = Impl_bn254.Boolean.(x ||| y)
-
-  let assert_equal x y = Impl_bn254.Boolean.Assert.(x = y)
-
-  let equals x y = Impl_bn254.Boolean.equal x y
 end
 
 module Group = struct
@@ -490,42 +434,6 @@ module Circuit = struct
 
     let get_cs_json t =
       (Impl.Keypair.pk t).index |> prover_to_json |> Util.json_parse
-  end
-end
-
-module Circuit_bn254 = struct
-  module Main = struct
-    let of_js (main : Impl_bn254.Field.t array -> unit) =
-      let main' public_input () = main public_input in
-      main'
-  end
-
-  let compile main public_input_size =
-    let input_typ = bn254_typ public_input_size in
-    let return_typ = Impl_bn254.Typ.unit in
-    let cs = Impl_bn254.constraint_system ~input_typ ~return_typ (Main.of_js main) in
-    Impl_bn254.Keypair.generate ~prev_challenges:0 cs
-
-  let prove main public_input_size public_input keypair =
-    let pk = Impl_bn254.Keypair.pk keypair in
-    let input_typ = bn254_typ public_input_size in
-    let return_typ = Impl_bn254.Typ.unit in
-    Impl_bn254.generate_witness_conv
-      ~input_typ
-      ~return_typ
-      ~f:(fun { Impl_bn254.Proof_inputs.auxiliary_inputs; public_inputs } () ->
-          Kimchi_backend.Bn254.Bn254_based_plonk.Proof.create pk public_inputs auxiliary_inputs )
-      (Main.of_js main) public_input
-
-  module Keypair = struct
-    let get_vk t = Impl_bn254.Keypair.vk t
-
-    external prover_to_json :
-      Kimchi_bindings.Protocol.Index.Bn254Fp.t -> Js.js_string Js.t
-      = "prover_to_json_bn254"
-
-    let get_cs_json t =
-      (Impl_bn254.Keypair.pk t).index |> prover_to_json |> Util.json_parse
   end
 end
 
@@ -577,235 +485,20 @@ module Poseidon = struct
       Poseidon_sponge.squeeze s |> Impl.Field.constant
 end
 
-module Foreign_field = struct
-  module FF = Kimchi_gadgets.Foreign_field
-  module Range_check = Kimchi_gadgets.Range_check
-  module External_checks = FF.External_checks
-
-  type t = Impl.field FF.Element.Standard.t
-
-  type t_const = Impl.field FF.Element.Standard.limbs_type
-
-  type op_mode = FF.op_mode
-
-  (* high-level API of self-contained methods which do all necessary checks *)
-
-  let assert_valid_element (x : t) (p : t_const) : unit =
-    let external_checks = External_checks.create (module Impl) in
-    let _ = FF.check_canonical (module Impl) external_checks x p in
-    FF.constrain_external_checks (module Impl) external_checks p
-
-  let sum_chain (x : t array) (ops : op_mode array) (p : t_const) : t =
-    let external_checks = External_checks.create (module Impl) in
-    let sum =
-      FF.sum_chain
-        (module Impl)
-        external_checks (Array.to_list x) (Array.to_list ops) p
-    in
-    FF.constrain_external_checks (module Impl) external_checks p ;
-    sum
-
-  let mul (x : t) (y : t) (p : t_const) : t =
-    let external_checks = External_checks.create (module Impl) in
-    let z = FF.mul (module Impl) external_checks x y p in
-    FF.constrain_external_checks (module Impl) external_checks p ;
-    z
-end
-
-module Foreign_field_bn254 = struct
-  module FF = Kimchi_gadgets.Foreign_field
-  module Range_check = Kimchi_gadgets.Range_check
-  module External_checks = FF.External_checks
-
-  type t = Impl_bn254.field FF.Element.Standard.t
-
-  type t_const = Impl_bn254.field FF.Element.Standard.limbs_type
-
-  type op_mode = FF.op_mode
-
-  (* high-level API of self-contained methods which do all necessary checks *)
-
-  let assert_valid_element (x : t) (p : t_const) : unit =
-    let external_checks = External_checks.create (module Impl_bn254) in
-    let _ = FF.check_canonical (module Impl_bn254) external_checks x p in
-    FF.constrain_external_checks (module Impl_bn254) external_checks p
-
-  let sum_chain (x : t array) (ops : op_mode array) (p : t_const) : t =
-    let external_checks = External_checks.create (module Impl_bn254) in
-    let sum =
-      FF.sum_chain
-        (module Impl_bn254)
-        external_checks (Array.to_list x) (Array.to_list ops) p
-    in
-    FF.constrain_external_checks (module Impl_bn254) external_checks p ;
-    sum
-
-  let mul (x : t) (y : t) (p : t_const) : t =
-    let external_checks = External_checks.create (module Impl_bn254) in
-    let z = FF.mul (module Impl_bn254) external_checks x y p in
-    FF.constrain_external_checks (module Impl_bn254) external_checks p ;
-    z
-end
-
-module EC_group = struct
-  module FF = Kimchi_gadgets.Foreign_field
-  module ECG = Kimchi_gadgets.Ec_group
-  module External_checks = FF.External_checks
-  module Curve_params = Kimchi_gadgets.Curve_params
-  module Bignum_bigint = Snarky_backendless.Backend_extended.Bignum_bigint
-
-  type t = Impl.field Kimchi_gadgets.Affine.t
-
-  type curve_t = Impl.field Kimchi_gadgets.Curve_params.InCircuit.t
-
-  exception ANotFoundInCurve
-
-  exception BNotFoundInCurve
-
-  exception ModulusNotFoundInCurve
-
-  exception GeneratorNotFoundInCurve
-
-  exception OrderNotFoundInCurve
-
-  (* Ia points are neccessary for scalar multiplication, because it implies adding with accumulation
-     which it checks that the accumulator is not the point at infinity.
-     The default for ia points are the point at infinity, so letting the default would make the scalar
-     multiplication fail.
-     We first select a random point in the curve as the input for the ia points computation.*)
-  let curve_params_with_ia_points curve_params =
-    let ia_input_fq = Pasta_bindings.Pallas.random () in
-    let ia_x, ia_y = match Pasta_bindings.Pallas.to_affine ia_input_fq with
-      | Finite (x, y) -> (x, y)
-      | Infinity -> failwith "Randomly generated Pallas point is the point at infinity" in
-    (* TODO: is there a better way to convert arkworks bigint to OCaml bigint? *)
-    let ia_x_bigint =
-      ia_x
-      |> Pasta_bindings.Fp.to_string
-      |> Bigint.of_string in
-    let ia_y_bigint =
-      ia_y
-      |> Pasta_bindings.Fp.to_string
-      |> Bigint.of_string in
-    let ia_input = (ia_x_bigint, ia_y_bigint) in
-    let ia = ECG.compute_ia_points ~point:ia_input curve_params in
-    Curve_params.to_circuit_constants (module Impl) { curve_params with ia = ia }
-
-  (* curve = [a, b, modulus, gen_x, gen_y, order] *)
-  let parse_ec curve =
-    let a =
-      Js.to_string
-        (Js.Optdef.get (Js.array_get curve 0) (fun () ->
-             raise ANotFoundInCurve ) ) in
-
-    let b =
-      Js.to_string
-        (Js.Optdef.get (Js.array_get curve 1) (fun () ->
-             raise BNotFoundInCurve ) ) in
-
-    let modulus =
-      Js.to_string
-        (Js.Optdef.get (Js.array_get curve 2) (fun () ->
-             raise ModulusNotFoundInCurve ) ) in
-
-    let gen_x =
-      Js.to_string
-        (Js.Optdef.get (Js.array_get curve 3) (fun () ->
-             raise GeneratorNotFoundInCurve ) ) in
-
-    let gen_y =
-      Js.to_string
-        (Js.Optdef.get (Js.array_get curve 4) (fun () ->
-             raise GeneratorNotFoundInCurve ) ) in
-
-    let order =
-      Js.to_string
-        (Js.Optdef.get (Js.array_get curve 5) (fun () ->
-             raise OrderNotFoundInCurve ) ) in
-
-    let curve_params = Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order in
-    curve_params_with_ia_points curve_params
-
-  let add (left_input : t) (right_input : t)
-      (curve : Js.js_string Js.t Js.js_array Js.t) =
-    let external_checks = External_checks.create (module Impl) in
-    let ec = parse_ec curve in
-    ECG.add (module Impl) external_checks ec left_input right_input
-
-  let scale (point : t) (scalar : Impl.Boolean.var array)
-      (curve : Js.js_string Js.t Js.js_array Js.t) =
-    let external_checks = External_checks.create (module Impl) in
-    let ec = parse_ec curve in
-    let scalar = Array.to_list scalar in
-    ECG.scalar_mul (module Impl) external_checks ec scalar point
-end
-
-module Foreign_poseidon = struct
-  let to_unchecked (x : Impl_bn254.Field.t) =
-    match x with Constant y -> y | y -> Impl_bn254.As_prover.read_var y
-
-  module Poseidon_sponge_checked =
-    Sponge.Make_sponge (Pickles.Bn254_main_inputs.Sponge.Permutation)
-  module Poseidon_sponge =
-    Sponge.Make_sponge (Sponge.Poseidon (Pickles.Bn254_field_sponge.Inputs))
-
-  let sponge_params = Kimchi_bn254_basic.poseidon_params_fp
-
-  let sponge_params_checked = Sponge.Params.map sponge_params ~f:Impl_bn254.Field.constant
-
-  type sponge =
-    | Checked of Poseidon_sponge_checked.t
-    | Unchecked of Poseidon_sponge.t
-
-  (* returns a "sponge" that stays opaque to JS *)
-  let sponge_create (is_checked : bool Js.t) : sponge =
-    if Js.to_bool is_checked then
-      Checked (Poseidon_sponge_checked.create ?init:None sponge_params_checked)
-    else Unchecked (Poseidon_sponge.create ?init:None sponge_params)
-
-  let sponge_absorb (sponge : sponge) (field : Foreign_field_bn254.t) : unit =
-    (* TODO: make foreign to native field conversion univoque *)
-    let (f0, _, _) = Foreign_field_bn254.FF.Element.Standard.to_limbs field in
-    match sponge with
-    | Checked s ->
-      Poseidon_sponge_checked.absorb s f0
-    | Unchecked s ->
-      Poseidon_sponge.absorb s @@ to_unchecked f0
-
-  let sponge_squeeze (sponge : sponge) : Foreign_field_bn254.t =
-    let field = match sponge with
-      | Checked s ->
-        Poseidon_sponge_checked.squeeze s
-      | Unchecked s ->
-        Poseidon_sponge.squeeze s |> Impl_bn254.Field.constant in
-    let limbs = (field, Impl_bn254.Field.zero, Impl_bn254.Field.zero) in
-    Foreign_field_bn254.FF.Element.Standard.of_limbs limbs
-end
-
 let snarky =
   object%js
     method exists = exists
 
     method existsVar = exists_var
 
-    method existsBn254 = exists_bn254
-
-    method existsVarBn254 = exists_var_bn254
-
     val run =
       let open Run in
       object%js
         method asProver = as_prover
 
-        method asProverBn254 = as_prover_bn254
-
         val inProverBlock = in_prover_block
 
-        val inProverBlockBn254 = in_prover_block_bn254
-
         method runAndCheck = run_and_check
-
-        method runAndCheckBn254 = run_and_check_bn254
 
         method runUnchecked = run_unchecked
 
@@ -880,25 +573,6 @@ let snarky =
 
         method raw = Gates.raw
       end
-    val fieldBn254 =
-      let open Field_bn254 in
-      object%js
-        method assertEqual = assert_equal
-
-        method assertMul = assert_mul
-
-        method assertBoolean = assert_boolean
-
-        method readVar = read_var
-
-        method toBits = to_bits
-
-        method fromBits = from_bits
-
-        method add = add
-
-        method scale = scale
-      end
 
     val bool =
       object%js
@@ -911,19 +585,6 @@ let snarky =
         method assertEqual = Bool.assert_equal
 
         method equals = Bool.equals
-      end
-
-    val boolBn254 =
-      object%js
-        method not = Bool_bn254.not
-
-        method and_ = Bool_bn254.and_
-
-        method or_ = Bool_bn254.or_
-
-        method assertEqual = Bool_bn254.assert_equal
-
-        method equals = Bool_bn254.equals
       end
 
     val group =
@@ -947,20 +608,6 @@ let snarky =
           end
       end
 
-    val circuitBn254 =
-      object%js
-        method compile = Circuit_bn254.compile
-
-        method prove = Circuit_bn254.prove
-
-        val keypair =
-          object%js
-            method getVerificationKey = Circuit_bn254.Keypair.get_vk
-
-            method getConstraintSystemJSON = Circuit_bn254.Keypair.get_cs_json
-          end
-      end
-
     val poseidon =
       object%js
         method update = Poseidon.update
@@ -975,41 +622,5 @@ let snarky =
 
             method squeeze = Poseidon.sponge_squeeze
           end
-
-        val foreignSponge =
-          object%js
-            method create = Foreign_poseidon.sponge_create
-
-            method absorb = Foreign_poseidon.sponge_absorb
-
-            method squeeze = Foreign_poseidon.sponge_squeeze
-          end
-      end
-
-    val foreignField =
-      let open Foreign_field in
-      object%js
-        val assertValidElement = assert_valid_element
-
-        val sumChain = sum_chain
-
-        val mul = mul
-      end
-
-    val foreignFieldBn254 =
-      let open Foreign_field_bn254 in
-      object%js
-        val assertValidElement = assert_valid_element
-
-        val sumChain = sum_chain
-
-        val mul = mul
-      end
-
-    val foreignGroup =
-      let open EC_group in
-      object%js
-        val add = add
-        val scale = scale
       end
   end

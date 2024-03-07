@@ -1,7 +1,6 @@
 module Js = Js_of_ocaml.Js
 module Backend = Kimchi_backend.Pasta.Vesta_based_plonk
 module Impl = Pickles.Impls.Step
-module Impl_bn254 = Pickles.Impls.Bn254
 module Field = Impl.Field
 module Boolean = Impl.Boolean
 
@@ -11,40 +10,11 @@ module Poseidon : sig
   type sponge
 end
 
-module Foreign_poseidon : sig
-  type sponge
-end
-
-module Foreign_field : sig
-  type t
-
-  type t_const
-
-  type op_mode
-end
-
-module Foreign_field_bn254 : sig
-  type t
-
-  type t_const
-
-  type op_mode
-end
-
-module EC_group : sig
-  type t
-
-  type curve_t
-end
-
 val snarky :
-  < exists : (int -> (unit -> Impl.field array) -> Field.t array) Js.meth
-  ; existsVar : ((unit -> Impl.field) -> Field.t) Js.meth
-  ; existsBn254 : (int -> (unit -> Impl_bn254.field array) -> Impl_bn254.Field.t array) Js.meth
-  ; existsVarBn254 : ((unit -> Impl_bn254.field) -> Impl_bn254.Field.t) Js.meth
+  < exists : (int -> (unit -> field array) -> Field.t array) Js.meth
+  ; existsVar : ((unit -> field) -> Field.t) Js.meth
   ; run :
       < asProver : ((unit -> unit) -> unit) Js.meth
-      ; asProverBn254 : ((unit -> unit) -> unit) Js.meth
       ; constraintSystem :
           (   (unit -> unit)
               -> < digest : Js.js_string Js.t Js.readonly_prop
@@ -53,9 +23,7 @@ val snarky :
                 Js.t )
             Js.meth
       ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
-      ; inProverBlockBn254 : (unit -> bool Js.t) Js.readonly_prop
       ; runAndCheck : ((unit -> unit) -> unit) Js.meth
-      ; runAndCheckBn254 : ((unit -> unit) -> unit) Js.meth
       ; runUnchecked : ((unit -> unit) -> unit) Js.meth >
         Js.t
         Js.readonly_prop
@@ -72,8 +40,7 @@ val snarky :
       ; readVar : (Field.t -> field) Js.meth
       ; scale : (field -> Field.t -> Field.t) Js.meth
       ; seal :
-          (   Impl.field Snarky_backendless.Cvar.t
-              -> Impl.field Snarky_backendless.Cvar.t )
+          (field Snarky_backendless.Cvar.t -> field Snarky_backendless.Cvar.t)
             Js.meth
       ; toBits : (int -> Field.t -> Boolean.var array) Js.meth
       ; toConstantAndTerms :
@@ -83,17 +50,6 @@ val snarky :
               -> field Snarky_backendless.Cvar.t
               -> field Snarky_backendless.Cvar.t )
             Js.meth >
-        Js.t
-        Js.readonly_prop
-  ; fieldBn254 :
-      < assertEqual : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
-      ; assertMul : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
-      ; assertBoolean : (Impl_bn254.Field.t -> unit) Js.meth
-      ; readVar : (Impl_bn254.Field.t -> Impl_bn254.field) Js.meth
-      ; toBits : (int -> Impl_bn254.Field.t -> Impl_bn254.Boolean.var array) Js.meth
-      ; fromBits : (Impl_bn254.Boolean.var array -> Impl_bn254.Field.t) Js.meth
-      ; add : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t) Js.meth
-      ; scale : (Impl_bn254.field -> Impl_bn254.Field.t -> Impl_bn254.Field.t) Js.meth >
         Js.t
         Js.readonly_prop
   ; gates :
@@ -262,14 +218,6 @@ val snarky :
       ; or_ : (Boolean.var -> Boolean.var -> Boolean.var) Js.meth >
         Js.t
         Js.readonly_prop
-  ; boolBn254 :
-      < and_ : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth
-      ; assertEqual : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> unit) Js.meth
-      ; equals : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth
-      ; not : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth
-      ; or_ : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth >
-        Js.t
-        Js.readonly_prop
   ; group :
       < scale :
           (   field Snarky_backendless.Cvar.t Tuple_lib.Double.t
@@ -286,19 +234,13 @@ val snarky :
             Js.meth
       ; hashToGroup :
           (   Field.t array
-              -> Impl.field Snarky_backendless.Cvar.t
-                 * Impl.field Snarky_backendless.Cvar.t )
+              -> field Snarky_backendless.Cvar.t * field Snarky_backendless.Cvar.t
+          )
             Js.meth
       ; sponge :
           < absorb : (Poseidon.sponge -> Field.t -> unit) Js.meth
           ; create : (bool Js.t -> Poseidon.sponge) Js.meth
           ; squeeze : (Poseidon.sponge -> Field.t) Js.meth >
-            Js.t
-            Js.readonly_prop
-      ; foreignSponge :
-          < absorb : (Foreign_poseidon.sponge -> Foreign_field_bn254.t -> unit) Js.meth
-          ; create : (bool Js.t -> Foreign_poseidon.sponge) Js.meth
-          ; squeeze : (Foreign_poseidon.sponge -> Foreign_field_bn254.t) Js.meth >
             Js.t
             Js.readonly_prop >
         Js.t
@@ -329,19 +271,5 @@ val snarky :
               -> bool Js.t )
             Js.meth >
         Js.t
-        Js.readonly_prop
-  ; circuitBn254 :
-      < compile : ((Impl_bn254.Field.t array -> unit) -> int -> Impl_bn254.Keypair.t) Js.meth
-      ; prove :
-          (   (Impl_bn254.Field.t array -> unit)
-              -> int
-              -> Impl_bn254.field array
-              -> Impl_bn254.Keypair.t
-              -> Kimchi_backend.Bn254.Bn254_based_plonk.Proof.with_public_evals )
-            Js.meth
-      ; keypair :
-          < getConstraintSystemJSON : (Impl_bn254.Keypair.t -> 'a) Js.meth
-          ; getVerificationKey :
-              (Impl_bn254.Keypair.t -> Impl_bn254.Verification_key.t) Js.meth >
-      >
-        Js.t
+        Js.readonly_prop >
+    Js.t
