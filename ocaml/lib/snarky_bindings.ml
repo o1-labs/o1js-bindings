@@ -90,6 +90,9 @@ module Field' = struct
   (** x*x === y without handling of constants *)
   let assert_square x y = Impl.assert_ (Impl.Constraint.square x y)
 
+  (** x*x === x without handling of constants *)
+  let assert_boolean x = Impl.assert_ (Impl.Constraint.boolean x)
+
   (** check x < y and x <= y.
         this is used in all comparisons, including with assert *)
   let compare (bit_length : int) x y =
@@ -506,6 +509,8 @@ let snarky =
         method assertMul = assert_mul
 
         method assertSquare = assert_square
+
+        method assertBoolean = assert_boolean
 
         method compare = compare
 

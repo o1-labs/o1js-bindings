@@ -32,6 +32,7 @@ val snarky :
       ; assertEqual : (Field.t -> Field.t -> unit) Js.meth
       ; assertMul : (Field.t -> Field.t -> Field.t -> unit) Js.meth
       ; assertSquare : (Field.t -> Field.t -> unit) Js.meth
+      ; assertBoolean : (Field.t -> unit) Js.meth
       ; compare :
           (int -> Field.t -> Field.t -> Boolean.var * Boolean.var) Js.meth
       ; fromBits : (Boolean.var array -> Field.t) Js.meth
