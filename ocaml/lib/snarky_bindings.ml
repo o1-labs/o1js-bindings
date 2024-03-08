@@ -2,6 +2,7 @@ open Core_kernel
 module Js = Js_of_ocaml.Js
 module Backend = Kimchi_backend.Pasta.Vesta_based_plonk
 module Impl = Pickles.Impls.Step
+module Impl_bn254 = Pickles.Impls.Bn254
 module Field = Impl.Field
 module Boolean = Impl.Boolean
 module As_prover = Impl.As_prover
@@ -485,6 +486,425 @@ module Poseidon = struct
       Poseidon_sponge.squeeze s |> Impl.Field.constant
 end
 
+module Snarky_bn254 = struct
+  module Typ = Impl_bn254.Typ
+  module Backend = Kimchi_backend.Bn254.Bn254_based_plonk
+
+  let empty_typ : (_, _, unit, Impl_bn254.field, _) Impl_bn254.Internal_Basic.Typ.typ' =
+    { var_to_fields = (fun fields -> (fields, ()))
+    ; var_of_fields = (fun (fields, _) -> fields)
+    ; value_to_fields = (fun fields -> (fields, ()))
+    ; value_of_fields = (fun (fields, _) -> fields)
+    ; size_in_field_elements = 0
+    ; constraint_system_auxiliary = (fun _ -> ())
+    ; check = (fun _ -> Impl_bn254.Internal_Basic.Checked.return ())
+    }
+
+  let typ (size_in_field_elements : int) : (Impl_bn254.Field.t array, Impl_bn254.field array) Typ.t =
+    Typ { empty_typ with size_in_field_elements }
+
+  let exists (size_in_fields : int) (compute : unit -> Impl_bn254.Field.Constant.t array) =
+    Impl_bn254.exists (typ size_in_fields) ~compute
+
+  let exists_var (compute : unit -> Impl_bn254.Field.Constant.t) =
+    Impl_bn254.exists Impl_bn254.Field.typ ~compute
+
+  module Run = struct
+    let as_prover = Impl_bn254.as_prover
+
+    let in_prover_block () = Impl_bn254.As_prover.in_prover_block () |> Js.bool
+
+    let run_and_check (f : unit -> unit) =
+      try
+        Impl_bn254.run_and_check_exn (fun () ->
+            f () ;
+            fun () -> () )
+      with exn -> Util.raise_exn exn
+
+    let run_unchecked (f : unit -> unit) =
+      try
+        Impl_bn254.run_and_check_exn (fun () ->
+            Snarky_backendless.Snark0.set_eval_constraints false ;
+            f () ;
+            Snarky_backendless.Snark0.set_eval_constraints true ;
+            fun () -> () )
+      with exn -> Util.raise_exn exn
+
+    let constraint_system (main : unit -> unit) =
+      let cs =
+        Impl_bn254.constraint_system ~input_typ:Impl_bn254.Typ.unit ~return_typ:Impl_bn254.Typ.unit
+          (fun () -> main)
+      in
+      object%js
+        val rows = Backend.R1CS_constraint_system.get_rows_len cs
+
+        val digest =
+          Backend.R1CS_constraint_system.digest cs |> Md5.to_hex |> Js.string
+
+        val json =
+          Backend.R1CS_constraint_system.to_json cs
+          |> Js.string |> Util.json_parse
+      end
+  end
+
+  module Field' = struct
+    (** add x, y to get a new AST node Add(x, y); handles if x, y are constants *)
+    let add x y = Impl_bn254.Field.add x y
+
+    (** scale x by a constant to get a new AST node Scale(c, x); handles if x is a constant; handles c=0,1 *)
+    let scale c x = Impl_bn254.Field.scale x c
+
+    (** witnesses z = x*y and constrains it with [assert_r1cs]; handles constants *)
+    let mul x y = Impl_bn254.Field.mul x y
+
+    (** evaluates a CVar by unfolding the AST and reading Vars from a list of public input + aux values *)
+    let read_var (x : Impl_bn254.Field.t) = Impl_bn254.As_prover.read_var x
+
+    (** x === y without handling of constants *)
+    let assert_equal x y = Impl_bn254.assert_ (Impl_bn254.Constraint.equal x y)
+
+    (** x*y === z without handling of constants *)
+    let assert_mul x y z = Impl_bn254.assert_ (Impl_bn254.Constraint.r1cs x y z)
+
+    (** x*x === y without handling of constants *)
+    let assert_square x y = Impl_bn254.assert_ (Impl_bn254.Constraint.square x y)
+
+    (** x*x === x without handling of constants *)
+    let assert_boolean x = Impl_bn254.assert_ (Impl_bn254.Constraint.boolean x)
+
+    (** check x < y and x <= y.
+          this is used in all comparisons, including with assert *)
+    let compare (bit_length : int) x y =
+      let ({ less; less_or_equal } : Impl_bn254.Field.comparison_result) =
+        Impl_bn254.Field.compare ~bit_length x y
+      in
+      (less, less_or_equal)
+
+    let to_bits (length : int) x =
+      Impl_bn254.Field.choose_preimage_var ~length x |> Array.of_list
+
+    let from_bits bits = Array.to_list bits |> Impl_bn254.Field.project
+
+    (** returns x truncated to the lowest [16 * length_div_16] bits
+         => can be used to assert that x fits in [16 * length_div_16] bits.
+
+         more efficient than [to_bits] because it uses the [EC_endoscalar] gate;
+         does 16 bits per row (vs 1 bits per row that you can do with generic gates).
+    *)
+    let truncate_to_bits16 (length_div_16 : int) x =
+      let _a, _b, x0 =
+        Pickles.Scalar_challenge.to_field_checked' ~num_bits:(length_div_16 * 16)
+          (module Impl_bn254)
+          { inner = x }
+      in
+      x0
+
+    (* can be implemented with Impl_bn254.Field.to_constant_and_terms *)
+    let seal x = Pickles.Util.seal (module Impl_bn254) x
+
+    let to_constant_and_terms x = Impl_bn254.Field.to_constant_and_terms x
+  end
+
+  let add_gate (label : string) gate =
+    Impl_bn254.with_label label (fun () ->
+        Impl_bn254.assert_
+          { annotation = None
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                gate
+          } )
+
+  module Gates = struct
+    let zero in1 in2 out =
+      add_gate "zero"
+        (Raw { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] })
+
+    let generic sl l sr r so o sm sc =
+      add_gate "generic"
+        (Basic { l = (sl, l); r = (sr, r); o = (so, o); m = sm; c = sc })
+
+    let poseidon state = add_gate "poseidon" (Poseidon { state })
+
+    let ec_add p1 p2 p3 inf same_x slope inf_z x21_inv =
+      add_gate "ec_add"
+        (EC_add_complete { p1; p2; p3; inf; same_x; slope; inf_z; x21_inv }) ;
+      (* TODO: do we need this? *)
+      p3
+
+    let ec_scale state = add_gate "ec_scale" (EC_scale { state })
+
+    let ec_endoscale state xs ys n_acc =
+      add_gate "ec_endoscale" (EC_endoscale { state; xs; ys; n_acc })
+
+    let ec_endoscalar state = add_gate "ec_endoscalar" (EC_endoscalar { state })
+
+    let lookup (w0, w1, w2, w3, w4, w5, w6) =
+      add_gate "lookup" (Lookup { w0; w1; w2; w3; w4; w5; w6 })
+
+    let range_check0 v0 (v0p0, v0p1, v0p2, v0p3, v0p4, v0p5)
+        (v0c0, v0c1, v0c2, v0c3, v0c4, v0c5, v0c6, v0c7) compact =
+      add_gate "range_check0"
+        (RangeCheck0
+           { (* Current row *) v0
+           ; v0p0
+           ; v0p1
+           ; v0p2
+           ; v0p3
+           ; v0p4
+           ; v0p5
+           ; v0c0
+           ; v0c1
+           ; v0c2
+           ; v0c3
+           ; v0c4
+           ; v0c5
+           ; v0c6
+           ; v0c7
+           ; (* Coefficients *)
+             compact
+           } )
+
+    let range_check1 v2 v12
+        ( v2c0
+        , v2p0
+        , v2p1
+        , v2p2
+        , v2p3
+        , v2c1
+        , v2c2
+        , v2c3
+        , v2c4
+        , v2c5
+        , v2c6
+        , v2c7
+        , v2c8 )
+        ( v2c9
+        , v2c10
+        , v2c11
+        , v0p0
+        , v0p1
+        , v1p0
+        , v1p1
+        , v2c12
+        , v2c13
+        , v2c14
+        , v2c15
+        , v2c16
+        , v2c17
+        , v2c18
+        , v2c19 ) =
+      add_gate "range_check1"
+        (RangeCheck1
+           { (* Current row *) v2
+           ; v12
+           ; v2c0
+           ; v2p0
+           ; v2p1
+           ; v2p2
+           ; v2p3
+           ; v2c1
+           ; v2c2
+           ; v2c3
+           ; v2c4
+           ; v2c5
+           ; v2c6
+           ; v2c7
+           ; v2c8
+           ; (* Next row *) v2c9
+           ; v2c10
+           ; v2c11
+           ; v0p0
+           ; v0p1
+           ; v1p0
+           ; v1p1
+           ; v2c12
+           ; v2c13
+           ; v2c14
+           ; v2c15
+           ; v2c16
+           ; v2c17
+           ; v2c18
+           ; v2c19
+           } )
+
+    let xor in1 in2 out in1_0 in1_1 in1_2 in1_3 in2_0 in2_1 in2_2 in2_3 out_0
+        out_1 out_2 out_3 =
+      add_gate "xor"
+        (Xor
+           { in1
+           ; in2
+           ; out
+           ; in1_0
+           ; in1_1
+           ; in1_2
+           ; in1_3
+           ; in2_0
+           ; in2_1
+           ; in2_2
+           ; in2_3
+           ; out_0
+           ; out_1
+           ; out_2
+           ; out_3
+           } )
+
+    let foreign_field_add (left_input_lo, left_input_mi, left_input_hi)
+        (right_input_lo, right_input_mi, right_input_hi) field_overflow carry
+        (foreign_field_modulus0, foreign_field_modulus1, foreign_field_modulus2)
+        sign =
+      add_gate "foreign_field_add"
+        (ForeignFieldAdd
+           { left_input_lo
+           ; left_input_mi
+           ; left_input_hi
+           ; right_input_lo
+           ; right_input_mi
+           ; right_input_hi
+           ; field_overflow
+           ; carry
+           ; foreign_field_modulus0
+           ; foreign_field_modulus1
+           ; foreign_field_modulus2
+           ; sign
+           } )
+
+    let foreign_field_mul (left_input0, left_input1, left_input2)
+        (right_input0, right_input1, right_input2) (remainder01, remainder2)
+        (quotient0, quotient1, quotient2) quotient_hi_bound
+        (product1_lo, product1_hi_0, product1_hi_1) carry0
+        ( carry1_0
+        , carry1_12
+        , carry1_24
+        , carry1_36
+        , carry1_48
+        , carry1_60
+        , carry1_72 ) (carry1_84, carry1_86, carry1_88, carry1_90)
+        foreign_field_modulus2
+        ( neg_foreign_field_modulus0
+        , neg_foreign_field_modulus1
+        , neg_foreign_field_modulus2 ) =
+      add_gate "foreign_field_mul"
+        (ForeignFieldMul
+           { left_input0
+           ; left_input1
+           ; left_input2
+           ; right_input0
+           ; right_input1
+           ; right_input2
+           ; remainder01
+           ; remainder2
+           ; quotient0
+           ; quotient1
+           ; quotient2
+           ; quotient_hi_bound
+           ; product1_lo
+           ; product1_hi_0
+           ; product1_hi_1
+           ; carry0
+           ; carry1_0
+           ; carry1_12
+           ; carry1_24
+           ; carry1_36
+           ; carry1_48
+           ; carry1_60
+           ; carry1_72
+           ; carry1_84
+           ; carry1_86
+           ; carry1_88
+           ; carry1_90
+           ; foreign_field_modulus2
+           ; neg_foreign_field_modulus0
+           ; neg_foreign_field_modulus1
+           ; neg_foreign_field_modulus2
+           } )
+
+    let rotate word rotated excess
+        (bound_limb0, bound_limb1, bound_limb2, bound_limb3)
+        ( bound_crumb0
+        , bound_crumb1
+        , bound_crumb2
+        , bound_crumb3
+        , bound_crumb4
+        , bound_crumb5
+        , bound_crumb6
+        , bound_crumb7 ) two_to_rot =
+      add_gate "rot64"
+        (Rot64
+           { (* Current row *) word
+           ; rotated
+           ; excess
+           ; bound_limb0
+           ; bound_limb1
+           ; bound_limb2
+           ; bound_limb3
+           ; bound_crumb0
+           ; bound_crumb1
+           ; bound_crumb2
+           ; bound_crumb3
+           ; bound_crumb4
+           ; bound_crumb5
+           ; bound_crumb6
+           ; bound_crumb7 (* Coefficients *)
+           ; two_to_rot (* Rotation scalar 2^rot *)
+           } )
+
+    let add_fixed_lookup_table id data =
+      add_gate "add_fixed_lookup_table" (AddFixedLookupTable { id; data })
+
+    let add_runtime_table_config id first_column =
+      add_gate "add_runtime_table_config" (AddRuntimeTableCfg { id; first_column })
+
+    let raw kind values coeffs = add_gate "raw" (Raw { kind; values; coeffs })
+  end
+
+  module Bool = struct
+    let not x = Impl_bn254.Boolean.not x
+
+    let and_ x y = Impl_bn254.Boolean.(x &&& y)
+
+    let or_ x y = Impl_bn254.Boolean.(x ||| y)
+
+    let assert_equal x y = Impl_bn254.Boolean.Assert.(x = y)
+
+    let equals x y = Impl_bn254.Boolean.equal x y
+  end
+
+  module Circuit = struct
+    module Main = struct
+      let of_js (main : Impl_bn254.Field.t array -> unit) =
+        let main' public_input () = main public_input in
+        main'
+    end
+
+    let compile main public_input_size =
+      let input_typ = typ public_input_size in
+      let return_typ = Impl_bn254.Typ.unit in
+      let cs = Impl_bn254.constraint_system ~input_typ ~return_typ (Main.of_js main) in
+      Impl_bn254.Keypair.generate ~prev_challenges:0 cs
+
+    let prove main public_input_size public_input keypair =
+      let pk = Impl_bn254.Keypair.pk keypair in
+      let input_typ = typ public_input_size in
+      let return_typ = Impl_bn254.Typ.unit in
+      Impl_bn254.generate_witness_conv ~input_typ ~return_typ
+        ~f:(fun { Impl_bn254.Proof_inputs.auxiliary_inputs; public_inputs } () ->
+            Backend.Proof.create pk public_inputs auxiliary_inputs
+          )
+        (Main.of_js main) public_input
+
+    module Keypair = struct
+      let get_vk t = Impl_bn254.Keypair.vk t
+
+      external prover_to_json :
+        Kimchi_bindings.Protocol.Index.Bn254Fp.t -> Js.js_string Js.t
+        = "prover_to_json_bn254"
+
+      let get_cs_json t =
+        (Impl_bn254.Keypair.pk t).index |> prover_to_json |> Util.json_parse
+    end
+  end
+end
+
 let snarky =
   object%js
     method exists = exists
@@ -621,6 +1041,127 @@ let snarky =
             method absorb = Poseidon.sponge_absorb
 
             method squeeze = Poseidon.sponge_squeeze
+          end
+      end
+  end
+
+(* Bn254 bindings for o1js *)
+
+open Snarky_bn254
+
+let snarkyBn254 =
+  object%js
+    method exists = exists
+
+    method existsVar = exists_var
+
+    val run =
+      let open Run in
+      object%js
+        method asProver = as_prover
+
+        val inProverBlock = in_prover_block
+
+        method runAndCheck = run_and_check
+
+        method runUnchecked = run_unchecked
+
+        method constraintSystem = constraint_system
+      end
+
+    val field =
+      let open Field' in
+      object%js
+        method add = add
+
+        method scale = scale
+
+        method mul = mul
+
+        method readVar = read_var
+
+        method assertEqual = assert_equal
+
+        method assertMul = assert_mul
+
+        method assertSquare = assert_square
+
+        method assertBoolean = assert_boolean
+
+        method compare = compare
+
+        method toBits = to_bits
+
+        method fromBits = from_bits
+
+        method truncateToBits16 = truncate_to_bits16
+
+        method seal = seal
+
+        method toConstantAndTerms = to_constant_and_terms
+      end
+
+    val gates =
+      object%js
+        method zero = Gates.zero
+
+        method generic = Gates.generic
+
+        method poseidon = Gates.poseidon
+
+        method ecAdd = Gates.ec_add
+
+        method ecScale = Gates.ec_scale
+
+        method ecEndoscale = Gates.ec_endoscale
+
+        method ecEndoscalar = Gates.ec_endoscalar
+
+        method lookup = Gates.lookup
+
+        method rangeCheck0 = Gates.range_check0
+
+        method rangeCheck1 = Gates.range_check1
+
+        method xor = Gates.xor
+
+        method foreignFieldAdd = Gates.foreign_field_add
+
+        method foreignFieldMul = Gates.foreign_field_mul
+
+        method rotate = Gates.rotate
+
+        method addFixedLookupTable = Gates.add_fixed_lookup_table
+
+        method addRuntimeTableConfig = Gates.add_runtime_table_config
+
+        method raw = Gates.raw
+      end
+
+    val bool =
+      object%js
+        method not = Bool.not
+
+        method and_ = Bool.and_
+
+        method or_ = Bool.or_
+
+        method assertEqual = Bool.assert_equal
+
+        method equals = Bool.equals
+      end
+
+    val circuit =
+      object%js
+        method compile = Circuit.compile
+
+        method prove = Circuit.prove
+
+        val keypair =
+          object%js
+            method getVerificationKey = Circuit.Keypair.get_vk
+
+            method getConstraintSystemJSON = Circuit.Keypair.get_cs_json
           end
       end
   end
