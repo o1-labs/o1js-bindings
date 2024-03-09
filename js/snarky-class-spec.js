@@ -13,6 +13,10 @@ export default [
         type: 'object',
       },
       {
+        name: 'gates',
+        type: 'object',
+      },
+      {
         name: 'bool',
         type: 'object',
       },
@@ -49,6 +53,10 @@ export default [
       },
       {
         name: 'field',
+        type: 'object',
+      },
+      {
+        name: 'gates',
         type: 'object',
       },
       {
