@@ -486,7 +486,7 @@ module Poseidon = struct
       Poseidon_sponge.squeeze s |> Impl.Field.constant
 end
 
-module Snarky_bn254 = struct
+module Bn254 = struct
   module Typ = Impl_bn254.Typ
   module Backend = Kimchi_backend.Bn254.Bn254_based_plonk
 
@@ -1043,125 +1043,127 @@ let snarky =
             method squeeze = Poseidon.sponge_squeeze
           end
       end
-  end
 
-(* Bn254 bindings for o1js *)
+    (* Bn254 bindings for o1js *)
 
-open Snarky_bn254
+    val bn254 =
+      let open Bn254 in
 
-let snarkyBn254 =
-  object%js
-    method exists = exists
-
-    method existsVar = exists_var
-
-    val run =
-      let open Run in
       object%js
-        method asProver = as_prover
+        method exists = exists
 
-        val inProverBlock = in_prover_block
+        method existsVar = exists_var
 
-        method runAndCheck = run_and_check
-
-        method runUnchecked = run_unchecked
-
-        method constraintSystem = constraint_system
-      end
-
-    val field =
-      let open Field' in
-      object%js
-        method add = add
-
-        method scale = scale
-
-        method mul = mul
-
-        method readVar = read_var
-
-        method assertEqual = assert_equal
-
-        method assertMul = assert_mul
-
-        method assertSquare = assert_square
-
-        method assertBoolean = assert_boolean
-
-        method compare = compare
-
-        method toBits = to_bits
-
-        method fromBits = from_bits
-
-        method truncateToBits16 = truncate_to_bits16
-
-        method seal = seal
-
-        method toConstantAndTerms = to_constant_and_terms
-      end
-
-    val gates =
-      object%js
-        method zero = Gates.zero
-
-        method generic = Gates.generic
-
-        method poseidon = Gates.poseidon
-
-        method ecAdd = Gates.ec_add
-
-        method ecScale = Gates.ec_scale
-
-        method ecEndoscale = Gates.ec_endoscale
-
-        method ecEndoscalar = Gates.ec_endoscalar
-
-        method lookup = Gates.lookup
-
-        method rangeCheck0 = Gates.range_check0
-
-        method rangeCheck1 = Gates.range_check1
-
-        method xor = Gates.xor
-
-        method foreignFieldAdd = Gates.foreign_field_add
-
-        method foreignFieldMul = Gates.foreign_field_mul
-
-        method rotate = Gates.rotate
-
-        method addFixedLookupTable = Gates.add_fixed_lookup_table
-
-        method addRuntimeTableConfig = Gates.add_runtime_table_config
-
-        method raw = Gates.raw
-      end
-
-    val bool =
-      object%js
-        method not = Bool.not
-
-        method and_ = Bool.and_
-
-        method or_ = Bool.or_
-
-        method assertEqual = Bool.assert_equal
-
-        method equals = Bool.equals
-      end
-
-    val circuit =
-      object%js
-        method compile = Circuit.compile
-
-        method prove = Circuit.prove
-
-        val keypair =
+        val run =
+          let open Run in
           object%js
-            method getVerificationKey = Circuit.Keypair.get_vk
+            method asProver = as_prover
 
-            method getConstraintSystemJSON = Circuit.Keypair.get_cs_json
+            val inProverBlock = in_prover_block
+
+            method runAndCheck = run_and_check
+
+            method runUnchecked = run_unchecked
+
+            method constraintSystem = constraint_system
+          end
+
+        val field =
+          let open Field' in
+          object%js
+            method add = add
+
+            method scale = scale
+
+            method mul = mul
+
+            method readVar = read_var
+
+            method assertEqual = assert_equal
+
+            method assertMul = assert_mul
+
+            method assertSquare = assert_square
+
+            method assertBoolean = assert_boolean
+
+            method compare = compare
+
+            method toBits = to_bits
+
+            method fromBits = from_bits
+
+            method truncateToBits16 = truncate_to_bits16
+
+            method seal = seal
+
+            method toConstantAndTerms = to_constant_and_terms
+          end
+
+        val gates =
+          object%js
+            method zero = Gates.zero
+
+            method generic = Gates.generic
+
+            method poseidon = Gates.poseidon
+
+            method ecAdd = Gates.ec_add
+
+            method ecScale = Gates.ec_scale
+
+            method ecEndoscale = Gates.ec_endoscale
+
+            method ecEndoscalar = Gates.ec_endoscalar
+
+            method lookup = Gates.lookup
+
+            method rangeCheck0 = Gates.range_check0
+
+            method rangeCheck1 = Gates.range_check1
+
+            method xor = Gates.xor
+
+            method foreignFieldAdd = Gates.foreign_field_add
+
+            method foreignFieldMul = Gates.foreign_field_mul
+
+            method rotate = Gates.rotate
+
+            method addFixedLookupTable = Gates.add_fixed_lookup_table
+
+            method addRuntimeTableConfig = Gates.add_runtime_table_config
+
+            method raw = Gates.raw
+          end
+
+        val bool =
+          object%js
+            method not = Bool.not
+
+            method and_ = Bool.and_
+
+            method or_ = Bool.or_
+
+            method assertEqual = Bool.assert_equal
+
+            method equals = Bool.equals
+          end
+
+        val circuit =
+          object%js
+            method compile = Circuit.compile
+
+            method prove = Circuit.prove
+
+            val keypair =
+              object%js
+                method getVerificationKey = Circuit.Keypair.get_vk
+
+                method getConstraintSystemJSON = Circuit.Keypair.get_cs_json
+              end
           end
       end
+
   end
+

@@ -272,232 +272,233 @@ val snarky :
               -> bool Js.t )
             Js.meth >
         Js.t
+        Js.readonly_prop
+  ; bn254 :
+      < exists : (int -> (unit -> Impl_bn254.field array) -> Impl_bn254.Field.t array) Js.meth
+      ; existsVar : ((unit -> Impl_bn254.field) -> Impl_bn254.Field.t) Js.meth
+      ; run :
+          < asProver : ((unit -> unit) -> unit) Js.meth
+          ; constraintSystem :
+              (   (unit -> unit)
+                  -> < digest : Js.js_string Js.t Js.readonly_prop
+                     ; json : 'b Js.readonly_prop
+                     ; rows : int Js.readonly_prop >
+                    Js.t )
+                Js.meth
+          ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
+          ; runAndCheck : ((unit -> unit) -> unit) Js.meth
+          ; runUnchecked : ((unit -> unit) -> unit) Js.meth >
+            Js.t
+            Js.readonly_prop
+      ; field :
+          < add : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t) Js.meth
+          ; assertBoolean : (Impl_bn254.Field.t -> unit) Js.meth
+          ; assertEqual : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
+          ; assertMul : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
+          ; assertSquare : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
+          ; compare :
+              (int -> Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Boolean.var * Impl_bn254.Boolean.var) Js.meth
+          ; fromBits : (Impl_bn254.Boolean.var array -> Impl_bn254.Field.t) Js.meth
+          ; mul : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t) Js.meth
+          ; readVar : (Impl_bn254.Field.t -> Impl_bn254.field) Js.meth
+          ; scale : (Impl_bn254.field -> Impl_bn254.Field.t -> Impl_bn254.Field.t) Js.meth
+          ; seal :
+              (Impl_bn254.field Snarky_backendless.Cvar.t -> Impl_bn254.field Snarky_backendless.Cvar.t)
+                Js.meth
+          ; toBits : (int -> Impl_bn254.Field.t -> Impl_bn254.Boolean.var array) Js.meth
+          ; toConstantAndTerms :
+              (Impl_bn254.Field.t -> Impl_bn254.field option * (Impl_bn254.field * int) list) Js.meth
+          ; truncateToBits16 :
+              (   int
+                  -> Impl_bn254.field Snarky_backendless.Cvar.t
+                  -> Impl_bn254.field Snarky_backendless.Cvar.t )
+                Js.meth >
+            Js.t
+            Js.readonly_prop
+      ; gates :
+          < zero : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
+          ; generic :
+              (   Impl_bn254.field
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.field
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.field
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.field
+                  -> Impl_bn254.field
+                  -> unit )
+                Js.meth
+          ; poseidon : (Impl_bn254.Field.t array array -> unit) Js.meth
+          ; ecAdd :
+              (   Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t * Impl_bn254.Field.t )
+                Js.meth
+          ; ecScale :
+              (Impl_bn254.Field.t Kimchi_backend_common.Scale_round.t array -> unit) Js.meth
+          ; ecEndoscale :
+              (   Impl_bn254.Field.t Kimchi_backend_common.Endoscale_round.t array
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> unit )
+                Js.meth
+          ; ecEndoscalar :
+              (Impl_bn254.Field.t Kimchi_backend_common.Endoscale_scalar_round.t array -> unit)
+                Js.meth
+          ; lookup :
+              (   Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> unit )
+                Js.meth
+          ; rangeCheck0 :
+              (   Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                  -> Impl_bn254.field
+                  -> unit )
+                Js.meth
+          ; rangeCheck1 :
+              (   Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                  -> unit )
+                Js.meth
+          ; xor :
+              (   Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> unit )
+                Js.meth
+          ; foreignFieldAdd :
+              (   Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.field * Impl_bn254.field * Impl_bn254.field
+                  -> Impl_bn254.field
+                  -> unit )
+                Js.meth
+          ; foreignFieldMul :
+              (   Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.field
+                  -> Impl_bn254.field * Impl_bn254.field * Impl_bn254.field
+                  -> unit )
+                Js.meth
+          ; rotate :
+              (   Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
+                  -> Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                     * Impl_bn254.Field.t
+                  -> Impl_bn254.field
+                  -> unit )
+                Js.meth
+          ; addFixedLookupTable : (int32 -> Impl_bn254.field array array -> unit) Js.meth
+          ; addRuntimeTableConfig : (int32 -> Impl_bn254.field array -> unit) Js.meth
+          ; raw :
+              (Kimchi_types.gate_type -> Impl_bn254.Field.t array -> Impl_bn254.field array -> unit)
+                Js.meth >
+            Js.t
+            Js.readonly_prop
+      ; bool :
+          < and_ : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth
+          ; assertEqual : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> unit) Js.meth
+          ; equals : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth
+          ; not : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth
+          ; or_ : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth >
+            Js.t
+            Js.readonly_prop
+      ; circuit :
+          < compile : ((Impl_bn254.Field.t array -> unit) -> int -> Impl_bn254.Keypair.t) Js.meth
+          ; keypair :
+              < getConstraintSystemJSON : (Impl_bn254.Keypair.t -> 'a) Js.meth
+              ; getVerificationKey :
+                  (Impl_bn254.Keypair.t -> Impl_bn254.Verification_key.t) Js.meth >
+                Js.t
+                Js.readonly_prop
+          ; prove :
+              (   (Impl_bn254.Field.t array -> unit)
+                  -> int
+                  -> Impl_bn254.field array
+                  -> Impl_bn254.Keypair.t
+                  -> Kimchi_backend.Bn254.Bn254_based_plonk.Proof.with_public_evals )
+                Js.meth >
+            Js.t
+            Js.readonly_prop >
+        Js.t
         Js.readonly_prop >
     Js.t
 
-val snarkyBn254 :
-  < exists : (int -> (unit -> Impl_bn254.field array) -> Impl_bn254.Field.t array) Js.meth
-  ; existsVar : ((unit -> Impl_bn254.field) -> Impl_bn254.Field.t) Js.meth
-  ; run :
-      < asProver : ((unit -> unit) -> unit) Js.meth
-      ; constraintSystem :
-          (   (unit -> unit)
-              -> < digest : Js.js_string Js.t Js.readonly_prop
-                 ; json : 'b Js.readonly_prop
-                 ; rows : int Js.readonly_prop >
-                Js.t )
-            Js.meth
-      ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
-      ; runAndCheck : ((unit -> unit) -> unit) Js.meth
-      ; runUnchecked : ((unit -> unit) -> unit) Js.meth >
-        Js.t
-        Js.readonly_prop
-  ; field :
-      < add : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t) Js.meth
-      ; assertBoolean : (Impl_bn254.Field.t -> unit) Js.meth
-      ; assertEqual : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
-      ; assertMul : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
-      ; assertSquare : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
-      ; compare :
-          (int -> Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Boolean.var * Impl_bn254.Boolean.var) Js.meth
-      ; fromBits : (Impl_bn254.Boolean.var array -> Impl_bn254.Field.t) Js.meth
-      ; mul : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t) Js.meth
-      ; readVar : (Impl_bn254.Field.t -> Impl_bn254.field) Js.meth
-      ; scale : (Impl_bn254.field -> Impl_bn254.Field.t -> Impl_bn254.Field.t) Js.meth
-      ; seal :
-          (Impl_bn254.field Snarky_backendless.Cvar.t -> Impl_bn254.field Snarky_backendless.Cvar.t)
-            Js.meth
-      ; toBits : (int -> Impl_bn254.Field.t -> Impl_bn254.Boolean.var array) Js.meth
-      ; toConstantAndTerms :
-          (Impl_bn254.Field.t -> Impl_bn254.field option * (Impl_bn254.field * int) list) Js.meth
-      ; truncateToBits16 :
-          (   int
-              -> Impl_bn254.field Snarky_backendless.Cvar.t
-              -> Impl_bn254.field Snarky_backendless.Cvar.t )
-            Js.meth >
-        Js.t
-        Js.readonly_prop
-  ; gates :
-      < zero : (Impl_bn254.Field.t -> Impl_bn254.Field.t -> Impl_bn254.Field.t -> unit) Js.meth
-      ; generic :
-          (   Impl_bn254.field
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.field
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.field
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.field
-              -> Impl_bn254.field
-              -> unit )
-            Js.meth
-      ; poseidon : (Impl_bn254.Field.t array array -> unit) Js.meth
-      ; ecAdd :
-          (   Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t * Impl_bn254.Field.t )
-            Js.meth
-      ; ecScale :
-          (Impl_bn254.Field.t Kimchi_backend_common.Scale_round.t array -> unit) Js.meth
-      ; ecEndoscale :
-          (   Impl_bn254.Field.t Kimchi_backend_common.Endoscale_round.t array
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> unit )
-            Js.meth
-      ; ecEndoscalar :
-          (Impl_bn254.Field.t Kimchi_backend_common.Endoscale_scalar_round.t array -> unit)
-            Js.meth
-      ; lookup :
-          (   Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> unit )
-            Js.meth
-      ; rangeCheck0 :
-          (   Impl_bn254.Field.t
-              -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-              -> Impl_bn254.field
-              -> unit )
-            Js.meth
-      ; rangeCheck1 :
-          (   Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-              -> unit )
-            Js.meth
-      ; xor :
-          (   Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> unit )
-            Js.meth
-      ; foreignFieldAdd :
-          (   Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.field * Impl_bn254.field * Impl_bn254.field
-              -> Impl_bn254.field
-              -> unit )
-            Js.meth
-      ; foreignFieldMul :
-          (   Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.field
-              -> Impl_bn254.field * Impl_bn254.field * Impl_bn254.field
-              -> unit )
-            Js.meth
-      ; rotate :
-          (   Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-              -> Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t * Impl_bn254.Field.t
-              -> Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-                 * Impl_bn254.Field.t
-              -> Impl_bn254.field
-              -> unit )
-            Js.meth
-      ; addFixedLookupTable : (int32 -> Impl_bn254.field array array -> unit) Js.meth
-      ; addRuntimeTableConfig : (int32 -> Impl_bn254.field array -> unit) Js.meth
-      ; raw :
-          (Kimchi_types.gate_type -> Impl_bn254.Field.t array -> Impl_bn254.field array -> unit)
-            Js.meth >
-        Js.t
-        Js.readonly_prop
-  ; bool :
-      < and_ : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth
-      ; assertEqual : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> unit) Js.meth
-      ; equals : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth
-      ; not : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth
-      ; or_ : (Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var -> Impl_bn254.Boolean.var) Js.meth >
-        Js.t
-        Js.readonly_prop
-  ; circuit :
-      < compile : ((Impl_bn254.Field.t array -> unit) -> int -> Impl_bn254.Keypair.t) Js.meth
-      ; keypair :
-          < getConstraintSystemJSON : (Impl_bn254.Keypair.t -> 'a) Js.meth
-          ; getVerificationKey :
-              (Impl_bn254.Keypair.t -> Impl_bn254.Verification_key.t) Js.meth >
-            Js.t
-            Js.readonly_prop
-      ; prove :
-          (   (Impl_bn254.Field.t array -> unit)
-              -> int
-              -> Impl_bn254.field array
-              -> Impl_bn254.Keypair.t
-              -> Kimchi_backend.Bn254.Bn254_based_plonk.Proof.with_public_evals )
-            Js.meth >
-        Js.t
-        Js.readonly_prop >
-    Js.t
