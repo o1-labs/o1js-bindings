@@ -9,6 +9,7 @@ import {
   Bool,
   AuthRequired,
   Sign,
+  TransactionVersion,
   ZkappUri,
   TokenSymbol,
   StateHash,
@@ -26,7 +27,7 @@ import { jsLayout } from './js-layout.js';
 export { customTypes, ZkappCommand, AccountUpdate, Account };
 export { Json };
 export * from '../transaction-leaves.js';
-export { provableFromLayout, toJSONEssential, emptyValue, Layout, TypeMap };
+export { provableFromLayout, toJSONEssential, empty, Layout, TypeMap };
 
 type TypeMap = {
   PublicKey: PublicKey;
@@ -56,6 +57,7 @@ type ProvableExtended<T, TJson> = GenericProvableExtended<T, TJson, Field>;
 type Layout = GenericLayout<TypeMap>;
 
 type CustomTypes = {
+  TransactionVersion: ProvableExtended<UInt32, Json.TypeMap['UInt32']>;
   ZkappUri: ProvableExtended<
     {
       data: string;
@@ -90,6 +92,7 @@ type CustomTypes = {
   ReceiptChainHash: ProvableExtended<Field, Json.TypeMap['Field']>;
 };
 let customTypes: CustomTypes = {
+  TransactionVersion,
   ZkappUri,
   TokenSymbol,
   StateHash,
@@ -99,7 +102,7 @@ let customTypes: CustomTypes = {
   VerificationKeyHash,
   ReceiptChainHash,
 };
-let { provableFromLayout, toJSONEssential, emptyValue } = ProvableFromLayout<
+let { provableFromLayout, toJSONEssential, empty } = ProvableFromLayout<
   TypeMap,
   Json.TypeMap
 >(TypeMap, customTypes);
@@ -137,7 +140,10 @@ type ZkappCommand = {
             receive: AuthRequired;
             setDelegate: AuthRequired;
             setPermissions: AuthRequired;
-            setVerificationKey: AuthRequired;
+            setVerificationKey: {
+              auth: AuthRequired;
+              txnVersion: UInt32;
+            };
             setZkappUri: AuthRequired;
             editActionState: AuthRequired;
             setTokenSymbol: AuthRequired;
@@ -340,7 +346,10 @@ type AccountUpdate = {
           receive: AuthRequired;
           setDelegate: AuthRequired;
           setPermissions: AuthRequired;
-          setVerificationKey: AuthRequired;
+          setVerificationKey: {
+            auth: AuthRequired;
+            txnVersion: UInt32;
+          };
           setZkappUri: AuthRequired;
           editActionState: AuthRequired;
           setTokenSymbol: AuthRequired;
@@ -542,7 +551,10 @@ type Account = {
     receive: AuthRequired;
     setDelegate: AuthRequired;
     setPermissions: AuthRequired;
-    setVerificationKey: AuthRequired;
+    setVerificationKey: {
+      auth: AuthRequired;
+      txnVersion: UInt32;
+    };
     setZkappUri: AuthRequired;
     editActionState: AuthRequired;
     setTokenSymbol: AuthRequired;

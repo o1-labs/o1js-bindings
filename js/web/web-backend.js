@@ -1,12 +1,12 @@
 import plonkWasm from '../../../web_bindings/plonk_wasm.js';
 import { workerSpec } from './worker-spec.js';
-import { getEfficientNumWorkers } from './num-workers.js';
 import {
   srcFromFunctionModule,
   inlineWorker,
   waitForMessage,
 } from './worker-helpers.js';
-import o1jsWebSrc from 'string:../../../web_bindings/snarky_js_web.bc.js';
+import o1jsWebSrc from 'string:../../../web_bindings/o1js_web.bc.js';
+import { workers } from '../../../lib/proof-system/workers.js';
 
 export { initO1, withThreadPool };
 
@@ -55,7 +55,7 @@ async function withThreadPool(run) {
   if (workerPromise === undefined)
     throw Error('need to initialize worker first');
   let worker = await workerPromise;
-  numWorkers ??= await getEfficientNumWorkers();
+  numWorkers ??= Math.max(1, workers.numWorkers ?? (navigator.hardwareConcurrency ?? 1) - 1);
   await workerCall(worker, 'initThreadPool', numWorkers);
   let result;
   try {

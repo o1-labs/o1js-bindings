@@ -6,14 +6,14 @@ import {
   Sign,
 } from '../../provable/field-bigint.js';
 import { PublicKey } from '../../provable/curve-bigint.js';
-import { derivedLeafTypes } from './derived-leaves.js';
+import { derivedLeafTypesSignable } from './derived-leaves.js';
 import { createEvents } from '../../lib/events.js';
 import {
   Poseidon,
-  Hash,
+  HashHelpers,
   packToFields,
 } from '../../provable/poseidon-bigint.js';
-import { mocks } from '../crypto/constants.js';
+import { mocks, protocolVersions } from '../crypto/constants.js';
 
 export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
 
@@ -26,6 +26,7 @@ export {
   VerificationKeyHash,
   ReceiptChainHash,
   StateHash,
+  TransactionVersion,
 };
 
 type AuthRequired = {
@@ -39,7 +40,7 @@ type TokenSymbol = { symbol: string; field: Field };
 type ZkappUri = { data: string; hash: Field };
 
 const { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri } =
-  derivedLeafTypes({ Field, Bool, Hash, packToFields });
+  derivedLeafTypesSignable({ Field, Bool, HashHelpers, packToFields });
 
 type Event = Field[];
 type Events = {
@@ -52,17 +53,23 @@ const { Events, Actions } = createEvents({ Field, Poseidon });
 type ActionState = Field;
 const ActionState = {
   ...Field,
-  emptyValue: Actions.emptyActionState,
+  empty: Actions.emptyActionState,
 };
 
 type VerificationKeyHash = Field;
 const VerificationKeyHash = {
   ...Field,
-  emptyValue: () => Field(mocks.dummyVerificationKeyHash),
+  empty: () => Field(mocks.dummyVerificationKeyHash),
 };
 
 type ReceiptChainHash = Field;
 const ReceiptChainHash = {
   ...Field,
-  emptyValue: () => Hash.emptyHashWithPrefix('CodaReceiptEmpty'),
+  empty: () => HashHelpers.emptyHashWithPrefix('CodaReceiptEmpty'),
+};
+
+type TransactionVersion = Field;
+const TransactionVersion = {
+  ...UInt32,
+  empty: () => UInt32(protocolVersions.txnVersion),
 };

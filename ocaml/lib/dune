@@ -1,5 +1,5 @@
 (library
- (name snarky_js_bindings_lib)
+ (name o1js_bindings_lib)
  (libraries
   ;; opam libraries ;;
   core_kernel
@@ -21,6 +21,7 @@
   pickles_base
   pickles.limb_vector
   pickles_types
+  key_cache
   kimchi_backend
   kimchi_backend.bn254
   kimchi_backend.bn254.basic
@@ -29,7 +30,7 @@
   kimchi_backend.pasta.basic
   kimchi_backend.pasta.constraint_system
   kimchi_backend.common
-  kimchi_gadgets
+  kimchi_backend.gadgets
   kimchi_bindings
   kimchi_types
   pasta_bindings
@@ -40,7 +41,7 @@
   data_hash_lib
   hash_prefixes
   fields_derivers
-  fields_derivers_zkapps
+  fields_derivers.zkapps
   genesis_constants
   mina_numbers
   mina_signature_kind

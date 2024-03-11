@@ -1,7 +1,7 @@
 /**
  * TS implementation of Pasta_bindings.{Fp, Fq}
  */
-import { FiniteField, Fp, Fq, Bn254Fp, Bn254Fq, mod } from '../finite_field.js';
+import { FiniteField, Fp, Fq, Bn254Fp, Bn254Fq, mod } from '../finite-field.js';
 import {
   Bigint256Bindings,
   Bigint256,
@@ -130,8 +130,7 @@ function createFieldBindings(Field: FiniteField) {
       return [0, generator];
     },
     to_bytes(x: Field): MlBytes {
-      // not used in js
-      throw Error('to_bytes: not implemented');
+      return Bigint256Bindings.caml_bigint_256_to_bytes(x);
     },
     of_bytes(bytes: MlBytes): Field {
       // not used in js

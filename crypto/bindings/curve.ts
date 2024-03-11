@@ -1,7 +1,7 @@
 /**
  * TS implementation of Pasta_bindings.{Pallas, Vesta}
  */
-import { MlTuple } from 'src/lib/ml/base.js';
+import { MlPair } from 'src/lib/ml/base.js';
 import { Field } from './field.js';
 import {
   Pallas,
@@ -10,7 +10,7 @@ import {
   ProjectiveCurve,
   GroupProjective,
   GroupAffine,
-} from '../elliptic_curve.js';
+} from '../elliptic-curve.js';
 import { withPrefix } from './util.js';
 import { Bn254Fp, FiniteField, Fp, Fq } from '../finite_field.js';
 
@@ -20,6 +20,7 @@ export {
   Bn254Bindings,
   Infinity,
   OrInfinity,
+  OrInfinityJson,
   toMlOrInfinity,
   fromMlOrInfinity,
 };
@@ -75,7 +76,7 @@ const affineZero = { x: 0n, y: 0n, infinity: true };
 type Infinity = 0;
 const Infinity = 0;
 type Finite<T> = [0, T];
-type OrInfinity = Infinity | Finite<MlTuple<Field, Field>>;
+type OrInfinity = Infinity | Finite<MlPair<Field, Field>>;
 
 function toMlOrInfinity(g: GroupAffine): OrInfinity {
   if (g.infinity) return 0;
@@ -86,3 +87,16 @@ function fromMlOrInfinity(g: OrInfinity): GroupAffine {
   if (g === 0) return affineZero;
   return { x: g[1][1][1], y: g[1][2][1], infinity: false };
 }
+
+type OrInfinityJson = 'Infinity' | { x: string; y: string };
+
+const OrInfinity = {
+  toJSON(g: OrInfinity): OrInfinityJson {
+    if (g === 0) return 'Infinity';
+    return { x: g[1][1][1].toString(), y: g[1][2][1].toString() };
+  },
+  fromJSON(g: OrInfinityJson): OrInfinity {
+    if (g === 'Infinity') return 0;
+    return [0, [0, [0, BigInt(g.x)], [0, BigInt(g.y)]]];
+  },
+};

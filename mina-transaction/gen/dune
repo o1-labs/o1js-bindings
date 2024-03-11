@@ -8,7 +8,7 @@
  (enabled_if
   (<> %{env:NO_JS_BUILD=0} 1))
  (deps
-  (:script ../../../build/jsLayoutToTypes.mjs)
+  (:script ../../../build/js-layout-to-types.mjs)
   ../../ocaml/jsLayout.json
   ../../../../.prettierrc.cjs
   (glob_files ../../../../node_modules/prettier/*))

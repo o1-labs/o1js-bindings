@@ -8,11 +8,22 @@ module Boolean = Impl.Boolean
 module As_prover = Impl.As_prover
 module Typ = Impl.Typ
 
+type field = Impl.field
+
 (* light-weight wrapper around snarky-ml core *)
 
-let typ (size_in_fields : int) = Typ.array ~length:size_in_fields Field.typ
+let empty_typ : (_, _, unit, field, _) Impl.Internal_Basic.Typ.typ' =
+  { var_to_fields = (fun fields -> (fields, ()))
+  ; var_of_fields = (fun (fields, _) -> fields)
+  ; value_to_fields = (fun fields -> (fields, ()))
+  ; value_of_fields = (fun (fields, _) -> fields)
+  ; size_in_field_elements = 0
+  ; constraint_system_auxiliary = (fun _ -> ())
+  ; check = (fun _ -> Impl.Internal_Basic.Checked.return ())
+  }
 
-let bn254_typ (size_in_fields : int) = Impl_bn254.Typ.array ~length:size_in_fields Impl_bn254.Field.typ
+let typ (size_in_field_elements : int) : (Field.t array, field array) Typ.t =
+  Typ { empty_typ with size_in_field_elements }
 
 let exists (size_in_fields : int) (compute : unit -> Field.Constant.t array) =
   Impl.exists (typ size_in_fields) ~compute
@@ -20,31 +31,14 @@ let exists (size_in_fields : int) (compute : unit -> Field.Constant.t array) =
 let exists_var (compute : unit -> Field.Constant.t) =
   Impl.exists Field.typ ~compute
 
-let exists_bn254 (size_in_fields : int) (compute : unit -> Impl_bn254.Field.Constant.t array) =
-  Impl_bn254.exists (bn254_typ size_in_fields) ~compute
-
-let exists_var_bn254 (compute : unit -> Impl_bn254.Field.Constant.t) =
-  Impl_bn254.exists Impl_bn254.Field.typ ~compute
-
 module Run = struct
   let as_prover = Impl.as_prover
 
-  let as_prover_bn254 = Impl_bn254.as_prover
-
   let in_prover_block () = As_prover.in_prover_block () |> Js.bool
-
-  let in_prover_block_bn254 () = Impl_bn254.As_prover.in_prover_block () |> Js.bool
 
   let run_and_check (f : unit -> unit) =
     try
       Impl.run_and_check_exn (fun () ->
-          f () ;
-          fun () -> () )
-    with exn -> Util.raise_exn exn
-
-  let run_and_check_bn254 (f : unit -> unit) =
-    try
-      Impl_bn254.run_and_check_exn (fun () ->
           f () ;
           fun () -> () )
     with exn -> Util.raise_exn exn
@@ -133,29 +127,256 @@ module Field' = struct
   let to_constant_and_terms x = Field.to_constant_and_terms x
 end
 
-module Field_bn254 = struct
-  (** x === y without handling of constants *)
-  let assert_equal x y = Impl_bn254.assert_ (Impl_bn254.Constraint.equal x y)
+let add_gate (label : string) gate =
+  Impl.with_label label (fun () ->
+      Impl.assert_
+        { annotation = None
+        ; basic =
+            Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+              gate
+        } )
 
-  (** x*y === z without handling of constants *)
-  let assert_mul x y z = Impl_bn254.assert_ (Impl_bn254.Constraint.r1cs x y z)
+module Gates = struct
+  let zero in1 in2 out =
+    add_gate "zero"
+      (Raw { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] })
 
-  (** x*x === x without handling of constants *)
-  let assert_boolean x = Impl_bn254.assert_ (Impl_bn254.Constraint.boolean x)
+  let generic sl l sr r so o sm sc =
+    add_gate "generic"
+      (Basic { l = (sl, l); r = (sr, r); o = (so, o); m = sm; c = sc })
 
-  (** evaluates a CVar by unfolding the AST and reading Vars from a list of public input + aux values *)
-  let read_var (x : Impl_bn254.Field.t) = Impl_bn254.As_prover.read_var x
+  let poseidon state = add_gate "poseidon" (Poseidon { state })
 
-  let to_bits (length : int) x =
-    Impl_bn254.Field.choose_preimage_var ~length x |> Array.of_list
+  let ec_add p1 p2 p3 inf same_x slope inf_z x21_inv =
+    add_gate "ec_add"
+      (EC_add_complete { p1; p2; p3; inf; same_x; slope; inf_z; x21_inv }) ;
+    (* TODO: do we need this? *)
+    p3
 
-  let from_bits bits = Array.to_list bits |> Impl_bn254.Field.project
+  let ec_scale state = add_gate "ec_scale" (EC_scale { state })
 
-  (** add x, y to get a new AST node Add(x, y); handles if x, y are constants *)
-  let add x y = Impl_bn254.Field.add x y
+  let ec_endoscale state xs ys n_acc =
+    add_gate "ec_endoscale" (EC_endoscale { state; xs; ys; n_acc })
 
-  (** scale x by a constant to get a new AST node Scale(c, x); handles if x is a constant; handles c=0,1 *)
-  let scale c x = Impl_bn254.Field.scale x c
+  let ec_endoscalar state = add_gate "ec_endoscalar" (EC_endoscalar { state })
+
+  let lookup (w0, w1, w2, w3, w4, w5, w6) =
+    add_gate "lookup" (Lookup { w0; w1; w2; w3; w4; w5; w6 })
+
+  let range_check0 v0 (v0p0, v0p1, v0p2, v0p3, v0p4, v0p5)
+      (v0c0, v0c1, v0c2, v0c3, v0c4, v0c5, v0c6, v0c7) compact =
+    add_gate "range_check0"
+      (RangeCheck0
+         { (* Current row *) v0
+         ; v0p0
+         ; v0p1
+         ; v0p2
+         ; v0p3
+         ; v0p4
+         ; v0p5
+         ; v0c0
+         ; v0c1
+         ; v0c2
+         ; v0c3
+         ; v0c4
+         ; v0c5
+         ; v0c6
+         ; v0c7
+         ; (* Coefficients *)
+           compact
+         } )
+
+  let range_check1 v2 v12
+      ( v2c0
+      , v2p0
+      , v2p1
+      , v2p2
+      , v2p3
+      , v2c1
+      , v2c2
+      , v2c3
+      , v2c4
+      , v2c5
+      , v2c6
+      , v2c7
+      , v2c8 )
+      ( v2c9
+      , v2c10
+      , v2c11
+      , v0p0
+      , v0p1
+      , v1p0
+      , v1p1
+      , v2c12
+      , v2c13
+      , v2c14
+      , v2c15
+      , v2c16
+      , v2c17
+      , v2c18
+      , v2c19 ) =
+    add_gate "range_check1"
+      (RangeCheck1
+         { (* Current row *) v2
+         ; v12
+         ; v2c0
+         ; v2p0
+         ; v2p1
+         ; v2p2
+         ; v2p3
+         ; v2c1
+         ; v2c2
+         ; v2c3
+         ; v2c4
+         ; v2c5
+         ; v2c6
+         ; v2c7
+         ; v2c8
+         ; (* Next row *) v2c9
+         ; v2c10
+         ; v2c11
+         ; v0p0
+         ; v0p1
+         ; v1p0
+         ; v1p1
+         ; v2c12
+         ; v2c13
+         ; v2c14
+         ; v2c15
+         ; v2c16
+         ; v2c17
+         ; v2c18
+         ; v2c19
+         } )
+
+  let xor in1 in2 out in1_0 in1_1 in1_2 in1_3 in2_0 in2_1 in2_2 in2_3 out_0
+      out_1 out_2 out_3 =
+    add_gate "xor"
+      (Xor
+         { in1
+         ; in2
+         ; out
+         ; in1_0
+         ; in1_1
+         ; in1_2
+         ; in1_3
+         ; in2_0
+         ; in2_1
+         ; in2_2
+         ; in2_3
+         ; out_0
+         ; out_1
+         ; out_2
+         ; out_3
+         } )
+
+  let foreign_field_add (left_input_lo, left_input_mi, left_input_hi)
+      (right_input_lo, right_input_mi, right_input_hi) field_overflow carry
+      (foreign_field_modulus0, foreign_field_modulus1, foreign_field_modulus2)
+      sign =
+    add_gate "foreign_field_add"
+      (ForeignFieldAdd
+         { left_input_lo
+         ; left_input_mi
+         ; left_input_hi
+         ; right_input_lo
+         ; right_input_mi
+         ; right_input_hi
+         ; field_overflow
+         ; carry
+         ; foreign_field_modulus0
+         ; foreign_field_modulus1
+         ; foreign_field_modulus2
+         ; sign
+         } )
+
+  let foreign_field_mul (left_input0, left_input1, left_input2)
+      (right_input0, right_input1, right_input2) (remainder01, remainder2)
+      (quotient0, quotient1, quotient2) quotient_hi_bound
+      (product1_lo, product1_hi_0, product1_hi_1) carry0
+      ( carry1_0
+      , carry1_12
+      , carry1_24
+      , carry1_36
+      , carry1_48
+      , carry1_60
+      , carry1_72 ) (carry1_84, carry1_86, carry1_88, carry1_90)
+      foreign_field_modulus2
+      ( neg_foreign_field_modulus0
+      , neg_foreign_field_modulus1
+      , neg_foreign_field_modulus2 ) =
+    add_gate "foreign_field_mul"
+      (ForeignFieldMul
+         { left_input0
+         ; left_input1
+         ; left_input2
+         ; right_input0
+         ; right_input1
+         ; right_input2
+         ; remainder01
+         ; remainder2
+         ; quotient0
+         ; quotient1
+         ; quotient2
+         ; quotient_hi_bound
+         ; product1_lo
+         ; product1_hi_0
+         ; product1_hi_1
+         ; carry0
+         ; carry1_0
+         ; carry1_12
+         ; carry1_24
+         ; carry1_36
+         ; carry1_48
+         ; carry1_60
+         ; carry1_72
+         ; carry1_84
+         ; carry1_86
+         ; carry1_88
+         ; carry1_90
+         ; foreign_field_modulus2
+         ; neg_foreign_field_modulus0
+         ; neg_foreign_field_modulus1
+         ; neg_foreign_field_modulus2
+         } )
+
+  let rotate word rotated excess
+      (bound_limb0, bound_limb1, bound_limb2, bound_limb3)
+      ( bound_crumb0
+      , bound_crumb1
+      , bound_crumb2
+      , bound_crumb3
+      , bound_crumb4
+      , bound_crumb5
+      , bound_crumb6
+      , bound_crumb7 ) two_to_rot =
+    add_gate "rot64"
+      (Rot64
+         { (* Current row *) word
+         ; rotated
+         ; excess
+         ; bound_limb0
+         ; bound_limb1
+         ; bound_limb2
+         ; bound_limb3
+         ; bound_crumb0
+         ; bound_crumb1
+         ; bound_crumb2
+         ; bound_crumb3
+         ; bound_crumb4
+         ; bound_crumb5
+         ; bound_crumb6
+         ; bound_crumb7 (* Coefficients *)
+         ; two_to_rot (* Rotation scalar 2^rot *)
+         } )
+
+  let add_fixed_lookup_table id data =
+    add_gate "add_fixed_lookup_table" (AddFixedLookupTable { id; data })
+
+  let add_runtime_table_config id first_column =
+    add_gate "add_runtime_table_config" (AddRuntimeTableCfg { id; first_column })
+
+  let raw kind values coeffs = add_gate "raw" (Raw { kind; values; coeffs })
 end
 
 module Bool = struct
@@ -170,31 +391,7 @@ module Bool = struct
   let equals x y = Boolean.equal x y
 end
 
-module Bool_bn254 = struct
-  let not x = Impl_bn254.Boolean.not x
-
-  let and_ x y = Impl_bn254.Boolean.(x &&& y)
-
-  let or_ x y = Impl_bn254.Boolean.(x ||| y)
-
-  let assert_equal x y = Impl_bn254.Boolean.Assert.(x = y)
-
-  let equals x y = Impl_bn254.Boolean.equal x y
-end
-
 module Group = struct
-  let ec_add p1 p2 p3 inf same_x slope inf_z x21_inv =
-    let open Impl in
-    with_label "Elliptic Curve Addition" (fun () ->
-        assert_
-          { annotation = Some __LOC__
-          ; basic =
-              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-                (EC_add_complete
-                   { p1; p2; p3; inf; same_x; slope; inf_z; x21_inv } )
-          } ;
-        p3 )
-
   let scale p (scalar_bits : Boolean.var array) =
     Pickles.Step_main_inputs.Ops.scale_fast_msb_bits p
       (Shifted_value scalar_bits)
@@ -238,42 +435,6 @@ module Circuit = struct
 
     let get_cs_json t =
       (Impl.Keypair.pk t).index |> prover_to_json |> Util.json_parse
-  end
-end
-
-module Circuit_bn254 = struct
-  module Main = struct
-    let of_js (main : Impl_bn254.Field.t array -> unit) =
-      let main' public_input () = main public_input in
-      main'
-  end
-
-  let compile main public_input_size =
-    let input_typ = bn254_typ public_input_size in
-    let return_typ = Impl_bn254.Typ.unit in
-    let cs = Impl_bn254.constraint_system ~input_typ ~return_typ (Main.of_js main) in
-    Impl_bn254.Keypair.generate ~prev_challenges:0 cs
-
-  let prove main public_input_size public_input keypair =
-    let pk = Impl_bn254.Keypair.pk keypair in
-    let input_typ = bn254_typ public_input_size in
-    let return_typ = Impl_bn254.Typ.unit in
-    Impl_bn254.generate_witness_conv
-      ~input_typ
-      ~return_typ
-      ~f:(fun { Impl_bn254.Proof_inputs.auxiliary_inputs; public_inputs } () ->
-          Kimchi_backend.Bn254.Bn254_based_plonk.Proof.create pk public_inputs auxiliary_inputs )
-      (Main.of_js main) public_input
-
-  module Keypair = struct
-    let get_vk t = Impl_bn254.Keypair.vk t
-
-    external prover_to_json :
-      Kimchi_bindings.Protocol.Index.Bn254Fp.t -> Js.js_string Js.t
-      = "prover_to_json_bn254"
-
-    let get_cs_json t =
-      (Impl_bn254.Keypair.pk t).index |> prover_to_json |> Util.json_parse
   end
 end
 
@@ -325,209 +486,423 @@ module Poseidon = struct
       Poseidon_sponge.squeeze s |> Impl.Field.constant
 end
 
-module Foreign_field = struct
-  module FF = Kimchi_gadgets.Foreign_field
-  module Range_check = Kimchi_gadgets.Range_check
-  module External_checks = FF.External_checks
+module Snarky_bn254 = struct
+  module Typ = Impl_bn254.Typ
+  module Backend = Kimchi_backend.Bn254.Bn254_based_plonk
 
-  type t = Impl.field FF.Element.Standard.t
+  let empty_typ : (_, _, unit, Impl_bn254.field, _) Impl_bn254.Internal_Basic.Typ.typ' =
+    { var_to_fields = (fun fields -> (fields, ()))
+    ; var_of_fields = (fun (fields, _) -> fields)
+    ; value_to_fields = (fun fields -> (fields, ()))
+    ; value_of_fields = (fun (fields, _) -> fields)
+    ; size_in_field_elements = 0
+    ; constraint_system_auxiliary = (fun _ -> ())
+    ; check = (fun _ -> Impl_bn254.Internal_Basic.Checked.return ())
+    }
 
-  type t_const = Impl.field FF.Element.Standard.limbs_type
+  let typ (size_in_field_elements : int) : (Impl_bn254.Field.t array, Impl_bn254.field array) Typ.t =
+    Typ { empty_typ with size_in_field_elements }
 
-  type op_mode = FF.op_mode
+  let exists (size_in_fields : int) (compute : unit -> Impl_bn254.Field.Constant.t array) =
+    Impl_bn254.exists (typ size_in_fields) ~compute
 
-  (* high-level API of self-contained methods which do all necessary checks *)
+  let exists_var (compute : unit -> Impl_bn254.Field.Constant.t) =
+    Impl_bn254.exists Impl_bn254.Field.typ ~compute
 
-  let assert_valid_element (x : t) (p : t_const) : unit =
-    let external_checks = External_checks.create (module Impl) in
-    let _ = FF.check_canonical (module Impl) external_checks x p in
-    FF.constrain_external_checks (module Impl) external_checks p
+  module Run = struct
+    let as_prover = Impl_bn254.as_prover
 
-  let sum_chain (x : t array) (ops : op_mode array) (p : t_const) : t =
-    let external_checks = External_checks.create (module Impl) in
-    let sum =
-      FF.sum_chain
-        (module Impl)
-        external_checks (Array.to_list x) (Array.to_list ops) p
-    in
-    FF.constrain_external_checks (module Impl) external_checks p ;
-    sum
+    let in_prover_block () = Impl_bn254.As_prover.in_prover_block () |> Js.bool
 
-  let mul (x : t) (y : t) (p : t_const) : t =
-    let external_checks = External_checks.create (module Impl) in
-    let z = FF.mul (module Impl) external_checks x y p in
-    FF.constrain_external_checks (module Impl) external_checks p ;
-    z
-end
+    let run_and_check (f : unit -> unit) =
+      try
+        Impl_bn254.run_and_check_exn (fun () ->
+            f () ;
+            fun () -> () )
+      with exn -> Util.raise_exn exn
 
-module Foreign_field_bn254 = struct
-  module FF = Kimchi_gadgets.Foreign_field
-  module Range_check = Kimchi_gadgets.Range_check
-  module External_checks = FF.External_checks
+    let run_unchecked (f : unit -> unit) =
+      try
+        Impl_bn254.run_and_check_exn (fun () ->
+            Snarky_backendless.Snark0.set_eval_constraints false ;
+            f () ;
+            Snarky_backendless.Snark0.set_eval_constraints true ;
+            fun () -> () )
+      with exn -> Util.raise_exn exn
 
-  type t = Impl_bn254.field FF.Element.Standard.t
+    let constraint_system (main : unit -> unit) =
+      let cs =
+        Impl_bn254.constraint_system ~input_typ:Impl_bn254.Typ.unit ~return_typ:Impl_bn254.Typ.unit
+          (fun () -> main)
+      in
+      object%js
+        val rows = Backend.R1CS_constraint_system.get_rows_len cs
 
-  type t_const = Impl_bn254.field FF.Element.Standard.limbs_type
+        val digest =
+          Backend.R1CS_constraint_system.digest cs |> Md5.to_hex |> Js.string
 
-  type op_mode = FF.op_mode
+        val json =
+          Backend.R1CS_constraint_system.to_json cs
+          |> Js.string |> Util.json_parse
+      end
+  end
 
-  (* high-level API of self-contained methods which do all necessary checks *)
+  module Field' = struct
+    (** add x, y to get a new AST node Add(x, y); handles if x, y are constants *)
+    let add x y = Impl_bn254.Field.add x y
 
-  let assert_valid_element (x : t) (p : t_const) : unit =
-    let external_checks = External_checks.create (module Impl_bn254) in
-    let _ = FF.check_canonical (module Impl_bn254) external_checks x p in
-    FF.constrain_external_checks (module Impl_bn254) external_checks p
+    (** scale x by a constant to get a new AST node Scale(c, x); handles if x is a constant; handles c=0,1 *)
+    let scale c x = Impl_bn254.Field.scale x c
 
-  let sum_chain (x : t array) (ops : op_mode array) (p : t_const) : t =
-    let external_checks = External_checks.create (module Impl_bn254) in
-    let sum =
-      FF.sum_chain
-        (module Impl_bn254)
-        external_checks (Array.to_list x) (Array.to_list ops) p
-    in
-    FF.constrain_external_checks (module Impl_bn254) external_checks p ;
-    sum
+    (** witnesses z = x*y and constrains it with [assert_r1cs]; handles constants *)
+    let mul x y = Impl_bn254.Field.mul x y
 
-  let mul (x : t) (y : t) (p : t_const) : t =
-    let external_checks = External_checks.create (module Impl_bn254) in
-    let z = FF.mul (module Impl_bn254) external_checks x y p in
-    FF.constrain_external_checks (module Impl_bn254) external_checks p ;
-    z
-end
+    (** evaluates a CVar by unfolding the AST and reading Vars from a list of public input + aux values *)
+    let read_var (x : Impl_bn254.Field.t) = Impl_bn254.As_prover.read_var x
 
-module EC_group = struct
-  module FF = Kimchi_gadgets.Foreign_field
-  module ECG = Kimchi_gadgets.Ec_group
-  module External_checks = FF.External_checks
-  module Curve_params = Kimchi_gadgets.Curve_params
-  module Bignum_bigint = Snarky_backendless.Backend_extended.Bignum_bigint
+    (** x === y without handling of constants *)
+    let assert_equal x y = Impl_bn254.assert_ (Impl_bn254.Constraint.equal x y)
 
-  type t = Impl.field Kimchi_gadgets.Affine.t
+    (** x*y === z without handling of constants *)
+    let assert_mul x y z = Impl_bn254.assert_ (Impl_bn254.Constraint.r1cs x y z)
 
-  type curve_t = Impl.field Kimchi_gadgets.Curve_params.InCircuit.t
+    (** x*x === y without handling of constants *)
+    let assert_square x y = Impl_bn254.assert_ (Impl_bn254.Constraint.square x y)
 
-  exception ANotFoundInCurve
+    (** x*x === x without handling of constants *)
+    let assert_boolean x = Impl_bn254.assert_ (Impl_bn254.Constraint.boolean x)
 
-  exception BNotFoundInCurve
+    (** check x < y and x <= y.
+          this is used in all comparisons, including with assert *)
+    let compare (bit_length : int) x y =
+      let ({ less; less_or_equal } : Impl_bn254.Field.comparison_result) =
+        Impl_bn254.Field.compare ~bit_length x y
+      in
+      (less, less_or_equal)
 
-  exception ModulusNotFoundInCurve
+    let to_bits (length : int) x =
+      Impl_bn254.Field.choose_preimage_var ~length x |> Array.of_list
 
-  exception GeneratorNotFoundInCurve
+    let from_bits bits = Array.to_list bits |> Impl_bn254.Field.project
 
-  exception OrderNotFoundInCurve
+    (** returns x truncated to the lowest [16 * length_div_16] bits
+         => can be used to assert that x fits in [16 * length_div_16] bits.
 
-  (* Ia points are neccessary for scalar multiplication, because it implies adding with accumulation
-     which it checks that the accumulator is not the point at infinity.
-     The default for ia points are the point at infinity, so letting the default would make the scalar
-     multiplication fail.
-     We first select a random point in the curve as the input for the ia points computation.*)
-  let curve_params_with_ia_points curve_params =
-    let ia_input_fq = Pasta_bindings.Pallas.random () in
-    let ia_x, ia_y = match Pasta_bindings.Pallas.to_affine ia_input_fq with
-      | Finite (x, y) -> (x, y)
-      | Infinity -> failwith "Randomly generated Pallas point is the point at infinity" in
-    (* TODO: is there a better way to convert arkworks bigint to OCaml bigint? *)
-    let ia_x_bigint =
-      ia_x
-      |> Pasta_bindings.Fp.to_string
-      |> Bigint.of_string in
-    let ia_y_bigint =
-      ia_y
-      |> Pasta_bindings.Fp.to_string
-      |> Bigint.of_string in
-    let ia_input = (ia_x_bigint, ia_y_bigint) in
-    let ia = ECG.compute_ia_points ~point:ia_input curve_params in
-    Curve_params.to_circuit_constants (module Impl) { curve_params with ia = ia }
+         more efficient than [to_bits] because it uses the [EC_endoscalar] gate;
+         does 16 bits per row (vs 1 bits per row that you can do with generic gates).
+    *)
+    let truncate_to_bits16 (length_div_16 : int) x =
+      let _a, _b, x0 =
+        Pickles.Scalar_challenge.to_field_checked' ~num_bits:(length_div_16 * 16)
+          (module Impl_bn254)
+          { inner = x }
+      in
+      x0
 
-  (* curve = [a, b, modulus, gen_x, gen_y, order] *)
-  let parse_ec curve =
-    let a =
-      Js.to_string
-        (Js.Optdef.get (Js.array_get curve 0) (fun () ->
-             raise ANotFoundInCurve ) ) in
+    (* can be implemented with Impl_bn254.Field.to_constant_and_terms *)
+    let seal x = Pickles.Util.seal (module Impl_bn254) x
 
-    let b =
-      Js.to_string
-        (Js.Optdef.get (Js.array_get curve 1) (fun () ->
-             raise BNotFoundInCurve ) ) in
+    let to_constant_and_terms x = Impl_bn254.Field.to_constant_and_terms x
+  end
 
-    let modulus =
-      Js.to_string
-        (Js.Optdef.get (Js.array_get curve 2) (fun () ->
-             raise ModulusNotFoundInCurve ) ) in
+  let add_gate (label : string) gate =
+    Impl_bn254.with_label label (fun () ->
+        Impl_bn254.assert_
+          { annotation = None
+          ; basic =
+              Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
+                gate
+          } )
 
-    let gen_x =
-      Js.to_string
-        (Js.Optdef.get (Js.array_get curve 3) (fun () ->
-             raise GeneratorNotFoundInCurve ) ) in
+  module Gates = struct
+    let zero in1 in2 out =
+      add_gate "zero"
+        (Raw { kind = Zero; values = [| in1; in2; out |]; coeffs = [||] })
 
-    let gen_y =
-      Js.to_string
-        (Js.Optdef.get (Js.array_get curve 4) (fun () ->
-             raise GeneratorNotFoundInCurve ) ) in
+    let generic sl l sr r so o sm sc =
+      add_gate "generic"
+        (Basic { l = (sl, l); r = (sr, r); o = (so, o); m = sm; c = sc })
 
-    let order =
-      Js.to_string
-        (Js.Optdef.get (Js.array_get curve 5) (fun () ->
-             raise OrderNotFoundInCurve ) ) in
+    let poseidon state = add_gate "poseidon" (Poseidon { state })
 
-    let curve_params = Curve_params.from_strings (module Impl) a b modulus gen_x gen_y order in
-    curve_params_with_ia_points curve_params
+    let ec_add p1 p2 p3 inf same_x slope inf_z x21_inv =
+      add_gate "ec_add"
+        (EC_add_complete { p1; p2; p3; inf; same_x; slope; inf_z; x21_inv }) ;
+      (* TODO: do we need this? *)
+      p3
 
-  let add (left_input : t) (right_input : t)
-      (curve : Js.js_string Js.t Js.js_array Js.t) =
-    let external_checks = External_checks.create (module Impl) in
-    let ec = parse_ec curve in
-    ECG.add (module Impl) external_checks ec left_input right_input
+    let ec_scale state = add_gate "ec_scale" (EC_scale { state })
 
-  let scale (point : t) (scalar : Impl.Boolean.var array)
-      (curve : Js.js_string Js.t Js.js_array Js.t) =
-    let external_checks = External_checks.create (module Impl) in
-    let ec = parse_ec curve in
-    let scalar = Array.to_list scalar in
-    ECG.scalar_mul (module Impl) external_checks ec scalar point
-end
+    let ec_endoscale state xs ys n_acc =
+      add_gate "ec_endoscale" (EC_endoscale { state; xs; ys; n_acc })
 
-module Foreign_poseidon = struct
-  let to_unchecked (x : Impl_bn254.Field.t) =
-    match x with Constant y -> y | y -> Impl_bn254.As_prover.read_var y
+    let ec_endoscalar state = add_gate "ec_endoscalar" (EC_endoscalar { state })
 
-  module Poseidon_sponge_checked =
-    Sponge.Make_sponge (Pickles.Bn254_main_inputs.Sponge.Permutation)
-  module Poseidon_sponge =
-    Sponge.Make_sponge (Sponge.Poseidon (Pickles.Bn254_field_sponge.Inputs))
+    let lookup (w0, w1, w2, w3, w4, w5, w6) =
+      add_gate "lookup" (Lookup { w0; w1; w2; w3; w4; w5; w6 })
 
-  let sponge_params = Kimchi_bn254_basic.poseidon_params_fp
+    let range_check0 v0 (v0p0, v0p1, v0p2, v0p3, v0p4, v0p5)
+        (v0c0, v0c1, v0c2, v0c3, v0c4, v0c5, v0c6, v0c7) compact =
+      add_gate "range_check0"
+        (RangeCheck0
+           { (* Current row *) v0
+           ; v0p0
+           ; v0p1
+           ; v0p2
+           ; v0p3
+           ; v0p4
+           ; v0p5
+           ; v0c0
+           ; v0c1
+           ; v0c2
+           ; v0c3
+           ; v0c4
+           ; v0c5
+           ; v0c6
+           ; v0c7
+           ; (* Coefficients *)
+             compact
+           } )
 
-  let sponge_params_checked = Sponge.Params.map sponge_params ~f:Impl_bn254.Field.constant
+    let range_check1 v2 v12
+        ( v2c0
+        , v2p0
+        , v2p1
+        , v2p2
+        , v2p3
+        , v2c1
+        , v2c2
+        , v2c3
+        , v2c4
+        , v2c5
+        , v2c6
+        , v2c7
+        , v2c8 )
+        ( v2c9
+        , v2c10
+        , v2c11
+        , v0p0
+        , v0p1
+        , v1p0
+        , v1p1
+        , v2c12
+        , v2c13
+        , v2c14
+        , v2c15
+        , v2c16
+        , v2c17
+        , v2c18
+        , v2c19 ) =
+      add_gate "range_check1"
+        (RangeCheck1
+           { (* Current row *) v2
+           ; v12
+           ; v2c0
+           ; v2p0
+           ; v2p1
+           ; v2p2
+           ; v2p3
+           ; v2c1
+           ; v2c2
+           ; v2c3
+           ; v2c4
+           ; v2c5
+           ; v2c6
+           ; v2c7
+           ; v2c8
+           ; (* Next row *) v2c9
+           ; v2c10
+           ; v2c11
+           ; v0p0
+           ; v0p1
+           ; v1p0
+           ; v1p1
+           ; v2c12
+           ; v2c13
+           ; v2c14
+           ; v2c15
+           ; v2c16
+           ; v2c17
+           ; v2c18
+           ; v2c19
+           } )
 
-  type sponge =
-    | Checked of Poseidon_sponge_checked.t
-    | Unchecked of Poseidon_sponge.t
+    let xor in1 in2 out in1_0 in1_1 in1_2 in1_3 in2_0 in2_1 in2_2 in2_3 out_0
+        out_1 out_2 out_3 =
+      add_gate "xor"
+        (Xor
+           { in1
+           ; in2
+           ; out
+           ; in1_0
+           ; in1_1
+           ; in1_2
+           ; in1_3
+           ; in2_0
+           ; in2_1
+           ; in2_2
+           ; in2_3
+           ; out_0
+           ; out_1
+           ; out_2
+           ; out_3
+           } )
 
-  (* returns a "sponge" that stays opaque to JS *)
-  let sponge_create (is_checked : bool Js.t) : sponge =
-    if Js.to_bool is_checked then
-      Checked (Poseidon_sponge_checked.create ?init:None sponge_params_checked)
-    else Unchecked (Poseidon_sponge.create ?init:None sponge_params)
+    let foreign_field_add (left_input_lo, left_input_mi, left_input_hi)
+        (right_input_lo, right_input_mi, right_input_hi) field_overflow carry
+        (foreign_field_modulus0, foreign_field_modulus1, foreign_field_modulus2)
+        sign =
+      add_gate "foreign_field_add"
+        (ForeignFieldAdd
+           { left_input_lo
+           ; left_input_mi
+           ; left_input_hi
+           ; right_input_lo
+           ; right_input_mi
+           ; right_input_hi
+           ; field_overflow
+           ; carry
+           ; foreign_field_modulus0
+           ; foreign_field_modulus1
+           ; foreign_field_modulus2
+           ; sign
+           } )
 
-  let sponge_absorb (sponge : sponge) (field : Foreign_field_bn254.t) : unit =
-    (* TODO: make foreign to native field conversion univoque *)
-    let (f0, _, _) = Foreign_field_bn254.FF.Element.Standard.to_limbs field in
-    match sponge with
-    | Checked s ->
-      Poseidon_sponge_checked.absorb s f0
-    | Unchecked s ->
-      Poseidon_sponge.absorb s @@ to_unchecked f0
+    let foreign_field_mul (left_input0, left_input1, left_input2)
+        (right_input0, right_input1, right_input2) (remainder01, remainder2)
+        (quotient0, quotient1, quotient2) quotient_hi_bound
+        (product1_lo, product1_hi_0, product1_hi_1) carry0
+        ( carry1_0
+        , carry1_12
+        , carry1_24
+        , carry1_36
+        , carry1_48
+        , carry1_60
+        , carry1_72 ) (carry1_84, carry1_86, carry1_88, carry1_90)
+        foreign_field_modulus2
+        ( neg_foreign_field_modulus0
+        , neg_foreign_field_modulus1
+        , neg_foreign_field_modulus2 ) =
+      add_gate "foreign_field_mul"
+        (ForeignFieldMul
+           { left_input0
+           ; left_input1
+           ; left_input2
+           ; right_input0
+           ; right_input1
+           ; right_input2
+           ; remainder01
+           ; remainder2
+           ; quotient0
+           ; quotient1
+           ; quotient2
+           ; quotient_hi_bound
+           ; product1_lo
+           ; product1_hi_0
+           ; product1_hi_1
+           ; carry0
+           ; carry1_0
+           ; carry1_12
+           ; carry1_24
+           ; carry1_36
+           ; carry1_48
+           ; carry1_60
+           ; carry1_72
+           ; carry1_84
+           ; carry1_86
+           ; carry1_88
+           ; carry1_90
+           ; foreign_field_modulus2
+           ; neg_foreign_field_modulus0
+           ; neg_foreign_field_modulus1
+           ; neg_foreign_field_modulus2
+           } )
 
-  let sponge_squeeze (sponge : sponge) : Foreign_field_bn254.t =
-    let field = match sponge with
-      | Checked s ->
-        Poseidon_sponge_checked.squeeze s
-      | Unchecked s ->
-        Poseidon_sponge.squeeze s |> Impl_bn254.Field.constant in
-    let limbs = (field, Impl_bn254.Field.zero, Impl_bn254.Field.zero) in
-    Foreign_field_bn254.FF.Element.Standard.of_limbs limbs
+    let rotate word rotated excess
+        (bound_limb0, bound_limb1, bound_limb2, bound_limb3)
+        ( bound_crumb0
+        , bound_crumb1
+        , bound_crumb2
+        , bound_crumb3
+        , bound_crumb4
+        , bound_crumb5
+        , bound_crumb6
+        , bound_crumb7 ) two_to_rot =
+      add_gate "rot64"
+        (Rot64
+           { (* Current row *) word
+           ; rotated
+           ; excess
+           ; bound_limb0
+           ; bound_limb1
+           ; bound_limb2
+           ; bound_limb3
+           ; bound_crumb0
+           ; bound_crumb1
+           ; bound_crumb2
+           ; bound_crumb3
+           ; bound_crumb4
+           ; bound_crumb5
+           ; bound_crumb6
+           ; bound_crumb7 (* Coefficients *)
+           ; two_to_rot (* Rotation scalar 2^rot *)
+           } )
+
+    let add_fixed_lookup_table id data =
+      add_gate "add_fixed_lookup_table" (AddFixedLookupTable { id; data })
+
+    let add_runtime_table_config id first_column =
+      add_gate "add_runtime_table_config" (AddRuntimeTableCfg { id; first_column })
+
+    let raw kind values coeffs = add_gate "raw" (Raw { kind; values; coeffs })
+  end
+
+  module Bool = struct
+    let not x = Impl_bn254.Boolean.not x
+
+    let and_ x y = Impl_bn254.Boolean.(x &&& y)
+
+    let or_ x y = Impl_bn254.Boolean.(x ||| y)
+
+    let assert_equal x y = Impl_bn254.Boolean.Assert.(x = y)
+
+    let equals x y = Impl_bn254.Boolean.equal x y
+  end
+
+  module Circuit = struct
+    module Main = struct
+      let of_js (main : Impl_bn254.Field.t array -> unit) =
+        let main' public_input () = main public_input in
+        main'
+    end
+
+    let compile main public_input_size =
+      let input_typ = typ public_input_size in
+      let return_typ = Impl_bn254.Typ.unit in
+      let cs = Impl_bn254.constraint_system ~input_typ ~return_typ (Main.of_js main) in
+      Impl_bn254.Keypair.generate ~prev_challenges:0 cs
+
+    let prove main public_input_size public_input keypair =
+      let pk = Impl_bn254.Keypair.pk keypair in
+      let input_typ = typ public_input_size in
+      let return_typ = Impl_bn254.Typ.unit in
+      Impl_bn254.generate_witness_conv ~input_typ ~return_typ
+        ~f:(fun { Impl_bn254.Proof_inputs.auxiliary_inputs; public_inputs } () ->
+            Backend.Proof.create pk public_inputs auxiliary_inputs
+          )
+        (Main.of_js main) public_input
+
+    module Keypair = struct
+      let get_vk t = Impl_bn254.Keypair.vk t
+
+      external prover_to_json :
+        Kimchi_bindings.Protocol.Index.Bn254Fp.t -> Js.js_string Js.t
+        = "prover_to_json_bn254"
+
+      let get_cs_json t =
+        (Impl_bn254.Keypair.pk t).index |> prover_to_json |> Util.json_parse
+    end
+  end
 end
 
 let snarky =
@@ -536,24 +911,14 @@ let snarky =
 
     method existsVar = exists_var
 
-    method existsBn254 = exists_bn254
-
-    method existsVarBn254 = exists_var_bn254
-
     val run =
       let open Run in
       object%js
         method asProver = as_prover
 
-        method asProverBn254 = as_prover_bn254
-
         val inProverBlock = in_prover_block
 
-        val inProverBlockBn254 = in_prover_block_bn254
-
         method runAndCheck = run_and_check
-
-        method runAndCheckBn254 = run_and_check_bn254
 
         method runUnchecked = run_unchecked
 
@@ -592,24 +957,41 @@ let snarky =
         method toConstantAndTerms = to_constant_and_terms
       end
 
-    val fieldBn254 =
-      let open Field_bn254 in
+    val gates =
       object%js
-        method assertEqual = assert_equal
+        method zero = Gates.zero
 
-        method assertMul = assert_mul
+        method generic = Gates.generic
 
-        method assertBoolean = assert_boolean
+        method poseidon = Gates.poseidon
 
-        method readVar = read_var
+        method ecAdd = Gates.ec_add
 
-        method toBits = to_bits
+        method ecScale = Gates.ec_scale
 
-        method fromBits = from_bits
+        method ecEndoscale = Gates.ec_endoscale
 
-        method add = add
+        method ecEndoscalar = Gates.ec_endoscalar
 
-        method scale = scale
+        method lookup = Gates.lookup
+
+        method rangeCheck0 = Gates.range_check0
+
+        method rangeCheck1 = Gates.range_check1
+
+        method xor = Gates.xor
+
+        method foreignFieldAdd = Gates.foreign_field_add
+
+        method foreignFieldMul = Gates.foreign_field_mul
+
+        method rotate = Gates.rotate
+
+        method addFixedLookupTable = Gates.add_fixed_lookup_table
+
+        method addRuntimeTableConfig = Gates.add_runtime_table_config
+
+        method raw = Gates.raw
       end
 
     val bool =
@@ -625,23 +1007,8 @@ let snarky =
         method equals = Bool.equals
       end
 
-    val boolBn254 =
-      object%js
-        method not = Bool_bn254.not
-
-        method and_ = Bool_bn254.and_
-
-        method or_ = Bool_bn254.or_
-
-        method assertEqual = Bool_bn254.assert_equal
-
-        method equals = Bool_bn254.equals
-      end
-
     val group =
       object%js
-        method ecadd = Group.ec_add
-
         method scale = Group.scale
       end
 
@@ -661,20 +1028,6 @@ let snarky =
           end
       end
 
-    val circuitBn254 =
-      object%js
-        method compile = Circuit_bn254.compile
-
-        method prove = Circuit_bn254.prove
-
-        val keypair =
-          object%js
-            method getVerificationKey = Circuit_bn254.Keypair.get_vk
-
-            method getConstraintSystemJSON = Circuit_bn254.Keypair.get_cs_json
-          end
-      end
-
     val poseidon =
       object%js
         method update = Poseidon.update
@@ -689,41 +1042,126 @@ let snarky =
 
             method squeeze = Poseidon.sponge_squeeze
           end
+      end
+  end
 
-        val foreignSponge =
+(* Bn254 bindings for o1js *)
+
+open Snarky_bn254
+
+let snarkyBn254 =
+  object%js
+    method exists = exists
+
+    method existsVar = exists_var
+
+    val run =
+      let open Run in
+      object%js
+        method asProver = as_prover
+
+        val inProverBlock = in_prover_block
+
+        method runAndCheck = run_and_check
+
+        method runUnchecked = run_unchecked
+
+        method constraintSystem = constraint_system
+      end
+
+    val field =
+      let open Field' in
+      object%js
+        method add = add
+
+        method scale = scale
+
+        method mul = mul
+
+        method readVar = read_var
+
+        method assertEqual = assert_equal
+
+        method assertMul = assert_mul
+
+        method assertSquare = assert_square
+
+        method assertBoolean = assert_boolean
+
+        method compare = compare
+
+        method toBits = to_bits
+
+        method fromBits = from_bits
+
+        method truncateToBits16 = truncate_to_bits16
+
+        method seal = seal
+
+        method toConstantAndTerms = to_constant_and_terms
+      end
+
+    val gates =
+      object%js
+        method zero = Gates.zero
+
+        method generic = Gates.generic
+
+        method poseidon = Gates.poseidon
+
+        method ecAdd = Gates.ec_add
+
+        method ecScale = Gates.ec_scale
+
+        method ecEndoscale = Gates.ec_endoscale
+
+        method ecEndoscalar = Gates.ec_endoscalar
+
+        method lookup = Gates.lookup
+
+        method rangeCheck0 = Gates.range_check0
+
+        method rangeCheck1 = Gates.range_check1
+
+        method xor = Gates.xor
+
+        method foreignFieldAdd = Gates.foreign_field_add
+
+        method foreignFieldMul = Gates.foreign_field_mul
+
+        method rotate = Gates.rotate
+
+        method addFixedLookupTable = Gates.add_fixed_lookup_table
+
+        method addRuntimeTableConfig = Gates.add_runtime_table_config
+
+        method raw = Gates.raw
+      end
+
+    val bool =
+      object%js
+        method not = Bool.not
+
+        method and_ = Bool.and_
+
+        method or_ = Bool.or_
+
+        method assertEqual = Bool.assert_equal
+
+        method equals = Bool.equals
+      end
+
+    val circuit =
+      object%js
+        method compile = Circuit.compile
+
+        method prove = Circuit.prove
+
+        val keypair =
           object%js
-            method create = Foreign_poseidon.sponge_create
+            method getVerificationKey = Circuit.Keypair.get_vk
 
-            method absorb = Foreign_poseidon.sponge_absorb
-
-            method squeeze = Foreign_poseidon.sponge_squeeze
+            method getConstraintSystemJSON = Circuit.Keypair.get_cs_json
           end
-      end
-
-    val foreignField =
-      let open Foreign_field in
-      object%js
-        val assertValidElement = assert_valid_element
-
-        val sumChain = sum_chain
-
-        val mul = mul
-      end
-
-    val foreignFieldBn254 =
-      let open Foreign_field_bn254 in
-      object%js
-        val assertValidElement = assert_valid_element
-
-        val sumChain = sum_chain
-
-        val mul = mul
-      end
-
-    val foreignGroup =
-      let open EC_group in
-      object%js
-        val add = add
-        val scale = scale
       end
   end

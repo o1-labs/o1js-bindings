@@ -4,8 +4,6 @@ export default [
     props: [
       { name: 'exists', type: 'function' },
       { name: 'existsVar', type: 'function' },
-      { name: 'existsBn254', type: 'function' },
-      { name: 'existsVarBn254', type: 'function' },
       {
         name: 'run',
         type: 'object',
@@ -15,15 +13,11 @@ export default [
         type: 'object',
       },
       {
-        name: 'fieldBn254',
+        name: 'gates',
         type: 'object',
       },
       {
         name: 'bool',
-        type: 'object',
-      },
-      {
-        name: 'boolBn254',
         type: 'object',
       },
       {
@@ -35,10 +29,6 @@ export default [
         type: 'object',
       },
       {
-        name: 'circuitBn254',
-        type: 'object',
-      },
-      {
         name: 'poseidon',
         type: 'object',
       },
@@ -47,7 +37,46 @@ export default [
         type: 'object',
       },
       {
-        name: 'foreignFieldBn254',
+        name: 'foreignGroup',
+        type: 'object',
+      },
+    ],
+  },
+  {
+    name: 'SnarkyBn254',
+    props: [
+      { name: 'exists', type: 'function' },
+      { name: 'existsVar', type: 'function' },
+      {
+        name: 'run',
+        type: 'object',
+      },
+      {
+        name: 'field',
+        type: 'object',
+      },
+      {
+        name: 'gates',
+        type: 'object',
+      },
+      {
+        name: 'bool',
+        type: 'object',
+      },
+      {
+        name: 'group',
+        type: 'object',
+      },
+      {
+        name: 'circuit',
+        type: 'object',
+      },
+      {
+        name: 'poseidon',
+        type: 'object',
+      },
+      {
+        name: 'foreignField',
         type: 'object',
       },
       {

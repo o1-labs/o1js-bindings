@@ -113,6 +113,22 @@ function workerSpec(wasm) {
       args: [undefined /* UintXArray */, undefined /* UintXArray */],
       res: bool,
     },
+    caml_fp_srs_create_parallel: {
+      args: [undefined /*number*/],
+      res: wasm.WasmFpSrs,
+    },
+    caml_fq_srs_create_parallel: {
+      args: [undefined /*number*/],
+      res: wasm.WasmFqSrs,
+    },
+    caml_fp_srs_get_lagrange_basis: {
+      args: [wasm.WasmFpSrs, undefined /* number */],
+      res: undefined /* UintXArray */,
+    },
+    caml_fq_srs_get_lagrange_basis: {
+      args: [wasm.WasmFqSrs, undefined /* number */],
+      res: undefined /* UintXArray */,
+    },
     caml_fp_srs_b_poly_commitment: {
       args: [wasm.WasmFpSrs, undefined /*Uint8Array*/],
       res: wasm.WasmFpPolyComm,

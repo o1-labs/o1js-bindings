@@ -5,11 +5,11 @@
 
 (data_only_dirs test_module)
 
-(vendored_dirs snarkyjs)
+(vendored_dirs o1js)
 
 (executable
- (name snarky_js_node)
- (modules snarky_js_node)
+ (name o1js_node)
+ (modules o1js_node)
  (modes js)
  (flags (-g))
  (link_flags
@@ -24,10 +24,10 @@
    --no-inline)
   (link_flags --source-map)
   (javascript_files overrides.js))
- (libraries snarky_js_bindings_lib node_backend)
+ (libraries o1js_bindings_lib bindings_js.node_backend)
  (link_deps
-  ../kimchi/js/node_js/plonk_wasm.js
-  ../kimchi/js/node_js/plonk_wasm_bg.wasm)
+  ../../mina/src/lib/crypto/kimchi_bindings/js/node_js/plonk_wasm.js
+  ../../mina/src/lib/crypto/kimchi_bindings/js/node_js/plonk_wasm_bg.wasm)
  (instrumentation
   (backend bisect_ppx))
  (forbidden_libraries async core re2 ctypes)
@@ -35,17 +35,17 @@
   (pps ppx_version js_of_ocaml-ppx)))
 
 (executable
- (name snarky_js_web)
- (modules snarky_js_web)
+ (name o1js_web)
+ (modules o1js_web)
  (modes js)
  (link_flags (-noautolink))
  (js_of_ocaml
   (flags +toplevel.js +dynlink.js --pretty --debug-info --no-inline)
   (javascript_files overrides.js))
- (libraries snarky_js_bindings_lib web_backend)
+ (libraries o1js_bindings_lib bindings_js.web_backend)
  (link_deps
-  ../kimchi/js/web/plonk_wasm.js
-  ../kimchi/js/web/plonk_wasm_bg.wasm)
+  ../../mina/src/lib/crypto/kimchi_bindings/js/web/plonk_wasm.js
+  ../../mina/src/lib/crypto/kimchi_bindings/js/web/plonk_wasm_bg.wasm)
  (instrumentation
   (backend bisect_ppx))
  (forbidden_libraries async core re2 ctypes)
@@ -53,11 +53,11 @@
   (pps ppx_version js_of_ocaml-ppx)))
 
 (executable
- (name snarky_js_types)
- (modules snarky_js_types)
+ (name o1js_types)
+ (modules o1js_types)
  (link_flags (-linkall))
  (modes native)
- (libraries mina_base fields_derivers_zkapps yojson)
+ (libraries mina_base fields_derivers.zkapps yojson)
  (instrumentation
   (backend bisect_ppx))
  (preprocess
@@ -68,11 +68,11 @@
  (action
   (with-stdout-to
    jsLayout.json
-   (run %{exe:./snarky_js_types.exe}))))
+   (run %{exe:./o1js_types.exe}))))
 
 (executable
- (name snarky_js_constants)
- (modules snarky_js_constants)
+ (name o1js_constants)
+ (modules o1js_constants)
  (link_flags (-linkall))
  (modes native)
  (libraries
@@ -86,7 +86,8 @@
   pickles
   random_oracle
   random_oracle.permutation.ocaml
-  yojson)
+  yojson
+  protocol_version)
  (instrumentation
   (backend bisect_ppx))
  (preprocess
