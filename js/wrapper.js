@@ -10,10 +10,4 @@ CJS: if (typeof require !== 'undefined') {
 ESM: snarky = (await import('../compiled/_node_bindings/o1js_node.bc.cjs'))
   .default;
 
-export { getSnarky, getWasm, withThreadPool };
-
-let getSnarky = () => snarky;
-
-function getWasm() {
-  return wasm;
-}
+export { snarky, wasm, withThreadPool };
