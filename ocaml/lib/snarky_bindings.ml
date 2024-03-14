@@ -25,26 +25,12 @@ let empty_typ : (_, _, unit, field, _) Impl.Internal_Basic.Typ.typ' =
 let typ (size_in_field_elements : int) : (Field.t array, field array) Typ.t =
   Typ { empty_typ with size_in_field_elements }
 
-let exists (size_in_fields : int) (compute : unit -> Field.Constant.t array) =
-  Impl.exists (typ size_in_fields) ~compute
-
-let exists_var (compute : unit -> Field.Constant.t) =
-  Impl.exists Field.typ ~compute
-
 module Run = struct
-  module State = struct
-    let alloc_var state = Run_state.alloc_var state ()
+  let exists (size_in_fields : int) (compute : unit -> Field.Constant.t array) =
+    Impl.exists (typ size_in_fields) ~compute
 
-    let store_field_elt state x = Run_state.store_field_elt state x
-
-    let as_prover state = Run_state.as_prover state
-
-    let set_as_prover state b = Run_state.set_as_prover state b
-
-    let has_witness state = Run_state.has_witness state
-
-    let get_variable_value state i = Run_state.get_variable_value state i
-  end
+  let exists_one (compute : unit -> Field.Constant.t) =
+    Impl.exists Field.typ ~compute
 
   let in_prover () = Impl.in_prover ()
 
@@ -72,6 +58,20 @@ module Run = struct
     finish
 
   let enter_as_prover size = Impl.as_prover_manual size |> Staged.unstage
+
+  module State = struct
+    let alloc_var state = Run_state.alloc_var state ()
+
+    let store_field_elt state x = Run_state.store_field_elt state x
+
+    let as_prover state = Run_state.as_prover state
+
+    let set_as_prover state b = Run_state.set_as_prover state b
+
+    let has_witness state = Run_state.has_witness state
+
+    let get_variable_value state i = Run_state.get_variable_value state i
+  end
 end
 
 module Constraint_system = struct
@@ -472,27 +472,12 @@ end
 
 let snarky =
   object%js
-    method exists = exists
-
-    method existsVar = exists_var
-
     val run =
       let open Run in
       object%js
-        val state =
-          object%js
-            val allocVar = State.alloc_var
+        method exists = exists
 
-            val storeFieldElt = State.store_field_elt
-
-            val asProver = State.as_prover
-
-            val setAsProver = State.set_as_prover
-
-            val hasWitness = State.has_witness
-
-            val getVariableValue = State.get_variable_value
-          end
+        method existsOne = exists_one
 
         val inProver = in_prover
 
@@ -507,6 +492,21 @@ let snarky =
         val enterGenerateWitness = enter_generate_witness
 
         val enterAsProver = enter_as_prover
+
+        val state =
+          object%js
+            val allocVar = State.alloc_var
+
+            val storeFieldElt = State.store_field_elt
+
+            val asProver = State.as_prover
+
+            val setAsProver = State.set_as_prover
+
+            val hasWitness = State.has_witness
+
+            val getVariableValue = State.get_variable_value
+          end
       end
 
     val constraintSystem =

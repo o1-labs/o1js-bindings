@@ -12,10 +12,20 @@ module Poseidon : sig
 end
 
 val snarky :
-  < exists : (int -> (unit -> field array) -> Field.t array) Js.meth
-  ; existsVar : ((unit -> field) -> Field.t) Js.meth
-  ; run :
-      < state :
+  < run :
+      < exists : (int -> (unit -> field array) -> Field.t array) Js.meth
+      ; existsOne : ((unit -> field) -> Field.t) Js.meth
+      ; inProver : (unit -> bool) Js.readonly_prop
+      ; asProver : ((unit -> unit) -> unit) Js.meth
+      ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
+      ; setEvalConstraints : (bool -> unit) Js.readonly_prop
+      ; enterConstraintSystem :
+          (unit -> unit -> Backend.R1CS_constraint_system.t) Js.readonly_prop
+      ; enterGenerateWitness :
+          (unit -> unit -> Impl.Proof_inputs.t) Js.readonly_prop
+      ; enterAsProver :
+          (int -> field array option -> Field.t array) Js.readonly_prop
+      ; state :
           < allocVar :
               (field Run_state.t -> field Snarky_backendless.Cvar.t)
               Js.readonly_prop
@@ -28,17 +38,7 @@ val snarky :
           ; getVariableValue :
               (field Run_state.t -> int -> field) Js.readonly_prop >
           Js.t
-          Js.readonly_prop
-      ; inProver : (unit -> bool) Js.readonly_prop
-      ; asProver : ((unit -> unit) -> unit) Js.meth
-      ; inProverBlock : (unit -> bool Js.t) Js.readonly_prop
-      ; setEvalConstraints : (bool -> unit) Js.readonly_prop
-      ; enterConstraintSystem :
-          (unit -> unit -> Backend.R1CS_constraint_system.t) Js.readonly_prop
-      ; enterGenerateWitness :
-          (unit -> unit -> Impl.Proof_inputs.t) Js.readonly_prop
-      ; enterAsProver :
-          (int -> field array option -> Field.t array) Js.readonly_prop >
+          Js.readonly_prop >
       Js.t
       Js.readonly_prop
   ; constraintSystem :
