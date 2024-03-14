@@ -48,23 +48,13 @@ val snarky :
       Js.t
       Js.readonly_prop
   ; field :
-      < add : (Field.t -> Field.t -> Field.t) Js.meth
-      ; assertEqual : (Field.t -> Field.t -> unit) Js.meth
+      < assertEqual : (Field.t -> Field.t -> unit) Js.meth
       ; assertMul : (Field.t -> Field.t -> Field.t -> unit) Js.meth
       ; assertSquare : (Field.t -> Field.t -> unit) Js.meth
       ; assertBoolean : (Field.t -> unit) Js.meth
       ; compare :
           (int -> Field.t -> Field.t -> Boolean.var * Boolean.var) Js.meth
-      ; fromBits : (Boolean.var array -> Field.t) Js.meth
-      ; mul : (Field.t -> Field.t -> Field.t) Js.meth
       ; readVar : (Field.t -> field) Js.meth
-      ; scale : (field -> Field.t -> Field.t) Js.meth
-      ; seal :
-          (field Snarky_backendless.Cvar.t -> field Snarky_backendless.Cvar.t)
-          Js.meth
-      ; toBits : (int -> Field.t -> Boolean.var array) Js.meth
-      ; toConstantAndTerms :
-          (Field.t -> field option * (field * int) list) Js.meth
       ; truncateToBits16 :
           (   int
            -> field Snarky_backendless.Cvar.t

@@ -85,15 +85,6 @@ module Constraint_system = struct
 end
 
 module Field' = struct
-  (** add x, y to get a new AST node Add(x, y); handles if x, y are constants *)
-  let add x y = Field.add x y
-
-  (** scale x by a constant to get a new AST node Scale(c, x); handles if x is a constant; handles c=0,1 *)
-  let scale c x = Field.scale x c
-
-  (** witnesses z = x*y and constrains it with [assert_r1cs]; handles constants *)
-  let mul x y = Field.mul x y
-
   (** evaluates a CVar by unfolding the AST and reading Vars from a list of public input + aux values *)
   let read_var (x : Field.t) = As_prover.read_var x
 
@@ -117,11 +108,6 @@ module Field' = struct
     in
     (less, less_or_equal)
 
-  let to_bits (length : int) x =
-    Field.choose_preimage_var ~length x |> Array.of_list
-
-  let from_bits bits = Array.to_list bits |> Field.project
-
   (** returns x truncated to the lowest [16 * length_div_16] bits
        => can be used to assert that x fits in [16 * length_div_16] bits.
 
@@ -135,11 +121,6 @@ module Field' = struct
         { inner = x }
     in
     x0
-
-  (* can be implemented with Field.to_constant_and_terms *)
-  let seal x = Pickles.Util.seal (module Impl) x
-
-  let to_constant_and_terms x = Field.to_constant_and_terms x
 end
 
 let add_gate (label : string) gate =
@@ -540,12 +521,6 @@ let snarky =
     val field =
       let open Field' in
       object%js
-        method add = add
-
-        method scale = scale
-
-        method mul = mul
-
         method readVar = read_var
 
         method assertEqual = assert_equal
@@ -558,15 +533,7 @@ let snarky =
 
         method compare = compare
 
-        method toBits = to_bits
-
-        method fromBits = from_bits
-
         method truncateToBits16 = truncate_to_bits16
-
-        method seal = seal
-
-        method toConstantAndTerms = to_constant_and_terms
       end
 
     val gates =
