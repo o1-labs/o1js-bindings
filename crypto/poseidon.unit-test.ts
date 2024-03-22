@@ -5,7 +5,7 @@ import { expect } from 'expect';
 import { bigIntToBytes, parseHexString32 } from './bigint-helpers.js';
 import { test, Random } from '../../lib/testing/property.js';
 import { Test } from '../../snarky.js';
-import { FieldConst } from '../../lib/field.js';
+import { FieldConst } from '../../lib/provable-core/fieldvar.js';
 import { MlArray } from '../../lib/ml/base.js';
 
 function checkTestVectors(
