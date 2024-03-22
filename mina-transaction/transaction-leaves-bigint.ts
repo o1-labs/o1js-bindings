@@ -4,15 +4,15 @@ import {
   UInt32,
   UInt64,
   Sign,
-} from '../../provable/field-bigint.js';
-import { PublicKey } from '../../provable/curve-bigint.js';
+} from '../../mina-signer/src/field-bigint.js';
+import { PublicKey } from '../../mina-signer/src/curve-bigint.js';
 import { derivedLeafTypesSignable } from './derived-leaves.js';
 import { createEvents } from '../../lib/events.js';
 import {
   Poseidon,
   HashHelpers,
   packToFields,
-} from '../../provable/poseidon-bigint.js';
+} from '../../mina-signer/src/poseidon-bigint.js';
 import { mocks, protocolVersions } from '../crypto/constants.js';
 
 export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
