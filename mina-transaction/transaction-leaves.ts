@@ -9,7 +9,7 @@ import {
   packToFields,
   emptyHashWithPrefix,
 } from '../../lib/hash.js';
-import { provable } from '../../lib/circuit-value.js';
+import { provable } from '../../lib/provable-types/circuit-value.js';
 import { mocks, protocolVersions } from '../crypto/constants.js';
 
 export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
