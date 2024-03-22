@@ -26,13 +26,12 @@ type GenericProvable<T, Field> = {
   sizeInFields(): number;
   check: (x: T) => void;
 };
-interface GenericProvablePure<T, Field> extends GenericProvable<T, Field> {
-  toFields: (x: T) => Field[];
-  toAuxiliary: (x?: T) => any[];
+type GenericProvablePure<T, Field> = Omit<
+  GenericProvable<T, Field>,
+  'fromFields'
+> & {
   fromFields: (x: Field[]) => T;
-  sizeInFields(): number;
-  check: (x: T) => void;
-}
+};
 
 type GenericSignable<T, TJson, Field> = {
   toInput: (x: T) => { fields?: Field[]; packed?: [Field, number][] };
