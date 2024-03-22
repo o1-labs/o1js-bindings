@@ -10,7 +10,7 @@ import { BinableWithBits, defineBinable, withBits } from './binable.js';
 export {
   signable,
   ProvableExtended,
-  ProvableBigint,
+  SignableBigint,
   BinableBigint,
   HashInput,
   Signable,
@@ -24,7 +24,7 @@ type Signable<T, J> = GenericSignable<T, J, Field>;
 type ProvableExtended<T, J> = GenericProvableExtended<T, J, Field>;
 type HashInput = GenericHashInput<Field>;
 
-function ProvableBigint<
+function SignableBigint<
   T extends bigint = bigint,
   TJSON extends string = string
 >(check: (x: bigint) => void): Signable<T, TJSON> {
