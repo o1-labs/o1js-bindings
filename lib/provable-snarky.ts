@@ -1,4 +1,7 @@
-import { Provable, ProvablePure } from '../../snarky.js';
+import {
+  Provable,
+  ProvablePure,
+} from '../../lib/provable-types/provable-intf.js';
 import { Field } from '../../lib/core.js';
 import {
   createDerivers,
