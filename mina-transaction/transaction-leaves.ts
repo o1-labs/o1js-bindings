@@ -1,6 +1,6 @@
 import { Field, Bool } from '../../lib/provable/core.js';
 import { UInt32, UInt64, Sign } from '../../lib/provable/int.js';
-import { PublicKey } from '../../lib/provable/signature.js';
+import { PublicKey } from '../../lib/provable/crypto/signature.js';
 import { derivedLeafTypes } from './derived-leaves.js';
 import { createEvents } from '../../lib/mina/events.js';
 import {
@@ -8,7 +8,7 @@ import {
   HashHelpers,
   packToFields,
   emptyHashWithPrefix,
-} from '../../lib/provable/hash.js';
+} from '../../lib/provable/crypto/poseidon.js';
 import { provable } from '../../lib/provable/types/struct.js';
 import { mocks, protocolVersions } from '../crypto/constants.js';
 
