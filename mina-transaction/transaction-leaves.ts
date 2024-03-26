@@ -1,4 +1,4 @@
-import { Field, Bool } from '../../lib/provable/core.js';
+import { Field, Bool } from '../../lib/provable/wrapped.js';
 import { UInt32, UInt64, Sign } from '../../lib/provable/int.js';
 import { PublicKey } from '../../lib/provable/crypto/signature.js';
 import { derivedLeafTypes } from './derived-leaves.js';
