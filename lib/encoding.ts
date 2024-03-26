@@ -1,5 +1,5 @@
 import { bytesToBigInt, changeBase } from '../crypto/bigint-helpers.js';
-import { Field } from '../../lib/core.js';
+import { Field } from '../../lib/provable/core.js';
 
 export {
   stringToFields,
