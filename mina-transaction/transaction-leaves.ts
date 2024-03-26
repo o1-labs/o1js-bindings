@@ -2,7 +2,7 @@ import { Field, Bool } from '../../lib/core.js';
 import { UInt32, UInt64, Sign } from '../../lib/int.js';
 import { PublicKey } from '../../lib/signature.js';
 import { derivedLeafTypes } from './derived-leaves.js';
-import { createEvents } from '../../lib/events.js';
+import { createEvents } from '../../lib/mina/events.js';
 import {
   Poseidon,
   HashHelpers,
