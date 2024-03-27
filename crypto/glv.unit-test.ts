@@ -1,4 +1,4 @@
-import { assert } from '../../lib/errors.js';
+import { assert } from '../../lib/util/errors.js';
 import { CurveParams } from './elliptic-curve-examples.js';
 import { createCurveAffine } from './elliptic-curve.js';
 import { computeGlvData, decompose } from './elliptic-curve-endomorphism.js';

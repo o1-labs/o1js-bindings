@@ -7,7 +7,7 @@ import {
 } from '../../mina-signer/src/field-bigint.js';
 import { PublicKey } from '../../mina-signer/src/curve-bigint.js';
 import { derivedLeafTypesSignable } from './derived-leaves.js';
-import { createEvents } from '../../lib/events.js';
+import { createEvents } from '../../lib/mina/events.js';
 import {
   Poseidon,
   HashHelpers,

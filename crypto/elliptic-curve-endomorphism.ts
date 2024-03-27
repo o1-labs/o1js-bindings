@@ -1,4 +1,4 @@
-import { assert } from '../../lib/errors.js';
+import { assert } from '../../lib/util/errors.js';
 import { abs, bigIntToBits, log2, max, sign } from './bigint-helpers.js';
 import {
   GroupAffine,
