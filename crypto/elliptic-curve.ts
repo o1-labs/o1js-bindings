@@ -11,6 +11,7 @@ import {
 import { Endomorphism } from './elliptic-curve-endomorphism.js';
 export {
   Pallas,
+  PallasAffine,
   Vesta,
   CurveParams,
   GroupAffine,
@@ -504,6 +505,17 @@ function affineScale(g: GroupAffine, s: bigint | boolean[], p: bigint) {
 }
 
 type CurveAffine = ReturnType<typeof createCurveAffine>;
+
+const PallasAffine = createCurveAffine({
+  name: 'Pallas',
+  modulus: p,
+  order: q,
+  generator: pallasGeneratorProjective,
+  b,
+  a,
+  endoBase: pallasEndoBase,
+  endoScalar: pallasEndoScalar,
+});
 
 function createCurveAffine({
   name,
