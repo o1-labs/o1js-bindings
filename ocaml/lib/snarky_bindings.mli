@@ -222,10 +222,13 @@ val snarky :
       Js.readonly_prop
   ; group :
       < scale :
-          (   field Snarky_backendless.Cvar.t Tuple_lib.Double.t
-           -> Boolean.var array
-           -> Pickles.Step_main_inputs.Inner_curve.t )
-          Js.meth >
+          (Field.t * Field.t -> Boolean.var array -> Field.t * Field.t) Js.meth
+      ; scaleFastUnpack :
+          (   Field.t * Field.t
+           -> Field.t Pickles_types.Shifted_value.Type1.t
+           -> int
+           -> (Field.t * Field.t) * Boolean.var array )
+          Js.readonly_prop >
       Js.t
       Js.readonly_prop
   ; poseidon :
