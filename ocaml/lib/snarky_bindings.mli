@@ -221,9 +221,7 @@ val snarky :
       Js.t
       Js.readonly_prop
   ; group :
-      < scale :
-          (Field.t * Field.t -> Boolean.var array -> Field.t * Field.t) Js.meth
-      ; scaleFastUnpack :
+      < scaleFastUnpack :
           (   Field.t * Field.t
            -> Field.t Pickles_types.Shifted_value.Type1.t
            -> int
