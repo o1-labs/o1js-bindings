@@ -1,15 +1,15 @@
-import { Field, Bool } from '../../lib/core.js';
-import { UInt32, UInt64, Sign } from '../../lib/int.js';
-import { PublicKey } from '../../lib/signature.js';
+import { Field, Bool } from '../../lib/provable/wrapped.js';
+import { UInt32, UInt64, Sign } from '../../lib/provable/int.js';
+import { PublicKey } from '../../lib/provable/crypto/signature.js';
 import { derivedLeafTypes } from './derived-leaves.js';
-import { createEvents } from '../../lib/events.js';
+import { createEvents } from '../../lib/mina/events.js';
 import {
   Poseidon,
   HashHelpers,
   packToFields,
   emptyHashWithPrefix,
-} from '../../lib/hash.js';
-import { provable } from '../../lib/circuit-value.js';
+} from '../../lib/provable/crypto/poseidon.js';
+import { provable } from '../../lib/provable/types/struct.js';
 import { mocks, protocolVersions } from '../crypto/constants.js';
 
 export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };

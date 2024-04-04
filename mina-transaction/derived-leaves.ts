@@ -14,9 +14,9 @@ import {
   stringLengthInBytes,
   stringToBytes,
 } from '../lib/binable.js';
-import { Base58, fieldEncodings } from '../../lib/base58.js';
-import { dataAsHash } from '../../lib/events.js';
-import { HashHelpers } from '../../lib/hash-generic.js';
+import { Base58, fieldEncodings } from '../../lib/util/base58.js';
+import { dataAsHash } from '../../lib/mina/events.js';
+import { HashHelpers } from '../../lib/provable/crypto/hash-generic.js';
 import { prefixes } from '../crypto/constants.js';
 
 export { derivedLeafTypes, derivedLeafTypesSignable, tokenSymbolLength };

@@ -25,26 +25,12 @@ let empty_typ : (_, _, unit, field, _) Impl.Internal_Basic.Typ.typ' =
 let typ (size_in_field_elements : int) : (Field.t array, field array) Typ.t =
   Typ { empty_typ with size_in_field_elements }
 
-let exists (size_in_fields : int) (compute : unit -> Field.Constant.t array) =
-  Impl.exists (typ size_in_fields) ~compute
-
-let exists_var (compute : unit -> Field.Constant.t) =
-  Impl.exists Field.typ ~compute
-
 module Run = struct
-  module State = struct
-    let alloc_var state = Run_state.alloc_var state ()
+  let exists (size_in_fields : int) (compute : unit -> Field.Constant.t array) =
+    Impl.exists (typ size_in_fields) ~compute
 
-    let store_field_elt state x = Run_state.store_field_elt state x
-
-    let as_prover state = Run_state.as_prover state
-
-    let set_as_prover state b = Run_state.set_as_prover state b
-
-    let has_witness state = Run_state.has_witness state
-
-    let get_variable_value state i = Run_state.get_variable_value state i
-  end
+  let exists_one (compute : unit -> Field.Constant.t) =
+    Impl.exists Field.typ ~compute
 
   let in_prover () = Impl.in_prover ()
 
@@ -72,6 +58,20 @@ module Run = struct
     finish
 
   let enter_as_prover size = Impl.as_prover_manual size |> Staged.unstage
+
+  module State = struct
+    let alloc_var state = Run_state.alloc_var state ()
+
+    let store_field_elt state x = Run_state.store_field_elt state x
+
+    let as_prover state = Run_state.as_prover state
+
+    let set_as_prover state b = Run_state.set_as_prover state b
+
+    let has_witness state = Run_state.has_witness state
+
+    let get_variable_value state i = Run_state.get_variable_value state i
+  end
 end
 
 module Constraint_system = struct
@@ -85,15 +85,6 @@ module Constraint_system = struct
 end
 
 module Field' = struct
-  (** add x, y to get a new AST node Add(x, y); handles if x, y are constants *)
-  let add x y = Field.add x y
-
-  (** scale x by a constant to get a new AST node Scale(c, x); handles if x is a constant; handles c=0,1 *)
-  let scale c x = Field.scale x c
-
-  (** witnesses z = x*y and constrains it with [assert_r1cs]; handles constants *)
-  let mul x y = Field.mul x y
-
   (** evaluates a CVar by unfolding the AST and reading Vars from a list of public input + aux values *)
   let read_var (x : Field.t) = As_prover.read_var x
 
@@ -117,11 +108,6 @@ module Field' = struct
     in
     (less, less_or_equal)
 
-  let to_bits (length : int) x =
-    Field.choose_preimage_var ~length x |> Array.of_list
-
-  let from_bits bits = Array.to_list bits |> Field.project
-
   (** returns x truncated to the lowest [16 * length_div_16] bits
        => can be used to assert that x fits in [16 * length_div_16] bits.
 
@@ -135,11 +121,6 @@ module Field' = struct
         { inner = x }
     in
     x0
-
-  (* can be implemented with Field.to_constant_and_terms *)
-  let seal x = Pickles.Util.seal (module Impl) x
-
-  let to_constant_and_terms x = Field.to_constant_and_terms x
 end
 
 let add_gate (label : string) gate =
@@ -394,18 +375,6 @@ module Gates = struct
   let raw kind values coeffs = add_gate "raw" (Raw { kind; values; coeffs })
 end
 
-module Bool = struct
-  let not x = Boolean.not x
-
-  let and_ x y = Boolean.(x &&& y)
-
-  let or_ x y = Boolean.(x ||| y)
-
-  let assert_equal x y = Boolean.Assert.(x = y)
-
-  let equals x y = Boolean.equal x y
-end
-
 module Group = struct
   let scale p (scalar_bits : Boolean.var array) =
     Pickles.Step_main_inputs.Ops.scale_fast_msb_bits p
@@ -503,27 +472,12 @@ end
 
 let snarky =
   object%js
-    method exists = exists
-
-    method existsVar = exists_var
-
     val run =
       let open Run in
       object%js
-        val state =
-          object%js
-            val allocVar = State.alloc_var
+        method exists = exists
 
-            val storeFieldElt = State.store_field_elt
-
-            val asProver = State.as_prover
-
-            val setAsProver = State.set_as_prover
-
-            val hasWitness = State.has_witness
-
-            val getVariableValue = State.get_variable_value
-          end
+        method existsOne = exists_one
 
         val inProver = in_prover
 
@@ -538,6 +492,21 @@ let snarky =
         val enterGenerateWitness = enter_generate_witness
 
         val enterAsProver = enter_as_prover
+
+        val state =
+          object%js
+            val allocVar = State.alloc_var
+
+            val storeFieldElt = State.store_field_elt
+
+            val asProver = State.as_prover
+
+            val setAsProver = State.set_as_prover
+
+            val hasWitness = State.has_witness
+
+            val getVariableValue = State.get_variable_value
+          end
       end
 
     val constraintSystem =
@@ -552,12 +521,6 @@ let snarky =
     val field =
       let open Field' in
       object%js
-        method add = add
-
-        method scale = scale
-
-        method mul = mul
-
         method readVar = read_var
 
         method assertEqual = assert_equal
@@ -570,15 +533,7 @@ let snarky =
 
         method compare = compare
 
-        method toBits = to_bits
-
-        method fromBits = from_bits
-
         method truncateToBits16 = truncate_to_bits16
-
-        method seal = seal
-
-        method toConstantAndTerms = to_constant_and_terms
       end
 
     val gates =
@@ -616,19 +571,6 @@ let snarky =
         method addRuntimeTableConfig = Gates.add_runtime_table_config
 
         method raw = Gates.raw
-      end
-
-    val bool =
-      object%js
-        method not = Bool.not
-
-        method and_ = Bool.and_
-
-        method or_ = Bool.or_
-
-        method assertEqual = Bool.assert_equal
-
-        method equals = Bool.equals
       end
 
     val group =

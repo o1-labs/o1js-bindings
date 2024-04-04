@@ -11,7 +11,7 @@ import {
   writeCache,
   readCache,
 } from '../../../lib/proof-system/cache.js';
-import { assert } from '../../../lib/errors.js';
+import { assert } from '../../../lib/util/errors.js';
 import { MlArray, MlOption } from '../../../lib/ml/base.js';
 import { OrInfinity, OrInfinityJson } from './curve.js';
 
