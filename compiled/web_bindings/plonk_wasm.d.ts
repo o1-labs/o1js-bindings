@@ -539,19 +539,6 @@ export function fp_oracles_dummy(): WasmFpOracles;
 */
 export function fp_oracles_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
 /**
-* @param {number} num_threads
-* @returns {Promise<any>}
-*/
-export function initThreadPool(num_threads: number): Promise<any>;
-/**
-* @returns {Promise<any>}
-*/
-export function exitThreadPool(): Promise<any>;
-/**
-* @param {number} receiver
-*/
-export function wbg_rayon_start_worker(receiver: number): void;
-/**
 * @returns {number}
 */
 export function caml_pasta_fq_size_in_bits(): number;
@@ -964,6 +951,35 @@ export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): 
 */
 export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
 /**
+* @param {number} num_threads
+* @returns {Promise<any>}
+*/
+export function initThreadPool(num_threads: number): Promise<any>;
+/**
+* @returns {Promise<any>}
+*/
+export function exitThreadPool(): Promise<any>;
+/**
+* @param {number} receiver
+*/
+export function wbg_rayon_start_worker(receiver: number): void;
+/**
+* @param {Uint32Array} lgr_comm
+* @param {WasmFqPlonkVerifierIndex} index
+* @param {WasmFqProverProof} proof
+* @returns {WasmFqOracles}
+*/
+export function fq_oracles_create(lgr_comm: Uint32Array, index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): WasmFqOracles;
+/**
+* @returns {WasmFqOracles}
+*/
+export function fq_oracles_dummy(): WasmFqOracles;
+/**
+* @param {WasmFqProverProof} x
+* @returns {WasmFqProverProof}
+*/
+export function fq_oracles_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
+/**
 * @returns {WasmFpGateVector}
 */
 export function caml_pasta_fp_plonk_gate_vector_create(): WasmFpGateVector;
@@ -1082,22 +1098,6 @@ export function caml_pallas_affine_one(): WasmGPallas;
 * @returns {WasmGVesta}
 */
 export function caml_vesta_affine_one(): WasmGVesta;
-/**
-* @param {Uint32Array} lgr_comm
-* @param {WasmFqPlonkVerifierIndex} index
-* @param {WasmFqProverProof} proof
-* @returns {WasmFqOracles}
-*/
-export function fq_oracles_create(lgr_comm: Uint32Array, index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): WasmFqOracles;
-/**
-* @returns {WasmFqOracles}
-*/
-export function fq_oracles_dummy(): WasmFqOracles;
-/**
-* @param {WasmFqProverProof} x
-* @returns {WasmFqProverProof}
-*/
-export function fq_oracles_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
 /**
 * A row accessible from a given row, corresponds to the fact that we open all polynomials
 * at `zeta` **and** `omega * zeta`.
@@ -2711,7 +2711,6 @@ export interface InitOutput {
   readonly __wbg_set_wasmfpshifts_s1: (a: number, b: number, c: number) => void;
   readonly wasmfqlookupselectors_new: (a: number, b: number, c: number, d: number) => number;
   readonly wasmfqlookupverifierindex_set_lookup_selectors: (a: number, b: number) => void;
-  readonly caml_fq_srs_read: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly __wbg_get_wasmfqlookupverifierindex_joint_lookup_used: (a: number) => number;
   readonly __wbg_set_wasmfqplonkverifierindex_domain: (a: number, b: number) => void;
   readonly __wbg_set_wasmfqplonkverifierindex_shifts: (a: number, b: number) => void;
@@ -2732,11 +2731,12 @@ export interface InitOutput {
   readonly wasmfqlookupselectors_range_check: (a: number) => number;
   readonly wasmfqlookupverifierindex_table_ids: (a: number) => number;
   readonly wasmfqlookupverifierindex_runtime_tables_selector: (a: number) => number;
-  readonly caml_fq_srs_write: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_fq_srs_read: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly wasmpastafpruntimetablecfg_new: (a: number, b: number, c: number) => number;
   readonly caml_pasta_fq_plonk_index_max_degree: (a: number) => number;
   readonly caml_fq_srs_h: (a: number) => number;
   readonly __wbg_set_wasmfqlookupverifierindex_joint_lookup_used: (a: number, b: number) => void;
+  readonly caml_fq_srs_write: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly __wbg_get_wasmfqplonkverifierindex_domain: (a: number) => number;
   readonly __wbg_get_wasmfqplonkverifierindex_shifts: (a: number) => number;
   readonly wasmvecvecfppolycomm_create: (a: number) => number;
@@ -2793,25 +2793,6 @@ export interface InitOutput {
   readonly fp_oracles_create: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly fp_oracles_dummy: () => number;
   readonly fp_oracles_deep_copy: (a: number) => number;
-  readonly __wbg_poolbuilder_free: (a: number) => void;
-  readonly poolbuilder_numThreads: (a: number) => number;
-  readonly poolbuilder_receiver: (a: number) => number;
-  readonly poolbuilder_build: (a: number) => void;
-  readonly initThreadPool: (a: number) => number;
-  readonly exitThreadPool: () => number;
-  readonly wbg_rayon_start_worker: (a: number) => void;
-  readonly wasmfppolycomm_new: (a: number, b: number, c: number) => number;
-  readonly wasmfppolycomm_unshifted: (a: number, b: number) => void;
-  readonly wasmfppolycomm_set_unshifted: (a: number, b: number, c: number) => void;
-  readonly __wbg_wasmfppolycomm_free: (a: number) => void;
-  readonly __wbg_get_wasmfppolycomm_shifted: (a: number) => number;
-  readonly __wbg_set_wasmfppolycomm_shifted: (a: number, b: number) => void;
-  readonly wasmfqpolycomm_new: (a: number, b: number, c: number) => number;
-  readonly wasmfqpolycomm_unshifted: (a: number, b: number) => void;
-  readonly wasmfqpolycomm_set_unshifted: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqpolycomm_shifted: (a: number) => number;
-  readonly __wbg_wasmfqpolycomm_free: (a: number) => void;
-  readonly __wbg_set_wasmfqpolycomm_shifted: (a: number, b: number) => void;
   readonly caml_pasta_fq_size_in_bits: () => number;
   readonly caml_pasta_fq_size: (a: number) => void;
   readonly caml_pasta_fq_add: (a: number, b: number, c: number, d: number, e: number) => void;
@@ -2894,6 +2875,54 @@ export interface InitOutput {
   readonly caml_vesta_of_affine: (a: number) => number;
   readonly caml_vesta_of_affine_coordinates: (a: number, b: number, c: number, d: number) => number;
   readonly caml_vesta_affine_deep_copy: (a: number) => number;
+  readonly __wbg_poolbuilder_free: (a: number) => void;
+  readonly poolbuilder_numThreads: (a: number) => number;
+  readonly poolbuilder_receiver: (a: number) => number;
+  readonly poolbuilder_build: (a: number) => void;
+  readonly initThreadPool: (a: number) => number;
+  readonly exitThreadPool: () => number;
+  readonly wbg_rayon_start_worker: (a: number) => void;
+  readonly __wbg_wasmfqrandomoracles_free: (a: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_joint_combiner_chal: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_joint_combiner_chal: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_joint_combiner: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_joint_combiner: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_beta: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_beta: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_gamma: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_gamma: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_alpha_chal: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_alpha_chal: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_alpha: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_alpha: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_zeta: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_zeta: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_v: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_v: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_u: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_u: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_zeta_chal: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_zeta_chal: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_v_chal: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_v_chal: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_u_chal: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_u_chal: (a: number, b: number, c: number) => void;
+  readonly wasmfqrandomoracles_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number, s: number, t: number, u: number, v: number, w: number, x: number) => number;
+  readonly __wbg_wasmfqoracles_free: (a: number) => void;
+  readonly __wbg_get_wasmfqoracles_o: (a: number) => number;
+  readonly __wbg_set_wasmfqoracles_o: (a: number, b: number) => void;
+  readonly __wbg_get_wasmfqoracles_p_eval0: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqoracles_p_eval0: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqoracles_p_eval1: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqoracles_p_eval1: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqoracles_digest_before_evaluations: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqoracles_digest_before_evaluations: (a: number, b: number, c: number) => void;
+  readonly wasmfqoracles_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => number;
+  readonly wasmfqoracles_opening_prechallenges: (a: number, b: number) => void;
+  readonly wasmfqoracles_set_opening_prechallenges: (a: number, b: number, c: number) => void;
+  readonly fq_oracles_create: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly fq_oracles_dummy: () => number;
+  readonly fq_oracles_deep_copy: (a: number) => number;
   readonly __wbg_wasmvecvecfq_free: (a: number) => void;
   readonly wasmvecvecfq_create: (a: number) => number;
   readonly wasmvecvecfq_push: (a: number, b: number, c: number) => void;
@@ -3016,52 +3045,27 @@ export interface InitOutput {
   readonly __wbg_set_wasmgvesta_y: (a: number, b: number, c: number) => void;
   readonly caml_pallas_affine_one: () => number;
   readonly caml_vesta_affine_one: () => number;
-  readonly __wbg_wasmpallasgprojective_free: (a: number) => void;
   readonly __wbg_wasmgvesta_free: (a: number) => void;
-  readonly __wbg_wasmvestagprojective_free: (a: number) => void;
   readonly __wbg_set_wasmgvesta_infinity: (a: number, b: number) => void;
   readonly __wbg_get_wasmgvesta_infinity: (a: number) => number;
-  readonly __wbg_wasmfqrandomoracles_free: (a: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_joint_combiner_chal: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_joint_combiner_chal: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_joint_combiner: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_joint_combiner: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_beta: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_beta: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_gamma: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_gamma: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_alpha_chal: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_alpha_chal: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_alpha: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_alpha: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_zeta: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_zeta: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_v: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_v: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_u: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_u: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_zeta_chal: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_zeta_chal: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_v_chal: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_v_chal: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_u_chal: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_u_chal: (a: number, b: number, c: number) => void;
-  readonly wasmfqrandomoracles_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number, s: number, t: number, u: number, v: number, w: number, x: number) => number;
-  readonly __wbg_wasmfqoracles_free: (a: number) => void;
-  readonly __wbg_get_wasmfqoracles_o: (a: number) => number;
-  readonly __wbg_set_wasmfqoracles_o: (a: number, b: number) => void;
-  readonly __wbg_get_wasmfqoracles_p_eval0: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqoracles_p_eval0: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqoracles_p_eval1: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqoracles_p_eval1: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqoracles_digest_before_evaluations: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqoracles_digest_before_evaluations: (a: number, b: number, c: number) => void;
-  readonly wasmfqoracles_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => number;
-  readonly wasmfqoracles_opening_prechallenges: (a: number, b: number) => void;
-  readonly wasmfqoracles_set_opening_prechallenges: (a: number, b: number, c: number) => void;
-  readonly fq_oracles_create: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly fq_oracles_dummy: () => number;
-  readonly fq_oracles_deep_copy: (a: number) => number;
+  readonly __wbg_wasmpallasgprojective_free: (a: number) => void;
+  readonly wasmfppolycomm_new: (a: number, b: number, c: number) => number;
+  readonly wasmfppolycomm_unshifted: (a: number, b: number) => void;
+  readonly wasmfppolycomm_set_unshifted: (a: number, b: number, c: number) => void;
+  readonly __wbg_wasmfppolycomm_free: (a: number) => void;
+  readonly __wbg_get_wasmfppolycomm_shifted: (a: number) => number;
+  readonly __wbg_set_wasmfppolycomm_shifted: (a: number, b: number) => void;
+  readonly wasmfqpolycomm_new: (a: number, b: number, c: number) => number;
+  readonly wasmfqpolycomm_unshifted: (a: number, b: number) => void;
+  readonly wasmfqpolycomm_set_unshifted: (a: number, b: number, c: number) => void;
+  readonly __wbg_wasmvestagprojective_free: (a: number) => void;
+  readonly __wbg_get_wasmfqpolycomm_shifted: (a: number) => number;
+  readonly __wbg_wasmfqpolycomm_free: (a: number) => void;
+  readonly __wbg_set_wasmfqpolycomm_shifted: (a: number, b: number) => void;
+  readonly wire_create: (a: number, b: number) => number;
+  readonly lookuppatterns_new: (a: number, b: number, c: number, d: number) => number;
+  readonly lookupfeatures_new: (a: number, b: number, c: number) => number;
+  readonly lookupinfo_new: (a: number, b: number, c: number) => number;
   readonly __wbg_lookuppatterns_free: (a: number) => void;
   readonly __wbg_get_lookuppatterns_xor: (a: number) => number;
   readonly __wbg_set_lookuppatterns_xor: (a: number, b: number) => void;
@@ -3085,15 +3089,11 @@ export interface InitOutput {
   readonly __wbg_set_lookupinfo_max_joint_size: (a: number, b: number) => void;
   readonly __wbg_get_lookupinfo_features: (a: number) => number;
   readonly __wbg_set_lookupinfo_features: (a: number, b: number) => void;
-  readonly wire_create: (a: number, b: number) => number;
-  readonly lookuppatterns_new: (a: number, b: number, c: number, d: number) => number;
-  readonly lookupfeatures_new: (a: number, b: number, c: number) => number;
-  readonly lookupinfo_new: (a: number, b: number, c: number) => number;
   readonly __wbg_wire_free: (a: number) => void;
-  readonly __wbg_get_wire_row: (a: number) => number;
-  readonly __wbg_set_wire_row: (a: number, b: number) => void;
-  readonly __wbg_get_wire_col: (a: number) => number;
   readonly __wbg_set_wire_col: (a: number, b: number) => void;
+  readonly __wbg_set_wire_row: (a: number, b: number) => void;
+  readonly __wbg_get_wire_row: (a: number) => number;
+  readonly __wbg_get_wire_col: (a: number) => number;
   readonly memory: WebAssembly.Memory;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;

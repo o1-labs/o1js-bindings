@@ -1801,31 +1801,6 @@ module.exports.fp_oracles_deep_copy = function(x) {
 };
 
 /**
-* @param {number} num_threads
-* @param {string} worker_source
-* @returns {Promise<any>}
-*/
-module.exports.initThreadPool = function(num_threads, worker_source) {
-    const ret = wasm.initThreadPool(num_threads, addHeapObject(worker_source));
-    return takeObject(ret);
-};
-
-/**
-* @returns {Promise<any>}
-*/
-module.exports.exitThreadPool = function() {
-    const ret = wasm.exitThreadPool();
-    return takeObject(ret);
-};
-
-/**
-* @param {number} receiver
-*/
-module.exports.wbg_rayon_start_worker = function(receiver) {
-    wasm.wbg_rayon_start_worker(receiver);
-};
-
-/**
 * @returns {number}
 */
 module.exports.caml_pasta_fq_size_in_bits = function() {
@@ -2517,6 +2492,78 @@ module.exports.caml_pasta_fq_poseidon_block_cipher = function(state) {
     } finally {
         wasm.__wbindgen_add_to_stack_pointer(16);
     }
+};
+
+/**
+* @param {number} num_threads
+* @param {string} worker_source
+* @returns {Promise<any>}
+*/
+module.exports.initThreadPool = function(num_threads, worker_source) {
+    const ret = wasm.initThreadPool(num_threads, addHeapObject(worker_source));
+    return takeObject(ret);
+};
+
+/**
+* @returns {Promise<any>}
+*/
+module.exports.exitThreadPool = function() {
+    const ret = wasm.exitThreadPool();
+    return takeObject(ret);
+};
+
+/**
+* @param {number} receiver
+*/
+module.exports.wbg_rayon_start_worker = function(receiver) {
+    wasm.wbg_rayon_start_worker(receiver);
+};
+
+/**
+* @param {Uint32Array} lgr_comm
+* @param {WasmFqPlonkVerifierIndex} index
+* @param {WasmFqProverProof} proof
+* @returns {WasmFqOracles}
+*/
+module.exports.fq_oracles_create = function(lgr_comm, index, proof) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray32ToWasm0(lgr_comm, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        _assertClass(index, WasmFqPlonkVerifierIndex);
+        var ptr1 = index.__destroy_into_raw();
+        _assertClass(proof, WasmFqProverProof);
+        var ptr2 = proof.__destroy_into_raw();
+        wasm.fq_oracles_create(retptr, ptr0, len0, ptr1, ptr2);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var r2 = getInt32Memory0()[retptr / 4 + 2];
+        if (r2) {
+            throw takeObject(r1);
+        }
+        return WasmFqOracles.__wrap(r0);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @returns {WasmFqOracles}
+*/
+module.exports.fq_oracles_dummy = function() {
+    const ret = wasm.fq_oracles_dummy();
+    return WasmFqOracles.__wrap(ret);
+};
+
+/**
+* @param {WasmFqProverProof} x
+* @returns {WasmFqProverProof}
+*/
+module.exports.fq_oracles_deep_copy = function(x) {
+    _assertClass(x, WasmFqProverProof);
+    var ptr0 = x.__destroy_into_raw();
+    const ret = wasm.fq_oracles_deep_copy(ptr0);
+    return WasmFqProverProof.__wrap(ret);
 };
 
 /**
@@ -3485,53 +3532,6 @@ module.exports.caml_vesta_affine_one = function() {
     return WasmGVesta.__wrap(ret);
 };
 
-/**
-* @param {Uint32Array} lgr_comm
-* @param {WasmFqPlonkVerifierIndex} index
-* @param {WasmFqProverProof} proof
-* @returns {WasmFqOracles}
-*/
-module.exports.fq_oracles_create = function(lgr_comm, index, proof) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray32ToWasm0(lgr_comm, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        _assertClass(index, WasmFqPlonkVerifierIndex);
-        var ptr1 = index.__destroy_into_raw();
-        _assertClass(proof, WasmFqProverProof);
-        var ptr2 = proof.__destroy_into_raw();
-        wasm.fq_oracles_create(retptr, ptr0, len0, ptr1, ptr2);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var r2 = getInt32Memory0()[retptr / 4 + 2];
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return WasmFqOracles.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-};
-
-/**
-* @returns {WasmFqOracles}
-*/
-module.exports.fq_oracles_dummy = function() {
-    const ret = wasm.fq_oracles_dummy();
-    return WasmFqOracles.__wrap(ret);
-};
-
-/**
-* @param {WasmFqProverProof} x
-* @returns {WasmFqProverProof}
-*/
-module.exports.fq_oracles_deep_copy = function(x) {
-    _assertClass(x, WasmFqProverProof);
-    var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.fq_oracles_deep_copy(ptr0);
-    return WasmFqProverProof.__wrap(ret);
-};
-
 function handleError(f, args) {
     try {
         return f.apply(this, args);
@@ -3612,6 +3612,17 @@ class LookupFeatures {
         wasm.__wbg_lookupfeatures_free(ptr);
     }
     /**
+    * @param {LookupPatterns} patterns
+    * @param {boolean} joint_lookup_used
+    * @param {boolean} uses_runtime_tables
+    */
+    constructor(patterns, joint_lookup_used, uses_runtime_tables) {
+        _assertClass(patterns, LookupPatterns);
+        var ptr0 = patterns.__destroy_into_raw();
+        const ret = wasm.lookupfeatures_new(ptr0, joint_lookup_used, uses_runtime_tables);
+        return LookupFeatures.__wrap(ret);
+    }
+    /**
     * A single lookup constraint is a vector of lookup constraints to be applied at a row.
     * @returns {LookupPatterns}
     */
@@ -3658,17 +3669,6 @@ class LookupFeatures {
     set uses_runtime_tables(arg0) {
         wasm.__wbg_set_lookupfeatures_uses_runtime_tables(this.__wbg_ptr, arg0);
     }
-    /**
-    * @param {LookupPatterns} patterns
-    * @param {boolean} joint_lookup_used
-    * @param {boolean} uses_runtime_tables
-    */
-    constructor(patterns, joint_lookup_used, uses_runtime_tables) {
-        _assertClass(patterns, LookupPatterns);
-        var ptr0 = patterns.__destroy_into_raw();
-        const ret = wasm.lookupfeatures_new(ptr0, joint_lookup_used, uses_runtime_tables);
-        return LookupFeatures.__wrap(ret);
-    }
 }
 module.exports.LookupFeatures = LookupFeatures;
 /**
@@ -3694,6 +3694,17 @@ class LookupInfo {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_lookupinfo_free(ptr);
+    }
+    /**
+    * @param {number} max_per_row
+    * @param {number} max_joint_size
+    * @param {LookupFeatures} features
+    */
+    constructor(max_per_row, max_joint_size, features) {
+        _assertClass(features, LookupFeatures);
+        var ptr0 = features.__destroy_into_raw();
+        const ret = wasm.lookupinfo_new(max_per_row, max_joint_size, ptr0);
+        return LookupInfo.__wrap(ret);
     }
     /**
     * The maximum length of an element of `kinds`. This can be computed from `kinds`.
@@ -3742,17 +3753,6 @@ class LookupInfo {
         var ptr0 = arg0.__destroy_into_raw();
         wasm.__wbg_set_lookupinfo_features(this.__wbg_ptr, ptr0);
     }
-    /**
-    * @param {number} max_per_row
-    * @param {number} max_joint_size
-    * @param {LookupFeatures} features
-    */
-    constructor(max_per_row, max_joint_size, features) {
-        _assertClass(features, LookupFeatures);
-        var ptr0 = features.__destroy_into_raw();
-        const ret = wasm.lookupinfo_new(max_per_row, max_joint_size, ptr0);
-        return LookupInfo.__wrap(ret);
-    }
 }
 module.exports.LookupInfo = LookupInfo;
 /**
@@ -3778,6 +3778,16 @@ class LookupPatterns {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_lookuppatterns_free(ptr);
+    }
+    /**
+    * @param {boolean} xor
+    * @param {boolean} lookup
+    * @param {boolean} range_check
+    * @param {boolean} foreign_field_mul
+    */
+    constructor(xor, lookup, range_check, foreign_field_mul) {
+        const ret = wasm.lookuppatterns_new(xor, lookup, range_check, foreign_field_mul);
+        return LookupPatterns.__wrap(ret);
     }
     /**
     * @returns {boolean}
@@ -3830,16 +3840,6 @@ class LookupPatterns {
     */
     set foreign_field_mul(arg0) {
         wasm.__wbg_set_lookuppatterns_foreign_field_mul(this.__wbg_ptr, arg0);
-    }
-    /**
-    * @param {boolean} xor
-    * @param {boolean} lookup
-    * @param {boolean} range_check
-    * @param {boolean} foreign_field_mul
-    */
-    constructor(xor, lookup, range_check, foreign_field_mul) {
-        const ret = wasm.lookuppatterns_new(xor, lookup, range_check, foreign_field_mul);
-        return LookupPatterns.__wrap(ret);
     }
 }
 module.exports.LookupPatterns = LookupPatterns;
@@ -9535,20 +9535,20 @@ class Wire {
     * @returns {number}
     */
     get row() {
-        const ret = wasm.__wbg_get_wire_row(this.__wbg_ptr);
+        const ret = wasm.__wbg_get_lookupinfo_max_per_row(this.__wbg_ptr);
         return ret >>> 0;
     }
     /**
     * @param {number} arg0
     */
     set row(arg0) {
-        wasm.__wbg_set_wire_row(this.__wbg_ptr, arg0);
+        wasm.__wbg_set_lookupinfo_max_per_row(this.__wbg_ptr, arg0);
     }
     /**
     * @returns {number}
     */
     get col() {
-        const ret = wasm.__wbg_get_wire_col(this.__wbg_ptr);
+        const ret = wasm.__wbg_get_lookupinfo_max_joint_size(this.__wbg_ptr);
         return ret >>> 0;
     }
     /**

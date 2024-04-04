@@ -539,20 +539,6 @@ export function fp_oracles_dummy(): WasmFpOracles;
 */
 export function fp_oracles_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
 /**
-* @param {number} num_threads
-* @param {string} worker_source
-* @returns {Promise<any>}
-*/
-export function initThreadPool(num_threads: number, worker_source: string): Promise<any>;
-/**
-* @returns {Promise<any>}
-*/
-export function exitThreadPool(): Promise<any>;
-/**
-* @param {number} receiver
-*/
-export function wbg_rayon_start_worker(receiver: number): void;
-/**
 * @returns {number}
 */
 export function caml_pasta_fq_size_in_bits(): number;
@@ -763,6 +749,36 @@ export function caml_pasta_fp_poseidon_block_cipher(state: Uint8Array): Uint8Arr
 * @returns {Uint8Array}
 */
 export function caml_pasta_fq_poseidon_block_cipher(state: Uint8Array): Uint8Array;
+/**
+* @param {number} num_threads
+* @param {string} worker_source
+* @returns {Promise<any>}
+*/
+export function initThreadPool(num_threads: number, worker_source: string): Promise<any>;
+/**
+* @returns {Promise<any>}
+*/
+export function exitThreadPool(): Promise<any>;
+/**
+* @param {number} receiver
+*/
+export function wbg_rayon_start_worker(receiver: number): void;
+/**
+* @param {Uint32Array} lgr_comm
+* @param {WasmFqPlonkVerifierIndex} index
+* @param {WasmFqProverProof} proof
+* @returns {WasmFqOracles}
+*/
+export function fq_oracles_create(lgr_comm: Uint32Array, index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): WasmFqOracles;
+/**
+* @returns {WasmFqOracles}
+*/
+export function fq_oracles_dummy(): WasmFqOracles;
+/**
+* @param {WasmFqProverProof} x
+* @returns {WasmFqProverProof}
+*/
+export function fq_oracles_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
 /**
 * @returns {number}
 */
@@ -1083,22 +1099,6 @@ export function caml_pallas_affine_one(): WasmGPallas;
 * @returns {WasmGVesta}
 */
 export function caml_vesta_affine_one(): WasmGVesta;
-/**
-* @param {Uint32Array} lgr_comm
-* @param {WasmFqPlonkVerifierIndex} index
-* @param {WasmFqProverProof} proof
-* @returns {WasmFqOracles}
-*/
-export function fq_oracles_create(lgr_comm: Uint32Array, index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): WasmFqOracles;
-/**
-* @returns {WasmFqOracles}
-*/
-export function fq_oracles_dummy(): WasmFqOracles;
-/**
-* @param {WasmFqProverProof} x
-* @returns {WasmFqProverProof}
-*/
-export function fq_oracles_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
 /**
 * A row accessible from a given row, corresponds to the fact that we open all polynomials
 * at `zeta` **and** `omega * zeta`.
