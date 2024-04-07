@@ -27,7 +27,7 @@ import { jsLayout } from './js-layout.js';
 export { customTypes, ZkappCommand, AccountUpdate, Account };
 export { Json };
 export * from '../transaction-leaves.js';
-export { provableFromLayout, toJSONEssential, emptyValue, Layout, TypeMap };
+export { provableFromLayout, toJSONEssential, empty, Layout, TypeMap };
 
 type TypeMap = {
   PublicKey: PublicKey;
@@ -102,7 +102,7 @@ let customTypes: CustomTypes = {
   VerificationKeyHash,
   ReceiptChainHash,
 };
-let { provableFromLayout, toJSONEssential, emptyValue } = ProvableFromLayout<
+let { provableFromLayout, toJSONEssential, empty } = ProvableFromLayout<
   TypeMap,
   Json.TypeMap
 >(TypeMap, customTypes);

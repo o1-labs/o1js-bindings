@@ -10,8 +10,8 @@ import {
   withCheck,
   withVersionNumber,
 } from './binable.js';
-import { PublicKey, Scalar } from '../../provable/curve-bigint.js';
-import { Bool, Field, UInt64 } from '../../provable/field-bigint.js';
+import { PublicKey, Scalar } from '../../mina-signer/src/curve-bigint.js';
+import { Bool, Field, UInt64 } from '../../mina-signer/src/field-bigint.js';
 
 // uint
 

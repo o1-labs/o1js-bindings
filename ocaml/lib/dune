@@ -1,5 +1,5 @@
 (library
- (name snarky_js_bindings_lib)
+ (name o1js_bindings_lib)
  (libraries
   ;; opam libraries ;;
   core_kernel
@@ -20,6 +20,7 @@
   pickles_base
   pickles.limb_vector
   pickles_types
+  key_cache
   kimchi_backend
   kimchi_backend.pasta
   kimchi_backend.pasta.basic
@@ -58,6 +59,7 @@
   ;; js-specific overrides ;;
   cache_dir.fake
   digestif.ocaml
+  hash_prefix_create.js
   logger.fake
   mina_metrics.none
   promise.js

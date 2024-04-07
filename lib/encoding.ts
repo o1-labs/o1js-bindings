@@ -1,5 +1,5 @@
 import { bytesToBigInt, changeBase } from '../crypto/bigint-helpers.js';
-import { Field } from '../../lib/core.js';
+import { Field } from '../../lib/provable/wrapped.js';
 
 export {
   stringToFields,
@@ -123,7 +123,7 @@ const Bijective = {
 };
 
 function toBytesBijective(fields: Field[], p: bigint) {
-  let fieldsBigInts = fields.map(fieldToBigInt);
+  let fieldsBigInts = fields.map((x) => x.toBigInt());
   let bytesBig = changeBase(fieldsBigInts, p, bytesBase);
   let bytes = bigIntArrayToBytes(bytesBig, bytesPerBigInt);
   return bytes;
@@ -132,26 +132,12 @@ function toBytesBijective(fields: Field[], p: bigint) {
 function toFieldsBijective(bytes: Uint8Array, p: bigint) {
   let bytesBig = bytesToBigIntArray(bytes, bytesPerBigInt);
   let fieldsBigInts = changeBase(bytesBig, bytesBase, p);
-  let fields = fieldsBigInts.map(bigIntToField);
+  let fields = fieldsBigInts.map(Field);
   return fields;
 }
 
-// a constant field is internally represented as {value: [0, Uint8Array(32)]}
 function bytesOfConstantField(field: Field): Uint8Array {
-  let value = (field as any).value;
-  if (value[0] !== 0) throw Error('Field is not constant');
-  return value[1];
-}
-
-function fieldToBigInt(field: Field) {
-  let bytes = bytesOfConstantField(field);
-  return bytesToBigInt(bytes);
-}
-
-function bigIntToField(x: bigint) {
-  let field = Field(1);
-  (field as any).value = [0, bigIntToBytes(x, 32)];
-  return field;
+  return Uint8Array.from(Field.toBytes(field));
 }
 
 function bigIntToBytes(x: bigint, length: number) {

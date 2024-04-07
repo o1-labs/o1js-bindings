@@ -1,5 +1,16 @@
-/* global joo_global_object
+/* global caml_named_value, caml_global_data, caml_string_of_jsstring
  */
+
+//Provides: caml_wrap_exception const (const)
+//Requires: caml_global_data,caml_string_of_jsstring,caml_named_value
+//Requires: caml_return_exn_constant
+function caml_wrap_exception(e) {
+  if (e instanceof Array) return e;
+  if (e instanceof globalThis.Error && caml_named_value('jsError'))
+    return [0, caml_named_value('jsError'), e];
+  //fallback: wrapped in Failure
+  return [0, caml_global_data.Failure, caml_string_of_jsstring(String(e))];
+}
 
 //Provides: caml_raise_with_string (const, const)
 function caml_raise_with_string(tag, msg) {
@@ -57,8 +68,8 @@ function caml_fatal_uncaught_exception(err) {
     return acc.string;
   }
   var str = collect_strings(err, {});
-  if (str !== undefined) throw joo_global_object.Error(str);
+  if (str !== undefined) throw globalThis.Error(str);
   // otherwise, just throw an unhelpful error
   console.dir(err, { depth: 10 });
-  throw joo_global_object.Error('Unknown error thrown from OCaml');
+  throw globalThis.Error('Unknown error thrown from OCaml');
 }

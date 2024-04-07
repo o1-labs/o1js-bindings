@@ -1,10 +1,16 @@
 import {
   GenericProvableExtended,
+  GenericSignable,
   primitiveTypeMap,
   primitiveTypes,
 } from './generic.js';
 
-export { ProvableFromLayout, GenericLayout, genericLayoutFold };
+export {
+  ProvableFromLayout,
+  SignableFromLayout,
+  GenericLayout,
+  genericLayoutFold,
+};
 
 type GenericTypeMap<
   Field,
@@ -26,65 +32,62 @@ type GenericTypeMap<
   TokenId: TokenId;
 };
 type AnyTypeMap = GenericTypeMap<any, any, any, any, any, any, any, any>;
-type TypeMapValues<TypeMap extends AnyTypeMap, JsonMap extends AnyTypeMap> = {
+
+type TypeMapValues<
+  TypeMap extends AnyTypeMap,
+  JsonMap extends AnyTypeMap,
+  BaseType
+> = {
+  [K in keyof TypeMap & keyof JsonMap]: BaseType;
+};
+
+type TypeMapProvable<TypeMap extends AnyTypeMap, JsonMap extends AnyTypeMap> = {
   [K in keyof TypeMap & keyof JsonMap]: GenericProvableExtended<
     TypeMap[K],
     JsonMap[K],
     TypeMap['Field']
   >;
 };
+type TypeMapSignable<TypeMap extends AnyTypeMap, JsonMap extends AnyTypeMap> = {
+  [K in keyof TypeMap & keyof JsonMap]: GenericSignable<
+    TypeMap[K],
+    JsonMap[K],
+    TypeMap['Field']
+  >;
+};
 
-function ProvableFromLayout<
+function SignableFromLayout<
   TypeMap extends AnyTypeMap,
   JsonMap extends AnyTypeMap
 >(
-  TypeMap: TypeMapValues<TypeMap, JsonMap>,
-  customTypes: Record<
-    string,
-    GenericProvableExtended<any, any, TypeMap['Field']>
-  >
+  TypeMap: TypeMapSignable<TypeMap, JsonMap>,
+  customTypes: Record<string, GenericSignable<any, any, TypeMap['Field']>>
 ) {
   type Field = TypeMap['Field'];
   const Field = TypeMap.Field;
+  type BaseType = GenericSignable<any, any, TypeMap['Field']>;
   type HashInput = { fields?: Field[]; packed?: [Field, number][] };
   type Layout = GenericLayout<TypeMap>;
 
-  const PrimitiveMap = primitiveTypeMap<Field>();
-
-  type FoldSpec<T, R> = GenericFoldSpec<T, R, TypeMap>;
+  type FoldSpec<T, R> = GenericFoldSpec<T, R, TypeMap, BaseType>;
 
   function layoutFold<T, R>(spec: FoldSpec<T, R>, typeData: Layout, value?: T) {
     return genericLayoutFold(TypeMap, customTypes, spec, typeData, value);
   }
 
-  function provableFromLayout<T, TJson>(typeData: Layout) {
+  function signableFromLayout<T, TJson>(typeData: Layout) {
     return {
-      sizeInFields(): number {
-        return sizeInFields(typeData);
-      },
-      toFields(value: T): Field[] {
-        return toFields(typeData, value);
-      },
-      toAuxiliary(value?: T): any[] {
-        return toAuxiliary(typeData, value);
-      },
-      fromFields(fields: Field[], aux: any[]): T {
-        return fromFields(typeData, fields, aux);
-      },
       toJSON(value: T): TJson {
         return toJSON(typeData, value);
       },
       fromJSON(json: TJson): T {
         return fromJSON(typeData, json);
       },
-      check(value: T): void {
-        check(typeData, value);
-      },
       toInput(value: T): HashInput {
         return toInput(typeData, value);
       },
-      emptyValue(): T {
-        return emptyValue(typeData);
+      empty(): T {
+        return empty(typeData);
       },
     };
   }
@@ -133,7 +136,7 @@ function ProvableFromLayout<
           if (json !== null) {
             value = fromJSON(optionTypeData.inner, json);
           } else {
-            value = emptyValue(optionTypeData.inner);
+            value = empty(optionTypeData.inner);
             if (optionTypeData.optionType === 'closedInterval') {
               let innerInner = optionTypeData.inner.entries.lower;
               let innerType =
@@ -163,9 +166,177 @@ function ProvableFromLayout<
       return values;
     }
     if (primitiveTypes.has(typeData.type as string)) {
-      return (PrimitiveMap as any)[typeData.type].fromJSON(json);
+      return (primitiveTypeMap as any)[typeData.type].fromJSON(json);
     }
     return (TypeMap as any)[typeData.type].fromJSON(json);
+  }
+
+  function empty(typeData: Layout) {
+    return layoutFold<undefined, any>(
+      {
+        map(type) {
+          return type.empty();
+        },
+        reduceArray(array) {
+          return array;
+        },
+        reduceObject(_, object) {
+          return object;
+        },
+        reduceFlaggedOption({ isSome, value }, typeData) {
+          if (typeData.optionType === 'closedInterval') {
+            let innerInner = typeData.inner.entries.lower;
+            let innerType = TypeMap[innerInner.type as 'UInt32' | 'UInt64'];
+            value.lower = innerType.fromJSON(typeData.rangeMin);
+            value.upper = innerType.fromJSON(typeData.rangeMax);
+          }
+          return { isSome, value };
+        },
+        reduceOrUndefined() {
+          return undefined;
+        },
+      },
+      typeData,
+      undefined
+    );
+  }
+
+  function toInput(typeData: Layout, value: any) {
+    return layoutFold<any, HashInput>(
+      {
+        map(type, value) {
+          return type.toInput(value);
+        },
+        reduceArray(array) {
+          let acc: HashInput = { fields: [], packed: [] };
+          for (let { fields, packed } of array) {
+            if (fields) acc.fields!.push(...fields);
+            if (packed) acc.packed!.push(...packed);
+          }
+          return acc;
+        },
+        reduceObject(keys, object) {
+          let acc: HashInput = { fields: [], packed: [] };
+          for (let key of keys) {
+            let { fields, packed } = object[key];
+            if (fields) acc.fields!.push(...fields);
+            if (packed) acc.packed!.push(...packed);
+          }
+          return acc;
+        },
+        reduceFlaggedOption({ isSome, value }) {
+          return {
+            fields: value.fields,
+            packed: isSome.packed!.concat(value.packed ?? []),
+          };
+        },
+        reduceOrUndefined(_) {
+          return {};
+        },
+      },
+      typeData,
+      value
+    );
+  }
+
+  // helper for pretty-printing / debugging
+
+  function toJSONEssential(typeData: Layout, value: any) {
+    return layoutFold<any, any>(
+      {
+        map(type, value) {
+          return type.toJSON(value);
+        },
+        reduceArray(array) {
+          if (array.length === 0 || array.every((x) => x === null)) return null;
+          return array;
+        },
+        reduceObject(_, object) {
+          for (let key in object) {
+            if (object[key] === null) {
+              delete object[key];
+            }
+          }
+          if (Object.keys(object).length === 0) return null;
+          return object;
+        },
+        reduceFlaggedOption({ isSome, value }) {
+          return isSome ? value : null;
+        },
+        reduceOrUndefined(value) {
+          return value ?? null;
+        },
+      },
+      typeData,
+      value
+    );
+  }
+
+  return {
+    signableFromLayout,
+    toInput,
+    toJSON,
+    fromJSON,
+    empty,
+    toJSONEssential,
+  };
+}
+
+function ProvableFromLayout<
+  TypeMap extends AnyTypeMap,
+  JsonMap extends AnyTypeMap
+>(
+  TypeMap: TypeMapProvable<TypeMap, JsonMap>,
+  customTypes: Record<
+    string,
+    GenericProvableExtended<any, any, TypeMap['Field']>
+  >
+) {
+  type Field = TypeMap['Field'];
+  const Field = TypeMap.Field;
+  type BaseType = GenericProvableExtended<any, any, TypeMap['Field']>;
+  type HashInput = { fields?: Field[]; packed?: [Field, number][] };
+  type Layout = GenericLayout<TypeMap>;
+
+  type FoldSpec<T, R> = GenericFoldSpec<T, R, TypeMap, BaseType>;
+
+  const { toInput, toJSON, fromJSON, empty, toJSONEssential } =
+    SignableFromLayout(TypeMap, customTypes);
+
+  function layoutFold<T, R>(spec: FoldSpec<T, R>, typeData: Layout, value?: T) {
+    return genericLayoutFold(TypeMap, customTypes, spec, typeData, value);
+  }
+
+  function provableFromLayout<T, TJson>(typeData: Layout) {
+    return {
+      sizeInFields(): number {
+        return sizeInFields(typeData);
+      },
+      toFields(value: T): Field[] {
+        return toFields(typeData, value);
+      },
+      toAuxiliary(value?: T): any[] {
+        return toAuxiliary(typeData, value);
+      },
+      fromFields(fields: Field[], aux: any[]): T {
+        return fromFields(typeData, fields, aux);
+      },
+      toJSON(value: T): TJson {
+        return toJSON(typeData, value);
+      },
+      fromJSON(json: TJson): T {
+        return fromJSON(typeData, json);
+      },
+      check(value: T): void {
+        check(typeData, value);
+      },
+      toInput(value: T): HashInput {
+        return toInput(typeData, value);
+      },
+      empty(): T {
+        return empty(typeData);
+      },
+    };
   }
 
   function toFields(typeData: Layout, value: any) {
@@ -293,44 +464,9 @@ function ProvableFromLayout<
       return values;
     }
     if (primitiveTypes.has(typeData.type as string)) {
-      return (PrimitiveMap as any)[typeData.type].fromFields(fields, aux);
+      return (primitiveTypeMap as any)[typeData.type].fromFields(fields, aux);
     }
     return (TypeMap as any)[typeData.type].fromFields(fields, aux);
-  }
-
-  function emptyValue(typeData: Layout) {
-    let zero = TypeMap.Field.fromJSON('0');
-    return layoutFold<undefined, any>(
-      {
-        map(type) {
-          if (type.emptyValue) return type.emptyValue();
-          return type.fromFields(
-            Array(type.sizeInFields()).fill(zero),
-            type.toAuxiliary()
-          );
-        },
-        reduceArray(array) {
-          return array;
-        },
-        reduceObject(_, object) {
-          return object;
-        },
-        reduceFlaggedOption({ isSome, value }, typeData) {
-          if (typeData.optionType === 'closedInterval') {
-            let innerInner = typeData.inner.entries.lower;
-            let innerType = TypeMap[innerInner.type as 'UInt32' | 'UInt64'];
-            value.lower = innerType.fromJSON(typeData.rangeMin);
-            value.upper = innerType.fromJSON(typeData.rangeMax);
-          }
-          return { isSome, value };
-        },
-        reduceOrUndefined() {
-          return undefined;
-        },
-      },
-      typeData,
-      undefined
-    );
   }
 
   function check(typeData: Layout, value: any) {
@@ -349,88 +485,13 @@ function ProvableFromLayout<
     );
   }
 
-  function toInput(typeData: Layout, value: any) {
-    return layoutFold<any, HashInput>(
-      {
-        map(type, value) {
-          return type.toInput(value);
-        },
-        reduceArray(array) {
-          let acc: HashInput = { fields: [], packed: [] };
-          for (let { fields, packed } of array) {
-            if (fields) acc.fields!.push(...fields);
-            if (packed) acc.packed!.push(...packed);
-          }
-          return acc;
-        },
-        reduceObject(keys, object) {
-          let acc: HashInput = { fields: [], packed: [] };
-          for (let key of keys) {
-            let { fields, packed } = object[key];
-            if (fields) acc.fields!.push(...fields);
-            if (packed) acc.packed!.push(...packed);
-          }
-          return acc;
-        },
-        reduceFlaggedOption({ isSome, value }) {
-          return {
-            fields: value.fields,
-            packed: isSome.packed!.concat(value.packed ?? []),
-          };
-        },
-        reduceOrUndefined(_) {
-          return {};
-        },
-      },
-      typeData,
-      value
-    );
-  }
-
-  // helper for pretty-printing / debugging
-
-  function toJSONEssential(typeData: Layout, value: any) {
-    return layoutFold<any, any>(
-      {
-        map(type, value) {
-          return type.toJSON(value);
-        },
-        reduceArray(array) {
-          if (array.length === 0 || array.every((x) => x === null)) return null;
-          return array;
-        },
-        reduceObject(_, object) {
-          for (let key in object) {
-            if (object[key] === null) {
-              delete object[key];
-            }
-          }
-          if (Object.keys(object).length === 0) return null;
-          return object;
-        },
-        reduceFlaggedOption({ isSome, value }) {
-          return isSome ? value : null;
-        },
-        reduceOrUndefined(value) {
-          return value ?? null;
-        },
-      },
-      typeData,
-      value
-    );
-  }
-
-  return { provableFromLayout, toJSONEssential, emptyValue };
+  return { provableFromLayout, toJSONEssential, empty };
 }
 
 // generic over leaf types
 
-type GenericFoldSpec<T, R, TypeMap extends AnyTypeMap> = {
-  map: (
-    type: GenericProvableExtended<any, any, TypeMap['Field']>,
-    value?: T,
-    name?: string
-  ) => R;
+type GenericFoldSpec<T, R, TypeMap extends AnyTypeMap, BaseType> = {
+  map: (type: BaseType, value?: T, name?: string) => R;
   reduceArray: (array: R[], typeData: ArrayLayout<TypeMap>) => R;
   reduceObject: (keys: string[], record: Record<string, R>) => R;
   reduceFlaggedOption: (
@@ -444,21 +505,18 @@ type GenericFoldSpec<T, R, TypeMap extends AnyTypeMap> = {
 };
 
 function genericLayoutFold<
-  T,
-  R,
-  TypeMap extends AnyTypeMap,
-  JsonMap extends AnyTypeMap
+  BaseType,
+  T = any,
+  R = any,
+  TypeMap extends AnyTypeMap = AnyTypeMap,
+  JsonMap extends AnyTypeMap = AnyTypeMap
 >(
-  TypeMap: TypeMapValues<TypeMap, JsonMap>,
-  customTypes: Record<
-    string,
-    GenericProvableExtended<any, any, TypeMap['Field']>
-  >,
-  spec: GenericFoldSpec<T, R, TypeMap>,
+  TypeMap: TypeMapValues<TypeMap, JsonMap, BaseType>,
+  customTypes: Record<string, BaseType>,
+  spec: GenericFoldSpec<T, R, TypeMap, BaseType>,
   typeData: GenericLayout<TypeMap>,
   value?: T
 ): R {
-  let PrimitiveMap = primitiveTypeMap<TypeMap['Field']>();
   let { checkedTypeName } = typeData;
   if (checkedTypeName) {
     // there's a custom type!
@@ -477,7 +535,10 @@ function genericLayoutFold<
     return spec.reduceArray(array, arrayTypeData);
   }
   if (typeData.type === 'option') {
-    let { optionType, inner } = typeData as OptionLayout<TypeMap>;
+    let { optionType, inner } = typeData as OptionLayout<
+      TypeMap,
+      BaseLayout<TypeMap>
+    >;
     switch (optionType) {
       case 'closedInterval':
       case 'flaggedOption':
@@ -521,7 +582,11 @@ function genericLayoutFold<
     return spec.reduceObject(keys, object);
   }
   if (primitiveTypes.has(typeData.type)) {
-    return spec.map((PrimitiveMap as any)[typeData.type], value, typeData.type);
+    return spec.map(
+      (primitiveTypeMap as any)[typeData.type],
+      value,
+      typeData.type
+    );
   }
   return spec.map((TypeMap as any)[typeData.type], value, typeData.type);
 }
