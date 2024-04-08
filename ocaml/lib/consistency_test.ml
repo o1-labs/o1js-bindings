@@ -292,7 +292,7 @@ module Transaction_hash = struct
       command |> hash_zkapp_command |> to_base58_check |> Js.string)
 
   let hash_payment_v1 (command : Js.js_string Js.t) =
-    let command : Signed_command.t_v1 =
+    let command : Signed_command.Stable.V1.t =
       command |> Js.to_string |> Yojson.Safe.from_string
       |> Signed_command.Stable.V1.of_yojson |> ok_exn
     in
@@ -317,7 +317,7 @@ module Transaction_hash = struct
     Binable.to_bigstring (module Signed_command.Stable.Latest) command
 
   let serialize_payment_v1 (command : Js.js_string Js.t) =
-    let command : Signed_command.t_v1 =
+    let command : Signed_command.Stable.V1.t =
       command |> Js.to_string |> Yojson.Safe.from_string
       |> Signed_command.Stable.V1.of_yojson |> ok_exn
     in
