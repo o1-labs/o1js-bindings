@@ -52,8 +52,7 @@ type Gate = [
 
 type PolyComm = [
   _: 0,
-  unshifted: MlArray<OrInfinity>,
-  shifted: MlOption<OrInfinity>
+  elems: MlArray<OrInfinity>,
 ];
 
 // verifier index
@@ -87,7 +86,8 @@ type VerifierIndex = [
   srs: WasmSrs,
   evals: VerificationEvals,
   shifts: MlArray<Field>,
-  lookup_index: MlOption<Lookup<PolyComm>>
+  lookup_index: MlOption<Lookup<PolyComm>>,
+  zkRows: number,
 ];
 
 // oracles
