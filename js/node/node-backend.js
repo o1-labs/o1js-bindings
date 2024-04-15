@@ -13,6 +13,10 @@ const wasm = wasm_;
 
 export { wasm, withThreadPool };
 
+export async function initO1() {
+  // TODO: what needs to be done here?
+}
+
 let workersReadyResolve;
 let workersReady;
 
