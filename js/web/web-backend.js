@@ -23,7 +23,13 @@ let workerPromise;
  */
 let numWorkers = undefined;
 
+let isInitialized = false;
+
 async function initO1() {
+  if (isInitialized) {
+    return;
+  }
+  isInitialized = true;
   const memory = allocateWasmMemoryForUserAgent(navigator.userAgent);
   await init(undefined, memory);
 
