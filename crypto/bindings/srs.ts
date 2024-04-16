@@ -194,10 +194,10 @@ type PolyCommJson = {
 };
 
 function polyCommsToJSON(comms: MlArray<PolyComm>): PolyCommJson[] {
-  return MlArray.mapFrom(comms, ([, shifted, unshifted]) => {
+  return MlArray.mapFrom(comms, ([, elems]) => {
     return {
-      shifted: MlArray.mapFrom(shifted, OrInfinity.toJSON),
-      unshifted: MlOption.mapFrom(unshifted, OrInfinity.toJSON),
+      shifted: MlArray.mapFrom(elems, OrInfinity.toJSON),
+      unshifted: undefined,
     };
   });
 }
@@ -207,7 +207,6 @@ function polyCommsFromJSON(json: PolyCommJson[]): MlArray<PolyComm> {
     return [
       0,
       MlArray.mapTo(shifted, OrInfinity.fromJSON),
-      MlOption.mapTo(unshifted, OrInfinity.fromJSON),
     ];
   });
 }
