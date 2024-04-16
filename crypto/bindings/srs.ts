@@ -12,7 +12,7 @@ import {
   readCache,
 } from '../../../lib/proof-system/cache.js';
 import { assert } from '../../../lib/util/errors.js';
-import { MlArray, MlOption } from '../../../lib/ml/base.js';
+import { MlArray } from '../../../lib/ml/base.js';
 import { OrInfinity, OrInfinityJson } from './curve.js';
 
 export { srs, setSrsCache, unsetSrsCache };
@@ -204,9 +204,6 @@ function polyCommsToJSON(comms: MlArray<PolyComm>): PolyCommJson[] {
 
 function polyCommsFromJSON(json: PolyCommJson[]): MlArray<PolyComm> {
   return MlArray.mapTo(json, ({ shifted, unshifted }) => {
-    return [
-      0,
-      MlArray.mapTo(shifted, OrInfinity.fromJSON),
-    ];
+    return [0, MlArray.mapTo(shifted, OrInfinity.fromJSON)];
   });
 }
