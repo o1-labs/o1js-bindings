@@ -7,6 +7,7 @@ import { test, Random } from '../../lib/testing/property.js';
 import { Test } from '../../snarky.js';
 import { FieldConst } from '../../lib/provable/core/fieldvar.js';
 import { MlArray } from '../../lib/ml/base.js';
+import { Fp } from './finite-field.js';
 
 let mlTest = await Test();
 
@@ -36,11 +37,11 @@ test(Random.array(Random.field, Random.nat(20)), (xs) => {
   );
 
   expect(g1).toBeDefined();
-
   expect(g1.x).toEqual(FieldConst.toBigint(g2x));
 
   let g2y_ = FieldConst.toBigint(g2y);
-  expect(g1.y.x0 === g2y_ || g1.y.x1 === g2y_).toEqual(true);
+  expect(g1.y === g2y_ || Fp.negate(g1.y) === g2y_).toEqual(true);
+  expect(Fp.isEven(g1.y)).toEqual(true);
 });
 
 console.log('poseidon hashToGroup implementations match! 🎉');

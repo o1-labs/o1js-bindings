@@ -376,9 +376,10 @@ module Gates = struct
 end
 
 module Group = struct
-  let scale p (scalar_bits : Boolean.var array) =
-    Pickles.Step_main_inputs.Ops.scale_fast_msb_bits p
-      (Shifted_value scalar_bits)
+  let scale_fast_unpack (base : Field.t * Field.t)
+      (scalar : Field.t Pickles_types.Shifted_value.Type1.t) num_bits :
+      (Field.t * Field.t) * Boolean.var array =
+    Pickles.Step_main_inputs.Ops.scale_fast_unpack base scalar ~num_bits
 end
 
 module Circuit = struct
@@ -575,7 +576,7 @@ let snarky =
 
     val group =
       object%js
-        method scale = Group.scale
+        val scaleFastUnpack = Group.scale_fast_unpack
       end
 
     val circuit =
