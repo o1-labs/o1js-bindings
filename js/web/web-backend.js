@@ -8,12 +8,10 @@ import {
 import o1jsWebSrc from 'string:../../../web_bindings/o1js_web.bc.js';
 import { workers } from '../../../lib/proof-system/workers.js';
 
-export { initializeBindings, withThreadPool };
+export { initializeBindings, withThreadPool, wasm };
 
-let wasm = plonkWasm();
-globalThis.plonk_wasm = wasm;
+let wasm;
 
-let init = wasm.default;
 /**
  * @type {Promise<Worker>}
  */
@@ -24,6 +22,10 @@ let workerPromise;
 let numWorkers = undefined;
 
 async function initializeBindings() {
+  wasm = plonkWasm();
+  globalThis.plonk_wasm = wasm;
+  let init = wasm.default;
+
   const memory = allocateWasmMemoryForUserAgent(navigator.userAgent);
   await init(undefined, memory);
 
