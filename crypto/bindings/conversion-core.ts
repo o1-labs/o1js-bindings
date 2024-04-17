@@ -8,7 +8,7 @@ import type {
 } from '../../compiled/node_bindings/plonk_wasm.cjs';
 import { OrInfinity, Gate, PolyComm, Wire } from './kimchi-types.js';
 import type * as wasmNamespace from '../../compiled/node_bindings/plonk_wasm.cjs';
-import { MlArray, MlOption } from '../../../lib/ml/base.js';
+import { MlArray } from '../../../lib/ml/base.js';
 import { mapTuple } from './util.js';
 import {
   WasmAffine,

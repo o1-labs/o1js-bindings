@@ -8,12 +8,10 @@ import {
 import o1jsWebSrc from 'string:../../../web_bindings/o1js_web.bc.js';
 import { workers } from '../../../lib/proof-system/workers.js';
 
-export { initO1, withThreadPool };
+export { initializeBindings, withThreadPool, wasm };
 
-let wasm = plonkWasm();
-globalThis.plonk_wasm = wasm;
+let wasm;
 
-let init = wasm.default;
 /**
  * @type {Promise<Worker>}
  */
@@ -23,13 +21,11 @@ let workerPromise;
  */
 let numWorkers = undefined;
 
-let isInitialized = false;
+async function initializeBindings() {
+  wasm = plonkWasm();
+  globalThis.plonk_wasm = wasm;
+  let init = wasm.default;
 
-async function initO1() {
-  if (isInitialized) {
-    return;
-  }
-  isInitialized = true;
   const memory = allocateWasmMemoryForUserAgent(navigator.userAgent);
   await init(undefined, memory);
 
@@ -61,7 +57,10 @@ async function withThreadPool(run) {
   if (workerPromise === undefined)
     throw Error('need to initialize worker first');
   let worker = await workerPromise;
-  numWorkers ??= Math.max(1, workers.numWorkers ?? (navigator.hardwareConcurrency ?? 1) - 1);
+  numWorkers ??= Math.max(
+    1,
+    workers.numWorkers ?? (navigator.hardwareConcurrency ?? 1) - 1
+  );
   await workerCall(worker, 'initThreadPool', numWorkers);
   let result;
   try {
