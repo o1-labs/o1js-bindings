@@ -28,7 +28,8 @@ type pickles_rule_js =
        -> < publicOutput : Public_input.t Js.prop
           ; previousStatements : Statement.t array Js.prop
           ; shouldVerify : Boolean.var array Js.prop >
-          Js.t )
+          Js.t
+          Promise_js_helpers.js_promise )
       Js.prop
   ; featureFlags : bool Pickles_types.Plonk_types.Features.t Js.prop
   ; proofsToVerify :
@@ -65,7 +66,11 @@ val pickles :
           ; storable : Cache.js_storable Js.optdef_prop
           ; overrideWrapDomain : int Js.optdef_prop >
           Js.t
-       -> < getVerificationKey : (Js.js_string Js.t * Impl.field) Js.meth
+       -> < getVerificationKey :
+              (   unit
+               -> (Js.js_string Js.t * Impl.field) Promise_js_helpers.js_promise
+              )
+              Js.readonly_prop
           ; provers : 'a Js.readonly_prop
           ; tag : 'b Js.readonly_prop
           ; verify : 'c Js.readonly_prop >

@@ -115,6 +115,15 @@ let body_of_json =
   in
   body_of_json
 
+let get_network_id_of_js_string (network : Js.js_string Js.t) =
+  match Js.to_string network with
+  | "mainnet" ->
+      Mina_signature_kind.Mainnet
+  | "testnet" ->
+      Mina_signature_kind.Testnet
+  | other ->
+      Mina_signature_kind.(Other_network other)
+
 module Poseidon = struct
   let hash_to_group (xs : Impl.field array) =
     let input = Random_oracle.hash xs in
@@ -123,11 +132,10 @@ end
 
 module Signature = struct
   let sign_field_element (x : Impl.field) (key : Other_impl.field)
-      (is_mainnet : bool Js.t) =
-    let network_id =
-      Mina_signature_kind.(if Js.to_bool is_mainnet then Mainnet else Testnet)
-    in
-    Signature_lib.Schnorr.Chunked.sign ~signature_kind:network_id key
+      (network_id : Js.js_string Js.t) =
+    Signature_lib.Schnorr.Chunked.sign
+      ~signature_kind:(get_network_id_of_js_string network_id)
+      key
       (Random_oracle.Input.Chunked.field x)
     |> Mina_base.Signature.to_base58_check |> Js.string
 
@@ -151,16 +159,33 @@ module To_fields = struct
 end
 
 module Hash_from_json = struct
-  let account_update (p : Js.js_string Js.t) =
-    p |> account_update_of_json |> Account_update.digest
+  let account_update (p : Js.js_string Js.t) (network_id : Js.js_string Js.t) =
+    p |> account_update_of_json
+    |> Account_update.digest ~chain:(get_network_id_of_js_string network_id)
 
-  let transaction_commitments (tx_json : Js.js_string Js.t) =
+  let transaction_commitments (tx_json : Js.js_string Js.t)
+      (network_id : Js.js_string Js.t) =
+    let chain = get_network_id_of_js_string network_id in
     let tx =
       Zkapp_command.of_json @@ Yojson.Safe.from_string @@ Js.to_string tx_json
     in
-    let commitment = Zkapp_command.commitment tx in
+    let get_account_updates_hash xs =
+      let hash_account_update (p : Account_update.t) =
+        Zkapp_command.Digest.Account_update.create ~chain p
+      in
+      Zkapp_command.Call_forest.accumulate_hashes ~hash_account_update xs
+    in
+    let commitment =
+      let account_updates_hash =
+        Zkapp_command.Call_forest.hash
+          (get_account_updates_hash tx.account_updates)
+      in
+      Zkapp_command.Transaction_commitment.create ~account_updates_hash
+    in
     let fee_payer = Account_update.of_fee_payer tx.fee_payer in
-    let fee_payer_hash = Zkapp_command.Digest.Account_update.create fee_payer in
+    let fee_payer_hash =
+      Zkapp_command.Digest.Account_update.create ~chain fee_payer
+    in
     let full_commitment =
       Zkapp_command.Transaction_commitment.create_complete commitment
         ~memo_hash:(Mina_base.Signed_command_memo.hash tx.memo)
@@ -258,8 +283,16 @@ module Transaction_hash = struct
     Mina_transaction.Transaction_hash.(
       command |> hash_signed_command |> to_base58_check |> Js.string)
 
+  let hash_zkapp_command (command : Js.js_string Js.t) =
+    let command : Zkapp_command.t =
+      command |> Js.to_string |> Yojson.Safe.from_string
+      |> Zkapp_command.of_json
+    in
+    Mina_transaction.Transaction_hash.(
+      command |> hash_zkapp_command |> to_base58_check |> Js.string)
+
   let hash_payment_v1 (command : Js.js_string Js.t) =
-    let command : Signed_command.t_v1 =
+    let command : Signed_command.Stable.V1.t =
       command |> Js.to_string |> Yojson.Safe.from_string
       |> Signed_command.Stable.V1.of_yojson |> ok_exn
     in
@@ -284,7 +317,7 @@ module Transaction_hash = struct
     Binable.to_bigstring (module Signed_command.Stable.Latest) command
 
   let serialize_payment_v1 (command : Js.js_string Js.t) =
-    let command : Signed_command.t_v1 =
+    let command : Signed_command.Stable.V1.t =
       command |> Js.to_string |> Yojson.Safe.from_string
       |> Signed_command.Stable.V1.of_yojson |> ok_exn
     in
@@ -394,6 +427,8 @@ let test =
         method serializePayment = serialize_payment
 
         method serializePaymentV1 = serialize_payment_v1
+
+        method hashZkAppCommand = hash_zkapp_command
 
         val examplePayment = example_payment
       end

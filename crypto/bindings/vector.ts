@@ -6,6 +6,7 @@ import { Field } from './field.js';
 import { withPrefix } from './util.js';
 
 export { FpVectorBindings, FqVectorBindings };
+export { FieldVector };
 
 type FieldVector = MlArray<Field>;
 

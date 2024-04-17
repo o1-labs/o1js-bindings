@@ -14,9 +14,9 @@ import {
   stringLengthInBytes,
   stringToBytes,
 } from '../lib/binable.js';
-import { Base58, fieldEncodings } from '../../lib/base58.js';
-import { dataAsHash } from '../../lib/events.js';
-import { HashHelpers } from '../../lib/hash-generic.js';
+import { Base58, fieldEncodings } from '../../lib/util/base58.js';
+import { dataAsHash } from '../../lib/mina/events.js';
+import { HashHelpers } from '../../lib/provable/crypto/hash-generic.js';
 import { prefixes } from '../crypto/constants.js';
 
 export { derivedLeafTypes, derivedLeafTypesSignable, tokenSymbolLength };
@@ -26,12 +26,12 @@ const tokenSymbolLength = 6;
 function derivedLeafTypes<Field, Bool>({
   Field,
   Bool,
-  Hash,
+  HashHelpers,
   packToFields,
 }: {
   Field: GenericField<Field>;
   Bool: GenericBool<Field, Bool>;
-  Hash: HashHelpers<Field>;
+  HashHelpers: HashHelpers<Field>;
   packToFields: (input: GenericHashInput<Field>) => Field[];
 }) {
   let { provable } = createDerivers<Field>();
@@ -57,19 +57,19 @@ function derivedLeafTypes<Field, Bool>({
       }),
       Bool
     ),
-    ZkappUri: createZkappUri(Field, Hash, packToFields),
+    ZkappUri: createZkappUri(Field, HashHelpers, packToFields),
   };
 }
 
 function derivedLeafTypesSignable<Field, Bool>({
   Field,
   Bool,
-  Hash,
+  HashHelpers,
   packToFields,
 }: {
   Field: GenericSignableField<Field>;
   Bool: GenericSignableBool<Field, Bool>;
-  Hash: HashHelpers<Field>;
+  HashHelpers: HashHelpers<Field>;
   packToFields: (input: GenericHashInput<Field>) => Field[];
 }) {
   let { signable } = createDerivers<Field>();
@@ -95,7 +95,7 @@ function derivedLeafTypesSignable<Field, Bool>({
       }),
       Bool
     ),
-    ZkappUri: createZkappUri(Field, Hash, packToFields),
+    ZkappUri: createZkappUri(Field, HashHelpers, packToFields),
   };
 }
 
@@ -197,7 +197,7 @@ function createAuthRequired<
 
 function createZkappUri<Field>(
   Field: GenericSignableField<Field>,
-  Hash: HashHelpers<Field>,
+  HashHelpers: HashHelpers<Field>,
   packToFields: (input: GenericHashInput<Field>) => Field[]
 ) {
   // Mina_base.Zkapp_account.hash_zkapp_uri_opt
@@ -208,12 +208,15 @@ function createZkappUri<Field>(
       packed: bits.map((b) => [Field(Number(b)), 1]),
     };
     let packed = packToFields(input);
-    return Hash.hashWithPrefix(prefixes.zkappUri, packed);
+    return HashHelpers.hashWithPrefix(prefixes.zkappUri, packed);
   }
 
   return dataAsHash<string, string, string, Field>({
     empty() {
-      let hash = Hash.hashWithPrefix(prefixes.zkappUri, [Field(0), Field(0)]);
+      let hash = HashHelpers.hashWithPrefix(prefixes.zkappUri, [
+        Field(0),
+        Field(0),
+      ]);
       return { data: '', hash };
     },
     toValue(data) {

@@ -8,7 +8,7 @@ import type {
 } from '../../compiled/node_bindings/plonk_wasm.cjs';
 import { OrInfinity, Gate, PolyComm, Wire } from './kimchi-types.js';
 import type * as wasmNamespace from '../../compiled/node_bindings/plonk_wasm.cjs';
-import { MlArray, MlOption } from '../../../lib/ml/base.js';
+import { MlArray } from '../../../lib/ml/base.js';
 import { mapTuple } from './util.js';
 import {
   WasmAffine,
@@ -116,19 +116,17 @@ function conversionCorePerField(
     },
 
     polyCommToRust(polyComm: PolyComm): WasmPolyComm {
-      let [, camlUnshifted, camlShifted] = polyComm;
-      let rustShifted = MlOption.mapFrom(camlShifted, self.pointToRust);
-      let rustUnshifted = self.pointsToRust(camlUnshifted);
+      let [, camlElems] = polyComm;
+      let rustShifted = undefined;
+      let rustUnshifted = self.pointsToRust(camlElems);
       return new PolyComm(rustUnshifted, rustShifted);
     },
     polyCommFromRust(polyComm: WasmPolyComm): PolyComm {
-      let rustShifted = polyComm.shifted;
       let rustUnshifted = polyComm.unshifted;
-      let mlShifted = MlOption.mapTo(rustShifted, affineFromRust);
       let mlUnshifted = mapFromUintArray(rustUnshifted, (ptr) => {
         return affineFromRust(wrap(ptr, CommitmentCurve));
       });
-      return [0, [0, ...mlUnshifted], mlShifted];
+      return [0, [0, ...mlUnshifted]];
     },
 
     polyCommsToRust([, ...comms]: MlArray<PolyComm>): Uint32Array {

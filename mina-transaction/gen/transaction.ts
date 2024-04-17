@@ -9,6 +9,7 @@ import {
   Bool,
   AuthRequired,
   Sign,
+  TransactionVersion,
   ZkappUri,
   TokenSymbol,
   StateHash,
@@ -66,6 +67,7 @@ type ProvableExtended<T, TValue, TJson> = GenericProvableExtended<
 type Layout = GenericLayout<TypeMap>;
 
 type CustomTypes = {
+  TransactionVersion: ProvableExtended<UInt32, Json.TypeMap['UInt32']>;
   ZkappUri: ProvableExtended<
     {
       data: string;
@@ -132,6 +134,7 @@ type CustomTypes = {
   >;
 };
 let customTypes: CustomTypes = {
+  TransactionVersion,
   ZkappUri,
   TokenSymbol,
   StateHash,
@@ -180,7 +183,10 @@ type ZkappCommand = {
             receive: AuthRequired;
             setDelegate: AuthRequired;
             setPermissions: AuthRequired;
-            setVerificationKey: AuthRequired;
+            setVerificationKey: {
+              auth: AuthRequired;
+              txnVersion: UInt32;
+            };
             setZkappUri: AuthRequired;
             editActionState: AuthRequired;
             setTokenSymbol: AuthRequired;
@@ -385,7 +391,10 @@ type AccountUpdate = {
           receive: AuthRequired;
           setDelegate: AuthRequired;
           setPermissions: AuthRequired;
-          setVerificationKey: AuthRequired;
+          setVerificationKey: {
+            auth: AuthRequired;
+            txnVersion: UInt32;
+          };
           setZkappUri: AuthRequired;
           editActionState: AuthRequired;
           setTokenSymbol: AuthRequired;
@@ -589,7 +598,10 @@ type Account = {
     receive: AuthRequired;
     setDelegate: AuthRequired;
     setPermissions: AuthRequired;
-    setVerificationKey: AuthRequired;
+    setVerificationKey: {
+      auth: AuthRequired;
+      txnVersion: UInt32;
+    };
     setZkappUri: AuthRequired;
     editActionState: AuthRequired;
     setTokenSymbol: AuthRequired;

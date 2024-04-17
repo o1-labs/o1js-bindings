@@ -1,4 +1,32 @@
-export { changeBase, bytesToBigInt, bigIntToBytes, parseHexString };
+export {
+  changeBase,
+  bytesToBigInt,
+  bigIntToBytes,
+  bigIntToBits,
+  parseHexString32,
+  log2,
+  max,
+  abs,
+  sign,
+  bytesToBigint32,
+  bigintToBytes32,
+};
+
+function bytesToBigint32(bytes: Uint8Array) {
+  let words = new BigUint64Array(bytes.buffer, bytes.byteOffset, 4);
+  return words[0] | (words[1] << 64n) | (words[2] << 128n) | (words[3] << 192n);
+}
+
+const mask64 = (1n << 64n) - 1n;
+
+function bigintToBytes32(x: bigint, bytes: Uint8Array): Uint8Array {
+  let words = new BigUint64Array(bytes.buffer, bytes.byteOffset, 4);
+  words[0] = x & mask64;
+  words[1] = (x >> 64n) & mask64;
+  words[2] = (x >> 128n) & mask64;
+  words[3] = x >> 192n;
+  return bytes;
+}
 
 function bytesToBigInt(bytes: Uint8Array | number[]) {
   let x = 0n;
@@ -10,23 +38,32 @@ function bytesToBigInt(bytes: Uint8Array | number[]) {
   return x;
 }
 
-function parseHexString(input: string) {
+let hexToNum: { [hexCharCode: number]: number } = {};
+for (let i = 0; i < 16; i++) hexToNum[i.toString(16).charCodeAt(0)] = i;
+let encoder = new TextEncoder();
+
+const tmpBytes = new Uint8Array(64);
+
+function parseHexString32(input: string) {
   // Parse the bytes explicitly, Bigint endianness is wrong
-  let inputBytes = new Uint8Array(32);
-  for (var j = 0; j < 32; j++) {
-      inputBytes[j] = parseInt(input[2*j] + input[2*j+1], 16);
+  encoder.encodeInto(input, tmpBytes);
+  for (let j = 0; j < 32; j++) {
+    let n1 = hexToNum[tmpBytes[2 * j]];
+    let n0 = hexToNum[tmpBytes[2 * j + 1]];
+    tmpBytes[j] = (n1 << 4) | n0;
   }
-  return bytesToBigInt(inputBytes);
+  return bytesToBigint32(tmpBytes);
 }
 
 /**
  * Transforms bigint to little-endian array of bytes (numbers between 0 and 255) of a given length.
  * Throws an error if the bigint doesn't fit in the given number of bytes.
  */
-function bigIntToBytes(x: bigint, length: number) {
+function bigIntToBytes(x: bigint, length?: number) {
   if (x < 0n) {
     throw Error(`bigIntToBytes: negative numbers are not supported, got ${x}`);
   }
+  if (length === undefined) return bigintToBytesFlexible(x);
   let bytes: number[] = Array(length);
   for (let i = 0; i < length; i++, x >>= 8n) {
     bytes[i] = Number(x & 0xffn);
@@ -35,6 +72,30 @@ function bigIntToBytes(x: bigint, length: number) {
     throw Error(`bigIntToBytes: input does not fit in ${length} bytes`);
   }
   return bytes;
+}
+
+function bigintToBytesFlexible(x: bigint) {
+  let bytes: number[] = [];
+  for (; x > 0n; x >>= 8n) {
+    bytes.push(Number(x & 0xffn));
+  }
+  return bytes;
+}
+
+/**
+ * Transforms bigint to little-endian array of bits (booleans).
+ * The length of the bit array is determined as needed.
+ */
+function bigIntToBits(x: bigint) {
+  if (x < 0n) {
+    throw Error(`bigIntToBits: negative numbers are not supported, got ${x}`);
+  }
+  let bits: boolean[] = [];
+  for (; x > 0n; x >>= 1n) {
+    let bit = !!(x & 1n);
+    bits.push(bit);
+  }
+  return bits;
 }
 
 function changeBase(digits: bigint[], base: bigint, newBase: bigint) {
@@ -150,4 +211,26 @@ function toBase(x: bigint, base: bigint) {
     digits.pop();
   }
   return digits;
+}
+
+/**
+ * ceil(log2(n))
+ * = smallest k such that n <= 2^k
+ */
+function log2(n: number | bigint) {
+  if (typeof n === 'number') n = BigInt(n);
+  if (n === 1n) return 0;
+  return (n - 1n).toString(2).length;
+}
+
+function max(a: bigint, b: bigint) {
+  return a > b ? a : b;
+}
+
+function abs(x: bigint) {
+  return x < 0n ? -x : x;
+}
+
+function sign(x: bigint): 1n | -1n {
+  return x >= 0 ? 1n : -1n;
 }

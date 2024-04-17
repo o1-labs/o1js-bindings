@@ -11,8 +11,8 @@ import {
   writeCache,
   readCache,
 } from '../../../lib/proof-system/cache.js';
-import { assert } from '../../../lib/errors.js';
-import { MlArray, MlOption } from '../../../lib/ml/base.js';
+import { assert } from '../../../lib/util/errors.js';
+import { MlArray } from '../../../lib/ml/base.js';
 import { OrInfinity, OrInfinityJson } from './curve.js';
 
 export { srs, setSrsCache, unsetSrsCache };
@@ -194,20 +194,16 @@ type PolyCommJson = {
 };
 
 function polyCommsToJSON(comms: MlArray<PolyComm>): PolyCommJson[] {
-  return MlArray.mapFrom(comms, ([, shifted, unshifted]) => {
+  return MlArray.mapFrom(comms, ([, elems]) => {
     return {
-      shifted: MlArray.mapFrom(shifted, OrInfinity.toJSON),
-      unshifted: MlOption.mapFrom(unshifted, OrInfinity.toJSON),
+      shifted: MlArray.mapFrom(elems, OrInfinity.toJSON),
+      unshifted: undefined,
     };
   });
 }
 
 function polyCommsFromJSON(json: PolyCommJson[]): MlArray<PolyComm> {
   return MlArray.mapTo(json, ({ shifted, unshifted }) => {
-    return [
-      0,
-      MlArray.mapTo(shifted, OrInfinity.fromJSON),
-      MlOption.mapTo(unshifted, OrInfinity.fromJSON),
-    ];
+    return [0, MlArray.mapTo(shifted, OrInfinity.fromJSON)];
   });
 }

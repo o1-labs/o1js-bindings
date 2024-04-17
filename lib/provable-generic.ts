@@ -19,6 +19,7 @@ export {
   InferredProvable,
   IsPure,
   From,
+  Constructor,
 };
 
 type ProvableConstructor<Field> = <A>(

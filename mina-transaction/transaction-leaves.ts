@@ -1,16 +1,16 @@
-import { Field, Bool } from '../../lib/core.js';
-import { UInt32, UInt64, Sign } from '../../lib/int.js';
-import { PublicKey } from '../../lib/signature.js';
+import { Field, Bool } from '../../lib/provable/wrapped.js';
+import { UInt32, UInt64, Sign } from '../../lib/provable/int.js';
+import { PublicKey } from '../../lib/provable/crypto/signature.js';
 import { derivedLeafTypes } from './derived-leaves.js';
-import { createEvents } from '../../lib/events.js';
+import { createEvents } from '../../lib/mina/events.js';
 import {
   Poseidon,
-  Hash,
+  HashHelpers,
   packToFields,
   emptyHashWithPrefix,
-} from '../../lib/hash.js';
-import { provable } from '../../lib/circuit_value.js';
-import { mocks } from '../crypto/constants.js';
+} from '../../lib/provable/crypto/poseidon.js';
+import { provable } from '../../lib/provable/types/struct.js';
+import { mocks, protocolVersions } from '../crypto/constants.js';
 
 export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
 
@@ -23,6 +23,7 @@ export {
   VerificationKeyHash,
   ReceiptChainHash,
   StateHash,
+  TransactionVersion,
 };
 
 type AuthRequired = {
@@ -36,7 +37,7 @@ type TokenSymbol = { symbol: string; field: Field };
 type ZkappUri = { data: string; hash: Field };
 
 const { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri } =
-  derivedLeafTypes({ Field, Bool, Hash, packToFields });
+  derivedLeafTypes({ Field, Bool, HashHelpers, packToFields });
 
 type Event = Field[];
 type Events = {
@@ -62,4 +63,10 @@ type ReceiptChainHash = Field;
 const ReceiptChainHash = {
   ...provable(Field),
   empty: () => emptyHashWithPrefix('CodaReceiptEmpty'),
+};
+
+type TransactionVersion = Field;
+const TransactionVersion = {
+  ...provable(UInt32),
+  empty: () => UInt32.from(protocolVersions.txnVersion),
 };

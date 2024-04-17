@@ -4,16 +4,16 @@ import {
   UInt32,
   UInt64,
   Sign,
-} from '../../provable/field-bigint.js';
-import { PublicKey } from '../../provable/curve-bigint.js';
+} from '../../mina-signer/src/field-bigint.js';
+import { PublicKey } from '../../mina-signer/src/curve-bigint.js';
 import { derivedLeafTypesSignable } from './derived-leaves.js';
-import { createEvents } from '../../lib/events.js';
+import { createEvents } from '../../lib/mina/events.js';
 import {
   Poseidon,
-  Hash,
+  HashHelpers,
   packToFields,
-} from '../../provable/poseidon-bigint.js';
-import { mocks } from '../crypto/constants.js';
+} from '../../mina-signer/src/poseidon-bigint.js';
+import { mocks, protocolVersions } from '../crypto/constants.js';
 
 export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
 
@@ -26,6 +26,7 @@ export {
   VerificationKeyHash,
   ReceiptChainHash,
   StateHash,
+  TransactionVersion,
 };
 
 type AuthRequired = {
@@ -39,7 +40,7 @@ type TokenSymbol = { symbol: string; field: Field };
 type ZkappUri = { data: string; hash: Field };
 
 const { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri } =
-  derivedLeafTypesSignable({ Field, Bool, Hash, packToFields });
+  derivedLeafTypesSignable({ Field, Bool, HashHelpers, packToFields });
 
 type Event = Field[];
 type Events = {
@@ -64,5 +65,11 @@ const VerificationKeyHash = {
 type ReceiptChainHash = Field;
 const ReceiptChainHash = {
   ...Field,
-  empty: () => Hash.emptyHashWithPrefix('CodaReceiptEmpty'),
+  empty: () => HashHelpers.emptyHashWithPrefix('CodaReceiptEmpty'),
+};
+
+type TransactionVersion = Field;
+const TransactionVersion = {
+  ...UInt32,
+  empty: () => UInt32(protocolVersions.txnVersion),
 };

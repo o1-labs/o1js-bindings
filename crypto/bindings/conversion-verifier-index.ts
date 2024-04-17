@@ -274,7 +274,7 @@ function verifierIndexConversionPerField(
 
   let self = {
     shiftsToRust([, ...shifts]: MlArray<Field>): WasmShifts {
-      let s = shifts.map(fieldToRust);
+      let s = shifts.map((s) => fieldToRust(s));
       return new Shifts(s[0], s[1], s[2], s[3], s[4], s[5], s[6]);
     },
     shiftsFromRust(s: WasmShifts): MlArray<Field> {
@@ -292,6 +292,7 @@ function verifierIndexConversionPerField(
       let evals = verificationEvalsToRust(vk[6]);
       let shifts = self.shiftsToRust(vk[7]);
       let lookupIndex = MlOption.mapFrom(vk[8], lookupVerifierIndexToRust);
+      let zkRows = vk[9];
       return new VerifierIndex(
         domain,
         maxPolySize,
@@ -300,7 +301,8 @@ function verifierIndexConversionPerField(
         srs,
         evals,
         shifts,
-        lookupIndex
+        lookupIndex,
+        zkRows,
       );
     },
     verifierIndexFromRust(vk: WasmVerifierIndex): VerifierIndex {
@@ -314,6 +316,7 @@ function verifierIndexConversionPerField(
         verificationEvalsFromRust(vk.evals),
         self.shiftsFromRust(vk.shifts),
         MlOption.mapTo(vk.lookup_index, lookupVerifierIndexFromRust),
+        vk.zk_rows
       ];
       vk.free();
       return mlVk;
