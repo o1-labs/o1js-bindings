@@ -67,7 +67,11 @@ type ProvableExtended<T, TValue, TJson> = GenericProvableExtended<
 type Layout = GenericLayout<TypeMap>;
 
 type CustomTypes = {
-  TransactionVersion: ProvableExtended<UInt32, Json.TypeMap['UInt32']>;
+  TransactionVersion: ProvableExtended<
+    UInt32,
+    Value.TypeMap['UInt32'],
+    Json.TypeMap['UInt32']
+  >;
   ZkappUri: ProvableExtended<
     {
       data: string;
