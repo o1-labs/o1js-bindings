@@ -22,6 +22,7 @@ import {
 import { GenericProvableExtended } from '../../lib/generic.js';
 import { ProvableFromLayout, GenericLayout } from '../../lib/from-layout.js';
 import * as Json from './transaction-json.js';
+import * as Value from './transaction-bigint.js';
 import { jsLayout } from './js-layout.js';
 
 export { customTypes, ZkappCommand, AccountUpdate, Account };
@@ -41,7 +42,11 @@ type TypeMap = {
 };
 
 const TypeMap: {
-  [K in keyof TypeMap]: ProvableExtended<TypeMap[K], Json.TypeMap[K]>;
+  [K in keyof TypeMap]: ProvableExtended<
+    TypeMap[K],
+    Value.TypeMap[K],
+    Json.TypeMap[K]
+  >;
 } = {
   PublicKey,
   UInt64,
@@ -53,15 +58,28 @@ const TypeMap: {
   Sign,
 };
 
-type ProvableExtended<T, TJson> = GenericProvableExtended<T, TJson, Field>;
+type ProvableExtended<T, TValue, TJson> = GenericProvableExtended<
+  T,
+  TValue,
+  TJson,
+  Field
+>;
 type Layout = GenericLayout<TypeMap>;
 
 type CustomTypes = {
-  TransactionVersion: ProvableExtended<UInt32, Json.TypeMap['UInt32']>;
+  TransactionVersion: ProvableExtended<
+    UInt32,
+    Value.TypeMap['UInt32'],
+    Json.TypeMap['UInt32']
+  >;
   ZkappUri: ProvableExtended<
     {
       data: string;
       hash: Field;
+    },
+    {
+      data: string;
+      hash: Value.TypeMap['Field'];
     },
     string
   >;
@@ -70,13 +88,25 @@ type CustomTypes = {
       symbol: string;
       field: Field;
     },
+    {
+      symbol: string;
+      field: Value.TypeMap['Field'];
+    },
     string
   >;
-  StateHash: ProvableExtended<Field, Json.TypeMap['Field']>;
+  StateHash: ProvableExtended<
+    Field,
+    Value.TypeMap['Field'],
+    Json.TypeMap['Field']
+  >;
   Events: ProvableExtended<
     {
       data: Field[][];
       hash: Field;
+    },
+    {
+      data: Value.TypeMap['Field'][][];
+      hash: Value.TypeMap['Field'];
     },
     Json.TypeMap['Field'][][]
   >;
@@ -85,11 +115,27 @@ type CustomTypes = {
       data: Field[][];
       hash: Field;
     },
+    {
+      data: Value.TypeMap['Field'][][];
+      hash: Value.TypeMap['Field'];
+    },
     Json.TypeMap['Field'][][]
   >;
-  ActionState: ProvableExtended<Field, Json.TypeMap['Field']>;
-  VerificationKeyHash: ProvableExtended<Field, Json.TypeMap['Field']>;
-  ReceiptChainHash: ProvableExtended<Field, Json.TypeMap['Field']>;
+  ActionState: ProvableExtended<
+    Field,
+    Value.TypeMap['Field'],
+    Json.TypeMap['Field']
+  >;
+  VerificationKeyHash: ProvableExtended<
+    Field,
+    Value.TypeMap['Field'],
+    Json.TypeMap['Field']
+  >;
+  ReceiptChainHash: ProvableExtended<
+    Field,
+    Value.TypeMap['Field'],
+    Json.TypeMap['Field']
+  >;
 };
 let customTypes: CustomTypes = {
   TransactionVersion,
@@ -104,6 +150,7 @@ let customTypes: CustomTypes = {
 };
 let { provableFromLayout, toJSONEssential, empty } = ProvableFromLayout<
   TypeMap,
+  Value.TypeMap,
   Json.TypeMap
 >(TypeMap, customTypes);
 
@@ -319,9 +366,11 @@ type ZkappCommand = {
   memo: string;
 };
 
-let ZkappCommand = provableFromLayout<ZkappCommand, Json.ZkappCommand>(
-  jsLayout.ZkappCommand as any
-);
+let ZkappCommand = provableFromLayout<
+  ZkappCommand,
+  Value.ZkappCommand,
+  Json.ZkappCommand
+>(jsLayout.ZkappCommand as any);
 
 type AccountUpdate = {
   body: {
@@ -523,9 +572,11 @@ type AccountUpdate = {
   };
 };
 
-let AccountUpdate = provableFromLayout<AccountUpdate, Json.AccountUpdate>(
-  jsLayout.AccountUpdate as any
-);
+let AccountUpdate = provableFromLayout<
+  AccountUpdate,
+  Value.AccountUpdate,
+  Json.AccountUpdate
+>(jsLayout.AccountUpdate as any);
 
 type Account = {
   publicKey: PublicKey;
@@ -576,6 +627,6 @@ type Account = {
   };
 };
 
-let Account = provableFromLayout<Account, Json.Account>(
+let Account = provableFromLayout<Account, Value.Account, Json.Account>(
   jsLayout.Account as any
 );

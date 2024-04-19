@@ -41,12 +41,19 @@ type TypeMapValues<
   [K in keyof TypeMap & keyof JsonMap]: BaseType;
 };
 
-type TypeMapProvable<TypeMap extends AnyTypeMap, JsonMap extends AnyTypeMap> = {
-  [K in keyof TypeMap & keyof JsonMap]: GenericProvableExtended<
-    TypeMap[K],
-    JsonMap[K],
-    TypeMap['Field']
-  >;
+type TypeMapProvable<
+  TypeMap extends AnyTypeMap,
+  ValueMap extends AnyTypeMap,
+  JsonMap extends AnyTypeMap
+> = {
+  [K in keyof TypeMap & keyof JsonMap]: K extends keyof ValueMap
+    ? GenericProvableExtended<
+        TypeMap[K],
+        ValueMap[K],
+        JsonMap[K],
+        TypeMap['Field']
+      >
+    : never;
 };
 type TypeMapSignable<TypeMap extends AnyTypeMap, JsonMap extends AnyTypeMap> = {
   [K in keyof TypeMap & keyof JsonMap]: GenericSignable<
@@ -284,17 +291,18 @@ function SignableFromLayout<
 
 function ProvableFromLayout<
   TypeMap extends AnyTypeMap,
+  ValueMap extends AnyTypeMap,
   JsonMap extends AnyTypeMap
 >(
-  TypeMap: TypeMapProvable<TypeMap, JsonMap>,
+  TypeMap: TypeMapProvable<TypeMap, ValueMap, JsonMap>,
   customTypes: Record<
     string,
-    GenericProvableExtended<any, any, TypeMap['Field']>
+    GenericProvableExtended<any, any, any, TypeMap['Field']>
   >
 ) {
   type Field = TypeMap['Field'];
   const Field = TypeMap.Field;
-  type BaseType = GenericProvableExtended<any, any, TypeMap['Field']>;
+  type BaseType = GenericProvableExtended<any, any, any, TypeMap['Field']>;
   type HashInput = { fields?: Field[]; packed?: [Field, number][] };
   type Layout = GenericLayout<TypeMap>;
 
@@ -306,8 +314,17 @@ function ProvableFromLayout<
   function layoutFold<T, R>(spec: FoldSpec<T, R>, typeData: Layout, value?: T) {
     return genericLayoutFold(TypeMap, customTypes, spec, typeData, value);
   }
+  function layoutMap<T, R>(
+    map: (typeData: BaseType, value: T) => R,
+    typeData: Layout,
+    value: T
+  ) {
+    return genericLayoutMap(TypeMap, customTypes, map, typeData, value);
+  }
 
-  function provableFromLayout<T, TJson>(typeData: Layout) {
+  function provableFromLayout<T, TValue, TJson>(
+    typeData: Layout
+  ): GenericProvableExtended<T, TValue, TJson, Field> {
     return {
       sizeInFields(): number {
         return sizeInFields(typeData);
@@ -336,6 +353,12 @@ function ProvableFromLayout<
       empty(): T {
         return empty(typeData);
       },
+      toValue(value: T): TValue {
+        return toValue(typeData, value);
+      },
+      fromValue(value: TValue | T): T {
+        return fromValue(typeData, value);
+      },
     };
   }
 
@@ -346,7 +369,7 @@ function ProvableFromLayout<
           return type.toFields(value);
         },
         reduceArray(array) {
-          return array!.flat();
+          return array.flat();
         },
         reduceObject(keys, object) {
           return keys.map((key) => object![key]).flat();
@@ -485,6 +508,22 @@ function ProvableFromLayout<
     );
   }
 
+  function toValue(typeData: Layout, value: any) {
+    return layoutMap<any, any>(
+      (type, value) => type.toValue(value),
+      typeData,
+      value
+    );
+  }
+
+  function fromValue(typeData: Layout, value: any) {
+    return layoutMap<any, any>(
+      (type, value) => type.fromValue(value),
+      typeData,
+      value
+    );
+  }
+
   return { provableFromLayout, toJSONEssential, empty };
 }
 
@@ -589,6 +628,44 @@ function genericLayoutFold<
     );
   }
   return spec.map((TypeMap as any)[typeData.type], value, typeData.type);
+}
+
+function genericLayoutMap<
+  BaseType,
+  T = any,
+  R = any,
+  TypeMap extends AnyTypeMap = AnyTypeMap,
+  JsonMap extends AnyTypeMap = AnyTypeMap
+>(
+  TypeMap: TypeMapValues<TypeMap, JsonMap, BaseType>,
+  customTypes: Record<string, BaseType>,
+  map: (typeData: BaseType, value: T) => R,
+  typeData: GenericLayout<TypeMap>,
+  value: T
+): R {
+  return genericLayoutFold<BaseType, T, any, TypeMap, JsonMap>(
+    TypeMap,
+    customTypes,
+    {
+      map(type, value) {
+        return map(type, value!);
+      },
+      reduceArray(array) {
+        return array;
+      },
+      reduceObject(_, object) {
+        return object;
+      },
+      reduceFlaggedOption(option) {
+        return option;
+      },
+      reduceOrUndefined(value) {
+        return value;
+      },
+    },
+    typeData,
+    value
+  );
 }
 
 // types

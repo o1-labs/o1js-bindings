@@ -15,8 +15,10 @@ export {
   NonMethods,
   InferProvable,
   InferJson,
+  InferValue,
   InferredProvable,
   IsPure,
+  From,
   Constructor,
 };
 
@@ -26,19 +28,19 @@ type ProvableConstructor<Field> = <A>(
 ) => InferredProvable<A, Field>;
 type SignableConstructor<Field> = <A>(typeObj: A) => InferredSignable<A, Field>;
 
+let complexTypes = new Set(['object', 'function']);
+let primitives = new Set([Number, String, Boolean, BigInt, null, undefined]);
+
 function createDerivers<Field>(): {
   provable: ProvableConstructor<Field>;
   signable: SignableConstructor<Field>;
 } {
-  let complexTypes = new Set(['object', 'function']);
-  let primitives = new Set([Number, String, Boolean, BigInt, null, undefined]);
-
   type Signable<T, TJson = JSONValue> = GenericSignable<T, TJson, Field>;
-  type ProvableExtended<T, TJson = JSONValue> = GenericProvableExtended<
+  type ProvableExtended<
     T,
-    TJson,
-    Field
-  >;
+    TValue = any,
+    TJson = JSONValue
+  > = GenericProvableExtended<T, TValue, TJson, Field>;
   type HashInput = GenericHashInput<Field>;
   const HashInput = createHashInput<Field>();
 
@@ -47,6 +49,7 @@ function createDerivers<Field>(): {
     options?: { isPure?: boolean }
   ): InferredProvable<A, Field> {
     type T = InferProvable<A, Field>;
+    type V = InferValue<A>;
     type J = InferJson<A>;
     let objectKeys =
       typeof typeObj === 'object' && typeObj !== null
@@ -147,6 +150,9 @@ function createDerivers<Field>(): {
       );
     }
 
+    const toValue = createMap('toValue');
+    const fromValue = createMap('fromValue');
+
     let { empty, fromJSON, toJSON, toInput } = signable(typeObj);
 
     type S = InferSignable<A, Field>;
@@ -158,12 +164,18 @@ function createDerivers<Field>(): {
         toAuxiliary: () => [],
         fromFields: (fields: Field[]) =>
           fromFields(typeObj, fields, [], true) as T,
+        check: (obj: T) => check(typeObj, obj, true),
+        toValue(x) {
+          return toValue(typeObj, x);
+        },
+        fromValue(v) {
+          return fromValue(typeObj, v);
+        },
         toInput: (obj: T) => toInput(obj as S),
         toJSON: (obj: T) => toJSON(obj as S) satisfies J,
         fromJSON: (json: J) => fromJSON(json) as T,
-        check: (obj: T) => check(typeObj, obj, true),
         empty: () => empty() as T,
-      } satisfies ProvableExtended<T, J> as InferredProvable<A, Field>;
+      } satisfies ProvableExtended<T, V, J> as InferredProvable<A, Field>;
     }
     return {
       sizeInFields: () => sizeInFields(typeObj),
@@ -171,12 +183,18 @@ function createDerivers<Field>(): {
       toAuxiliary: (obj?: T) => toAuxiliary(typeObj, obj, true),
       fromFields: (fields: Field[], aux: any[]) =>
         fromFields(typeObj, fields, aux, true) as T,
+      check: (obj: T) => check(typeObj, obj, true),
+      toValue(x) {
+        return toValue(typeObj, x);
+      },
+      fromValue(v) {
+        return fromValue(typeObj, v);
+      },
       toInput: (obj: T) => toInput(obj as S),
       toJSON: (obj: T) => toJSON(obj as S) satisfies J,
       fromJSON: (json: J) => fromJSON(json) as T,
-      check: (obj: T) => check(typeObj, obj, true),
       empty: () => empty() as T,
-    } satisfies ProvableExtended<T, J> as InferredProvable<A, Field>;
+    } satisfies ProvableExtended<T, V, J> as InferredProvable<A, Field>;
   }
 
   function signable<A>(typeObj: A): InferredSignable<A, Field> {
@@ -277,6 +295,20 @@ function createDerivers<Field>(): {
   return { provable, signable };
 }
 
+function createMap<S extends string>(name: S) {
+  function map(typeObj: any, obj: any): any {
+    if (primitives.has(typeObj)) return obj;
+    if (!complexTypes.has(typeof typeObj))
+      throw Error(`provable: unsupported type "${typeObj}"`);
+    if (Array.isArray(typeObj)) return typeObj.map((t, i) => map(t, obj[i]));
+    if (name in typeObj) return typeObj[name](obj);
+    return Object.fromEntries(
+      Object.keys(typeObj).map((k) => [k, map(typeObj[k], obj[k])])
+    );
+  }
+  return map;
+}
+
 function createHashInput<Field>() {
   type HashInput = GenericHashInput<Field>;
   return {
@@ -302,7 +334,12 @@ type JSONValue =
   | Array<JSONValue>
   | { [key: string]: JSONValue };
 
-type Struct<T, Field> = GenericProvableExtended<NonMethods<T>, any, Field> &
+type Struct<T, Field> = GenericProvableExtended<
+  NonMethods<T>,
+  any,
+  any,
+  Field
+> &
   Constructor<T> & { _isStruct: true };
 
 type NonMethodKeys<T> = {
@@ -334,6 +371,21 @@ type InferPrimitive<P extends Primitive> = P extends typeof String
   : P extends undefined
   ? undefined
   : any;
+
+type InferPrimitiveValue<P extends Primitive> = P extends typeof String
+  ? string
+  : P extends typeof Number
+  ? number
+  : P extends typeof Boolean
+  ? boolean
+  : P extends typeof BigInt
+  ? bigint
+  : P extends null
+  ? null
+  : P extends undefined
+  ? undefined
+  : any;
+
 type InferPrimitiveJson<P extends Primitive> = P extends typeof String
   ? string
   : P extends typeof Number
@@ -349,14 +401,18 @@ type InferPrimitiveJson<P extends Primitive> = P extends typeof String
   : JSONValue;
 
 type InferProvable<A, Field> = A extends Constructor<infer U>
-  ? A extends GenericProvable<U, Field>
+  ? A extends GenericProvable<U, any, Field>
     ? U
     : A extends Struct<U, Field>
     ? U
     : InferProvableBase<A, Field>
   : InferProvableBase<A, Field>;
 
-type InferProvableBase<A, Field> = A extends GenericProvable<infer U, Field>
+type InferProvableBase<A, Field> = A extends GenericProvable<
+  infer U,
+  any,
+  Field
+>
   ? U
   : A extends Primitive
   ? InferPrimitive<A>
@@ -369,6 +425,22 @@ type InferProvableBase<A, Field> = A extends GenericProvable<infer U, Field>
   : A extends Record<any, any>
   ? {
       [K in keyof A]: InferProvable<A[K], Field>;
+    }
+  : never;
+
+type InferValue<A> = A extends GenericProvable<any, infer U, any>
+  ? U
+  : A extends Primitive
+  ? InferPrimitiveValue<A>
+  : A extends Tuple<any>
+  ? {
+      [I in keyof A]: InferValue<A[I]>;
+    }
+  : A extends (infer U)[]
+  ? InferValue<U>[]
+  : A extends Record<any, any>
+  ? {
+      [K in keyof A]: InferValue<A[K]>;
     }
   : never;
 
@@ -392,9 +464,9 @@ type InferJson<A> = A extends WithJson<infer J>
 
 type IsPure<A, Field> = IsPureBase<A, Field> extends true ? true : false;
 
-type IsPureBase<A, Field> = A extends GenericProvablePure<any, Field>
+type IsPureBase<A, Field> = A extends GenericProvablePure<any, any, Field>
   ? true
-  : A extends GenericProvable<any, Field>
+  : A extends GenericProvable<any, any, Field>
   ? false
   : A extends Primitive
   ? false
@@ -407,8 +479,18 @@ type IsPureBase<A, Field> = A extends GenericProvablePure<any, Field>
   : false;
 
 type InferredProvable<A, Field> = IsPure<A, Field> extends true
-  ? GenericProvableExtendedPure<InferProvable<A, Field>, InferJson<A>, Field>
-  : GenericProvableExtended<InferProvable<A, Field>, InferJson<A>, Field>;
+  ? GenericProvableExtendedPure<
+      InferProvable<A, Field>,
+      InferValue<A>,
+      InferJson<A>,
+      Field
+    >
+  : GenericProvableExtended<
+      InferProvable<A, Field>,
+      InferValue<A>,
+      InferJson<A>,
+      Field
+    >;
 
 // signable
 
@@ -433,3 +515,25 @@ type InferredSignable<A, Field> = GenericSignable<
   InferJson<A>,
   Field
 >;
+
+// deep union type for flexible fromValue
+
+type From<A> = A extends {
+  fromValue: (x: infer U) => any;
+} & GenericProvable<any, any, any>
+  ? U | InferProvable<A, any>
+  : A extends GenericProvable<any, any, any>
+  ? InferProvable<A, any> | InferValue<A>
+  : A extends Primitive
+  ? InferPrimitiveValue<A>
+  : A extends Tuple<any>
+  ? {
+      [I in keyof A]: From<A[I]>;
+    }
+  : A extends (infer U)[]
+  ? From<U>[]
+  : A extends Record<any, any>
+  ? {
+      [K in keyof A]: From<A[K]>;
+    }
+  : never;
