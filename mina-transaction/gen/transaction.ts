@@ -79,7 +79,7 @@ type CustomTypes = {
     },
     {
       data: string;
-      hash: bigint;
+      hash: Value.TypeMap['Field'];
     },
     string
   >;
@@ -90,7 +90,7 @@ type CustomTypes = {
     },
     {
       symbol: string;
-      field: bigint;
+      field: Value.TypeMap['Field'];
     },
     string
   >;
@@ -105,8 +105,8 @@ type CustomTypes = {
       hash: Field;
     },
     {
-      data: bigint[][];
-      hash: bigint;
+      data: Value.TypeMap['Field'][][];
+      hash: Value.TypeMap['Field'];
     },
     Json.TypeMap['Field'][][]
   >;
@@ -116,8 +116,8 @@ type CustomTypes = {
       hash: Field;
     },
     {
-      data: bigint[][];
-      hash: bigint;
+      data: Value.TypeMap['Field'][][];
+      hash: Value.TypeMap['Field'];
     },
     Json.TypeMap['Field'][][]
   >;
