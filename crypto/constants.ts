@@ -13,7 +13,8 @@ let prefixes = {
   "signatureMainnet": "MinaSignatureMainnet",
   "signatureTestnet": "CodaSignature*******",
   "zkappUri": "MinaZkappUri********",
-  "deriveTokenId": "MinaDeriveTokenId***"
+  "deriveTokenId": "MinaDeriveTokenId***",
+  "sideLoadedVK": "MinaSideLoadedVk****"
 };
 let prefixHashes = {
   "CodaReceiptUC*******": [
