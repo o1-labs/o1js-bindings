@@ -98,5 +98,27 @@ val pickles :
       < fromMlString : (string -> Js.js_string Js.t) Js.readonly_prop
       ; toMlString : (Js.js_string Js.t -> string) Js.readonly_prop >
       Js.t
-      Js.readonly_prop >
+      Js.readonly_prop
+  ; sideLoaded :
+      < create :
+          (Js.js_string Js.t -> int -> int -> int -> 'd)
+          Js_of_ocaml.Js.readonly_prop
+      ; inCircuit :
+          (   _ Pickles.Tag.t
+           -> Mina_wire_types.Pickles.M.Side_loaded.Verification_key.V2.t
+           -> unit )
+          Js_of_ocaml.Js.readonly_prop
+      ; inProver :
+          (_ Pickles.Tag.t -> Js.js_string Js.t -> unit)
+          Js_of_ocaml.Js.readonly_prop
+      ; vkDigest :
+          (   Pickles.Side_loaded.Verification_key.Checked.t
+           -> Pickles.Impls.Step.Internal_Basic.Field.Var.t array )
+          Js_of_ocaml.Js.readonly_prop
+      ; vkToCircuit :
+          (   (unit -> Js.js_string Js.t)
+           -> Pickles.Side_loaded.Verification_key.Checked.t )
+          Js_of_ocaml.Js.readonly_prop >
+      Js.t
+      Js_of_ocaml.Js.readonly_prop >
   Js.t
