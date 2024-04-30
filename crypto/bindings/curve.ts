@@ -1,7 +1,7 @@
 /**
  * TS implementation of Pasta_bindings.{Pallas, Vesta}
  */
-import { MlPair } from 'src/lib/ml/base.js';
+import { MlPair } from '../../../lib/ml/base.js';
 import { Field } from './field.js';
 import {
   Pallas,
