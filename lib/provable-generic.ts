@@ -44,6 +44,20 @@ function createDerivers<Field>(): {
   type HashInput = GenericHashInput<Field>;
   const HashInput = createHashInput<Field>();
 
+  /**
+   * A function that gives us a hint that the input type is a `Provable` and we shouldn't continue
+   * recursing into its properties, when computing methods that aren't required by the `Provable` interface.
+   */
+  function shouldTerminateProvable(
+    typeObj: object
+  ): typeObj is GenericProvable<any, any, Field> {
+    return (
+      'sizeInFields' in typeObj &&
+      'toFields' in typeObj &&
+      'fromFields' in typeObj
+    );
+  }
+
   function provable<A>(
     typeObj: A,
     options?: { isPure?: boolean }
@@ -153,7 +167,10 @@ function createDerivers<Field>(): {
     const toValue = createMap('toValue');
     const fromValue = createMap('fromValue');
 
-    let { empty, fromJSON, toJSON, toInput } = signable(typeObj);
+    let { empty, fromJSON, toJSON, toInput } = signable(
+      typeObj,
+      shouldTerminateProvable
+    );
 
     type S = InferSignable<A, Field>;
 
@@ -197,7 +214,10 @@ function createDerivers<Field>(): {
     } satisfies ProvableExtended<T, V, J> as InferredProvable<A, Field>;
   }
 
-  function signable<A>(typeObj: A): InferredSignable<A, Field> {
+  function signable<A>(
+    typeObj: A,
+    shouldTerminate?: (typeObj: object) => boolean
+  ): InferredSignable<A, Field> {
     type T = InferSignable<A, Field>;
     type J = InferJson<A>;
     let objectKeys =
@@ -243,6 +263,11 @@ function createDerivers<Field>(): {
       if (Array.isArray(typeObj))
         return typeObj.map((t, i) => toJSON(t, obj[i]));
       if ('toJSON' in typeObj) return typeObj.toJSON(obj);
+
+      if (shouldTerminate?.(typeObj) === true) {
+        throw Error(`Expected \`toJSON()\` method on ${display(typeObj)}`);
+      }
+
       return Object.fromEntries(
         (isToplevel ? objectKeys : Object.keys(typeObj)).map((k) => [
           k,
@@ -261,6 +286,11 @@ function createDerivers<Field>(): {
       if (Array.isArray(typeObj))
         return typeObj.map((t, i) => fromJSON(t, json[i]));
       if ('fromJSON' in typeObj) return typeObj.fromJSON(json);
+
+      if (shouldTerminate?.(typeObj) === true) {
+        throw Error(`Expected \`fromJSON()\` method on ${display(typeObj)}`);
+      }
+
       let keys = isToplevel ? objectKeys : Object.keys(typeObj);
       let values = fromJSON(
         keys.map((k) => typeObj[k]),
@@ -279,6 +309,11 @@ function createDerivers<Field>(): {
         throw Error(`provable: unsupported type "${typeObj}"`);
       if (Array.isArray(typeObj)) return typeObj.map(empty);
       if ('empty' in typeObj) return typeObj.empty();
+
+      if (shouldTerminate?.(typeObj) === true) {
+        throw Error(`Expected \`empty()\` method on ${display(typeObj)}`);
+      }
+
       return Object.fromEntries(
         Object.keys(typeObj).map((k) => [k, empty(typeObj[k])])
       );
@@ -290,6 +325,11 @@ function createDerivers<Field>(): {
       fromJSON: (json: J) => fromJSON(typeObj, json, true),
       empty: () => empty(typeObj) as T,
     } satisfies Signable<T, J> as InferredSignable<A, Field>;
+  }
+
+  function display(typeObj: object) {
+    if ('name' in typeObj) return typeObj.name;
+    return 'anonymous type object';
   }
 
   return { provable, signable };
