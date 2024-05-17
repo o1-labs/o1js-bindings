@@ -9,7 +9,7 @@ import {
   packToFields,
   emptyHashWithPrefix,
 } from '../../lib/provable/crypto/poseidon.js';
-import { provable } from '../../lib/provable/types/struct.js';
+import { provable } from '../../lib/provable/types/provable-derivers.js';
 import { mocks, protocolVersions } from '../crypto/constants.js';
 
 export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
