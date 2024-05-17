@@ -3137,9 +3137,6 @@ export interface InitOutput {
   readonly __wbg_get_wire_col: (a: number) => number;
   readonly __wbg_set_wire_col: (a: number, b: number) => void;
   readonly wire_create: (a: number, b: number) => number;
-  readonly lookuppatterns_new: (a: number, b: number, c: number, d: number) => number;
-  readonly lookupfeatures_new: (a: number, b: number, c: number) => number;
-  readonly lookupinfo_new: (a: number, b: number, c: number) => number;
   readonly __wbg_featureflags_free: (a: number) => void;
   readonly __wbg_get_featureflags_range_check0: (a: number) => number;
   readonly __wbg_set_featureflags_range_check0: (a: number, b: number) => void;
@@ -3155,6 +3152,9 @@ export interface InitOutput {
   readonly __wbg_set_featureflags_rot: (a: number, b: number) => void;
   readonly __wbg_get_featureflags_lookup_features: (a: number) => number;
   readonly __wbg_set_featureflags_lookup_features: (a: number, b: number) => void;
+  readonly lookuppatterns_new: (a: number, b: number, c: number, d: number) => number;
+  readonly lookupfeatures_new: (a: number, b: number, c: number) => number;
+  readonly lookupinfo_new: (a: number, b: number, c: number) => number;
   readonly memory: WebAssembly.Memory;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
