@@ -29,6 +29,7 @@ let prefixes =
     ; ("signatureTestnet", `String (signature_testnet :> string))
     ; ("zkappUri", `String (zkapp_uri :> string))
     ; ("deriveTokenId", `String (derive_token_id :> string))
+    ; ("sideLoadedVK", `String (side_loaded_vk :> string))
     ]
 
 type hash_prefix_kind = Kimchi | Legacy
