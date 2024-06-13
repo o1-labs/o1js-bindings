@@ -17,6 +17,8 @@ export {
   EmptyNull,
   EmptyUndefined,
   EmptyVoid,
+  StructProvable,
+  structProvable,
 };
 
 type GenericProvable<T, TValue, Field> = {
@@ -28,6 +30,80 @@ type GenericProvable<T, TValue, Field> = {
   toValue: (x: T) => TValue;
   fromValue: (x: T | TValue) => T;
 };
+
+type StructProvable<T extends {}, TValue extends {[K in keyof T]: any}, Field> = {
+    [K in keyof T]: GenericProvable<T[K], TValue[K], Field>;
+}
+
+function structProvable<T extends {}, TValue extends {[K in keyof T]: any}, Field>
+  (typ: StructProvable<T, TValue, Field>):
+      GenericProvable<
+        {[K in keyof T]: T[K]},
+        {[K in keyof TValue]: TValue[K]},
+        Field>
+{
+    return {
+        toFields: (x) => {
+            var fields: Field[] = [];
+            var field: keyof T;
+            for (field in typ) {
+                fields.concat(typ[field].toFields(x[field]));
+            }
+            return fields;
+        },
+        toAuxiliary: (x? /* Why is this nullable?! */) => {
+            if (x == undefined) {
+                return [];
+            }
+            var auxes: any[] = [];
+            var field: keyof T;
+            for (field in typ) {
+                auxes.concat(typ[field].toAuxiliary(x[field]));
+            }
+            return auxes;
+        },
+        fromFields: (x: Field[], aux: any[]) => {
+            var res: {[K in keyof T]?: T[K]} = {};
+            var offset = 0;
+            var idx = 0;
+            var field: keyof T;
+            for (field in typ) {
+                let end = offset + typ[field].sizeInFields();
+                let field_aux = aux[idx];
+                res[field] = typ[field].fromFields(x.slice(offset, end), field_aux);
+                offset = end;
+                idx += 1;
+            }
+            return (res as {[K in keyof T]: T[K]});
+        },
+        sizeInFields: () => {
+            var sum = 0;
+            var field: keyof T;
+            for (field in typ) {
+                sum += typ[field].sizeInFields();
+            }
+            return sum;
+        },
+        check: (x) => {
+            var field: keyof T;
+            for (field in typ) {
+                typ[field].check(x[field]);
+            }
+        },
+        toValue: (x) => { // Wtf?
+            throw new Error("TODO");
+        },
+        fromValue: (x) => {
+            var res: {[K in keyof T]?: T[K]} = {};
+            var field: keyof T;
+            for (field in typ) {
+                res[field] = typ[field].fromValue(x[field]);
+            }
+            return (res as {[K in keyof T]: T[K]});
+        },
+    }
+}
+
 type GenericProvablePure<T, TValue, Field> = Omit<
   GenericProvable<T, TValue, Field>,
   'fromFields'
