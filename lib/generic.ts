@@ -39,7 +39,7 @@ function structProvable<T extends {}, TValue extends {[K in keyof T]: any}, Fiel
   (typ: StructProvable<T, TValue, Field>):
       GenericProvable<
         {[K in keyof T]: T[K]},
-        {[K in keyof TValue]: TValue[K]},
+        {[K in keyof T]: TValue[K]},
         Field>
 {
     return {
@@ -90,8 +90,13 @@ function structProvable<T extends {}, TValue extends {[K in keyof T]: any}, Fiel
                 typ[field].check(x[field]);
             }
         },
-        toValue: (x) => { // Wtf?
-            throw new Error("TODO");
+        toValue: (x) => {
+            var res: {[K in keyof T]?: TValue[K]} = {};
+            var field: keyof T;
+            for (field in typ) {
+                res[field] = typ[field].toValue(x[field]);
+            }
+            return (res as {[K in keyof T]: TValue[K]});
         },
         fromValue: (x) => {
             var res: {[K in keyof T]?: T[K]} = {};
