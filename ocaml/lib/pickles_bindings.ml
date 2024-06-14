@@ -760,7 +760,7 @@ end
 let side_loaded_create (name : Js.js_string Js.t) (max_proofs_verified : int)
     (public_input_length : int) (public_output_length : int) =
   let name = Js.to_string name in
-  let feature_flags = Pickles_types.Plonk_types.Features.none in
+  let feature_flags = Pickles_types.Plonk_types.Features.maybe in
   let typ = statement_typ public_input_length public_output_length in
   match max_proofs_verified with
   | 0 ->
