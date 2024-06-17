@@ -70,7 +70,7 @@ type pickles_rule_js =
           Js.t
           Promise_js_helpers.js_promise )
       Js.prop
-  ; featureFlags : bool Pickles_types.Plonk_types.Features.t Js.prop
+  ; featureFlags : bool option Pickles_types.Plonk_types.Features.t Js.prop
   ; proofsToVerify :
       < isSelf : bool Js.t Js.prop ; tag : Js.Unsafe.any Js.t Js.prop > Js.t
       array
@@ -309,7 +309,15 @@ module Choices = struct
           |> Promise.map ~f:(finish_circuit prevs self)
         in
         { identifier = Js.to_string rule##.identifier
-        ; feature_flags = rule##.featureFlags
+        ; feature_flags =
+            Pickles_types.Plonk_types.Features.map rule##.featureFlags
+              ~f:(function
+              | Some true ->
+                  true
+              | Some false ->
+                  false
+              | None ->
+                  false )
         ; prevs
         ; main
         }
