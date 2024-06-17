@@ -77,17 +77,15 @@ type pickles_rule_js =
       Js.prop >
   Js.t
 
-let map_feature_flags
+let map_feature_flags_option
     (feature_flags_ : bool option Pickles_types.Plonk_types.Features.t) =
-  print_endline "hello" ;
-  let () = print_endline "hellO" in
   Pickles_types.Plonk_types.Features.map feature_flags_ ~f:(function
     | Some true ->
-        print_endline "yes" ; Pickles_types.Opt.Flag.Yes
+        Pickles_types.Opt.Flag.Yes
     | Some false ->
-        print_endline "no" ; Pickles_types.Opt.Flag.No
+        Pickles_types.Opt.Flag.No
     | None ->
-        print_endline "maybe" ; Pickles_types.Opt.Flag.Maybe )
+        Pickles_types.Opt.Flag.Maybe )
 
 module Choices = struct
   open Pickles_types
@@ -772,7 +770,7 @@ let side_loaded_create (name : Js.js_string Js.t) (max_proofs_verified : int)
     (public_input_length : int) (public_output_length : int)
     (feature_flags_js : bool option Pickles_types.Plonk_types.Features.t) =
   let name = Js.to_string name in
-  let feature_flags = map_feature_flags feature_flags_js in
+  let feature_flags = map_feature_flags_option feature_flags_js in
   let typ = statement_typ public_input_length public_output_length in
   match max_proofs_verified with
   | 0 ->
