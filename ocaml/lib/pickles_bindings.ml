@@ -314,9 +314,7 @@ module Choices = struct
               ~f:(function
               | Some true ->
                   true
-              | Some false ->
-                  false
-              | None ->
+              | _ ->
                   false )
         ; prevs
         ; main
