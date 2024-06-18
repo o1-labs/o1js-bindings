@@ -70,12 +70,22 @@ type pickles_rule_js =
           Js.t
           Promise_js_helpers.js_promise )
       Js.prop
-  ; featureFlags : bool Pickles_types.Plonk_types.Features.t Js.prop
+  ; featureFlags : bool option Pickles_types.Plonk_types.Features.t Js.prop
   ; proofsToVerify :
       < isSelf : bool Js.t Js.prop ; tag : Js.Unsafe.any Js.t Js.prop > Js.t
       array
       Js.prop >
   Js.t
+
+let map_feature_flags_option
+    (feature_flags_ : bool option Pickles_types.Plonk_types.Features.t) =
+  Pickles_types.Plonk_types.Features.map feature_flags_ ~f:(function
+    | Some true ->
+        Pickles_types.Opt.Flag.Yes
+    | Some false ->
+        Pickles_types.Opt.Flag.No
+    | None ->
+        Pickles_types.Opt.Flag.Maybe )
 
 module Choices = struct
   open Pickles_types
@@ -298,9 +308,14 @@ module Choices = struct
           |> Promise_js_helpers.of_js
           |> Promise.map ~f:(finish_circuit prevs self)
         in
-
         { identifier = Js.to_string rule##.identifier
-        ; feature_flags = rule##.featureFlags
+        ; feature_flags =
+            Pickles_types.Plonk_types.Features.map rule##.featureFlags
+              ~f:(function
+              | Some true ->
+                  true
+              | _ ->
+                  false )
         ; prevs
         ; main
         }
@@ -758,9 +773,10 @@ module Util = struct
 end
 
 let side_loaded_create (name : Js.js_string Js.t) (max_proofs_verified : int)
-    (public_input_length : int) (public_output_length : int) =
+    (public_input_length : int) (public_output_length : int)
+    (feature_flags_js : bool option Pickles_types.Plonk_types.Features.t) =
   let name = Js.to_string name in
-  let feature_flags = Pickles_types.Plonk_types.Features.none in
+  let feature_flags = map_feature_flags_option feature_flags_js in
   let typ = statement_typ public_input_length public_output_length in
   match max_proofs_verified with
   | 0 ->
