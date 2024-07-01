@@ -173,6 +173,11 @@ function createDerivers<Field>(): {
       if (!complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
 
+      if (Array.isArray(typeObj))
+        return typeObj.forEach((t, i) => check(t, obj[i]));
+
+      if (isProvable(typeObj)) return typeObj.check(obj);
+
       if (display(typeObj) === 'Struct')
         throw Error(
           `provable: cannot run check() on 'Struct' type. ` +
@@ -187,11 +192,6 @@ function createDerivers<Field>(): {
             `  fieldA: MySpecificStruct, // Use the specific struct type\n` +
             `}) {}\n`
         );
-
-      if (Array.isArray(typeObj))
-        return typeObj.forEach((t, i) => check(t, obj[i]));
-
-      if (isProvable(typeObj)) return typeObj.check(obj);
 
       return Object.keys(typeObj).forEach((k) => check(typeObj[k], obj[k]));
     }
