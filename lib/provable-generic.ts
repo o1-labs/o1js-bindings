@@ -20,6 +20,10 @@ export {
   IsPure,
   From,
   Constructor,
+  NestedProvable,
+  InferProvableNested,
+  InferJsonNested,
+  InferValueNested,
 };
 
 type ProvableConstructor<Field> = <A>(
@@ -437,7 +441,7 @@ type InferPrimitiveJson<P extends Primitive> = P extends typeof String
   ? null
   : P extends undefined
   ? null
-  : JSONValue;
+  : any;
 
 type NestedProvable<Field> =
   | Primitive
@@ -581,5 +585,66 @@ type From<A> = A extends {
   : A extends Record<any, any>
   ? {
       [K in keyof A]: From<A[K]>;
+    }
+  : never;
+
+// nested
+
+type InferProvableNested<
+  Field,
+  A extends NestedProvable<Field>
+> = A extends Primitive
+  ? InferPrimitive<A>
+  : A extends GenericProvable<infer P, any, any>
+  ? P
+  : A extends [NestedProvable<Field>, ...NestedProvable<Field>[]]
+  ? {
+      [I in keyof A & number]: InferProvableNested<Field, A[I]>;
+    }
+  : A extends (infer U extends NestedProvable<Field>)[]
+  ? InferProvableNested<Field, U>[]
+  : A extends Record<string, NestedProvable<Field>>
+  ? {
+      [K in keyof A]: InferProvableNested<Field, A[K]>;
+    }
+  : never;
+
+type InferValueNested<
+  Field,
+  A extends NestedProvable<Field>
+> = A extends Primitive
+  ? InferPrimitiveValue<A>
+  : A extends GenericProvable<any, infer U, any>
+  ? U
+  : A extends [NestedProvable<Field>, ...NestedProvable<Field>[]]
+  ? {
+      [I in keyof A & number]: InferValueNested<Field, A[I]>;
+    }
+  : A extends (infer U extends NestedProvable<Field>)[]
+  ? InferValueNested<Field, U>[]
+  : A extends Record<string, NestedProvable<Field>>
+  ? {
+      [K in keyof A]: InferValueNested<Field, A[K]>;
+    }
+  : never;
+
+type InferJsonNested<
+  Field,
+  A extends NestedProvable<Field>
+> = A extends Primitive
+  ? InferPrimitiveJson<A>
+  : A extends GenericProvable<any, any, Field>
+  ? A extends WithJson<infer J>
+    ? J
+    : never
+  : A extends [NestedProvable<Field>, ...NestedProvable<Field>[]]
+  ? {
+      [I in keyof A & number]: InferJsonNested<Field, A[I]>;
+    }
+  : A extends (infer U extends NestedProvable<Field>)[]
+  ? InferJsonNested<Field, U>[]
+  : A extends Record<string, NestedProvable<Field>>
+  ? {
+      [K in keyof A]: InferJsonNested<Field, A[K]>;
     }
   : never;
