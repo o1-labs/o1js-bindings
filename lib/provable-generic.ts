@@ -178,13 +178,6 @@ function createDerivers<Field>(): {
 
       if (isProvable(typeObj)) return typeObj.check(obj);
 
-      if (typeof typeObj === 'function') {
-        throw new Error(
-          `provable: invalid type detected. Functions are not supported as types. ` +
-            `Ensure you are passing an instance of a supported type or an anonymous object.\n`
-        );
-      }
-
       if (display(typeObj) === 'Struct') {
         throw new Error(
           `provable: cannot run check() on 'Struct' type. ` +
@@ -198,6 +191,13 @@ function createDerivers<Field>(): {
             `class MyStruct extends Struct({\n` +
             `  fieldA: MySpecificStruct, // Use the specific struct type\n` +
             `}) {}\n`
+        );
+      }
+
+      if (typeof typeObj === 'function') {
+        throw new Error(
+          `provable: invalid type detected. Functions are not supported as types. ` +
+            `Ensure you are passing an instance of a supported type or an anonymous object.\n`
         );
       }
 
