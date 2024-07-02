@@ -178,6 +178,30 @@ function createDerivers<Field>(): {
 
       if (isProvable(typeObj)) return typeObj.check(obj);
 
+      if (display(typeObj) === 'Struct') {
+        throw new Error(
+          `provable: cannot run check() on 'Struct' type. ` +
+            `Instead of using 'Struct' directly, extend 'Struct' to create a specific type.\n\n` +
+            `Example:\n` +
+            `// Incorrect Usage:\n` +
+            `class MyStruct extends Struct({\n` +
+            `  fieldA: Struct, // This is incorrect\n` +
+            `}) {}\n\n` +
+            `// Correct Usage:\n` +
+            `class MyStruct extends Struct({\n` +
+            `  fieldA: MySpecificStruct, // Use the specific struct type\n` +
+            `}) {}\n`
+        );
+      }
+
+      if (typeof typeObj === 'function') {
+        throw new Error(
+          `provable: invalid type detected. Functions are not supported as types. ` +
+            `Ensure you are passing an instance of a supported type or an anonymous object.\n`
+        );
+      }
+
+      // Only recurse into the object if it's an object and not a function
       return Object.keys(typeObj).forEach((k) => check(typeObj[k], obj[k]));
     }
 
