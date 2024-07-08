@@ -12,7 +12,17 @@ import {
 import { provable } from '../../lib/provable/types/provable-derivers.js';
 import { mocks, protocolVersions } from '../crypto/constants.js';
 
-export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
+export {
+  PublicKey,
+  Field,
+  Bool,
+  AuthRequired,
+  UInt64,
+  UInt32,
+  Sign,
+  TokenId,
+  MayUseToken,
+};
 
 export {
   Events,
@@ -31,12 +41,16 @@ type AuthRequired = {
   signatureNecessary: Bool;
   signatureSufficient: Bool;
 };
+type MayUseToken = {
+  parentsOwnToken: Bool;
+  inheritFromParent: Bool;
+};
 type TokenId = Field;
 type StateHash = Field;
 type TokenSymbol = { symbol: string; field: Field };
 type ZkappUri = { data: string; hash: Field };
 
-const { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri } =
+const { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri, MayUseToken } =
   derivedLeafTypes({ Field, Bool, HashHelpers, packToFields });
 
 type Event = Field[];

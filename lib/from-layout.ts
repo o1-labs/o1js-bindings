@@ -21,6 +21,7 @@ type GenericTypeMap<
   PublicKey,
   AuthRequired,
   TokenId
+  // MayUseToken
 > = {
   Field: Field;
   Bool: Bool;
@@ -30,6 +31,7 @@ type GenericTypeMap<
   PublicKey: PublicKey;
   AuthRequired: AuthRequired;
   TokenId: TokenId;
+  // MayUseToken: MayUseToken;
 };
 type AnyTypeMap = GenericTypeMap<any, any, any, any, any, any, any, any>;
 

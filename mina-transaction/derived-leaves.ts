@@ -57,6 +57,13 @@ function derivedLeafTypes<Field, Bool>({
       }),
       Bool
     ),
+    MayUseToken: createMayUseToken(
+      provable({
+        parentsOwnToken: Bool,
+        inheritFromParent: Bool,
+      }),
+      Bool
+    ),
     ZkappUri: createZkappUri(Field, HashHelpers, packToFields),
   };
 }
@@ -92,6 +99,13 @@ function derivedLeafTypesSignable<Field, Bool>({
         constant: Bool,
         signatureNecessary: Bool,
         signatureSufficient: Bool,
+      }),
+      Bool
+    ),
+    MayUseToken: createMayUseToken(
+      signable({
+        parentsOwnToken: Bool,
+        inheritFromParent: Bool,
       }),
       Bool
     ),
@@ -233,4 +247,37 @@ function createZkappUri<Field>(
     },
     Field,
   });
+}
+
+type MayUseToken<Bool> = {
+  parentsOwnToken: Bool;
+  inheritFromParent: Bool;
+};
+
+function createMayUseToken<
+  Field,
+  Bool,
+  Base extends GenericSignable<MayUseToken<Bool>, MayUseToken<boolean>, Field>
+>(base: Base, Bool: GenericSignableBool<Field, Bool>) {
+  return {
+    ...(base as Omit<Base, 'toJSON' | 'fromJSON'>),
+    empty(): MayUseToken<Bool> {
+      return {
+        parentsOwnToken: Bool(false),
+        inheritFromParent: Bool(false),
+      };
+    },
+    toJSON(x: MayUseToken<Bool>): Json.MayUseToken {
+      return {
+        parentsOwnToken: Bool.toJSON(x.parentsOwnToken),
+        inheritFromParent: Bool.toJSON(x.inheritFromParent),
+      };
+    },
+    fromJSON(json: Json.MayUseToken): MayUseToken<Bool> {
+      return {
+        parentsOwnToken: Bool.fromJSON(json.parentsOwnToken),
+        inheritFromParent: Bool.fromJSON(json.inheritFromParent),
+      };
+    },
+  };
 }
