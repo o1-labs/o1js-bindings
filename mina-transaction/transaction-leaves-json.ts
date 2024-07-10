@@ -1,14 +1,4 @@
-export {
-  PublicKey,
-  Field,
-  Bool,
-  AuthRequired,
-  UInt64,
-  UInt32,
-  Sign,
-  TokenId,
-  MayUseToken,
-};
+export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
 
 type Field = string;
 type Bool = boolean;
@@ -18,7 +8,3 @@ type PublicKey = string;
 type Sign = 'Positive' | 'Negative';
 type AuthRequired = 'Signature' | 'Proof' | 'Either' | 'None' | 'Impossible';
 type TokenId = Field;
-type MayUseToken = {
-  parentsOwnToken: Bool;
-  inheritFromParent: Bool;
-};

@@ -9,7 +9,7 @@ KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
 
 [ -d node_modules ] || npm i
 
-# export DUNE_USE_DEFAULT_LINKER="y"
+export DUNE_USE_DEFAULT_LINKER="y"
 
 if [ -f "$BUILD_PATH/o1js_node.bc.js" ]; then
   echo "found o1js_node.bc.js"

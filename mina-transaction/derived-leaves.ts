@@ -269,11 +269,5 @@ function createMayUseToken<
           'MayUseToken: parentsOwnToken and inheritFromParent cannot both be true'
         );
     },
-    fromJSON(json: Json.MayUseToken): MayUseToken<Bool> {
-      return {
-        parentsOwnToken: Bool.fromJSON(json.parentsOwnToken),
-        inheritFromParent: Bool.fromJSON(json.inheritFromParent),
-      };
-    },
   };
 }
