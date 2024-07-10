@@ -261,17 +261,13 @@ function createMayUseToken<
 >(base: Base, Bool: GenericSignableBool<Field, Bool>) {
   return {
     ...(base as Omit<Base, 'toJSON' | 'fromJSON'>),
-    empty(): MayUseToken<Bool> {
-      return {
-        parentsOwnToken: Bool(false),
-        inheritFromParent: Bool(false),
-      };
-    },
-    toJSON(x: MayUseToken<Bool>): Json.MayUseToken {
-      return {
-        parentsOwnToken: Bool.toJSON(x.parentsOwnToken),
-        inheritFromParent: Bool.toJSON(x.inheritFromParent),
-      };
+    check(mayUseToken: MayUseToken<Bool>) {
+      let parentsOwnToken = Bool.toJSON(mayUseToken.parentsOwnToken);
+      let inheritFromParent = Bool.toJSON(mayUseToken.inheritFromParent);
+      if (parentsOwnToken && inheritFromParent)
+        throw Error(
+          'MayUseToken: parentsOwnToken and inheritFromParent cannot both be true'
+        );
     },
     fromJSON(json: Json.MayUseToken): MayUseToken<Bool> {
       return {
