@@ -34,6 +34,7 @@ export {
   ReceiptChainHash,
   StateHash,
   TransactionVersion,
+  MayUseToken,
 };
 
 type AuthRequired = {
@@ -83,3 +84,20 @@ const TransactionVersion = {
 
 type BalanceChange = Int64;
 const BalanceChange = Int64;
+type MayUseToken = {
+  parentsOwnToken: Bool;
+  inheritFromParent: Bool;
+};
+const MayUseToken = {
+  ...provable({
+    parentsOwnToken: Bool,
+    inheritFromParent: Bool,
+  }),
+  check: ({ parentsOwnToken, inheritFromParent }: MayUseToken) => {
+    parentsOwnToken
+      .and(inheritFromParent)
+      .assertFalse(
+        'MayUseToken: parentsOwnToken and inheritFromParent cannot both be true'
+      );
+  },
+};
