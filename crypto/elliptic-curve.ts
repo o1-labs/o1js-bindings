@@ -305,7 +305,7 @@ function projectiveToAffine(g: GroupProjective, p: bigint): GroupAffine {
   let z = g.z;
   if (z === 0n) {
     // infinity
-    return { x: 0n, y: 0n, infinity: true };
+    return { infinity: true };
   } else if (z === 1n) {
     // already normalized affine form
     return { x: g.x, y: g.y, infinity: false };
