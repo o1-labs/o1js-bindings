@@ -584,8 +584,11 @@ function createCurveAffine({
     equal(g: GroupAffine, h: GroupAffine) {
       if (g.infinity && h.infinity) {
         return true;
+      } else if (g.infinity || h.infinity) {
+        return false;
+      } else {
+        return mod(g.x - h.x, p) === 0n && mod(g.y - h.y, p) === 0n;
       }
-      return mod(g.x - h.x, p) === 0n && mod(g.y - h.y, p) === 0n;
     },
     isOnCurve(g: GroupAffine) {
       return affineOnCurve(g, p, a, b);
