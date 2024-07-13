@@ -61,7 +61,7 @@ type GroupProjective = { x: bigint; y: bigint; z: bigint };
 
 type PointAtInfinity = { infinity: true };
 type FinitePoint = { x: bigint; y: bigint; infinity: false };
-type GroupAffine = { x: bigint; y: bigint; infinity: boolean };
+type GroupAffine = PointAtInfinity | FinitePoint;
 
 /**
  * Parameters defining an elliptic curve in short Weierstraß form
