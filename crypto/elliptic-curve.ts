@@ -296,13 +296,9 @@ function projectiveScale(g: GroupProjective, x: bigint | boolean[], p: bigint) {
   return h;
 }
 
-function projectiveFromAffine({
-  x,
-  y,
-  infinity,
-}: GroupAffine): GroupProjective {
-  if (infinity) return projectiveZero;
-  return { x, y, z: 1n };
+function projectiveFromAffine(point: GroupAffine): GroupProjective {
+  if (isPointAtInfinity(point)) return projectiveZero;
+  return { x: point.x, y: point.y, z: 1n };
 }
 
 function projectiveToAffine(g: GroupProjective, p: bigint): GroupAffine {
