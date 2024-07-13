@@ -121,6 +121,10 @@ function isFinitePoint(point: GroupAffine): point is FinitePoint {
   return !point.infinity;
 }
 
+function isPointAtInfinity(point: GroupAffine): point is PointAtInfinity {
+  return point.infinity;
+}
+
 // reference implementation https://github.com/o1-labs/snarky/blob/78e0d952518f75b5382f6d735adb24eef7a0fa90/group_map/group_map.ml
 const GroupMap = {
   create: (F: FiniteField, params: GroupMapParams) => {
