@@ -94,6 +94,15 @@ const MayUseToken = {
     inheritFromParent: Bool,
   }),
   check: ({ parentsOwnToken, inheritFromParent }: MayUseToken) => {
+    if (
+      !(parentsOwnToken instanceof Bool) ||
+      !(inheritFromParent instanceof Bool)
+    ) {
+      throw Error(
+        'MayUseToken: parentsOwnToken and inheritFromParent must be Bool'
+      );
+    }
+
     parentsOwnToken
       .and(inheritFromParent)
       .assertFalse(
