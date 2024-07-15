@@ -14,7 +14,7 @@ import {
   packToFields,
 } from '../../mina-signer/src/poseidon-bigint.js';
 import { mocks, protocolVersions } from '../crypto/constants.js';
-import { signable } from 'src/mina-signer/src/derivers-bigint.js';
+import { signable } from '../../mina-signer/src/derivers-bigint.js';
 
 export {
   PublicKey,
