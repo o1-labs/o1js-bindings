@@ -14,8 +14,19 @@ import {
   packToFields,
 } from '../../mina-signer/src/poseidon-bigint.js';
 import { mocks, protocolVersions } from '../crypto/constants.js';
+import { signable } from 'src/mina-signer/src/derivers-bigint.js';
 
-export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
+export {
+  PublicKey,
+  Field,
+  Bool,
+  AuthRequired,
+  UInt64,
+  UInt32,
+  Sign,
+  BalanceChange,
+  TokenId,
+};
 
 export {
   Events,
@@ -73,3 +84,6 @@ const TransactionVersion = {
   ...UInt32,
   empty: () => UInt32(protocolVersions.txnVersion),
 };
+
+type BalanceChange = { magnitude: UInt64; sgn: Sign };
+const BalanceChange = signable({ magnitude: UInt64, sgn: Sign });
