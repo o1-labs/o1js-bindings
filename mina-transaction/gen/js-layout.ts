@@ -756,6 +756,18 @@ let jsLayout = {
                     parentsOwnToken: null,
                     inheritFromParent: null,
                   },
+                  checkedType: {
+                    type: 'object',
+                    name: 'Anonymous',
+                    docs: null,
+                    keys: ['parentsOwnToken', 'inheritFromParent'],
+                    entries: {
+                      parentsOwnToken: { type: 'Bool' },
+                      inheritFromParent: { type: 'Bool' },
+                    },
+                    docEntries: { parentsOwnToken: '', inheritFromParent: '' },
+                  },
+                  checkedTypeName: 'MayUseToken',
                 },
                 authorizationKind: {
                   type: 'object',
@@ -1527,6 +1539,18 @@ let jsLayout = {
               inheritFromParent: { type: 'Bool' },
             },
             docEntries: { parentsOwnToken: null, inheritFromParent: null },
+            checkedType: {
+              type: 'object',
+              name: 'Anonymous',
+              docs: null,
+              keys: ['parentsOwnToken', 'inheritFromParent'],
+              entries: {
+                parentsOwnToken: { type: 'Bool' },
+                inheritFromParent: { type: 'Bool' },
+              },
+              docEntries: { parentsOwnToken: '', inheritFromParent: '' },
+            },
+            checkedTypeName: 'MayUseToken',
           },
           authorizationKind: {
             type: 'object',
