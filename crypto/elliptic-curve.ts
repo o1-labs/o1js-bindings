@@ -452,10 +452,10 @@ const Vesta = createCurveProjective({
 const affineZero: PointAtInfinity = { infinity: true };
 
 function affineOnCurve(g: GroupAffine, p: bigint, a: bigint, b: bigint) {
-  if (infinity) return true;
+  if (g.infinity) return true;
   // y^2 = x^3 + ax + b
-  let x2 = mod(x * x, p);
-  return mod(y * y - x * x2 - a * x - b, p) === 0n;
+  let x2 = mod(g.x * g.x, p);
+  return mod(g.y * g.y - g.x * x2 - a * g.x - b, p) === 0n;
 }
 
 function affineAdd(g: GroupAffine, h: GroupAffine, p: bigint): GroupAffine {
