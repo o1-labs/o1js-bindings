@@ -81,4 +81,5 @@ const TransactionVersion = {
   empty: () => UInt32.from(protocolVersions.txnVersion),
 };
 
-class BalanceChange extends Int64 {}
+type BalanceChange = Int64;
+const BalanceChange = Int64;
