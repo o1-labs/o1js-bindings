@@ -59,7 +59,7 @@ const projectiveZero = { x: 1n, y: 1n, z: 0n };
 
 type GroupProjective = { x: bigint; y: bigint; z: bigint };
 
-type PointAtInfinity = { infinity: true };
+type PointAtInfinity = { x: bigint; y: bigint; infinity: true };
 type FinitePoint = { x: bigint; y: bigint; infinity: false };
 type GroupAffine = PointAtInfinity | FinitePoint;
 
