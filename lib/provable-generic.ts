@@ -102,7 +102,7 @@ function createDerivers<Field>(): {
         }
         if (typeObj.length !== obj.length) {
           throw new Error(
-            `Type mismatch: expected array length ${typeObj.length}, got ${obj.length}`
+            `Expected array length ${typeObj.length}, but got ${obj.length}`
           );
         }
         return typeObj.map((t, i) => toFields(t, obj[i])).flat();
