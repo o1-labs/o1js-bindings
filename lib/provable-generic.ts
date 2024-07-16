@@ -97,7 +97,7 @@ function createDerivers<Field>(): {
         throw Error(`provable: unsupported type "${typeObj}"`);
 
       if (Array.isArray(typeObj)) {        
-        if (typeObj.length !== obj.length) {
+        if (!Array.isArray(obj) || typeObj.length !== obj.length) {
           throw new Error(`Type mismatch: expected array length ${typeObj.length}, got ${obj.length}`);
         }
         return typeObj.map((t, i) => toFields(t, obj[i])).flat();
