@@ -1,5 +1,5 @@
 import { Field, Bool } from '../../lib/provable/wrapped.js';
-import { UInt32, UInt64, Sign } from '../../lib/provable/int.js';
+import { UInt32, UInt64, Sign, Int64 } from '../../lib/provable/int.js';
 import { PublicKey } from '../../lib/provable/crypto/signature.js';
 import { derivedLeafTypes } from './derived-leaves.js';
 import { createEvents } from '../../lib/mina/events.js';
@@ -12,7 +12,17 @@ import {
 import { provable } from '../../lib/provable/types/provable-derivers.js';
 import { mocks, protocolVersions } from '../crypto/constants.js';
 
-export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
+export {
+  PublicKey,
+  Field,
+  Bool,
+  AuthRequired,
+  UInt64,
+  UInt32,
+  Sign,
+  BalanceChange,
+  TokenId,
+};
 
 export {
   Events,
@@ -70,3 +80,6 @@ const TransactionVersion = {
   ...provable(UInt32),
   empty: () => UInt32.from(protocolVersions.txnVersion),
 };
+
+type BalanceChange = Int64;
+const BalanceChange = Int64;
