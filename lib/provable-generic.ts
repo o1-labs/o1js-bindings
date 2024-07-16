@@ -77,7 +77,8 @@ function createDerivers<Field>(): {
   ): typeObj is { provable: GenericProvable<any, any, Field> } {
     return (
       'provable' in typeObj &&
-      typeof typeObj.provable === 'object' &&
+      (typeof typeObj.provable === 'object' ||
+        typeof typeObj.provable === 'function') &&
       typeObj.provable !== null &&
       isProvable(typeObj.provable)
     );
@@ -522,7 +523,13 @@ type NestedProvable<Field> =
   | NestedProvable<Field>[]
   | { [key: string]: NestedProvable<Field> };
 
-type InferProvable<A, Field> = A extends Constructor<infer U>
+type InferProvable<A, Field> = A extends { provable: Constructor<infer U> }
+  ? A extends { provable: GenericProvable<U, any, Field> }
+    ? U
+    : A extends { provable: Struct<U, Field> }
+    ? U
+    : InferProvableBase<A, Field>
+  : A extends Constructor<infer U>
   ? A extends GenericProvable<U, any, Field>
     ? U
     : A extends Struct<U, Field>
