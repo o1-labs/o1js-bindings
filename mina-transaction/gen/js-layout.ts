@@ -282,6 +282,8 @@ let jsLayout = {
                     sgn: { type: 'Sign' },
                   },
                   docEntries: { magnitude: null, sgn: null },
+                  checkedType: { type: 'BalanceChange' },
+                  checkedTypeName: 'BalanceChange',
                 },
                 incrementNonce: { type: 'Bool' },
                 events: {
@@ -1058,6 +1060,8 @@ let jsLayout = {
             keys: ['magnitude', 'sgn'],
             entries: { magnitude: { type: 'UInt64' }, sgn: { type: 'Sign' } },
             docEntries: { magnitude: null, sgn: null },
+            checkedType: { type: 'BalanceChange' },
+            checkedTypeName: 'BalanceChange',
           },
           incrementNonce: { type: 'Bool' },
           events: {

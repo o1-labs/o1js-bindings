@@ -6,9 +6,10 @@ import {
   UInt32,
   TokenId,
   Field,
-  Bool,
   AuthRequired,
+  BalanceChange,
   Sign,
+  Bool,
   TransactionVersion,
   ZkappUri,
   TokenSymbol,
@@ -35,9 +36,10 @@ type TypeMap = {
   UInt32: UInt32;
   TokenId: TokenId;
   Field: Field;
-  Bool: Bool;
   AuthRequired: AuthRequired;
+  BalanceChange: BalanceChange;
   Sign: Sign;
+  Bool: Bool;
 };
 
 const TypeMap: {
@@ -48,9 +50,10 @@ const TypeMap: {
   UInt32,
   TokenId,
   Field,
-  Bool,
   AuthRequired,
+  BalanceChange,
   Sign,
+  Bool,
 };
 
 type Signable<T, TJson> = GenericSignable<T, TJson, Field>;
@@ -73,6 +76,13 @@ type CustomTypes = {
     string
   >;
   StateHash: Signable<Field, Json.TypeMap['Field']>;
+  BalanceChange: Signable<
+    BalanceChange,
+    {
+      magnitude: Json.TypeMap['UInt64'];
+      sgn: Json.TypeMap['Sign'];
+    }
+  >;
   Events: Signable<
     {
       data: Field[][];
@@ -96,6 +106,7 @@ let customTypes: CustomTypes = {
   ZkappUri,
   TokenSymbol,
   StateHash,
+  BalanceChange,
   Events,
   Actions,
   ActionState,
@@ -178,10 +189,7 @@ type ZkappCommand = {
         };
         votingFor: { isSome: Bool; value: Field };
       };
-      balanceChange: {
-        magnitude: UInt64;
-        sgn: Sign;
-      };
+      balanceChange: BalanceChange;
       incrementNonce: Bool;
       events: {
         data: Field[][];
@@ -384,10 +392,7 @@ type AccountUpdate = {
       };
       votingFor: { isSome: Bool; value: Field };
     };
-    balanceChange: {
-      magnitude: UInt64;
-      sgn: Sign;
-    };
+    balanceChange: BalanceChange;
     incrementNonce: Bool;
     events: {
       data: Field[][];

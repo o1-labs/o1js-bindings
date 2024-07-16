@@ -6,9 +6,10 @@ import {
   UInt32,
   TokenId,
   Field,
-  Bool,
   AuthRequired,
+  BalanceChange,
   Sign,
+  Bool,
 } from '../transaction-leaves-json.js';
 
 export { ZkappCommand, AccountUpdate, Account };
@@ -21,9 +22,10 @@ type TypeMap = {
   UInt32: UInt32;
   TokenId: TokenId;
   Field: Field;
-  Bool: Bool;
   AuthRequired: AuthRequired;
+  BalanceChange: BalanceChange;
   Sign: Sign;
+  Bool: Bool;
 };
 
 type ZkappCommand = {

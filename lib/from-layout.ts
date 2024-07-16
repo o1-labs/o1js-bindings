@@ -18,6 +18,7 @@ type GenericTypeMap<
   UInt32,
   UInt64,
   Sign,
+  BalanceChange,
   PublicKey,
   AuthRequired,
   TokenId
@@ -27,11 +28,12 @@ type GenericTypeMap<
   UInt32: UInt32;
   UInt64: UInt64;
   Sign: Sign;
+  BalanceChange: BalanceChange;
   PublicKey: PublicKey;
   AuthRequired: AuthRequired;
   TokenId: TokenId;
 };
-type AnyTypeMap = GenericTypeMap<any, any, any, any, any, any, any, any>;
+type AnyTypeMap = GenericTypeMap<any, any, any, any, any, any, any, any, any>;
 
 type TypeMapValues<
   TypeMap extends AnyTypeMap,
