@@ -66,8 +66,25 @@ function createDerivers<Field>(): {
     );
   }
 
+  /**
+   * Accepts objects of the form { provable: Provable }
+   */
+  function hasProvable(
+    typeObj: object
+  ): typeObj is { provable: GenericProvable<any, any, Field> } {
+    return (
+      'provable' in typeObj &&
+      typeof typeObj.provable === 'object' &&
+      typeObj.provable !== null &&
+      isProvable(typeObj.provable)
+    );
+  }
+
   function provable<A>(
     typeObj: A,
+    /**
+     * @deprecated
+     */
     options?: { isPure?: boolean } // TODO: remove this option, it has no effect
   ): InferredProvable<A, Field> {
     type T = InferProvable<A, Field>;
@@ -84,6 +101,8 @@ function createDerivers<Field>(): {
       if (!complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
 
+      if (hasProvable(typeObj)) return typeObj.provable.sizeInFields();
+
       if (Array.isArray(typeObj))
         return typeObj.map(sizeInFields).reduce((a, b) => a + b, 0);
 
@@ -99,6 +118,8 @@ function createDerivers<Field>(): {
 
       if (!complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
+
+      if (hasProvable(typeObj)) return typeObj.provable.toFields(obj);
 
       if (Array.isArray(typeObj))
         return typeObj.map((t, i) => toFields(t, obj[i])).flat();
@@ -119,6 +140,8 @@ function createDerivers<Field>(): {
 
       if (isPrimitive(typeObj) || !complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
+
+      if (hasProvable(typeObj)) return typeObj.provable.toAuxiliary(obj);
 
       if (Array.isArray(typeObj))
         return typeObj.map((t, i) => toAuxiliary(t, obj?.[i]));
@@ -144,6 +167,8 @@ function createDerivers<Field>(): {
 
       if (isPrimitive(typeObj) || !complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
+
+      if (hasProvable(typeObj)) return typeObj.provable.fromFields(fields, aux);
 
       if (Array.isArray(typeObj)) {
         let array: any[] = [];
@@ -176,6 +201,8 @@ function createDerivers<Field>(): {
 
       if (!complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
+
+      if (hasProvable(typeObj)) return typeObj.provable.check(obj);
 
       if (Array.isArray(typeObj))
         return typeObj.forEach((t, i) => check(t, obj[i]));
@@ -212,7 +239,11 @@ function createDerivers<Field>(): {
     const toValue = createMap('toValue');
     const fromValue = createMap('fromValue');
 
-    let { empty, fromJSON, toJSON, toInput } = signable(typeObj, isProvable);
+    let { empty, fromJSON, toJSON, toInput } = signable(
+      typeObj,
+      // if one of these is true, we don't want to continue searching for 'signable' methods
+      (obj) => isProvable(obj) || hasProvable(obj)
+    );
 
     type S = InferSignable<A, Field>;
 
@@ -469,6 +500,7 @@ type InferPrimitiveJson<P extends Primitive> = P extends typeof String
 
 type NestedProvable<Field> =
   | Primitive
+  | { provable: GenericProvable<any, any, Field> }
   | GenericProvable<any, any, Field>
   | [NestedProvable<Field>, ...NestedProvable<Field>[]]
   | NestedProvable<Field>[]
@@ -538,7 +570,11 @@ type InferJson<A> = A extends WithJson<infer J>
 
 type IsPure<A, Field> = IsPureBase<A, Field> extends true ? true : false;
 
-type IsPureBase<A, Field> = A extends GenericProvablePure<any, any, Field>
+type IsPureBase<A, Field> = A extends {
+  provable: GenericProvablePure<any, any, Field>;
+}
+  ? true
+  : A extends GenericProvablePure<any, any, Field>
   ? true
   : A extends GenericProvable<any, any, Field>
   ? false
@@ -619,6 +655,8 @@ type InferProvableNested<
   A extends NestedProvable<Field>
 > = A extends Primitive
   ? InferPrimitive<A>
+  : A extends { provable: GenericProvable<infer P, any, any> }
+  ? P
   : A extends GenericProvable<infer P, any, any>
   ? P
   : A extends [NestedProvable<Field>, ...NestedProvable<Field>[]]
@@ -638,6 +676,8 @@ type InferValueNested<
   A extends NestedProvable<Field>
 > = A extends Primitive
   ? InferPrimitiveValue<A>
+  : A extends { provable: GenericProvable<any, infer U, any> }
+  ? U
   : A extends GenericProvable<any, infer U, any>
   ? U
   : A extends [NestedProvable<Field>, ...NestedProvable<Field>[]]
@@ -657,6 +697,10 @@ type InferJsonNested<
   A extends NestedProvable<Field>
 > = A extends Primitive
   ? InferPrimitiveJson<A>
+  : A extends { provable: GenericProvable<any, any, Field> }
+  ? A['provable'] extends WithJson<infer J>
+    ? J
+    : never
   : A extends GenericProvable<any, any, Field>
   ? A extends WithJson<infer J>
     ? J
