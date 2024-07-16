@@ -95,10 +95,8 @@ function derivedLeafTypesSignable<Field, Bool>({
       }),
       Bool
     ),
-    MayUseToken: createMayUseToken(
-      signable({ parentsOwnToken: Bool, inheritFromParent: Bool }),
-      Bool
-    ),
+    MayUseToken: signable({ parentsOwnToken: Bool, inheritFromParent: Bool }),
+    Bool,
     ZkappUri: createZkappUri(Field, HashHelpers, packToFields),
   };
 }
@@ -196,20 +194,6 @@ function createAuthRequired<
         .map((s) => Bool(!!Number(s)));
       return { constant, signatureNecessary, signatureSufficient };
     },
-  };
-}
-
-type MayUseToken<Bool> = {
-  parentsOwnToken: Bool;
-  inheritFromParent: Bool;
-};
-function createMayUseToken<
-  Field,
-  Bool,
-  Base extends GenericSignable<MayUseToken<Bool>, MayUseToken<boolean>, Field>
->(base: Base, _Bool: GenericSignableBool<Field, Bool>) {
-  return {
-    ...base,
   };
 }
 
