@@ -449,7 +449,7 @@ const Vesta = createCurveProjective({
   endoScalar: vestaEndoScalar,
 });
 
-const affineZero: PointAtInfinity = { infinity: true };
+const affineZero: PointAtInfinity = { x: 0n, y: 0n, infinity: true };
 
 function affineOnCurve(g: GroupAffine, p: bigint, a: bigint, b: bigint) {
   if (g.infinity) return true;
