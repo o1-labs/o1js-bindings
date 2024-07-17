@@ -95,6 +95,8 @@ function derivedLeafTypesSignable<Field, Bool>({
       }),
       Bool
     ),
+    MayUseToken: signable({ parentsOwnToken: Bool, inheritFromParent: Bool }),
+    Bool,
     ZkappUri: createZkappUri(Field, HashHelpers, packToFields),
   };
 }

@@ -26,6 +26,7 @@ export {
   Sign,
   BalanceChange,
   TokenId,
+  MayUseToken,
 };
 
 export {
@@ -49,8 +50,12 @@ type TokenId = Field;
 type StateHash = Field;
 type TokenSymbol = { symbol: string; field: Field };
 type ZkappUri = { data: string; hash: Field };
+type MayUseToken = {
+  parentsOwnToken: Bool;
+  inheritFromParent: Bool;
+};
 
-const { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri } =
+const { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri, MayUseToken } =
   derivedLeafTypesSignable({ Field, Bool, HashHelpers, packToFields });
 
 type Event = Field[];
