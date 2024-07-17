@@ -8,6 +8,7 @@ export {
   Sign,
   BalanceChange,
   TokenId,
+  MayUseToken,
 };
 
 type Field = string;
@@ -19,3 +20,7 @@ type BalanceChange = { magnitude: UInt64; sgn: Sign };
 type PublicKey = string;
 type AuthRequired = 'Signature' | 'Proof' | 'Either' | 'None' | 'Impossible';
 type TokenId = Field;
+type MayUseToken = {
+  parentsOwnToken: Bool;
+  inheritFromParent: Bool;
+};
