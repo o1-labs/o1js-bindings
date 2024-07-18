@@ -27,6 +27,7 @@ type GenericProvable<T, TValue, Field> = {
   check: (x: T) => void;
   toValue: (x: T) => TValue;
   fromValue: (x: T | TValue) => T;
+  toCanonical?: (x: T) => T;
 };
 type GenericProvablePure<T, TValue, Field> = Omit<
   GenericProvable<T, TValue, Field>,
