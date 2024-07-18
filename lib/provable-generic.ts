@@ -98,10 +98,10 @@ function createDerivers<Field>(): {
 
       if (Array.isArray(typeObj)) {
         if (!Array.isArray(obj)) {
-          throw new Error(`Expected an array for type, but got ${typeof obj}`);
+          throw Error(`Expected an array for type, but got ${typeof obj}`);
         }
         if (typeObj.length !== obj.length) {
-          throw new Error(
+          throw Error(
             `Expected array length ${typeObj.length}, but got ${obj.length}`
           );
         }
