@@ -34,6 +34,7 @@ export {
   ReceiptChainHash,
   StateHash,
   TransactionVersion,
+  MayUseToken,
 };
 
 type AuthRequired = {
@@ -83,3 +84,13 @@ const TransactionVersion = {
 
 type BalanceChange = Int64;
 const BalanceChange = Int64;
+type MayUseToken = {
+  parentsOwnToken: Bool;
+  inheritFromParent: Bool;
+};
+const MayUseToken = {
+  ...provable({
+    parentsOwnToken: Bool,
+    inheritFromParent: Bool,
+  }),
+};
