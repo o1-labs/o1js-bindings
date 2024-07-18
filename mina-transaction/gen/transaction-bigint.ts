@@ -17,6 +17,7 @@ import {
   Events,
   Actions,
   ActionState,
+  MayUseToken,
   VerificationKeyHash,
   ReceiptChainHash,
 } from '../transaction-leaves-bigint.js';
@@ -98,6 +99,16 @@ type CustomTypes = {
     Json.TypeMap['Field'][][]
   >;
   ActionState: Signable<Field, Json.TypeMap['Field']>;
+  MayUseToken: Signable<
+    {
+      parentsOwnToken: Bool;
+      inheritFromParent: Bool;
+    },
+    {
+      parentsOwnToken: Json.TypeMap['Bool'];
+      inheritFromParent: Json.TypeMap['Bool'];
+    }
+  >;
   VerificationKeyHash: Signable<Field, Json.TypeMap['Field']>;
   ReceiptChainHash: Signable<Field, Json.TypeMap['Field']>;
 };
@@ -110,6 +121,7 @@ let customTypes: CustomTypes = {
   Events,
   Actions,
   ActionState,
+  MayUseToken,
   VerificationKeyHash,
   ReceiptChainHash,
 };
