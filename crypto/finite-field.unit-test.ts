@@ -70,9 +70,15 @@ for (let F of fields) {
     let squareX = F.square(x);
     assert(F.isSquare(squareX), 'square + isSquare');
     assert([x, F.negate(x)].includes(F.sqrt(squareX)!), 'square + sqrt');
+    assert.equal(F.sqrt(0n), F.sqrt(p), 'sqrt handles non-canonical 0');
 
     if (F.M >= 2n) {
       assert(F.isSquare(p - 1n), 'isSquare -1');
+      assert.equal(
+        F.isSquare(0n),
+        F.isSquare(p),
+        'isSquare handles non-canonical 0'
+      );
       let i = F.power(F.twoadicRoot, 1n << (F.M - 2n));
       assert([i, F.negate(i)].includes(F.sqrt(p - 1n)!), 'sqrt -1');
     }
