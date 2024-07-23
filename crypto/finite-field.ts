@@ -300,10 +300,10 @@ function createField(
       return mod(x * x, p);
     },
     isSquare(x: bigint) {
-      return isSquare(x, p);
+      return isSquare(mod(x, p), p);
     },
     sqrt(x: bigint) {
-      return sqrt(x, p, oddFactor, twoadicRoot, twoadicity);
+      return sqrt(mod(x, p), p, oddFactor, twoadicRoot, twoadicity);
     },
     power(x: bigint, n: bigint) {
       return power(x, n, p);
@@ -317,7 +317,9 @@ function createField(
       return mod(z, p);
     },
     equal(x: bigint, y: bigint) {
-      return mod(x - y, p) === 0n;
+      let x_ = x >= 0n && x < p ? x : mod(x, p);
+      let y_ = y >= 0n && y < p ? y : mod(y, p);
+      return x_ === y_;
     },
     isEven(x: bigint) {
       return !(x & 1n);
