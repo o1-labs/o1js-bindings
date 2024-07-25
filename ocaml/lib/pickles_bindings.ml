@@ -29,6 +29,8 @@ let public_input_typ (i : int) = Typ.array ~length:i Field.typ
 let statement_typ (input_size : int) (output_size : int) =
   Typ.(array ~length:input_size Field.typ * array ~length:output_size Field.typ)
 
+type proof = (Pickles_types.Nat.N0.n, Pickles_types.Nat.N0.n) Pickles.Proof.t
+
 type ('prev_proof, 'proof) js_prover =
      Public_input.Constant.t
   -> 'prev_proof array
@@ -74,7 +76,8 @@ type pickles_rule_js =
   ; proofsToVerify :
       < isSelf : bool Js.t Js.prop ; tag : Js.Unsafe.any Js.t Js.prop > Js.t
       array
-      Js.prop >
+      Js.prop
+  ; previousProofs : proof array Js.prop >
   Js.t
 
 let map_feature_flags_option
@@ -513,8 +516,6 @@ module Cache = struct
     in
     [ d ]
 end
-
-type proof = (Pickles_types.Nat.N0.n, Pickles_types.Nat.N0.n) Pickles.Proof.t
 
 module Public_inputs_with_proofs =
   Pickles_types.Hlist.H3.T (Pickles.Statement_with_proof)
