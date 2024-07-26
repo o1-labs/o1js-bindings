@@ -17,6 +17,7 @@ import {
   Events,
   Actions,
   ActionState,
+  MayUseToken,
   VerificationKeyHash,
   ReceiptChainHash,
 } from '../transaction-leaves.js';
@@ -137,6 +138,20 @@ type CustomTypes = {
     Value.TypeMap['Field'],
     Json.TypeMap['Field']
   >;
+  MayUseToken: ProvableExtended<
+    {
+      parentsOwnToken: Bool;
+      inheritFromParent: Bool;
+    },
+    {
+      parentsOwnToken: Value.TypeMap['Bool'];
+      inheritFromParent: Value.TypeMap['Bool'];
+    },
+    {
+      parentsOwnToken: Json.TypeMap['Bool'];
+      inheritFromParent: Json.TypeMap['Bool'];
+    }
+  >;
   VerificationKeyHash: ProvableExtended<
     Field,
     Value.TypeMap['Field'],
@@ -157,6 +172,7 @@ let customTypes: CustomTypes = {
   Events,
   Actions,
   ActionState,
+  MayUseToken,
   VerificationKeyHash,
   ReceiptChainHash,
 };
