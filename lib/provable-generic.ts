@@ -124,14 +124,14 @@ function createDerivers<Field>(): {
         throw Error(`provable: unsupported type "${typeObj}"`);
 
       if (Array.isArray(typeObj)) {
-        if (!Array.isArray(obj)) {
-          throw Error(`Expected an array for type, but got ${typeof obj}`);
-        }
-        if (typeObj.length !== obj.length) {
-          throw Error(
-            `Expected array length ${typeObj.length}, but got ${obj.length}`
-          );
-        }
+        // if (!Array.isArray(obj)) {
+        //   throw Error(`Expected an array for type, but got ${typeof obj}`);
+        // }
+        // if (typeObj.length !== obj.length) {
+        //   throw Error(
+        //     `Expected array length ${typeObj.length}, but got ${obj.length}`
+        //   );
+        // }
         return typeObj.map((t, i) => toFields(t, obj[i])).flat();
       }
 
