@@ -282,7 +282,7 @@ function createField(
       return mod(2n ** BigInt(bits) - (x + 1n), p);
     },
     negate(x: bigint) {
-      return x === 0n ? 0n : p - x;
+      return x === 0n ? 0n : mod(-x, p);
     },
     sub(x: bigint, y: bigint) {
       return mod(x - y, p);
@@ -322,7 +322,7 @@ function createField(
       return x_ === y_;
     },
     isEven(x: bigint) {
-      return !(x & 1n);
+      return !mod(x & 1n, p);
     },
     random() {
       return randomField(p, sizeInBytes, hiBitMask);
