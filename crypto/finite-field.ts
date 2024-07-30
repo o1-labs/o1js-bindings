@@ -319,6 +319,7 @@ function createField(
       return mod(z, p);
     },
     equal(x: bigint, y: bigint) {
+      // We check if x and y are both in the range [0, p). If they are, can do a simple comparison. Otherwise, we need to reduce them to the proper canonical field range.
       let x_ = x >= 0n && x < p ? x : mod(x, p);
       let y_ = y >= 0n && y < p ? y : mod(y, p);
       return x_ === y_;
