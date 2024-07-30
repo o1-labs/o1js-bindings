@@ -324,7 +324,7 @@ function createField(
       return x_ === y_;
     },
     isEven(x: bigint) {
-      return !mod(x & 1n, p);
+      return !(mod(x, p) & 1n);
     },
     random() {
       return randomField(p, sizeInBytes, hiBitMask);
