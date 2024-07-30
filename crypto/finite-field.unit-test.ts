@@ -28,9 +28,11 @@ for (let F of fields) {
     assert.equal(F.sub(3n, 3n), 0n, 'sub');
     assert.equal(F.sub(3n, 8n), p - 5n, 'sub');
     assert.equal(F.negate(5n), p - 5n, 'negate');
+    assert.equal(F.negate(p), 0n, 'non-canonical 0 is negated');
     assert.equal(F.add(x, F.negate(x)), 0n, 'add & negate');
     assert.equal(F.sub(F.add(x, y), x), y, 'add & sub');
     assert.equal(F.isEven(17n), false, 'isEven');
+    assert.equal(F.isEven(p), true, 'non-canonical 0 is even');
     assert.equal(F.isEven(p - 1n), true, 'isEven');
 
     assert.equal(F.mul(p - 1n, 2n), p - 2n, 'mul');
