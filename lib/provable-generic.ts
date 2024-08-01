@@ -240,6 +240,9 @@ function createDerivers<Field>(): {
       if (!complexTypes.has(typeof typeObj))
         throw Error(`provable: unsupported type "${typeObj}"`);
 
+      if (hasProvable(typeObj))
+        return typeObj.provable.toCanonical?.(value) ?? value;
+
       if (Array.isArray(typeObj)) {
         return typeObj.forEach((t, i) => toCanonical(t, value[i]));
       }
