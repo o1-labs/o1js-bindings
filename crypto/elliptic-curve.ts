@@ -58,7 +58,9 @@ const a = 0n;
 const projectiveZero = { x: 1n, y: 1n, z: 0n };
 
 type GroupProjective = { x: bigint; y: bigint; z: bigint };
-type GroupAffine = { x: bigint; y: bigint; infinity: boolean };
+type PointAtInfinity = { x: bigint; y: bigint; infinity: true };
+type FinitePoint = { x: bigint; y: bigint; infinity: false };
+type GroupAffine = PointAtInfinity | FinitePoint;
 
 /**
  * Parameters defining an elliptic curve in short Weierstraß form
@@ -442,7 +444,7 @@ const Vesta = createCurveProjective({
   endoScalar: vestaEndoScalar,
 });
 
-const affineZero: GroupAffine = { x: 0n, y: 0n, infinity: true };
+const affineZero: PointAtInfinity = { x: 0n, y: 0n, infinity: true };
 
 function affineOnCurve(
   { x, y, infinity }: GroupAffine,
@@ -579,7 +581,13 @@ function createCurveAffine({
     },
 
     equal(g: GroupAffine, h: GroupAffine) {
-      return mod(g.x - h.x, p) === 0n && mod(g.y - h.y, p) === 0n;
+      if (g.infinity && h.infinity) {
+        return true;
+      } else if (g.infinity || h.infinity) {
+        return false;
+      } else {
+        return mod(g.x - h.x, p) === 0n && mod(g.y - h.y, p) === 0n;
+      }
     },
     isOnCurve(g: GroupAffine) {
       return affineOnCurve(g, p, a, b);
