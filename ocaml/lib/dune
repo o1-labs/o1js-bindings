@@ -1,4 +1,5 @@
 (library
+ (public_name o1js_bindings.lib)
  (name o1js_bindings_lib)
  (libraries
   ;; opam libraries ;;
