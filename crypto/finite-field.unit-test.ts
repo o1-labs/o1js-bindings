@@ -28,9 +28,11 @@ for (let F of fields) {
     assert.equal(F.sub(3n, 3n), 0n, 'sub');
     assert.equal(F.sub(3n, 8n), p - 5n, 'sub');
     assert.equal(F.negate(5n), p - 5n, 'negate');
+    assert.equal(F.negate(p), 0n, 'non-canonical 0 is negated');
     assert.equal(F.add(x, F.negate(x)), 0n, 'add & negate');
     assert.equal(F.sub(F.add(x, y), x), y, 'add & sub');
     assert.equal(F.isEven(17n), false, 'isEven');
+    assert.equal(F.isEven(p), true, 'non-canonical 0 is even');
     assert.equal(F.isEven(p - 1n), true, 'isEven');
 
     assert.equal(F.mul(p - 1n, 2n), p - 2n, 'mul');
@@ -70,9 +72,15 @@ for (let F of fields) {
     let squareX = F.square(x);
     assert(F.isSquare(squareX), 'square + isSquare');
     assert([x, F.negate(x)].includes(F.sqrt(squareX)!), 'square + sqrt');
+    assert.equal(F.sqrt(0n), F.sqrt(p), 'sqrt handles non-canonical 0');
 
     if (F.M >= 2n) {
       assert(F.isSquare(p - 1n), 'isSquare -1');
+      assert.equal(
+        F.isSquare(0n),
+        F.isSquare(p),
+        'isSquare handles non-canonical 0'
+      );
       let i = F.power(F.twoadicRoot, 1n << (F.M - 2n));
       assert([i, F.negate(i)].includes(F.sqrt(p - 1n)!), 'sqrt -1');
     }
