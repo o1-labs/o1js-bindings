@@ -7,8 +7,8 @@ set -e
 
 MINA_PATH="src/mina"
 KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
-_NODE_BINDINGS="src/bindings/compiled/_node_bindings"
-NODE_BINDINGS="src/bindings/compiled/node_bindings"
+_NODE_BINDINGS="./compiled/_node_bindings"
+NODE_BINDINGS="./compiled/node_bindings"
 
 export DUNE_USE_DEFAULT_LINKER="y"
 

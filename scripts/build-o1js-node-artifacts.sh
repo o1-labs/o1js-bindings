@@ -3,11 +3,13 @@
 set -e
 
 MINA_PATH="src/mina"
-DUNE_PATH="src/bindings/ocaml/js"
+DUNE_PATH="./ocaml"
 BUILD_PATH="_build/default/$DUNE_PATH"
 KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
 
-[ -d node_modules ] || npm i
+# TODO this doesn't make sense to run from in here
+# What should we do instead
+# [ -d node_modules ] || npm i
 
 export DUNE_USE_DEFAULT_LINKER="y"
 
@@ -23,9 +25,10 @@ if [ -f "$BUILD_PATH/o1js_node.bc.js" ]; then
 fi
 
 # Copy mina config files, that is necessary for o1js to build
+mkdir -p src
 dune b "$MINA_PATH/src/config.mlh" && \
-cp "$MINA_PATH/src/config.mlh" "src" \
-&& cp -r "$MINA_PATH/src/config" "src/config" || exit 1
+cp "$MINA_PATH/src/config.mlh" "src" && \
+cp -r "$MINA_PATH/src/config" "src/config" || exit 1
 
 dune b $KIMCHI_BINDINGS/js/node_js \
 && dune b $DUNE_PATH/o1js_node.bc.js || exit 1
@@ -36,23 +39,23 @@ if [ -f "$BUILD_PATH/o1js_node.bc.map" ]; then
   cp "$BUILD_PATH/o1js_node.bc.map" "_build/o1js_node.bc.map";
 fi
 
-dune b src/bindings/mina-transaction/gen/js-layout.ts \
-&& dune b src/bindings/crypto/constants.ts \
- src/bindings/crypto/test-vectors/poseidon-kimchi.ts \
+dune b ./mina-transaction/gen/js-layout.ts \
+&& dune b ./crypto/constants.ts \
+ ./crypto/test-vectors/poseidon-kimchi.ts \
 || exit 1
 
 # Cleanup mina config files
 rm -rf "src/config" \
 && rm "src/config.mlh" || exit 1
 
-BINDINGS_PATH=src/bindings/compiled/_node_bindings/
+BINDINGS_PATH=./compiled/_node_bindings/
 mkdir -p "$BINDINGS_PATH"
 chmod -R 777 "$BINDINGS_PATH"
 cp _build/default/$KIMCHI_BINDINGS/js/node_js/plonk_wasm* "$BINDINGS_PATH"
 mv -f $BINDINGS_PATH/plonk_wasm.js $BINDINGS_PATH/plonk_wasm.cjs
 mv -f $BINDINGS_PATH/plonk_wasm.d.ts $BINDINGS_PATH/plonk_wasm.d.cts
 cp $BUILD_PATH/o1js_node*.js "$BINDINGS_PATH"
-cp src/bindings/compiled/node_bindings/o1js_node.bc.d.cts $BINDINGS_PATH/
+cp ./compiled/node_bindings/o1js_node.bc.d.cts $BINDINGS_PATH/
 cp "_build/o1js_node.bc.map" "$BINDINGS_PATH"/o1js_node.bc.map
 mv -f $BINDINGS_PATH/o1js_node.bc.js $BINDINGS_PATH/o1js_node.bc.cjs
 sed -i 's/plonk_wasm.js/plonk_wasm.cjs/' $BINDINGS_PATH/o1js_node.bc.cjs

@@ -77,6 +77,32 @@
         };
       in {
         formatter = pkgs.nixfmt;
+        devShells = {
+          default =  pkgs.mkShell {
+            # TODO use self for these
+            inputsFrom = [ prj.pkgs.o1js_bindings prj.pkgs.__ocaml-js__ ];
+            shellHook =
+            ''
+            rustup update nightly-2023-09-01-x86_64-unknown-linux-gnu
+            rustup component add rust-src --toolchain nightly-2023-09-01-x86_64-unknown-linux-gnu
+            '';
+            packages = with pkgs;
+              [ nodejs
+                nodePackages.npm
+                typescript
+                nodePackages.typescript-language-server
+
+                rustup
+                wasm-pack
+
+                dune_3
+                ocaml
+
+                ocamlPackages.js_of_ocaml-ppx
+                ocamlPackages.base
+              ] ++ commonOverrides.buildInputs ;
+          };
+        };
         # TODO build from ./ocaml root, not ./. (after fixing a bug in dune-nix)
         packages = {
           inherit dune-description;

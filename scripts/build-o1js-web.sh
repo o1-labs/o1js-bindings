@@ -3,10 +3,10 @@
 set -e
 
 MINA_PATH="src/mina"
-DUNE_PATH="src/bindings/ocaml/js"
+DUNE_PATH="./ocaml/js"
 BUILD_PATH="_build/default/$DUNE_PATH"
 KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
-WEB_BINDINGS="src/bindings/compiled/web_bindings"
+WEB_BINDINGS="./compiled/web_bindings"
 
 dune b $DUNE_PATH/o1js_web.bc.js
 cp _build/default/$KIMCHI_BINDINGS/js/web/plonk_wasm* $WEB_BINDINGS/
