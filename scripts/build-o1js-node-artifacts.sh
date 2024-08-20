@@ -3,7 +3,7 @@
 set -e
 
 MINA_PATH="src/mina"
-DUNE_PATH="./ocaml"
+DUNE_PATH="./ocaml/js"
 BUILD_PATH="_build/default/$DUNE_PATH"
 KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
 

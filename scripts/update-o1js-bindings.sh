@@ -24,7 +24,7 @@ cp "$BINDINGS_PATH"/plonk_wasm* "$NODE_BINDINGS"/
 
 sed -i 's/plonk_wasm.js/plonk_wasm.cjs/' "$NODE_BINDINGS"/o1js_node.bc.cjs
 
-npm run build
+#npm run build
 
 # 2. web build
 
@@ -51,7 +51,7 @@ pushd $WEB_BINDINGS
   mv o1js_web.bc.min.js o1js_web.bc.js
 popd
 
-npm run build:web
+#npm run build:web
 
 # 3. update MINA_COMMIT file in o1js
 

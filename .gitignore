@@ -2,3 +2,5 @@
 _build
 result
 *.mlh
+dist
+node_modules

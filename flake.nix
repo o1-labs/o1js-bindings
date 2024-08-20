@@ -77,12 +77,14 @@
         };
       in {
         formatter = pkgs.nixfmt;
+        inherit mina;
         devShells = {
-          default =  pkgs.mkShell {
+          default = pkgs.mkShell {
             # TODO use self for these
             inputsFrom = [ prj.pkgs.o1js_bindings prj.pkgs.__ocaml-js__ ];
             shellHook =
             ''
+            # TODO double check this is needed
             rustup update nightly-2023-09-01-x86_64-unknown-linux-gnu
             rustup component add rust-src --toolchain nightly-2023-09-01-x86_64-unknown-linux-gnu
             '';
@@ -94,10 +96,9 @@
 
                 rustup
                 wasm-pack
+                binaryen # provides wasm-opt
 
                 dune_3
-                ocaml
-
                 ocamlPackages.js_of_ocaml-ppx
                 ocamlPackages.base
               ] ++ commonOverrides.buildInputs ;
