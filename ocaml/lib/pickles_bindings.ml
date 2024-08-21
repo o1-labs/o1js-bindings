@@ -32,7 +32,8 @@ let statement_typ (input_size : int) (output_size : int) =
 type ('prev_proof, 'proof) js_prover =
      Public_input.Constant.t
   -> 'prev_proof array
-  -> (Public_input.Constant.t * 'proof) Promise_js_helpers.js_promise
+  -> (Public_input.Constant.t * 'proof * Impl.field array)
+     Promise_js_helpers.js_promise
 
 let dummy_constraints =
   let module Inner_curve = Kimchi_pasta.Pasta.Pallas in
@@ -417,6 +418,8 @@ module Cache = struct
           Or_error.map res ~f:(fun res -> (res, cache_hit)) )
 
     let write spec { Disk_storable.to_string; read = _; write } key value =
+      Printf.printf "Key %s" (to_string key) ;
+
       let errs =
         List.filter_map spec ~f:(fun s ->
             let res =
@@ -585,6 +588,7 @@ let pickles_compile (choices : pickles_rule_js array)
     (config :
       < publicInputSize : int Js.prop
       ; publicOutputSize : int Js.prop
+      ; auxiliaryOutputSize : int Js.prop
       ; storable : Cache.js_storable Js.optdef_prop
       ; overrideWrapDomain : int Js.optdef_prop >
       Js.t ) =
@@ -601,6 +605,8 @@ let pickles_compile (choices : pickles_rule_js array)
   (* translate method circuits from JS *)
   let public_input_size = config##.publicInputSize in
   let public_output_size = config##.publicOutputSize in
+  let auxiliary_output_size = config##.auxiliaryOutputSize in
+
   let override_wrap_domain =
     Js.Optdef.to_option config##.overrideWrapDomain
     |> Option.map ~f:Pickles_base.Proofs_verified.of_int_exn
@@ -624,7 +630,8 @@ let pickles_compile (choices : pickles_rule_js array)
         (Input_and_output
            ( public_input_typ public_input_size
            , public_input_typ public_output_size ) )
-      ~auxiliary_typ:(Typ.array ~length:1 Field.typ) (* TODO: actually fix *)
+      ~auxiliary_typ:(Typ.array ~length:auxiliary_output_size Field.typ)
+        (* TODO: actually fix *)
       ~branches:(module Branches)
       ~max_proofs_verified:(module Max_proofs_verified)
       ~name ?storables ?cache
@@ -643,7 +650,8 @@ let pickles_compile (choices : pickles_rule_js array)
             respond Unhandled
       in
       prover ?handler:(Some handler) public_input
-      |> Promise.map ~f:(fun (output, _, proof) -> (output, proof))
+      |> Promise.map ~f:(fun (output, auxiliary_output, proof) ->
+             (output, proof, auxiliary_output) )
       |> Promise_js_helpers.to_js
     in
     prove

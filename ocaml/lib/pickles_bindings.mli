@@ -26,6 +26,7 @@ type pickles_rule_js =
   ; main :
       (   Public_input.t
        -> < publicOutput : Public_input.t Js.prop
+          ; auxiliaryOutput : Public_input.t Js.prop
           ; previousStatements : Statement.t array Js.prop
           ; shouldVerify : Boolean.var array Js.prop >
           Js.t
@@ -63,6 +64,7 @@ val pickles :
       (   pickles_rule_js array
        -> < publicInputSize : int Js.prop
           ; publicOutputSize : int Js.prop
+          ; auxiliaryOutputSize : int Js.prop
           ; storable : Cache.js_storable Js.optdef_prop
           ; overrideWrapDomain : int Js.optdef_prop >
           Js.t
