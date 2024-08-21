@@ -66,6 +66,7 @@ type pickles_rule_js =
       (   Public_input.t
        -> < publicOutput : Public_input.t Js.prop
           ; previousStatements : Statement.t array Js.prop
+          ; auxiliaryOutput : Public_input.t Js.prop
           ; shouldVerify : Boolean.var array Js.prop >
           Js.t
           Promise_js_helpers.js_promise )
@@ -260,6 +261,7 @@ module Choices = struct
           _ Pickles.Inductive_rule.main_return =
         (* convert js rule output to pickles rule output *)
         let public_output = js_result##.publicOutput in
+        let auxiliary_output = js_result##auxiliaryOutput in
         let previous_proofs_should_verify =
           should_verifys prevs js_result##.shouldVerify
         in
@@ -293,7 +295,7 @@ module Choices = struct
           in
           go 0 previous_public_inputs previous_proofs_should_verify prevs
         in
-        { previous_proof_statements; public_output; auxiliary_output = () }
+        { previous_proof_statements; public_output; auxiliary_output }
       in
 
       let rule ~(self : (Statement.t, Statement.Constant.t, _, _) Pickles.Tag.t)
@@ -620,7 +622,7 @@ let pickles_compile (choices : pickles_rule_js array)
         (Input_and_output
            ( public_input_typ public_input_size
            , public_input_typ public_output_size ) )
-      ~auxiliary_typ:Typ.unit
+      ~auxiliary_typ:Typ.field
       ~branches:(module Branches)
       ~max_proofs_verified:(module Max_proofs_verified)
       ~name ?storables ?cache
