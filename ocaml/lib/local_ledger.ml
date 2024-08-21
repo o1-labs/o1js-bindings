@@ -197,7 +197,7 @@ let account_to_json =
     lazy (Mina_base.Account.deriver @@ Fields_derivers_zkapps.o ())
   in
   let to_json (account : Mina_base.Account.t) : Js.Unsafe.any =
-    account
+    Mina_base.Account.to_poly account
     |> Fields_derivers_zkapps.to_json (Lazy.force deriver)
     |> Yojson.Safe.to_string |> Js.string |> Util.json_parse
   in
