@@ -65,8 +65,8 @@ type pickles_rule_js =
   ; main :
       (   Public_input.t
        -> < publicOutput : Public_input.t Js.prop
-          ; previousStatements : Statement.t array Js.prop
           ; auxiliaryOutput : Public_input.t Js.prop
+          ; previousStatements : Statement.t array Js.prop
           ; shouldVerify : Boolean.var array Js.prop >
           Js.t
           Promise_js_helpers.js_promise )
@@ -251,8 +251,8 @@ module Choices = struct
         , Public_input.Constant.t
         , Public_input.t
         , Public_input.Constant.t
-        , unit
-        , unit )
+        , Public_input.t
+        , 'aux )
         t =
       let (Prevs prevs) = Prevs.of_rule rule in
 
@@ -261,7 +261,7 @@ module Choices = struct
           _ Pickles.Inductive_rule.main_return =
         (* convert js rule output to pickles rule output *)
         let public_output = js_result##.publicOutput in
-        let auxiliary_output = js_result##auxiliaryOutput in
+        let auxiliary_output = js_result##.auxiliaryOutput in
         let previous_proofs_should_verify =
           should_verifys prevs js_result##.shouldVerify
         in
@@ -297,7 +297,6 @@ module Choices = struct
         in
         { previous_proof_statements; public_output; auxiliary_output }
       in
-
       let rule ~(self : (Statement.t, Statement.Constant.t, _, _) Pickles.Tag.t)
           : _ Pickles.Inductive_rule.Promise.t =
         let prevs = prevs ~self in
@@ -305,11 +304,13 @@ module Choices = struct
         let main ({ public_input } : _ Pickles.Inductive_rule.main_input) =
           (* add dummy constraints *)
           dummy_constraints () ;
+
           (* circuit from js *)
           rule##.main public_input
           |> Promise_js_helpers.of_js
           |> Promise.map ~f:(finish_circuit prevs self)
         in
+
         { identifier = Js.to_string rule##.identifier
         ; feature_flags =
             Pickles_types.Plonk_types.Features.map rule##.featureFlags
@@ -322,6 +323,7 @@ module Choices = struct
         ; main
         }
       in
+
       Rule rule
   end
 
@@ -371,8 +373,8 @@ module Choices = struct
         , Public_input.Constant.t
         , Public_input.t
         , Public_input.Constant.t
-        , unit
-        , unit )
+        , Public_input.t
+        , 'aux )
         t =
       if index < 0 then Choices rules
       else
@@ -622,7 +624,7 @@ let pickles_compile (choices : pickles_rule_js array)
         (Input_and_output
            ( public_input_typ public_input_size
            , public_input_typ public_output_size ) )
-      ~auxiliary_typ:Typ.field
+      ~auxiliary_typ:(Typ.array ~length:1 Field.typ) (* TODO: actually fix *)
       ~branches:(module Branches)
       ~max_proofs_verified:(module Max_proofs_verified)
       ~name ?storables ?cache
@@ -652,7 +654,7 @@ let pickles_compile (choices : pickles_rule_js array)
          , b
          , c
          , Public_input.Constant.t
-         , (Public_input.Constant.t * unit * Proof.t) Promise.t )
+         , (Public_input.Constant.t * Impl.field array * Proof.t) Promise.t )
          Pickles.Provers.t
       -> ('prev_proof, Proof.t) js_prover list = function
     | [] ->
