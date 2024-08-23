@@ -3,7 +3,7 @@ module Impl = Pickles.Impls.Step
 module Field = Impl.Field
 module Boolean = Impl.Boolean
 
-module Public_input : sig
+module Field_input_array : sig
   type t = Field.t array
 
   module Constant : sig
@@ -24,9 +24,9 @@ end
 type pickles_rule_js =
   < identifier : Js.js_string Js.t Js.prop
   ; main :
-      (   Public_input.t
-       -> < publicOutput : Public_input.t Js.prop
-          ; auxiliaryOutput : Public_input.t Js.prop
+      (   Field_input_array.t
+       -> < publicOutput : Field_input_array.t Js.prop
+          ; auxiliaryOutput : Field_input_array.t Js.prop
           ; previousStatements : Statement.t array Js.prop
           ; shouldVerify : Boolean.var array Js.prop >
           Js.t

@@ -6,7 +6,7 @@ module Boolean = Impl.Boolean
 module Typ = Impl.Typ
 module Backend = Pickles.Backend
 
-module Public_input = struct
+module Field_input_array = struct
   type t = Field.t array
 
   module Constant = struct
@@ -30,9 +30,9 @@ let statement_typ (input_size : int) (output_size : int) =
   Typ.(array ~length:input_size Field.typ * array ~length:output_size Field.typ)
 
 type ('prev_proof, 'proof) js_prover =
-     Public_input.Constant.t
+     Field_input_array.Constant.t
   -> 'prev_proof array
-  -> (Public_input.Constant.t * Impl.field array * 'proof)
+  -> (Field_input_array.Constant.t * Impl.field array * 'proof)
      Promise_js_helpers.js_promise
 
 let dummy_constraints =
@@ -64,9 +64,9 @@ let dummy_constraints =
 type pickles_rule_js =
   < identifier : Js.js_string Js.t Js.prop
   ; main :
-      (   Public_input.t
-       -> < publicOutput : Public_input.t Js.prop
-          ; auxiliaryOutput : Public_input.t Js.prop
+      (   Field_input_array.t
+       -> < publicOutput : Field_input_array.t Js.prop
+          ; auxiliaryOutput : Field_input_array.t Js.prop
           ; previousStatements : Statement.t array Js.prop
           ; shouldVerify : Boolean.var array Js.prop >
           Js.t
@@ -194,8 +194,8 @@ module Choices = struct
     let get_typ ~public_input_size ~public_output_size
         (type a1 a2 a3 a4 width height) (tag : (a1, a2, a3, a4) Pickles.Tag.t)
         (self :
-          ( Public_input.t * Public_input.t
-          , Public_input.Constant.t * Public_input.Constant.t
+          ( Field_input_array.t * Field_input_array.t
+          , Field_input_array.Constant.t * Field_input_array.Constant.t
           , width
           , height )
           Pickles.Tag.t ) =
@@ -210,8 +210,8 @@ module Choices = struct
            public_input_size:int
         -> public_output_size:int
         -> self:
-             ( Public_input.t * Public_input.t
-             , Public_input.Constant.t * Public_input.Constant.t
+             ( Field_input_array.t * Field_input_array.t
+             , Field_input_array.Constant.t * Field_input_array.Constant.t
              , width
              , height )
              Pickles.Tag.t
@@ -248,10 +248,10 @@ module Choices = struct
         , _
         , _
         , _
-        , Public_input.t
-        , Public_input.Constant.t
-        , Public_input.t
-        , Public_input.Constant.t
+        , Field_input_array.t
+        , Field_input_array.Constant.t
+        , Field_input_array.t
+        , Field_input_array.Constant.t
         , 'aux_var
         , 'aux_value )
         t =
@@ -308,12 +308,9 @@ module Choices = struct
           dummy_constraints () ;
 
           (* circuit from js *)
-          let res =
-            Promise.map
-              ~f:(finish_circuit prevs self)
-              (Promise_js_helpers.of_js (rule##.main public_input))
-          in
-          res
+          rule##.main public_input
+          |> Promise_js_helpers.of_js
+          |> Promise.map ~f:(finish_circuit prevs self)
         in
 
         { identifier = Js.to_string rule##.identifier
@@ -374,12 +371,12 @@ module Choices = struct
         , _
         , _
         , _
-        , Public_input.t
-        , Public_input.Constant.t
-        , Public_input.t
-        , Public_input.Constant.t
-        , Public_input.t
-        , 'aux )
+        , Field_input_array.t
+        , Field_input_array.Constant.t
+        , Field_input_array.t
+        , Field_input_array.Constant.t
+        , 'aux_var
+        , 'aux_value )
         t =
       if index < 0 then Choices rules
       else
@@ -634,7 +631,6 @@ let pickles_compile (choices : pickles_rule_js array)
            ( public_input_typ public_input_size
            , public_input_typ public_output_size ) )
       ~auxiliary_typ:(Typ.array ~length:auxiliary_output_size Typ.field)
-        (* TODO: actually fix *)
       ~branches:(module Branches)
       ~max_proofs_verified:(module Max_proofs_verified)
       ~name ?storables ?cache
@@ -643,7 +639,7 @@ let pickles_compile (choices : pickles_rule_js array)
   (* translate returned prover and verify functions to JS *)
   let module Proof = (val p) in
   let to_js_prover prover : ('prev_proof, Proof.t) js_prover =
-    let prove (public_input : Public_input.Constant.t)
+    let prove (public_input : Field_input_array.Constant.t)
         (prevs : 'prev_proof array) =
       let handler (Snarky_backendless.Request.With { request; respond }) =
         match request with
@@ -665,8 +661,9 @@ let pickles_compile (choices : pickles_rule_js array)
          ( a
          , b
          , c
-         , Public_input.Constant.t
-         , (Public_input.Constant.t * Impl.field array * Proof.t) Promise.t )
+         , Field_input_array.Constant.t
+         , (Field_input_array.Constant.t * Impl.field array * Proof.t) Promise.t
+         )
          Pickles.Provers.t
       -> ('prev_proof, Proof.t) js_prover list = function
     | [] ->
