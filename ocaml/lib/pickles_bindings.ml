@@ -667,10 +667,19 @@ let pickles_compile (choices : pickles_rule_js array)
     |> Promise_js_helpers.to_js
   in
   let get_vk () =
+    let () = print_endline "1111" in
+
     let vk = Pickles.Side_loaded.Verification_key.of_compiled_promise tag in
+    let () = print_endline "2222" in
+
     Promise.map vk ~f:(fun vk ->
+        let () = print_endline "55555" in
+
         let data = Pickles.Side_loaded.Verification_key.to_base64 vk in
+        let () = print_endline "33333" in
         let hash = Mina_base.Zkapp_account.digest_vk vk in
+        let () = print_endline "44444" in
+
         (data |> Js.string, hash) )
     |> Promise_js_helpers.to_js
   in
