@@ -32,7 +32,7 @@ let statement_typ (input_size : int) (output_size : int) =
 type ('prev_proof, 'proof) js_prover =
      Public_input.Constant.t
   -> 'prev_proof array
-  -> (Public_input.Constant.t * 'proof * Impl.field array)
+  -> (Public_input.Constant.t * Impl.field array * 'proof)
      Promise_js_helpers.js_promise
 
 let dummy_constraints =
@@ -252,8 +252,8 @@ module Choices = struct
         , Public_input.Constant.t
         , Public_input.t
         , Public_input.Constant.t
-        , Public_input.t
-        , 'aux )
+        , 'aux_var
+        , 'aux_value )
         t =
       let (Prevs prevs) = Prevs.of_rule rule in
 
@@ -307,9 +307,12 @@ module Choices = struct
           dummy_constraints () ;
 
           (* circuit from js *)
-          rule##.main public_input
-          |> Promise_js_helpers.of_js
-          |> Promise.map ~f:(finish_circuit prevs self)
+          let res =
+            Promise.map
+              ~f:(finish_circuit prevs self)
+              (Promise_js_helpers.of_js (rule##.main public_input))
+          in
+          res
         in
 
         { identifier = Js.to_string rule##.identifier
@@ -636,6 +639,7 @@ let pickles_compile (choices : pickles_rule_js array)
       ~max_proofs_verified:(module Max_proofs_verified)
       ~name ?storables ?cache
   in
+  let _console_log s = Js_of_ocaml.Firebug.console##log s in
 
   (* translate returned prover and verify functions to JS *)
   let module Proof = (val p) in
@@ -649,8 +653,9 @@ let pickles_compile (choices : pickles_rule_js array)
         | _ ->
             respond Unhandled
       in
+
       prover ?handler:(Some handler) public_input
-      |> Promise.map ~f:(fun (output, auxiliary_output, proof) ->
+      |> Promise.map ~f:(fun (output, proof, auxiliary_output) ->
              (output, proof, auxiliary_output) )
       |> Promise_js_helpers.to_js
     in
