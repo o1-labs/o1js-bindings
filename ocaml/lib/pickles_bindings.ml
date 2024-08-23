@@ -263,6 +263,7 @@ module Choices = struct
         (* convert js rule output to pickles rule output *)
         let public_output = js_result##.publicOutput in
         let auxiliary_output = js_result##.auxiliaryOutput in
+
         let previous_proofs_should_verify =
           should_verifys prevs js_result##.shouldVerify
         in
@@ -421,8 +422,6 @@ module Cache = struct
           Or_error.map res ~f:(fun res -> (res, cache_hit)) )
 
     let write spec { Disk_storable.to_string; read = _; write } key value =
-      Printf.printf "Key %s" (to_string key) ;
-
       let errs =
         List.filter_map spec ~f:(fun s ->
             let res =
@@ -614,6 +613,7 @@ let pickles_compile (choices : pickles_rule_js array)
     Js.Optdef.to_option config##.overrideWrapDomain
     |> Option.map ~f:Pickles_base.Proofs_verified.of_int_exn
   in
+
   let (Choices choices) =
     Choices.of_js ~public_input_size ~public_output_size choices
   in
@@ -633,13 +633,12 @@ let pickles_compile (choices : pickles_rule_js array)
         (Input_and_output
            ( public_input_typ public_input_size
            , public_input_typ public_output_size ) )
-      ~auxiliary_typ:(Typ.array ~length:auxiliary_output_size Field.typ)
+      ~auxiliary_typ:(Typ.array ~length:auxiliary_output_size Typ.field)
         (* TODO: actually fix *)
       ~branches:(module Branches)
       ~max_proofs_verified:(module Max_proofs_verified)
       ~name ?storables ?cache
   in
-  let _console_log s = Js_of_ocaml.Firebug.console##log s in
 
   (* translate returned prover and verify functions to JS *)
   let module Proof = (val p) in
@@ -655,8 +654,8 @@ let pickles_compile (choices : pickles_rule_js array)
       in
 
       prover ?handler:(Some handler) public_input
-      |> Promise.map ~f:(fun (output, proof, auxiliary_output) ->
-             (output, proof, auxiliary_output) )
+      |> Promise.map ~f:(fun (public_output, auxiliary_output, proof) ->
+             (public_output, auxiliary_output, proof) )
       |> Promise_js_helpers.to_js
     in
     prove
