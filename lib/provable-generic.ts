@@ -125,8 +125,17 @@ function createDerivers<Field>(): {
 
       if (hasProvable(typeObj)) return typeObj.provable.toFields(obj);
 
-      if (Array.isArray(typeObj))
+      if (Array.isArray(typeObj)) {
+        if (!Array.isArray(obj)) {
+          throw Error(`Expected an array for type, but got ${typeof obj}`);
+        }
+        if (typeObj.length !== obj.length) {
+          throw Error(
+            `Expected array length ${typeObj.length}, but got ${obj.length}`
+          );
+        }
         return typeObj.map((t, i) => toFields(t, obj[i])).flat();
+      }
 
       if (isProvable(typeObj)) return typeObj.toFields(obj);
 
