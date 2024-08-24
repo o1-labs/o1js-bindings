@@ -32,7 +32,7 @@ let statement_typ (input_size : int) (output_size : int) =
 type ('prev_proof, 'proof) js_prover =
      Field_input_array.Constant.t
   -> 'prev_proof array
-  -> (Field_input_array.Constant.t * Impl.field array * 'proof)
+  -> (Field_input_array.Constant.t * 'proof * Impl.field array)
      Promise_js_helpers.js_promise
 
 let dummy_constraints =
@@ -651,7 +651,7 @@ let pickles_compile (choices : pickles_rule_js array)
 
       prover ?handler:(Some handler) public_input
       |> Promise.map ~f:(fun (public_output, auxiliary_output, proof) ->
-             (public_output, auxiliary_output, proof) )
+             (public_output, proof, auxiliary_output) )
       |> Promise_js_helpers.to_js
     in
     prove
