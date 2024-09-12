@@ -582,7 +582,8 @@ let pickles_compile (choices : pickles_rule_js array)
       < publicInputSize : int Js.prop
       ; publicOutputSize : int Js.prop
       ; storable : Cache.js_storable Js.optdef_prop
-      ; overrideWrapDomain : int Js.optdef_prop >
+      ; overrideWrapDomain : int Js.optdef_prop
+      ; chunks : int Js.prop >
       Js.t ) =
   (* translate number of branches and recursively verified proofs from JS *)
   let branches = Array.length choices in
@@ -597,6 +598,7 @@ let pickles_compile (choices : pickles_rule_js array)
   (* translate method circuits from JS *)
   let public_input_size = config##.publicInputSize in
   let public_output_size = config##.publicOutputSize in
+  let num_chunks = config##.chunks in
   let override_wrap_domain =
     Js.Optdef.to_option config##.overrideWrapDomain
     |> Option.map ~f:Pickles_base.Proofs_verified.of_int_exn
@@ -620,7 +622,7 @@ let pickles_compile (choices : pickles_rule_js array)
         (Input_and_output
            ( public_input_typ public_input_size
            , public_input_typ public_output_size ) )
-      ~auxiliary_typ:Typ.unit
+      ~auxiliary_typ:Typ.unit ~num_chunks
       ~branches:(module Branches)
       ~max_proofs_verified:(module Max_proofs_verified)
       ~name ?storables ?cache
