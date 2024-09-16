@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -37,8 +37,9 @@ if [ -f "$BUILD_PATH/o1js_node.bc.map" ]; then
 fi
 
 dune b src/bindings/mina-transaction/gen/js-layout.ts \
-&& dune b src/bindings/crypto/constants.ts \
- src/bindings/crypto/test-vectors/poseidon-kimchi.ts \
+  src/bindings/mina-transaction/gen/js-layout-v2.ts \
+  src/bindings/crypto/constants.ts \
+  src/bindings/crypto/test-vectors/poseidon-kimchi.ts \
 || exit 1
 
 # Cleanup mina config files
