@@ -38,7 +38,6 @@
   fields_derivers
   fields_derivers.zkapps
   genesis_constants
-  genesis_constants.compiled
   mina_numbers
   mina_signature_kind
   mina_transaction
