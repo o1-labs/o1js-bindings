@@ -350,7 +350,7 @@ let jsLayout = {
                   type: 'object',
                   name: 'Preconditions',
                   docs: null,
-                  keys: ['network', 'account', 'validWhile'],
+                  keys: ['network', 'account', 'test', 'validWhile'],
                   entries: {
                     network: {
                       type: 'object',
@@ -717,6 +717,105 @@ let jsLayout = {
                         isNew: null,
                       },
                     },
+                    test: {
+                      type: 'object',
+                      name: 'AccountPrecondition',
+                      docs: null,
+                      keys: [
+                        'balance',
+                        'nonce',
+                        'receiptChainHash',
+                        'delegate',
+                        'state',
+                        'actionState',
+                        'provedState',
+                        'isNew',
+                      ],
+                      entries: {
+                        balance: {
+                          type: 'option',
+                          optionType: 'closedInterval',
+                          rangeMin: '0',
+                          rangeMax: '18446744073709551615',
+                          inner: {
+                            type: 'object',
+                            name: 'BalanceInterval',
+                            docs: null,
+                            keys: ['lower', 'upper'],
+                            entries: {
+                              lower: { type: 'UInt64' },
+                              upper: { type: 'UInt64' },
+                            },
+                            docEntries: { lower: null, upper: null },
+                          },
+                        },
+                        nonce: {
+                          type: 'option',
+                          optionType: 'closedInterval',
+                          rangeMin: '0',
+                          rangeMax: '4294967295',
+                          inner: {
+                            type: 'object',
+                            name: 'NonceInterval',
+                            docs: null,
+                            keys: ['lower', 'upper'],
+                            entries: {
+                              lower: { type: 'UInt32' },
+                              upper: { type: 'UInt32' },
+                            },
+                            docEntries: { lower: null, upper: null },
+                          },
+                        },
+                        receiptChainHash: {
+                          type: 'option',
+                          optionType: 'flaggedOption',
+                          inner: { type: 'Field' },
+                        },
+                        delegate: {
+                          type: 'option',
+                          optionType: 'flaggedOption',
+                          inner: { type: 'PublicKey' },
+                        },
+                        state: {
+                          type: 'array',
+                          inner: {
+                            type: 'option',
+                            optionType: 'flaggedOption',
+                            inner: { type: 'Field' },
+                          },
+                          staticLength: 8,
+                        },
+                        actionState: {
+                          type: 'option',
+                          optionType: 'flaggedOption',
+                          inner: {
+                            type: 'Field',
+                            checkedType: { type: 'Field' },
+                            checkedTypeName: 'ActionState',
+                          },
+                        },
+                        provedState: {
+                          type: 'option',
+                          optionType: 'flaggedOption',
+                          inner: { type: 'Bool' },
+                        },
+                        isNew: {
+                          type: 'option',
+                          optionType: 'flaggedOption',
+                          inner: { type: 'Bool' },
+                        },
+                      },
+                      docEntries: {
+                        balance: null,
+                        nonce: null,
+                        receiptChainHash: null,
+                        delegate: null,
+                        state: null,
+                        actionState: null,
+                        provedState: null,
+                        isNew: null,
+                      },
+                    },
                     validWhile: {
                       type: 'option',
                       optionType: 'closedInterval',
@@ -738,6 +837,7 @@ let jsLayout = {
                   docEntries: {
                     network: null,
                     account: null,
+                    test: null,
                     validWhile: null,
                   },
                 },
@@ -1140,7 +1240,7 @@ let jsLayout = {
             type: 'object',
             name: 'Preconditions',
             docs: null,
-            keys: ['network', 'account', 'validWhile'],
+            keys: ['network', 'account', 'test', 'validWhile'],
             entries: {
               network: {
                 type: 'object',
@@ -1507,6 +1607,105 @@ let jsLayout = {
                   isNew: null,
                 },
               },
+              test: {
+                type: 'object',
+                name: 'AccountPrecondition',
+                docs: null,
+                keys: [
+                  'balance',
+                  'nonce',
+                  'receiptChainHash',
+                  'delegate',
+                  'state',
+                  'actionState',
+                  'provedState',
+                  'isNew',
+                ],
+                entries: {
+                  balance: {
+                    type: 'option',
+                    optionType: 'closedInterval',
+                    rangeMin: '0',
+                    rangeMax: '18446744073709551615',
+                    inner: {
+                      type: 'object',
+                      name: 'BalanceInterval',
+                      docs: null,
+                      keys: ['lower', 'upper'],
+                      entries: {
+                        lower: { type: 'UInt64' },
+                        upper: { type: 'UInt64' },
+                      },
+                      docEntries: { lower: null, upper: null },
+                    },
+                  },
+                  nonce: {
+                    type: 'option',
+                    optionType: 'closedInterval',
+                    rangeMin: '0',
+                    rangeMax: '4294967295',
+                    inner: {
+                      type: 'object',
+                      name: 'NonceInterval',
+                      docs: null,
+                      keys: ['lower', 'upper'],
+                      entries: {
+                        lower: { type: 'UInt32' },
+                        upper: { type: 'UInt32' },
+                      },
+                      docEntries: { lower: null, upper: null },
+                    },
+                  },
+                  receiptChainHash: {
+                    type: 'option',
+                    optionType: 'flaggedOption',
+                    inner: { type: 'Field' },
+                  },
+                  delegate: {
+                    type: 'option',
+                    optionType: 'flaggedOption',
+                    inner: { type: 'PublicKey' },
+                  },
+                  state: {
+                    type: 'array',
+                    inner: {
+                      type: 'option',
+                      optionType: 'flaggedOption',
+                      inner: { type: 'Field' },
+                    },
+                    staticLength: 8,
+                  },
+                  actionState: {
+                    type: 'option',
+                    optionType: 'flaggedOption',
+                    inner: {
+                      type: 'Field',
+                      checkedType: { type: 'Field' },
+                      checkedTypeName: 'ActionState',
+                    },
+                  },
+                  provedState: {
+                    type: 'option',
+                    optionType: 'flaggedOption',
+                    inner: { type: 'Bool' },
+                  },
+                  isNew: {
+                    type: 'option',
+                    optionType: 'flaggedOption',
+                    inner: { type: 'Bool' },
+                  },
+                },
+                docEntries: {
+                  balance: null,
+                  nonce: null,
+                  receiptChainHash: null,
+                  delegate: null,
+                  state: null,
+                  actionState: null,
+                  provedState: null,
+                  isNew: null,
+                },
+              },
               validWhile: {
                 type: 'option',
                 optionType: 'closedInterval',
@@ -1525,7 +1724,12 @@ let jsLayout = {
                 },
               },
             },
-            docEntries: { network: null, account: null, validWhile: null },
+            docEntries: {
+              network: null,
+              account: null,
+              test: null,
+              validWhile: null,
+            },
           },
           useFullCommitment: { type: 'Bool' },
           implicitAccountCreationFee: { type: 'Bool' },
