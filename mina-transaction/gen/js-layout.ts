@@ -350,7 +350,7 @@ let jsLayout = {
                   type: 'object',
                   name: 'Preconditions',
                   docs: null,
-                  keys: ['network', 'account', 'test', 'validWhile'],
+                  keys: ['network', 'account', 'permissions', 'validWhile'],
                   entries: {
                     network: {
                       type: 'object',
@@ -717,104 +717,19 @@ let jsLayout = {
                         isNew: null,
                       },
                     },
-                    test: {
+                    permissions: {
                       type: 'object',
-                      name: 'AccountPrecondition',
+                      name: 'PermissionsPrecondition',
                       docs: null,
-                      keys: [
-                        'balance',
-                        'nonce',
-                        'receiptChainHash',
-                        'delegate',
-                        'state',
-                        'actionState',
-                        'provedState',
-                        'isNew',
-                      ],
+                      keys: ['dummyBool'],
                       entries: {
-                        balance: {
-                          type: 'option',
-                          optionType: 'closedInterval',
-                          rangeMin: '0',
-                          rangeMax: '18446744073709551615',
-                          inner: {
-                            type: 'object',
-                            name: 'BalanceInterval',
-                            docs: null,
-                            keys: ['lower', 'upper'],
-                            entries: {
-                              lower: { type: 'UInt64' },
-                              upper: { type: 'UInt64' },
-                            },
-                            docEntries: { lower: null, upper: null },
-                          },
-                        },
-                        nonce: {
-                          type: 'option',
-                          optionType: 'closedInterval',
-                          rangeMin: '0',
-                          rangeMax: '4294967295',
-                          inner: {
-                            type: 'object',
-                            name: 'NonceInterval',
-                            docs: null,
-                            keys: ['lower', 'upper'],
-                            entries: {
-                              lower: { type: 'UInt32' },
-                              upper: { type: 'UInt32' },
-                            },
-                            docEntries: { lower: null, upper: null },
-                          },
-                        },
-                        receiptChainHash: {
-                          type: 'option',
-                          optionType: 'flaggedOption',
-                          inner: { type: 'Field' },
-                        },
-                        delegate: {
-                          type: 'option',
-                          optionType: 'flaggedOption',
-                          inner: { type: 'PublicKey' },
-                        },
-                        state: {
-                          type: 'array',
-                          inner: {
-                            type: 'option',
-                            optionType: 'flaggedOption',
-                            inner: { type: 'Field' },
-                          },
-                          staticLength: 8,
-                        },
-                        actionState: {
-                          type: 'option',
-                          optionType: 'flaggedOption',
-                          inner: {
-                            type: 'Field',
-                            checkedType: { type: 'Field' },
-                            checkedTypeName: 'ActionState',
-                          },
-                        },
-                        provedState: {
-                          type: 'option',
-                          optionType: 'flaggedOption',
-                          inner: { type: 'Bool' },
-                        },
-                        isNew: {
+                        dummyBool: {
                           type: 'option',
                           optionType: 'flaggedOption',
                           inner: { type: 'Bool' },
                         },
                       },
-                      docEntries: {
-                        balance: null,
-                        nonce: null,
-                        receiptChainHash: null,
-                        delegate: null,
-                        state: null,
-                        actionState: null,
-                        provedState: null,
-                        isNew: null,
-                      },
+                      docEntries: { dummyBool: null },
                     },
                     validWhile: {
                       type: 'option',
@@ -837,7 +752,7 @@ let jsLayout = {
                   docEntries: {
                     network: null,
                     account: null,
-                    test: null,
+                    permissions: null,
                     validWhile: null,
                   },
                 },
@@ -1240,7 +1155,7 @@ let jsLayout = {
             type: 'object',
             name: 'Preconditions',
             docs: null,
-            keys: ['network', 'account', 'test', 'validWhile'],
+            keys: ['network', 'account', 'permissions', 'validWhile'],
             entries: {
               network: {
                 type: 'object',
@@ -1607,104 +1522,19 @@ let jsLayout = {
                   isNew: null,
                 },
               },
-              test: {
+              permissions: {
                 type: 'object',
-                name: 'AccountPrecondition',
+                name: 'PermissionsPrecondition',
                 docs: null,
-                keys: [
-                  'balance',
-                  'nonce',
-                  'receiptChainHash',
-                  'delegate',
-                  'state',
-                  'actionState',
-                  'provedState',
-                  'isNew',
-                ],
+                keys: ['dummyBool'],
                 entries: {
-                  balance: {
-                    type: 'option',
-                    optionType: 'closedInterval',
-                    rangeMin: '0',
-                    rangeMax: '18446744073709551615',
-                    inner: {
-                      type: 'object',
-                      name: 'BalanceInterval',
-                      docs: null,
-                      keys: ['lower', 'upper'],
-                      entries: {
-                        lower: { type: 'UInt64' },
-                        upper: { type: 'UInt64' },
-                      },
-                      docEntries: { lower: null, upper: null },
-                    },
-                  },
-                  nonce: {
-                    type: 'option',
-                    optionType: 'closedInterval',
-                    rangeMin: '0',
-                    rangeMax: '4294967295',
-                    inner: {
-                      type: 'object',
-                      name: 'NonceInterval',
-                      docs: null,
-                      keys: ['lower', 'upper'],
-                      entries: {
-                        lower: { type: 'UInt32' },
-                        upper: { type: 'UInt32' },
-                      },
-                      docEntries: { lower: null, upper: null },
-                    },
-                  },
-                  receiptChainHash: {
-                    type: 'option',
-                    optionType: 'flaggedOption',
-                    inner: { type: 'Field' },
-                  },
-                  delegate: {
-                    type: 'option',
-                    optionType: 'flaggedOption',
-                    inner: { type: 'PublicKey' },
-                  },
-                  state: {
-                    type: 'array',
-                    inner: {
-                      type: 'option',
-                      optionType: 'flaggedOption',
-                      inner: { type: 'Field' },
-                    },
-                    staticLength: 8,
-                  },
-                  actionState: {
-                    type: 'option',
-                    optionType: 'flaggedOption',
-                    inner: {
-                      type: 'Field',
-                      checkedType: { type: 'Field' },
-                      checkedTypeName: 'ActionState',
-                    },
-                  },
-                  provedState: {
-                    type: 'option',
-                    optionType: 'flaggedOption',
-                    inner: { type: 'Bool' },
-                  },
-                  isNew: {
+                  dummyBool: {
                     type: 'option',
                     optionType: 'flaggedOption',
                     inner: { type: 'Bool' },
                   },
                 },
-                docEntries: {
-                  balance: null,
-                  nonce: null,
-                  receiptChainHash: null,
-                  delegate: null,
-                  state: null,
-                  actionState: null,
-                  provedState: null,
-                  isNew: null,
-                },
+                docEntries: { dummyBool: null },
               },
               validWhile: {
                 type: 'option',
@@ -1727,7 +1557,7 @@ let jsLayout = {
             docEntries: {
               network: null,
               account: null,
-              test: null,
+              permissions: null,
               validWhile: null,
             },
           },

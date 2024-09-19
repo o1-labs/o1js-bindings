@@ -155,21 +155,8 @@ type ZkappCommand = {
           provedState: Bool | null;
           isNew: Bool | null;
         };
-        test: {
-          balance: {
-            lower: UInt64;
-            upper: UInt64;
-          } | null;
-          nonce: {
-            lower: UInt32;
-            upper: UInt32;
-          } | null;
-          receiptChainHash: Field | null;
-          delegate: PublicKey | null;
-          state: (Field | null)[];
-          actionState: Field | null;
-          provedState: Bool | null;
-          isNew: Bool | null;
+        permissions: {
+          dummyBool: Bool | null;
         };
         validWhile: {
           lower: UInt32;
@@ -313,21 +300,8 @@ type AccountUpdate = {
         provedState: Bool | null;
         isNew: Bool | null;
       };
-      test: {
-        balance: {
-          lower: UInt64;
-          upper: UInt64;
-        } | null;
-        nonce: {
-          lower: UInt32;
-          upper: UInt32;
-        } | null;
-        receiptChainHash: Field | null;
-        delegate: PublicKey | null;
-        state: (Field | null)[];
-        actionState: Field | null;
-        provedState: Bool | null;
-        isNew: Bool | null;
+      permissions: {
+        dummyBool: Bool | null;
       };
       validWhile: {
         lower: UInt32;

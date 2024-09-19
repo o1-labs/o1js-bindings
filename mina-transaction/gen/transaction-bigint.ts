@@ -311,27 +311,8 @@ type ZkappCommand = {
           provedState: { isSome: Bool; value: Bool };
           isNew: { isSome: Bool; value: Bool };
         };
-        test: {
-          balance: {
-            isSome: Bool;
-            value: {
-              lower: UInt64;
-              upper: UInt64;
-            };
-          };
-          nonce: {
-            isSome: Bool;
-            value: {
-              lower: UInt32;
-              upper: UInt32;
-            };
-          };
-          receiptChainHash: { isSome: Bool; value: Field };
-          delegate: { isSome: Bool; value: PublicKey };
-          state: { isSome: Bool; value: Field }[];
-          actionState: { isSome: Bool; value: Field };
-          provedState: { isSome: Bool; value: Bool };
-          isNew: { isSome: Bool; value: Bool };
+        permissions: {
+          dummyBool: { isSome: Bool; value: Bool };
         };
         validWhile: {
           isSome: Bool;
@@ -536,27 +517,8 @@ type AccountUpdate = {
         provedState: { isSome: Bool; value: Bool };
         isNew: { isSome: Bool; value: Bool };
       };
-      test: {
-        balance: {
-          isSome: Bool;
-          value: {
-            lower: UInt64;
-            upper: UInt64;
-          };
-        };
-        nonce: {
-          isSome: Bool;
-          value: {
-            lower: UInt32;
-            upper: UInt32;
-          };
-        };
-        receiptChainHash: { isSome: Bool; value: Field };
-        delegate: { isSome: Bool; value: PublicKey };
-        state: { isSome: Bool; value: Field }[];
-        actionState: { isSome: Bool; value: Field };
-        provedState: { isSome: Bool; value: Bool };
-        isNew: { isSome: Bool; value: Bool };
+      permissions: {
+        dummyBool: { isSome: Bool; value: Bool };
       };
       validWhile: {
         isSome: Bool;
