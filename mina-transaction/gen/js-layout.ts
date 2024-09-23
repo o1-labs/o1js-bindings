@@ -721,15 +721,15 @@ let jsLayout = {
                       type: 'object',
                       name: 'PermissionsPrecondition',
                       docs: null,
-                      keys: ['dummyBool'],
+                      keys: ['receive'],
                       entries: {
-                        dummyBool: {
+                        receive: {
                           type: 'option',
                           optionType: 'flaggedOption',
-                          inner: { type: 'Bool' },
+                          inner: { type: 'AuthRequired' },
                         },
                       },
-                      docEntries: { dummyBool: null },
+                      docEntries: { receive: null },
                     },
                     validWhile: {
                       type: 'option',
@@ -1526,15 +1526,15 @@ let jsLayout = {
                 type: 'object',
                 name: 'PermissionsPrecondition',
                 docs: null,
-                keys: ['dummyBool'],
+                keys: ['receive'],
                 entries: {
-                  dummyBool: {
+                  receive: {
                     type: 'option',
                     optionType: 'flaggedOption',
-                    inner: { type: 'Bool' },
+                    inner: { type: 'AuthRequired' },
                   },
                 },
-                docEntries: { dummyBool: null },
+                docEntries: { receive: null },
               },
               validWhile: {
                 type: 'option',

@@ -156,7 +156,7 @@ type ZkappCommand = {
           isNew: Bool | null;
         };
         permissions: {
-          dummyBool: Bool | null;
+          receive: AuthRequired | null;
         };
         validWhile: {
           lower: UInt32;
@@ -301,7 +301,7 @@ type AccountUpdate = {
         isNew: Bool | null;
       };
       permissions: {
-        dummyBool: Bool | null;
+        receive: AuthRequired | null;
       };
       validWhile: {
         lower: UInt32;

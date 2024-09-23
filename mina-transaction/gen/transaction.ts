@@ -364,7 +364,7 @@ type ZkappCommand = {
           isNew: { isSome: Bool; value: Bool };
         };
         permissions: {
-          dummyBool: { isSome: Bool; value: Bool };
+          receive: { isSome: Bool; value: AuthRequired };
         };
         validWhile: {
           isSome: Bool;
@@ -572,7 +572,7 @@ type AccountUpdate = {
         isNew: { isSome: Bool; value: Bool };
       };
       permissions: {
-        dummyBool: { isSome: Bool; value: Bool };
+        receive: { isSome: Bool; value: AuthRequired };
       };
       validWhile: {
         isSome: Bool;
