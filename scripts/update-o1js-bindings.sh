@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
 MINA_PATH="src/mina"
-DUNE_PATH="src/bindings/ocaml"
+DUNE_PATH="src/bindings/ocaml/jsoo_exports"
 BUILD_PATH="_build/default/$DUNE_PATH"
 DIR_PATH=$(dirname "$0")
 KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
@@ -30,7 +30,7 @@ npm run build
 
 cp "$BUILD_PATH/o1js_node.bc.map" "_build/o1js_node.bc.map"
 dune b $DUNE_PATH/o1js_web.bc.js
-cp "_build/o1js_node.bc.map" "$BUILD_PATH/o1js_node.bc.map" 
+cp "_build/o1js_node.bc.map" "$BUILD_PATH/o1js_node.bc.map"
 
 cp _build/default/$KIMCHI_BINDINGS/js/web/plonk_wasm* $WEB_BINDINGS/
 cp $BUILD_PATH/o1js_web*.js $WEB_BINDINGS/
@@ -55,5 +55,8 @@ npm run build:web
 
 # 3. update MINA_COMMIT file in o1js
 
-echo "The mina commit used to generate the backends for node and web is
-$(git rev-parse HEAD)" > "src/bindings/MINA_COMMIT"
+pushd "$MINA_PATH"
+  MINA_COMMIT=$(git rev-parse HEAD)
+popd
+echo "The mina commit used to generate the backends for node and web is" "$MINA_COMMIT" \
+  > src/bindings/MINA_COMMIT

@@ -17,4 +17,4 @@ let deriver obj =
 
 To consume a custom deriver and add custom behavior, `transaction-leaves-bigint.ts` and `transaction-leaves.ts` must be changed.
 
-To regenerate them, check out the [mina repository](https://github.com/MinaProtocol/mina) and run `make snarkyjs` (heads up: there are a lot of things to install and set up if you build mina the first time).
+To regenerate them, run `npm run build:update-bindings` from o1js.
