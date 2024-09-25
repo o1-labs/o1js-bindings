@@ -127,6 +127,9 @@ function createDerivers<Field>(): {
 
       if (Array.isArray(typeObj)) {
         if (!Array.isArray(obj)) {
+          if (typeof obj === 'object') {
+            return typeObj.map((t, i) => toFields(t, obj[i])).flat();
+          }
           throw Error(`Expected an array for type, but got ${typeof obj}`);
         }
         if (typeObj.length !== obj.length) {
