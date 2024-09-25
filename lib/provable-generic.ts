@@ -118,9 +118,6 @@ function createDerivers<Field>(): {
     }
 
     function toFields(typeObj: NestedProvable<Field>, obj: any): Field[] {
-      console.log(typeObj);
-
-      console.log(obj);
       if (isPrimitive(typeObj)) return [];
 
       if (!complexTypes.has(typeof typeObj))
