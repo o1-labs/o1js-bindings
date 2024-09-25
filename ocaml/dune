@@ -1,53 +1,7 @@
-(env
- (_
-  (js_of_ocaml
-   (compilation_mode whole_program))))
-
-(data_only_dirs test_module)
-
-(vendored_dirs o1js)
-
-(executable
- (name o1js_node)
- (modules o1js_node)
- (modes js)
- (flags (-g))
- (link_flags
-  (-noautolink -g))
- (js_of_ocaml
-  (flags +toplevel.js +dynlink.js --pretty --source-map)
-  (link_flags --source-map)
-  (javascript_files overrides.js))
- (libraries o1js_bindings_lib bindings_js.node_backend)
- (link_deps
-  ../../mina/src/lib/crypto/kimchi_bindings/js/node_js/plonk_wasm.js
-  ../../mina/src/lib/crypto/kimchi_bindings/js/node_js/plonk_wasm_bg.wasm)
- (instrumentation
-  (backend bisect_ppx))
- (forbidden_libraries async core re2 ctypes)
- (preprocess
-  (pps ppx_version js_of_ocaml-ppx)))
-
-(executable
- (name o1js_web)
- (modules o1js_web)
- (modes js)
- (link_flags (-noautolink))
- (js_of_ocaml
-  (flags +toplevel.js +dynlink.js --pretty)
-  (javascript_files overrides.js))
- (libraries o1js_bindings_lib bindings_js.web_backend)
- (link_deps
-  ../../mina/src/lib/crypto/kimchi_bindings/js/web/plonk_wasm.js
-  ../../mina/src/lib/crypto/kimchi_bindings/js/web/plonk_wasm_bg.wasm)
- (instrumentation
-  (backend bisect_ppx))
- (forbidden_libraries async core re2 ctypes)
- (preprocess
-  (pps ppx_version js_of_ocaml-ppx)))
-
 (executable
  (name o1js_types)
+ (public_name o1js-types)
+ (package o1js_bindings)
  (modules o1js_types)
  (link_flags (-linkall))
  (modes native)
@@ -66,6 +20,8 @@
 
 (executable
  (name o1js_constants)
+ (public_name o1js-constants)
+ (package o1js_bindings)
  (modules o1js_constants)
  (link_flags (-linkall))
  (modes native)

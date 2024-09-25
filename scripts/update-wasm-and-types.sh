@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 # this script updates the wasm artifacts used for node,
 # as well as auto-generated wasm types checked into git
