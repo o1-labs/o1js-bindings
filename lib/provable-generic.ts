@@ -118,6 +118,9 @@ function createDerivers<Field>(): {
     }
 
     function toFields(typeObj: NestedProvable<Field>, obj: any): Field[] {
+      console.log(typeObj);
+
+      console.log(obj);
       if (isPrimitive(typeObj)) return [];
 
       if (!complexTypes.has(typeof typeObj))
@@ -127,6 +130,9 @@ function createDerivers<Field>(): {
 
       if (Array.isArray(typeObj)) {
         if (!Array.isArray(obj)) {
+          if (typeof obj === 'object') {
+            return typeObj.map((t, i) => toFields(t, obj[i])).flat();
+          }
           throw Error(`Expected an array for type, but got ${typeof obj}`);
         }
         if (typeObj.length !== obj.length) {
