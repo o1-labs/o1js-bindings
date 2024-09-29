@@ -28,6 +28,19 @@ checkTestVectors(testPoseidonKimchiFp.test_vectors, Poseidon.hash);
 
 checkTestVectors(testPoseidonLegacyFp.test_vectors, PoseidonLegacy.hash);
 
+// calling update() subsequently on size-2 chunks is the same as calling hash() on the full input
+
+test(Random.array(Random.field, 5), (xs) => {
+  let h1 = Poseidon.hash(xs);
+
+  let state = Poseidon.initialState();
+  state = Poseidon.update(state, [xs[0], xs[1]]);
+  state = Poseidon.update(state, [xs[2], xs[3]]);
+  state = Poseidon.update(state, [xs[4]]);
+  let h2 = state[0];
+  expect(h1).toEqual(h2);
+});
+
 console.log('poseidon implementation matches the test vectors! 🎉');
 
 test(Random.array(Random.field, Random.nat(20)), (xs) => {

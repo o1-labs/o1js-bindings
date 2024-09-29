@@ -1,5 +1,5 @@
 import { Field, Bool } from '../../lib/provable/wrapped.js';
-import { UInt32, UInt64, Sign } from '../../lib/provable/int.js';
+import { UInt32, UInt64, Sign, Int64 } from '../../lib/provable/int.js';
 import { PublicKey } from '../../lib/provable/crypto/signature.js';
 import { derivedLeafTypes } from './derived-leaves.js';
 import { createEvents } from '../../lib/mina/events.js';
@@ -9,10 +9,20 @@ import {
   packToFields,
   emptyHashWithPrefix,
 } from '../../lib/provable/crypto/poseidon.js';
-import { provable } from '../../lib/provable/types/struct.js';
+import { provable } from '../../lib/provable/types/provable-derivers.js';
 import { mocks, protocolVersions } from '../crypto/constants.js';
 
-export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
+export {
+  PublicKey,
+  Field,
+  Bool,
+  AuthRequired,
+  UInt64,
+  UInt32,
+  Sign,
+  BalanceChange,
+  TokenId,
+};
 
 export {
   Events,
@@ -24,6 +34,7 @@ export {
   ReceiptChainHash,
   StateHash,
   TransactionVersion,
+  MayUseToken,
 };
 
 type AuthRequired = {
@@ -69,4 +80,24 @@ type TransactionVersion = Field;
 const TransactionVersion = {
   ...provable(UInt32),
   empty: () => UInt32.from(protocolVersions.txnVersion),
+};
+
+type BalanceChange = Int64;
+const BalanceChange = Int64;
+type MayUseToken = {
+  parentsOwnToken: Bool;
+  inheritFromParent: Bool;
+};
+const MayUseToken = {
+  ...provable({ parentsOwnToken: Bool, inheritFromParent: Bool }),
+
+  check: ({ parentsOwnToken, inheritFromParent }: MayUseToken) => {
+    Bool.check(parentsOwnToken);
+    Bool.check(inheritFromParent);
+    parentsOwnToken
+      .and(inheritFromParent)
+      .assertFalse(
+        'MayUseToken: parentsOwnToken and inheritFromParent cannot both be true'
+      );
+  },
 };

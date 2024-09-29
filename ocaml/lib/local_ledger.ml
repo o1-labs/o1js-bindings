@@ -197,7 +197,7 @@ let account_to_json =
     lazy (Mina_base.Account.deriver @@ Fields_derivers_zkapps.o ())
   in
   let to_json (account : Mina_base.Account.t) : Js.Unsafe.any =
-    account
+    Mina_base.Account.to_poly account
     |> Fields_derivers_zkapps.to_json (Lazy.force deriver)
     |> Yojson.Safe.to_string |> Js.string |> Util.json_parse
   in
@@ -233,7 +233,7 @@ let apply_zkapp_command_transaction l (txn : Zkapp_command.t)
       ~global_slot:network_state.global_slot_since_genesis
       ~state_view:network_state
       ~constraint_constants:
-        { Genesis_constants.Constraint_constants.compiled with
+        { Genesis_constants.Compiled.constraint_constants with
           account_creation_fee = Currency.Fee.of_string account_creation_fee
         }
       ledger txn

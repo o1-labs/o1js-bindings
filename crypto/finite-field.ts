@@ -184,12 +184,13 @@ function fastInverse(
   return s;
 }
 
-function sqrt(n: bigint, p: bigint, Q: bigint, c: bigint, M: bigint) {
+function sqrt(n_: bigint, p: bigint, Q: bigint, c: bigint, M: bigint) {
   // https://en.wikipedia.org/wiki/Tonelli-Shanks_algorithm#The_algorithm
   // variable naming is the same as in that link ^
   // Q is what we call `t` elsewhere - the odd factor in p - 1
   // c is a known primitive root of unity
   // M is the twoadicity = exponent of 2 in factorization of p - 1
+  let n = mod(n_, p);
   if (n === 0n) return 0n;
   let t = power(n, (Q - 1n) >> 1n, p); // n^(Q - 1)/2
   let R = mod(t * n, p); // n^((Q - 1)/2 + 1) = n^((Q + 1)/2)
@@ -212,7 +213,8 @@ function sqrt(n: bigint, p: bigint, Q: bigint, c: bigint, M: bigint) {
   }
 }
 
-function isSquare(x: bigint, p: bigint) {
+function isSquare(x_: bigint, p: bigint) {
+  let x = mod(x_, p);
   if (x === 0n) return true;
   let sqrt1 = power(x, (p - 1n) / 2n, p);
   return sqrt1 === 1n;
@@ -282,7 +284,7 @@ function createField(
       return mod(2n ** BigInt(bits) - (x + 1n), p);
     },
     negate(x: bigint) {
-      return x === 0n ? 0n : p - x;
+      return x === 0n ? 0n : mod(-x, p);
     },
     sub(x: bigint, y: bigint) {
       return mod(x - y, p);
@@ -317,10 +319,13 @@ function createField(
       return mod(z, p);
     },
     equal(x: bigint, y: bigint) {
-      return mod(x - y, p) === 0n;
+      // We check if x and y are both in the range [0, p). If they are, can do a simple comparison. Otherwise, we need to reduce them to the proper canonical field range.
+      let x_ = x >= 0n && x < p ? x : mod(x, p);
+      let y_ = y >= 0n && y < p ? y : mod(y, p);
+      return x_ === y_;
     },
     isEven(x: bigint) {
-      return !(x & 1n);
+      return !(mod(x, p) & 1n);
     },
     random() {
       return randomField(p, sizeInBytes, hiBitMask);

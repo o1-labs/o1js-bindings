@@ -6,9 +6,10 @@ import {
   UInt32,
   TokenId,
   Field,
-  Bool,
   AuthRequired,
+  BalanceChange,
   Sign,
+  Bool,
   TransactionVersion,
   ZkappUri,
   TokenSymbol,
@@ -16,6 +17,7 @@ import {
   Events,
   Actions,
   ActionState,
+  MayUseToken,
   VerificationKeyHash,
   ReceiptChainHash,
 } from '../transaction-leaves.js';
@@ -36,9 +38,10 @@ type TypeMap = {
   UInt32: UInt32;
   TokenId: TokenId;
   Field: Field;
-  Bool: Bool;
   AuthRequired: AuthRequired;
+  BalanceChange: BalanceChange;
   Sign: Sign;
+  Bool: Bool;
 };
 
 const TypeMap: {
@@ -53,9 +56,10 @@ const TypeMap: {
   UInt32,
   TokenId,
   Field,
-  Bool,
   AuthRequired,
+  BalanceChange,
   Sign,
+  Bool,
 };
 
 type ProvableExtended<T, TValue, TJson> = GenericProvableExtended<
@@ -99,6 +103,14 @@ type CustomTypes = {
     Value.TypeMap['Field'],
     Json.TypeMap['Field']
   >;
+  BalanceChange: ProvableExtended<
+    BalanceChange,
+    Value.TypeMap['BalanceChange'],
+    {
+      magnitude: Json.TypeMap['UInt64'];
+      sgn: Json.TypeMap['Sign'];
+    }
+  >;
   Events: ProvableExtended<
     {
       data: Field[][];
@@ -126,6 +138,20 @@ type CustomTypes = {
     Value.TypeMap['Field'],
     Json.TypeMap['Field']
   >;
+  MayUseToken: ProvableExtended<
+    {
+      parentsOwnToken: Bool;
+      inheritFromParent: Bool;
+    },
+    {
+      parentsOwnToken: Value.TypeMap['Bool'];
+      inheritFromParent: Value.TypeMap['Bool'];
+    },
+    {
+      parentsOwnToken: Json.TypeMap['Bool'];
+      inheritFromParent: Json.TypeMap['Bool'];
+    }
+  >;
   VerificationKeyHash: ProvableExtended<
     Field,
     Value.TypeMap['Field'],
@@ -142,9 +168,11 @@ let customTypes: CustomTypes = {
   ZkappUri,
   TokenSymbol,
   StateHash,
+  BalanceChange,
   Events,
   Actions,
   ActionState,
+  MayUseToken,
   VerificationKeyHash,
   ReceiptChainHash,
 };
@@ -225,10 +253,7 @@ type ZkappCommand = {
         };
         votingFor: { isSome: Bool; value: Field };
       };
-      balanceChange: {
-        magnitude: UInt64;
-        sgn: Sign;
-      };
+      balanceChange: BalanceChange;
       incrementNonce: Bool;
       events: {
         data: Field[][];
@@ -433,10 +458,7 @@ type AccountUpdate = {
       };
       votingFor: { isSome: Bool; value: Field };
     };
-    balanceChange: {
-      magnitude: UInt64;
-      sgn: Sign;
-    };
+    balanceChange: BalanceChange;
     incrementNonce: Bool;
     events: {
       data: Field[][];

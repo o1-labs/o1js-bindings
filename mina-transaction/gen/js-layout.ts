@@ -282,6 +282,8 @@ let jsLayout = {
                     sgn: { type: 'Sign' },
                   },
                   docEntries: { magnitude: null, sgn: null },
+                  checkedType: { type: 'BalanceChange' },
+                  checkedTypeName: 'BalanceChange',
                 },
                 incrementNonce: { type: 'Bool' },
                 events: {
@@ -754,6 +756,18 @@ let jsLayout = {
                     parentsOwnToken: null,
                     inheritFromParent: null,
                   },
+                  checkedType: {
+                    type: 'object',
+                    name: 'Anonymous',
+                    docs: null,
+                    keys: ['parentsOwnToken', 'inheritFromParent'],
+                    entries: {
+                      parentsOwnToken: { type: 'Bool' },
+                      inheritFromParent: { type: 'Bool' },
+                    },
+                    docEntries: { parentsOwnToken: '', inheritFromParent: '' },
+                  },
+                  checkedTypeName: 'MayUseToken',
                 },
                 authorizationKind: {
                   type: 'object',
@@ -1058,6 +1072,8 @@ let jsLayout = {
             keys: ['magnitude', 'sgn'],
             entries: { magnitude: { type: 'UInt64' }, sgn: { type: 'Sign' } },
             docEntries: { magnitude: null, sgn: null },
+            checkedType: { type: 'BalanceChange' },
+            checkedTypeName: 'BalanceChange',
           },
           incrementNonce: { type: 'Bool' },
           events: {
@@ -1523,6 +1539,18 @@ let jsLayout = {
               inheritFromParent: { type: 'Bool' },
             },
             docEntries: { parentsOwnToken: null, inheritFromParent: null },
+            checkedType: {
+              type: 'object',
+              name: 'Anonymous',
+              docs: null,
+              keys: ['parentsOwnToken', 'inheritFromParent'],
+              entries: {
+                parentsOwnToken: { type: 'Bool' },
+                inheritFromParent: { type: 'Bool' },
+              },
+              docEntries: { parentsOwnToken: '', inheritFromParent: '' },
+            },
+            checkedTypeName: 'MayUseToken',
           },
           authorizationKind: {
             type: 'object',

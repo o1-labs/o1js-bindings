@@ -18,6 +18,7 @@ type GenericTypeMap<
   UInt32,
   UInt64,
   Sign,
+  BalanceChange,
   PublicKey,
   AuthRequired,
   TokenId
@@ -27,11 +28,12 @@ type GenericTypeMap<
   UInt32: UInt32;
   UInt64: UInt64;
   Sign: Sign;
+  BalanceChange: BalanceChange;
   PublicKey: PublicKey;
   AuthRequired: AuthRequired;
   TokenId: TokenId;
 };
-type AnyTypeMap = GenericTypeMap<any, any, any, any, any, any, any, any>;
+type AnyTypeMap = GenericTypeMap<any, any, any, any, any, any, any, any, any>;
 
 type TypeMapValues<
   TypeMap extends AnyTypeMap,
@@ -346,6 +348,13 @@ function ProvableFromLayout<
       },
       check(value: T): void {
         check(typeData, value);
+      },
+      // TODO implement properly
+      // currently, the implementation below is fine because `provableFromLayout()`
+      // is not used on any non-canonical types, so returning the element itself is correct.
+      // (we do need an implementation though and can't just throw an error)
+      toCanonical(value: T): T {
+        return value;
       },
       toInput(value: T): HashInput {
         return toInput(typeData, value);

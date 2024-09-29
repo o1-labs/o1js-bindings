@@ -14,8 +14,20 @@ import {
   packToFields,
 } from '../../mina-signer/src/poseidon-bigint.js';
 import { mocks, protocolVersions } from '../crypto/constants.js';
+import { signable } from '../../mina-signer/src/derivers-bigint.js';
 
-export { PublicKey, Field, Bool, AuthRequired, UInt64, UInt32, Sign, TokenId };
+export {
+  PublicKey,
+  Field,
+  Bool,
+  AuthRequired,
+  UInt64,
+  UInt32,
+  Sign,
+  BalanceChange,
+  TokenId,
+  MayUseToken,
+};
 
 export {
   Events,
@@ -38,8 +50,12 @@ type TokenId = Field;
 type StateHash = Field;
 type TokenSymbol = { symbol: string; field: Field };
 type ZkappUri = { data: string; hash: Field };
+type MayUseToken = {
+  parentsOwnToken: Bool;
+  inheritFromParent: Bool;
+};
 
-const { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri } =
+const { TokenId, StateHash, TokenSymbol, AuthRequired, ZkappUri, MayUseToken } =
   derivedLeafTypesSignable({ Field, Bool, HashHelpers, packToFields });
 
 type Event = Field[];
@@ -73,3 +89,6 @@ const TransactionVersion = {
   ...UInt32,
   empty: () => UInt32(protocolVersions.txnVersion),
 };
+
+type BalanceChange = { magnitude: UInt64; sgn: Sign };
+const BalanceChange = signable({ magnitude: UInt64, sgn: Sign });
