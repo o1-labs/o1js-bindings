@@ -1,12 +1,15 @@
 import { BindingsType } from '../v2/type.js';
 import {
+  Actions,
   AuthRequired,
   Bool,
+  Events,
   Field,
   Option,
   PublicKey,
   Range,
   Sign,
+  StateHash,
   TokenId,
   TokenSymbol,
   UInt32,
@@ -26,8 +29,6 @@ export {
   VerificationKeyPermission,
   Timing,
   BalanceChange,
-  Events,
-  Actions,
   Preconditions,
   NetworkPrecondition,
   EpochDataPrecondition,
@@ -114,36 +115,6 @@ const BalanceChange: BindingsType.Object<BalanceChange> =
       sgn: new BindingsType.Leaf.Sign(),
     },
   });
-type Events = { data: Field[][]; hash: Field };
-const Events: BindingsType.Object<Events> = new BindingsType.Object({
-  name: 'Events',
-  keys: ['data', 'hash'],
-  entries: {
-    data: new BindingsType.Array({
-      staticLength: null,
-      inner: new BindingsType.Array({
-        staticLength: null,
-        inner: new BindingsType.Leaf.Field(),
-      }),
-    }),
-    hash: new BindingsType.Leaf.Field(),
-  },
-});
-type Actions = { data: Field[][]; hash: Field };
-const Actions: BindingsType.Object<Actions> = new BindingsType.Object({
-  name: 'Actions',
-  keys: ['data', 'hash'],
-  entries: {
-    data: new BindingsType.Array({
-      staticLength: null,
-      inner: new BindingsType.Array({
-        staticLength: null,
-        inner: new BindingsType.Leaf.Field(),
-      }),
-    }),
-    hash: new BindingsType.Leaf.Field(),
-  },
-});
 type EpochLedgerPrecondition = {
   hash: Option<Field>;
   totalCurrency: Option<Range<UInt64>>;
@@ -430,8 +401,8 @@ type AccountUpdateModification = {
     setVotingFor: AuthRequired;
     setTiming: AuthRequired;
   }>;
-  zkappUri: Option<{ data: string; hash: Field }>;
-  tokenSymbol: Option<{ symbol: string; field: Field }>;
+  zkappUri: Option<ZkappUri>;
+  tokenSymbol: Option<TokenSymbol>;
   timing: Option<{
     initialMinimumBalance: UInt64;
     cliffTime: UInt32;
@@ -439,7 +410,7 @@ type AccountUpdateModification = {
     vestingPeriod: UInt32;
     vestingIncrement: UInt64;
   }>;
-  votingFor: Option<Field>;
+  votingFor: Option<StateHash>;
 };
 const AccountUpdateModification: BindingsType.Object<AccountUpdateModification> =
   new BindingsType.Object({
@@ -471,7 +442,9 @@ const AccountUpdateModification: BindingsType.Object<AccountUpdateModification> 
         new BindingsType.Leaf.TokenSymbol()
       ),
       timing: new BindingsType.Option.Flagged(Timing),
-      votingFor: new BindingsType.Option.Flagged(new BindingsType.Leaf.Field()),
+      votingFor: new BindingsType.Option.Flagged(
+        new BindingsType.Leaf.StateHash()
+      ),
     },
   });
 type NetworkPrecondition = {
@@ -678,8 +651,8 @@ type AccountUpdateBody = {
       setVotingFor: AuthRequired;
       setTiming: AuthRequired;
     }>;
-    zkappUri: Option<{ data: string; hash: Field }>;
-    tokenSymbol: Option<{ symbol: string; field: Field }>;
+    zkappUri: Option<ZkappUri>;
+    tokenSymbol: Option<TokenSymbol>;
     timing: Option<{
       initialMinimumBalance: UInt64;
       cliffTime: UInt32;
@@ -687,12 +660,12 @@ type AccountUpdateBody = {
       vestingPeriod: UInt32;
       vestingIncrement: UInt64;
     }>;
-    votingFor: Option<Field>;
+    votingFor: Option<StateHash>;
   };
   balanceChange: { magnitude: UInt64; sgn: Sign };
   incrementNonce: Bool;
-  events: { data: Field[][]; hash: Field };
-  actions: { data: Field[][]; hash: Field };
+  events: Events;
+  actions: Actions;
   callData: Field;
   callDepth: number;
   preconditions: {
@@ -763,8 +736,8 @@ const AccountUpdateBody: BindingsType.Object<AccountUpdateBody> =
       update: AccountUpdateModification,
       balanceChange: BalanceChange,
       incrementNonce: new BindingsType.Leaf.Bool(),
-      events: Events,
-      actions: Actions,
+      events: new BindingsType.Leaf.Events(),
+      actions: new BindingsType.Leaf.Actions(),
       callData: new BindingsType.Leaf.Field(),
       callDepth: new BindingsType.Leaf.Number(),
       preconditions: Preconditions,
@@ -797,8 +770,8 @@ type ZkappAccountUpdate = {
         setVotingFor: AuthRequired;
         setTiming: AuthRequired;
       }>;
-      zkappUri: Option<{ data: string; hash: Field }>;
-      tokenSymbol: Option<{ symbol: string; field: Field }>;
+      zkappUri: Option<ZkappUri>;
+      tokenSymbol: Option<TokenSymbol>;
       timing: Option<{
         initialMinimumBalance: UInt64;
         cliffTime: UInt32;
@@ -806,12 +779,12 @@ type ZkappAccountUpdate = {
         vestingPeriod: UInt32;
         vestingIncrement: UInt64;
       }>;
-      votingFor: Option<Field>;
+      votingFor: Option<StateHash>;
     };
     balanceChange: { magnitude: UInt64; sgn: Sign };
     incrementNonce: Bool;
-    events: { data: Field[][]; hash: Field };
-    actions: { data: Field[][]; hash: Field };
+    events: Events;
+    actions: Actions;
     callData: Field;
     callDepth: number;
     preconditions: {
@@ -898,8 +871,8 @@ type ZkappCommand = {
           setVotingFor: AuthRequired;
           setTiming: AuthRequired;
         }>;
-        zkappUri: Option<{ data: string; hash: Field }>;
-        tokenSymbol: Option<{ symbol: string; field: Field }>;
+        zkappUri: Option<ZkappUri>;
+        tokenSymbol: Option<TokenSymbol>;
         timing: Option<{
           initialMinimumBalance: UInt64;
           cliffTime: UInt32;
@@ -907,12 +880,12 @@ type ZkappCommand = {
           vestingPeriod: UInt32;
           vestingIncrement: UInt64;
         }>;
-        votingFor: Option<Field>;
+        votingFor: Option<StateHash>;
       };
       balanceChange: { magnitude: UInt64; sgn: Sign };
       incrementNonce: Bool;
-      events: { data: Field[][]; hash: Field };
-      actions: { data: Field[][]; hash: Field };
+      events: Events;
+      actions: Actions;
       callData: Field;
       callDepth: number;
       preconditions: {
@@ -994,8 +967,6 @@ const Types: { [key: string]: BindingsType<any> } = {
   VerificationKeyPermission,
   Timing,
   BalanceChange,
-  Events,
-  Actions,
   Preconditions,
   NetworkPrecondition,
   EpochDataPrecondition,

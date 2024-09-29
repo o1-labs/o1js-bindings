@@ -1,24 +1,51 @@
-// !!! TODO NOW: fromFields (add aux)
+// TODO NOW: rename to Schema
 
 import * as BindingsLeaves from './leaves.js'
+import { FieldsDecoder, ProvableSerializable } from './util.js';
 import { versionBytes } from '../../crypto/constants.js';
 import { Provable } from '../../../lib/provable/provable.js';
+import { HashInput } from '../../../lib/provable/types/provable-derivers.js'
 import { toBase58Check } from '../../../lib/util/base58.js';
 
 const JsArray = Array;
 
-// TODO: refactor Provable to use this kind of an interface (will save a lot of array slicing)
-// TODO: this could also handle aux data in addition to fields
-class FieldsDecoder {
-  constructor(
-    private fields: BindingsLeaves.Field[],
-    private index: number = 0
-  ) {}
+abstract class ProvableBindingsType<T, Actual> {
+  abstract Type(): ProvableSerializable<Actual>;
 
-  decode<T>(size: number, f: (subFields: BindingsLeaves.Field[]) => T): T {
-    const subFields = this.fields.slice(this.index, this.index + size);
-    this.index += size;
-    return f(subFields);
+  sizeInFields(): number {
+    return this.Type().sizeInFields();
+  }
+
+  toJSON(x: T): any {
+    return this.Type().toJSON(x as never as Actual);
+  }
+
+  toInput(x: T): HashInput {
+    return this.Type().toInput(x as never as Actual);
+  }
+
+  toFields(x: T): BindingsLeaves.Field[] {
+    return this.Type().toFields(x as never as Actual);
+  }
+
+  toAuxiliary(x?: T): any[] {
+    return this.Type().toAuxiliary(x as never as Actual);
+  }
+
+  fromFields(fields: BindingsLeaves.Field[], aux: any[]): T {
+    return this.Type().fromFields(fields, aux) as never as T
+  }
+
+  toValue(x: T): T {
+    return x;
+  }
+
+  fromValue(x: T): T {
+    return x;
+  }
+
+  check(x: T) {
+    return this.Type().check(x as never as Actual);
   }
 }
 
@@ -28,7 +55,7 @@ export type BindingsType<T> =
   | BindingsType.Option<T>
   | BindingsType.Array<T>;
 
-function assertBindingsTypeImplementsProvable<T, B extends BindingsType<T> & Provable<T>>(_x?: B) {}
+function assertBindingsTypeImplementsProvable<T, B extends BindingsType<T> & ProvableSerializable<T>>(_x?: B) {}
 
 assertBindingsTypeImplementsProvable<number, BindingsType<number>>();
 assertBindingsTypeImplementsProvable<string, BindingsType<string>>();
@@ -38,8 +65,10 @@ assertBindingsTypeImplementsProvable<BindingsLeaves.Field, BindingsType<Bindings
 assertBindingsTypeImplementsProvable<BindingsLeaves.PublicKey, BindingsType<BindingsLeaves.PublicKey>>();
 assertBindingsTypeImplementsProvable<BindingsLeaves.Sign, BindingsType<BindingsLeaves.Sign>>();
 assertBindingsTypeImplementsProvable<BindingsLeaves.TokenId, BindingsType<BindingsLeaves.TokenId>>();
+assertBindingsTypeImplementsProvable<BindingsLeaves.TokenSymbol, BindingsType<BindingsLeaves.TokenSymbol>>();
 assertBindingsTypeImplementsProvable<BindingsLeaves.UInt32, BindingsType<BindingsLeaves.UInt32>>();
 assertBindingsTypeImplementsProvable<BindingsLeaves.UInt64, BindingsType<BindingsLeaves.UInt64>>();
+assertBindingsTypeImplementsProvable<BindingsLeaves.ZkappUri, BindingsType<BindingsLeaves.ZkappUri>>();
 assertBindingsTypeImplementsProvable<{x: number}, BindingsType<{x: number}>>();
 assertBindingsTypeImplementsProvable<number[], BindingsType<number[]>>();
 assertBindingsTypeImplementsProvable<BindingsLeaves.Option<number>, BindingsType<BindingsLeaves.Option<number>>>();
@@ -75,11 +104,6 @@ export namespace BindingsType {
     }
 
     toJSON(x: T): any {
-      // TODO NOW: this is a big hack, let's put this hack at the bindings generation layer instead (new leaf type)
-      if(['Actions', 'Events'].includes(this.name)) {
-        return (x as any).data;
-      }
-
       // TODO: type safety
       const x2 = x as {[key in keyof T]: any};
       const json: Partial<T> = {};
@@ -87,6 +111,19 @@ export namespace BindingsType {
         json[key] = this.entries[key].toJSON(x2[key]);
       }
       return json;
+    }
+
+    toInput(x: T): HashInput {
+      // TODO: type safety
+      const x2 = x as {[key in keyof T]: any};
+      const acc: HashInput = { fields: [], packed: [] };
+      for(const key of this.keys) {
+        // surely there is an optimization here to avoid allocating so many temporary arrays
+        const { fields, packed } = this.entries[key].toInput(x2[key]);
+        acc.fields!.push(...(fields ?? []));
+        acc.packed!.push(...(packed ?? []));
+      }
+      return acc;
     }
 
     toFields(x: T): BindingsLeaves.Field[] {
@@ -162,8 +199,21 @@ export namespace BindingsType {
       return x.map((el) => inner.toJSON(el));
     }
 
+    toInput(x: T): HashInput {
+      if(!(x instanceof JsArray)) throw new Error('impossible');
+
+      // TODO: type safety
+      const inner: BindingsType<any> = this.inner;
+      const acc: HashInput = { fields: [], packed: [] };
+      x.forEach((el) => {
+        const { fields, packed } = inner.toInput(el);
+        acc.fields!.push(...(fields ?? []));
+        acc.packed!.push(...(packed ?? []));
+      });
+      return acc;
+    }
+
     toFields(x: T): BindingsLeaves.Field[] {
-      // boo typescript
       if(!(x instanceof JsArray)) throw new Error('impossible');
 
       // TODO: type safety
@@ -234,16 +284,21 @@ export namespace BindingsType {
         return x2 !== undefined ? inner.toJSON(x2) : null;
       }
 
+      toInput(_x: T): any {
+        return {}
+      }
+
       toFields(_x: T): BindingsLeaves.Field[] {
         return []
       }
 
       toAuxiliary(x?: T): any[] {
-        return [x];
+        return x === undefined ? [false] : [true, this.inner.toAuxiliary(x)]
       }
 
-      fromFields(_fields: BindingsLeaves.Field[], aux: any[]): T {
-        return aux[0];
+      fromFields(fields: BindingsLeaves.Field[], aux: any[]): T {
+        // TODO: type safety
+        return (aux[0] ? this.inner.fromFields(fields, aux[1]) : undefined) as T;
       }
 
       toValue(x: T): T {
@@ -259,129 +314,42 @@ export namespace BindingsType {
       }
     }
 
-    // TODO NOW: test that this definition is equivalent to the Provable<Option<T>> definition
-    export class Flagged<T> implements Provable<T> {
+    export class Flagged<T> extends ProvableBindingsType<T, BindingsLeaves.Option<any>> {
       readonly _T!: T extends BindingsLeaves.Option<any> ? void : never;
 
       constructor(
         public readonly inner: T extends BindingsLeaves.Option<infer U> ? BindingsType<U> : never
-      ) {}
-
-      sizeInFields(): number {
-        // TODO NOW: return BindingsLeaves.Option(this.inner as BindingsType<any>).sizeInFields();
-        return 1 + this.inner.sizeInFields();
+      ) {
+        super();
       }
 
-      toJSON(x: T): any {
-        // TODO: type safety
-        const x2: any = x;
-        const inner: BindingsType<any> = this.inner;
-        return x2.isSome.toBoolean() ? inner.toJSON(x2.value) : null;
-      }
-
-      toFields(x: T): BindingsLeaves.Field[] {
-        // TODO: type safety
-        const x2 = x as BindingsLeaves.Option<any>;
-        const inner: BindingsType<any> = this.inner;
-        return [
-          ...BindingsLeaves.Bool.toFields(x2.isSome),
-          ...inner.toFields(x2.value)
-        ];
-      }
-
-      toAuxiliary(x?: T): any[] {
-        // TODO: type safety
-        const x2 = x as BindingsLeaves.Option<any> | undefined;
-        return this.inner.toAuxiliary(x2?.value);
-      }
-
-      fromFields(fields: BindingsLeaves.Field[], aux: any[]): T {
-        // TODO: type safety
-        const x: Partial<BindingsLeaves.Option<any>> = {};
-        x.isSome = BindingsLeaves.Bool.fromFields([fields[0]]);
-        x.value = this.inner.fromFields(fields.slice(1, 1 + this.inner.sizeInFields()), aux);
-        return x as T;
-      }
-
-      toValue(x: T): T {
-        return x;
-      }
-
-      fromValue(x: T): T {
-        return x;
-      }
-
-      check(_x: T) {
-        throw new Error('TODO')
-      }
+      Type() { return BindingsLeaves.Option(this.inner as ProvableSerializable<any>); }
     }
 
-    export class ClosedInterval<T> implements Provable<T> {
+    export class ClosedInterval<T> extends ProvableBindingsType<T, BindingsLeaves.Option<BindingsLeaves.Range<any>>> {
       readonly _T!: T extends BindingsLeaves.Option<BindingsLeaves.Range<any>> ? void : never;
 
       constructor(
         public readonly inner: T extends BindingsLeaves.Option<BindingsLeaves.Range<infer U>> ? BindingsType<U> : never
-      ) {}
-
-      sizeInFields(): number {
-        return 1 + 2 * this.inner.sizeInFields();
+      ) {
+        super();
       }
 
-      // TODO: should this just be moved up to the LeafValue definition?
-      toJSON(x: T extends BindingsLeaves.Option<BindingsLeaves.Range<any>> ? T : never): any {
-        if(x.isSome.toBoolean()) {
-          return {
-            lower: x.value.lower.toJSON(),
-            upper: x.value.upper.toJSON()
-          }
-        } else {
-          return null;
-        }
-      }
-
-      toFields(x: T): BindingsLeaves.Field[] {
-        // TODO: type safety
-        const x2 = x as BindingsLeaves.Option<BindingsLeaves.Range<any>>;
-        return [...x2.isSome.toFields(), ...x2.value.lower.toFields(), ...x2.value.upper.toFields()];
-      }
-
-      toAuxiliary(x?: T): any[] {
-        // TODO: type safety
-        const x2 = x as BindingsLeaves.Option<BindingsLeaves.Range<any>> | undefined;
-        return [this.inner.toAuxiliary(x2?.value.lower), this.inner.toAuxiliary(x2?.value.upper)];
-      }
-
-      fromFields(fields: BindingsLeaves.Field[], aux: any[]): T {
-        // TODO: type safety
-        const decoder = new FieldsDecoder(fields);
-        const isSome = decoder.decode(BindingsLeaves.Bool.sizeInFields(), BindingsLeaves.Bool.fromFields);
-        const lower = decoder.decode(this.inner.sizeInFields(), (f) => this.inner.fromFields(f, aux[0]));
-        const upper = decoder.decode(this.inner.sizeInFields(), (f) => this.inner.fromFields(f, aux[1]));
-        return {isSome, value: {lower, upper}} as T;
-      }
-
-      toValue(x: T): T {
-        return x;
-      }
-
-      fromValue(x: T): T {
-        return x;
-      }
-
-      check(_x: T) {
-        throw new Error('TODO')
-      }
+      Type() { return BindingsLeaves.Option(BindingsLeaves.Range(this.inner as ProvableSerializable<any>)); }
     }
   }
 
   export type Leaf<T> =
     | Leaf.Number<T>
     | Leaf.String<T>
+    | Leaf.Actions<T>
     | Leaf.AuthRequired<T>
     | Leaf.Bool<T>
+    | Leaf.Events<T>
     | Leaf.Field<T>
     | Leaf.PublicKey<T>
     | Leaf.Sign<T>
+    | Leaf.StateHash<T>
     | Leaf.TokenId<T>
     | Leaf.TokenSymbol<T>
     | Leaf.UInt32<T>
@@ -389,10 +357,7 @@ export namespace BindingsType {
     | Leaf.ZkappUri<T>;
 
   export namespace Leaf {
-    export class Number<T = number> implements Provable<T> {
-      readonly _T!: T extends number ? void : never;
-      readonly type: 'number' = 'number';
-
+    abstract class AuxiliaryLeaf<T> {
       constructor() {}
 
       sizeInFields(): number {
@@ -401,6 +366,10 @@ export namespace BindingsType {
 
       toJSON(x: T): any {
         return x;
+      }
+
+      toInput(_x: T): HashInput {
+        return {};
       }
 
       toFields(_x: T): BindingsLeaves.Field[] {
@@ -428,257 +397,73 @@ export namespace BindingsType {
       }
     }
 
-    export class String<T = string> implements Provable<T> {
-      readonly _T!: T extends string ? void : never;
-      readonly type: 'string' = 'string';
-
-      constructor() {}
-
-      sizeInFields(): number {
-        return 0;
-      }
-
-      toJSON(x: T): any {
-        return x;
-      }
-
-      toFields(_x: T): BindingsLeaves.Field[] {
-        return []
-      }
-
-      toAuxiliary(x?: T): any[] {
-        return [x];
-      }
-
-      fromFields(_fields: BindingsLeaves.Field[], aux: any[]): T {
-        return aux[0];
-      }
-
-      toValue(x: T): T {
-        return x;
-      }
-
-      fromValue(x: T): T {
-        return x;
-      }
-
-      check(_x: T) {
-        throw new Error('TODO')
-      }
+    export class Number<T = number> extends AuxiliaryLeaf<T> {
+      readonly _T!: T extends number ? void : never;
+      readonly type: 'number' = 'number';
     }
 
-    export class AuthRequired<T = BindingsLeaves.AuthRequired> implements Provable<T> {
+    export class String<T = string> extends AuxiliaryLeaf<T> {
+      readonly _T!: T extends string ? void : never;
+      readonly type: 'string' = 'string';
+    }
+
+    export class Actions<T = BindingsLeaves.Actions> extends ProvableBindingsType<T, BindingsLeaves.Actions> {
+      readonly _T!: T extends number ? void : never;
+      readonly type: 'number' = 'number';
+
+      Type() { return BindingsLeaves.Actions; }
+    }
+
+    export class AuthRequired<T = BindingsLeaves.AuthRequired> extends ProvableBindingsType<T, BindingsLeaves.AuthRequired> {
       readonly _T!: T extends BindingsLeaves.AuthRequired ? void : never;
       readonly type: 'AuthRequired' = 'AuthRequired';
 
-      constructor() {}
-
-      sizeInFields(): number {
-        return 3;
-      }
-
-      toJSON(x: T): any {
-        // TODO: type safety
-        return BindingsLeaves.AuthRequired.toJSON(x as BindingsLeaves.AuthRequired);
-      }
-
-      toFields(x: T): BindingsLeaves.Field[] {
-        // TODO: type safety
-        return BindingsLeaves.AuthRequired.toFields(x as BindingsLeaves.AuthRequired);
-      }
-
-      toAuxiliary(x?: T): any[] {
-        // TODO: type safety
-        return BindingsLeaves.AuthRequired.toAuxiliary(x as BindingsLeaves.AuthRequired | undefined);
-      }
-
-      fromFields(fields: BindingsLeaves.Field[], aux: any[]): T {
-        // TODO: type safety
-        return BindingsLeaves.AuthRequired.fromFields(fields, aux) as T;
-      }
-
-      toValue(x: T): T {
-        return x;
-      }
-
-      fromValue(x: T): T {
-        return x;
-      }
-
-      check(_x: T) {
-        throw new Error('TODO')
-      }
+      Type() { return BindingsLeaves.AuthRequired; }
     }
 
-    export class Bool<T = BindingsLeaves.Bool> implements Provable<T> {
+    export class Bool<T = BindingsLeaves.Bool> extends ProvableBindingsType<T, BindingsLeaves.Bool> {
       readonly _T!: T extends BindingsLeaves.Bool ? void : never;
       readonly type: 'Bool' = 'Bool';
 
-      constructor() {}
-
-      sizeInFields(): number {
-        return 1;
-      }
-
-      toJSON(x: T): any {
-        // TODO: type safety
-        return BindingsLeaves.Bool.toJSON(x as BindingsLeaves.Bool);
-      }
-
-      toFields(x: T): BindingsLeaves.Field[] {
-        // TODO: type safety
-        return BindingsLeaves.Bool.toFields(x as BindingsLeaves.Bool);
-      }
-
-      toAuxiliary(x?: T): any[] {
-        // TODO: type safety
-        return BindingsLeaves.Bool.toAuxiliary(x as BindingsLeaves.Bool | undefined);
-      }
-
-      fromFields(fields: BindingsLeaves.Field[]): T {
-        // TODO: type safety
-        return BindingsLeaves.Bool.fromFields(fields) as T;
-      }
-
-      toValue(x: T): T {
-        return x;
-      }
-
-      fromValue(x: T): T {
-        return x;
-      }
-
-      check(_x: T) {
-        throw new Error('TODO')
-      }
+      Type() { return BindingsLeaves.Bool; }
     }
 
-    export class Field<T = BindingsLeaves.Field> implements Provable<T> {
+    export class Events<T = BindingsLeaves.Events> extends ProvableBindingsType<T, BindingsLeaves.Events> {
+      readonly _T!: T extends number ? void : never;
+      readonly type: 'number' = 'number';
+
+      Type() { return BindingsLeaves.Events; }
+    }
+
+    export class Field<T = BindingsLeaves.Field> extends ProvableBindingsType<T, BindingsLeaves.Field> {
       readonly _T!: T extends BindingsLeaves.Field ? void : never;
       readonly type: 'Field' = 'Field';
 
-      constructor() {}
-
-      sizeInFields(): number {
-        return 1;
-      }
-
-      toJSON(x: T): any {
-        // TODO: type safety
-        return BindingsLeaves.Field.toJSON(x as BindingsLeaves.Field);
-      }
-
-      toFields(x: T): BindingsLeaves.Field[] {
-        // TODO: type safety
-        return [x as BindingsLeaves.Field];
-      }
-
-      toAuxiliary(_x?: T): any[] {
-        return BindingsLeaves.Field.toAuxiliary();
-      }
-
-      fromFields(fields: BindingsLeaves.Field[], _aux: any[]): T {
-        // TODO: type safety
-        return fields[0] as T;
-      }
-
-      toValue(x: T): T {
-        return x;
-      }
-
-      fromValue(x: T): T {
-        return x;
-      }
-
-      check(_x: T) {
-        throw new Error('TODO')
-      }
+      Type() { return BindingsLeaves.Field; }
     }
 
-    export class PublicKey<T = BindingsLeaves.PublicKey> implements Provable<T> {
+    export class PublicKey<T = BindingsLeaves.PublicKey> extends ProvableBindingsType<T, BindingsLeaves.PublicKey> {
       readonly _T!: T extends BindingsLeaves.PublicKey ? void : never;
       readonly type: 'PublicKey' = 'PublicKey';
 
-      constructor() {}
-
-      sizeInFields(): number {
-        return BindingsLeaves.PublicKey.sizeInFields();
-      }
-
-      toJSON(x: T): any {
-        // TODO: type safety
-        return BindingsLeaves.PublicKey.toJSON(x as BindingsLeaves.PublicKey);
-      }
-
-      toFields(x: T): BindingsLeaves.Field[] {
-        // TODO: type safety
-        return BindingsLeaves.PublicKey.toFields(x as BindingsLeaves.PublicKey);
-      }
-
-      toAuxiliary(_x?: T): any[] {
-        return BindingsLeaves.PublicKey.toAuxiliary();
-      }
-
-      fromFields(fields: BindingsLeaves.Field[], _aux: any[]): T {
-        // TODO: type safety
-        return BindingsLeaves.PublicKey.fromFields(fields) as T;
-      }
-
-      toValue(x: T): T {
-        return x;
-      }
-
-      fromValue(x: T): T {
-        return x;
-      }
-
-      check(_x: T) {
-        throw new Error('TODO')
-      }
+      Type() { return BindingsLeaves.PublicKey; }
     }
 
-    export class Sign<T = BindingsLeaves.Sign> implements Provable<T> {
+    export class Sign<T = BindingsLeaves.Sign> extends ProvableBindingsType<T, BindingsLeaves.Sign> {
       readonly _T!: T extends BindingsLeaves.Sign ? void : never;
       readonly type: 'Sign' = 'Sign';
 
-      constructor() {}
-
-      sizeInFields(): number {
-        return 1;
-      }
-
-      toJSON(x: T): any {
-        // TODO: type safety
-        return BindingsLeaves.Sign.toJSON(x as BindingsLeaves.Sign);
-      }
-
-      toFields(x: T): BindingsLeaves.Field[] {
-        // TODO: type safety
-        return BindingsLeaves.Sign.toFields(x as BindingsLeaves.Sign);
-      }
-
-      toAuxiliary(_x?: T): any[] {
-        return BindingsLeaves.Sign.toAuxiliary();
-      }
-
-      fromFields(fields: BindingsLeaves.Field[], _aux: any[]): T {
-        // TODO: type safety
-        return BindingsLeaves.Sign.fromFields(fields) as T;
-      }
-
-      toValue(x: T): T {
-        return x;
-      }
-
-      fromValue(x: T): T {
-        return x;
-      }
-
-      check(_x: T) {
-        throw new Error('TODO')
-      }
+      Type() { return BindingsLeaves.Sign; }
     }
 
+    export class StateHash<T = BindingsLeaves.StateHash> extends ProvableBindingsType<T, BindingsLeaves.StateHash> {
+      readonly _T!: T extends BindingsLeaves.StateHash ? void : never;
+      readonly type: 'StateHash' = 'StateHash';
+
+      Type() { return BindingsLeaves.StateHash; }
+    }
+
+    // TODO NOW
     export class TokenId<T = BindingsLeaves.TokenId> implements Provable<T> {
       readonly _T!: T extends BindingsLeaves.TokenId ? void : never;
       readonly type: 'TokenId' = 'TokenId';
@@ -692,6 +477,11 @@ export namespace BindingsType {
       toJSON(x: T): any {
         // TODO: type safety
         return toBase58Check(BindingsLeaves.Field.toBytes(x as BindingsLeaves.Field), versionBytes.tokenIdKey);
+      }
+
+      toInput(x: T): HashInput {
+        // TODO: type safety
+        return BindingsLeaves.Field.toInput(x as BindingsLeaves.Field);
       }
 
       toFields(x: T): BindingsLeaves.Field[] {
@@ -721,174 +511,32 @@ export namespace BindingsType {
       }
     }
 
-    export class TokenSymbol<T = BindingsLeaves.TokenSymbol> implements Provable<T> {
+    export class TokenSymbol<T = BindingsLeaves.TokenSymbol> extends ProvableBindingsType<T, BindingsLeaves.TokenSymbol> {
       readonly _T!: T extends BindingsLeaves.TokenId ? void : never;
       readonly type: 'TokenId' = 'TokenId';
 
-      constructor() {}
-
-      sizeInFields(): number {
-        return BindingsLeaves.Field.sizeInFields();
-      }
-
-      toJSON(x: T): any {
-        // TODO: type safety
-        return BindingsLeaves.TokenSymbol.toJSON(x as BindingsLeaves.TokenSymbol);
-      }
-
-      toFields(x: T): BindingsLeaves.Field[] {
-        // TODO: type safety
-        return BindingsLeaves.TokenSymbol.toFields(x as BindingsLeaves.TokenSymbol);
-      }
-
-      toAuxiliary(x?: T): any[] {
-        // TODO: type safety
-        return BindingsLeaves.TokenSymbol.toAuxiliary(x as BindingsLeaves.TokenSymbol | undefined);
-      }
-
-      fromFields(fields: BindingsLeaves.Field[], aux: any[]): T {
-        // TODO: type safety
-        return BindingsLeaves.TokenSymbol.fromFields(fields, aux) as T;
-      }
-
-      toValue(x: T): T {
-        return x;
-      }
-
-      fromValue(x: T): T {
-        return x;
-      }
-
-      check(_x: T) {
-        throw new Error('TODO')
-      }
+      Type() { return BindingsLeaves.TokenSymbol; }
     }
 
-    export class UInt32<T = BindingsLeaves.UInt32> implements Provable<T> {
+    export class UInt32<T = BindingsLeaves.UInt32> extends ProvableBindingsType<T, BindingsLeaves.UInt32> {
       readonly _T!: T extends BindingsLeaves.UInt32 ? void : never;
       readonly type: 'UInt32' = 'UInt32';
 
-      constructor() {}
-
-      sizeInFields(): number {
-        return 1
-      }
-
-      toJSON(x: T): any {
-        // TODO: type safety
-        return BindingsLeaves.UInt32.toJSON(x as BindingsLeaves.UInt32);
-      }
-
-      toFields(x: T): BindingsLeaves.Field[] {
-        // TODO: type safety
-        return BindingsLeaves.UInt32.toFields(x as BindingsLeaves.UInt32);
-      }
-
-      toAuxiliary(_x?: T): any[] {
-        return BindingsLeaves.UInt32.toAuxiliary();
-      }
-
-      fromFields(fields: BindingsLeaves.Field[]): T {
-        // TODO: type safety
-        return BindingsLeaves.UInt32.fromFields(fields) as T;
-      }
-
-      toValue(x: T): T {
-        return x;
-      }
-
-      fromValue(x: T): T {
-        return x;
-      }
-
-      check(_x: T) {
-        throw new Error('TODO')
-      }
+      Type() { return BindingsLeaves.UInt32; }
     }
 
-    export class UInt64<T = BindingsLeaves.UInt64> implements Provable<T> {
+    export class UInt64<T = BindingsLeaves.UInt64> extends ProvableBindingsType<T, BindingsLeaves.UInt64> {
       readonly _T!: T extends BindingsLeaves.UInt64 ? void : never;
       readonly type: 'UInt64' = 'UInt64';
 
-      constructor() {}
-
-      sizeInFields(): number {
-        return 1
-      }
-
-      toJSON(x: T): any {
-        // TODO: type safety
-        return BindingsLeaves.UInt64.toJSON(x as BindingsLeaves.UInt64);
-      }
-
-      toFields(x: T): BindingsLeaves.Field[] {
-        // TODO: type safety
-        return BindingsLeaves.UInt64.toFields(x as BindingsLeaves.UInt64);
-      }
-
-      toAuxiliary(_x?: T): any[] {
-        return BindingsLeaves.UInt64.toAuxiliary();
-      }
-
-      fromFields(fields: BindingsLeaves.Field[]): T {
-        // TODO: type safety
-        return BindingsLeaves.UInt64.fromFields(fields) as T;
-      }
-
-      toValue(x: T): T {
-        return x;
-      }
-
-      fromValue(x: T): T {
-        return x;
-      }
-
-      check(_x: T) {
-        throw new Error('TODO')
-      }
+      Type() { return BindingsLeaves.UInt64; }
     }
 
-    export class ZkappUri<T = BindingsLeaves.ZkappUri> implements Provable<T> {
+    export class ZkappUri<T = BindingsLeaves.ZkappUri> extends ProvableBindingsType<T, BindingsLeaves.ZkappUri> {
       readonly _T!: T extends BindingsLeaves.ZkappUri ? void : never;
       readonly type: 'ZkappUri';
 
-      constructor() {}
-
-      sizeInFields(): number {
-        return BindingsLeaves.ZkappUri.sizeInFields();
-      }
-
-      toJSON(x: T): any {
-        // TODO: type safety
-        return BindingsLeaves.ZkappUri.toJSON(x as BindingsLeaves.ZkappUri);
-      }
-
-      toFields(x: T): BindingsLeaves.Field[] {
-        // TODO: type safety
-        return BindingsLeaves.ZkappUri.toFields(x as BindingsLeaves.ZkappUri);
-      }
-
-      toAuxiliary(x?: T): any[] {
-        // TODO: type safety
-        return BindingsLeaves.ZkappUri.toAuxiliary(x as BindingsLeaves.ZkappUri);
-      }
-
-      fromFields(fields: BindingsLeaves.Field[], aux: any[]): T {
-        // TODO: type safety
-        return BindingsLeaves.ZkappUri.fromFields(fields, aux) as T;
-      }
-
-      toValue(x: T): T {
-        return x;
-      }
-
-      fromValue(x: T): T {
-        return x;
-      }
-
-      check(_x: T) {
-        throw new Error('TODO')
-      }
+      Type() { return BindingsLeaves.ZkappUri; }
     }
   }
 }
