@@ -347,6 +347,7 @@ export namespace BindingsType {
     | Leaf.Bool<T>
     | Leaf.Events<T>
     | Leaf.Field<T>
+    | Leaf.Int64<T>
     | Leaf.PublicKey<T>
     | Leaf.Sign<T>
     | Leaf.StateHash<T>
@@ -440,6 +441,13 @@ export namespace BindingsType {
       readonly type: 'Field' = 'Field';
 
       Type() { return BindingsLeaves.Field; }
+    }
+
+    export class Int64<T = BindingsLeaves.Int64> extends ProvableBindingsType<T, BindingsLeaves.Int64> {
+      readonly _T!: T extends BindingsLeaves.Int64 ? void : never;
+      readonly type: 'Int64' = 'Int64';
+
+      Type() { return BindingsLeaves.Int64; }
     }
 
     export class PublicKey<T = BindingsLeaves.PublicKey> extends ProvableBindingsType<T, BindingsLeaves.PublicKey> {

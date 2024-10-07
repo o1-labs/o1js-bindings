@@ -5,6 +5,7 @@ import {
   Bool,
   Events,
   Field,
+  Int64,
   Option,
   PublicKey,
   Range,
@@ -28,7 +29,6 @@ export {
   Permissions,
   VerificationKeyPermission,
   Timing,
-  BalanceChange,
   Preconditions,
   NetworkPrecondition,
   EpochDataPrecondition,
@@ -105,16 +105,6 @@ const Timing: BindingsType.Object<Timing> = new BindingsType.Object({
     vestingIncrement: new BindingsType.Leaf.UInt64(),
   },
 });
-type BalanceChange = { magnitude: UInt64; sgn: Sign };
-const BalanceChange: BindingsType.Object<BalanceChange> =
-  new BindingsType.Object({
-    name: 'BalanceChange',
-    keys: ['magnitude', 'sgn'],
-    entries: {
-      magnitude: new BindingsType.Leaf.UInt64(),
-      sgn: new BindingsType.Leaf.Sign(),
-    },
-  });
 type EpochLedgerPrecondition = {
   hash: Option<Field>;
   totalCurrency: Option<Range<UInt64>>;
@@ -662,7 +652,7 @@ type AccountUpdateBody = {
     }>;
     votingFor: Option<StateHash>;
   };
-  balanceChange: { magnitude: UInt64; sgn: Sign };
+  balanceChange: Int64;
   incrementNonce: Bool;
   events: Events;
   actions: Actions;
@@ -734,7 +724,7 @@ const AccountUpdateBody: BindingsType.Object<AccountUpdateBody> =
       publicKey: new BindingsType.Leaf.PublicKey(),
       tokenId: new BindingsType.Leaf.TokenId(),
       update: AccountUpdateModification,
-      balanceChange: BalanceChange,
+      balanceChange: new BindingsType.Leaf.Int64(),
       incrementNonce: new BindingsType.Leaf.Bool(),
       events: new BindingsType.Leaf.Events(),
       actions: new BindingsType.Leaf.Actions(),
@@ -781,7 +771,7 @@ type ZkappAccountUpdate = {
       }>;
       votingFor: Option<StateHash>;
     };
-    balanceChange: { magnitude: UInt64; sgn: Sign };
+    balanceChange: Int64;
     incrementNonce: Bool;
     events: Events;
     actions: Actions;
@@ -882,7 +872,7 @@ type ZkappCommand = {
         }>;
         votingFor: Option<StateHash>;
       };
-      balanceChange: { magnitude: UInt64; sgn: Sign };
+      balanceChange: Int64;
       incrementNonce: Bool;
       events: Events;
       actions: Actions;
@@ -966,7 +956,6 @@ const Types: { [key: string]: BindingsType<any> } = {
   Permissions,
   VerificationKeyPermission,
   Timing,
-  BalanceChange,
   Preconditions,
   NetworkPrecondition,
   EpochDataPrecondition,

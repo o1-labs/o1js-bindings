@@ -13,7 +13,7 @@ import { toBase58Check } from '../../../lib/util/base58.js';
 
 export { Bool } from '../../../lib/provable/bool.js';
 export { Field } from '../../../lib/provable/field.js';
-export { UInt32, UInt64, Sign } from '../../../lib/provable/int.js';
+export { Int64, UInt32, UInt64, Sign } from '../../../lib/provable/int.js';
 export { PublicKey } from '../../../lib/provable/crypto/signature.js';
 
 // for now, we erase the value conversion in the proxy, as it is currently not utilized
