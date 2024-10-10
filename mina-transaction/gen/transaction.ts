@@ -370,6 +370,7 @@ type ZkappCommand = {
           receive: { isSome: Bool; value: AuthRequired };
           setDelegate: { isSome: Bool; value: AuthRequired };
           setPermissions: { isSome: Bool; value: AuthRequired };
+          setVerificationKey: { isSome: Bool; value: AuthRequired };
           setZkappUri: { isSome: Bool; value: AuthRequired };
           editActionState: { isSome: Bool; value: AuthRequired };
           setTokenSymbol: { isSome: Bool; value: AuthRequired };
@@ -589,6 +590,7 @@ type AccountUpdate = {
         receive: { isSome: Bool; value: AuthRequired };
         setDelegate: { isSome: Bool; value: AuthRequired };
         setPermissions: { isSome: Bool; value: AuthRequired };
+        setVerificationKey: { isSome: Bool; value: AuthRequired };
         setZkappUri: { isSome: Bool; value: AuthRequired };
         editActionState: { isSome: Bool; value: AuthRequired };
         setTokenSymbol: { isSome: Bool; value: AuthRequired };

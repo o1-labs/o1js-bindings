@@ -162,6 +162,7 @@ type ZkappCommand = {
           receive: AuthRequired | null;
           setDelegate: AuthRequired | null;
           setPermissions: AuthRequired | null;
+          setVerificationKey: AuthRequired | null;
           setZkappUri: AuthRequired | null;
           editActionState: AuthRequired | null;
           setTokenSymbol: AuthRequired | null;
@@ -318,6 +319,7 @@ type AccountUpdate = {
         receive: AuthRequired | null;
         setDelegate: AuthRequired | null;
         setPermissions: AuthRequired | null;
+        setVerificationKey: AuthRequired | null;
         setZkappUri: AuthRequired | null;
         editActionState: AuthRequired | null;
         setTokenSymbol: AuthRequired | null;
