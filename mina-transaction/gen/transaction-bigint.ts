@@ -310,21 +310,21 @@ type ZkappCommand = {
           actionState: { isSome: Bool; value: Field };
           provedState: { isSome: Bool; value: Bool };
           isNew: { isSome: Bool; value: Bool };
-        };
-        permissions: {
-          editState: { isSome: Bool; value: AuthRequired };
-          access: { isSome: Bool; value: AuthRequired };
-          send: { isSome: Bool; value: AuthRequired };
-          receive: { isSome: Bool; value: AuthRequired };
-          setDelegate: { isSome: Bool; value: AuthRequired };
-          setPermissions: { isSome: Bool; value: AuthRequired };
-          setVerificationKey: { isSome: Bool; value: AuthRequired };
-          setZkappUri: { isSome: Bool; value: AuthRequired };
-          editActionState: { isSome: Bool; value: AuthRequired };
-          setTokenSymbol: { isSome: Bool; value: AuthRequired };
-          incrementNonce: { isSome: Bool; value: AuthRequired };
-          setVotingFor: { isSome: Bool; value: AuthRequired };
-          setTiming: { isSome: Bool; value: AuthRequired };
+          permissions: {
+            editState: { isSome: Bool; value: AuthRequired };
+            access: { isSome: Bool; value: AuthRequired };
+            send: { isSome: Bool; value: AuthRequired };
+            receive: { isSome: Bool; value: AuthRequired };
+            setDelegate: { isSome: Bool; value: AuthRequired };
+            setPermissions: { isSome: Bool; value: AuthRequired };
+            setVerificationKey: { isSome: Bool; value: AuthRequired };
+            setZkappUri: { isSome: Bool; value: AuthRequired };
+            editActionState: { isSome: Bool; value: AuthRequired };
+            setTokenSymbol: { isSome: Bool; value: AuthRequired };
+            incrementNonce: { isSome: Bool; value: AuthRequired };
+            setVotingFor: { isSome: Bool; value: AuthRequired };
+            setTiming: { isSome: Bool; value: AuthRequired };
+          };
         };
         validWhile: {
           isSome: Bool;
@@ -528,21 +528,21 @@ type AccountUpdate = {
         actionState: { isSome: Bool; value: Field };
         provedState: { isSome: Bool; value: Bool };
         isNew: { isSome: Bool; value: Bool };
-      };
-      permissions: {
-        editState: { isSome: Bool; value: AuthRequired };
-        access: { isSome: Bool; value: AuthRequired };
-        send: { isSome: Bool; value: AuthRequired };
-        receive: { isSome: Bool; value: AuthRequired };
-        setDelegate: { isSome: Bool; value: AuthRequired };
-        setPermissions: { isSome: Bool; value: AuthRequired };
-        setVerificationKey: { isSome: Bool; value: AuthRequired };
-        setZkappUri: { isSome: Bool; value: AuthRequired };
-        editActionState: { isSome: Bool; value: AuthRequired };
-        setTokenSymbol: { isSome: Bool; value: AuthRequired };
-        incrementNonce: { isSome: Bool; value: AuthRequired };
-        setVotingFor: { isSome: Bool; value: AuthRequired };
-        setTiming: { isSome: Bool; value: AuthRequired };
+        permissions: {
+          editState: { isSome: Bool; value: AuthRequired };
+          access: { isSome: Bool; value: AuthRequired };
+          send: { isSome: Bool; value: AuthRequired };
+          receive: { isSome: Bool; value: AuthRequired };
+          setDelegate: { isSome: Bool; value: AuthRequired };
+          setPermissions: { isSome: Bool; value: AuthRequired };
+          setVerificationKey: { isSome: Bool; value: AuthRequired };
+          setZkappUri: { isSome: Bool; value: AuthRequired };
+          editActionState: { isSome: Bool; value: AuthRequired };
+          setTokenSymbol: { isSome: Bool; value: AuthRequired };
+          incrementNonce: { isSome: Bool; value: AuthRequired };
+          setVotingFor: { isSome: Bool; value: AuthRequired };
+          setTiming: { isSome: Bool; value: AuthRequired };
+        };
       };
       validWhile: {
         isSome: Bool;
