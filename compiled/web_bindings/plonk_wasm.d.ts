@@ -694,135 +694,6 @@ export function fp_oracles_dummy(): WasmFpOracles;
 */
 export function fp_oracles_deep_copy(x: WasmFpProverProof): WasmFpProverProof;
 /**
-* @returns {WasmFpGateVector}
-*/
-export function caml_pasta_fp_plonk_gate_vector_create(): WasmFpGateVector;
-/**
-* @param {WasmFpGateVector} v
-* @param {WasmFpGate} gate
-*/
-export function caml_pasta_fp_plonk_gate_vector_add(v: WasmFpGateVector, gate: WasmFpGate): void;
-/**
-* @param {WasmFpGateVector} v
-* @param {number} i
-* @returns {WasmFpGate}
-*/
-export function caml_pasta_fp_plonk_gate_vector_get(v: WasmFpGateVector, i: number): WasmFpGate;
-/**
-* @param {WasmFpGateVector} v
-* @returns {number}
-*/
-export function caml_pasta_fp_plonk_gate_vector_len(v: WasmFpGateVector): number;
-/**
-* @param {WasmFpGateVector} v
-* @param {Wire} t
-* @param {Wire} h
-*/
-export function caml_pasta_fp_plonk_gate_vector_wrap(v: WasmFpGateVector, t: Wire, h: Wire): void;
-/**
-* @param {number} public_input_size
-* @param {WasmFpGateVector} v
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fp_plonk_gate_vector_digest(public_input_size: number, v: WasmFpGateVector): Uint8Array;
-/**
-* @param {number} public_input_size
-* @param {WasmFpGateVector} v
-* @returns {string}
-*/
-export function caml_pasta_fp_plonk_circuit_serialize(public_input_size: number, v: WasmFpGateVector): string;
-/**
-* @returns {WasmPallasGProjective}
-*/
-export function caml_pallas_one(): WasmPallasGProjective;
-/**
-* @param {WasmPallasGProjective} x
-* @param {WasmPallasGProjective} y
-* @returns {WasmPallasGProjective}
-*/
-export function caml_pallas_add(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
-/**
-* @param {WasmPallasGProjective} x
-* @param {WasmPallasGProjective} y
-* @returns {WasmPallasGProjective}
-*/
-export function caml_pallas_sub(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
-/**
-* @param {WasmPallasGProjective} x
-* @returns {WasmPallasGProjective}
-*/
-export function caml_pallas_negate(x: WasmPallasGProjective): WasmPallasGProjective;
-/**
-* @param {WasmPallasGProjective} x
-* @returns {WasmPallasGProjective}
-*/
-export function caml_pallas_double(x: WasmPallasGProjective): WasmPallasGProjective;
-/**
-* @param {WasmPallasGProjective} x
-* @param {Uint8Array} y
-* @returns {WasmPallasGProjective}
-*/
-export function caml_pallas_scale(x: WasmPallasGProjective, y: Uint8Array): WasmPallasGProjective;
-/**
-* @returns {WasmPallasGProjective}
-*/
-export function caml_pallas_random(): WasmPallasGProjective;
-/**
-* @param {number} i
-* @returns {WasmPallasGProjective}
-*/
-export function caml_pallas_rng(i: number): WasmPallasGProjective;
-/**
-* @returns {Uint8Array}
-*/
-export function caml_pallas_endo_base(): Uint8Array;
-/**
-* @returns {Uint8Array}
-*/
-export function caml_pallas_endo_scalar(): Uint8Array;
-/**
-* @param {WasmPallasGProjective} x
-* @returns {WasmGPallas}
-*/
-export function caml_pallas_to_affine(x: WasmPallasGProjective): WasmGPallas;
-/**
-* @param {WasmGPallas} x
-* @returns {WasmPallasGProjective}
-*/
-export function caml_pallas_of_affine(x: WasmGPallas): WasmPallasGProjective;
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {WasmPallasGProjective}
-*/
-export function caml_pallas_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmPallasGProjective;
-/**
-* @param {WasmGPallas} x
-* @returns {WasmGPallas}
-*/
-export function caml_pallas_affine_deep_copy(x: WasmGPallas): WasmGPallas;
-/**
-* @param {Uint32Array} lgr_comm
-* @param {WasmFqPlonkVerifierIndex} index
-* @param {WasmFqProverProof} proof
-* @returns {WasmFqOracles}
-*/
-export function fq_oracles_create(lgr_comm: Uint32Array, index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): WasmFqOracles;
-/**
-* @returns {WasmFqOracles}
-*/
-export function fq_oracles_dummy(): WasmFqOracles;
-/**
-* @param {WasmFqProverProof} x
-* @returns {WasmFqProverProof}
-*/
-export function fq_oracles_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
-/**
-* @param {WasmPastaFpPlonkIndex} prover_index
-* @returns {string}
-*/
-export function prover_to_json(prover_index: WasmPastaFpPlonkIndex): string;
-/**
 * @param {string} name
 */
 export function greet(name: string): void;
@@ -1098,6 +969,135 @@ export function caml_pasta_fp_poseidon_block_cipher(state: Uint8Array): Uint8Arr
 * @returns {Uint8Array}
 */
 export function caml_pasta_fq_poseidon_block_cipher(state: Uint8Array): Uint8Array;
+/**
+* @returns {WasmFpGateVector}
+*/
+export function caml_pasta_fp_plonk_gate_vector_create(): WasmFpGateVector;
+/**
+* @param {WasmFpGateVector} v
+* @param {WasmFpGate} gate
+*/
+export function caml_pasta_fp_plonk_gate_vector_add(v: WasmFpGateVector, gate: WasmFpGate): void;
+/**
+* @param {WasmFpGateVector} v
+* @param {number} i
+* @returns {WasmFpGate}
+*/
+export function caml_pasta_fp_plonk_gate_vector_get(v: WasmFpGateVector, i: number): WasmFpGate;
+/**
+* @param {WasmFpGateVector} v
+* @returns {number}
+*/
+export function caml_pasta_fp_plonk_gate_vector_len(v: WasmFpGateVector): number;
+/**
+* @param {WasmFpGateVector} v
+* @param {Wire} t
+* @param {Wire} h
+*/
+export function caml_pasta_fp_plonk_gate_vector_wrap(v: WasmFpGateVector, t: Wire, h: Wire): void;
+/**
+* @param {number} public_input_size
+* @param {WasmFpGateVector} v
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fp_plonk_gate_vector_digest(public_input_size: number, v: WasmFpGateVector): Uint8Array;
+/**
+* @param {number} public_input_size
+* @param {WasmFpGateVector} v
+* @returns {string}
+*/
+export function caml_pasta_fp_plonk_circuit_serialize(public_input_size: number, v: WasmFpGateVector): string;
+/**
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_one(): WasmPallasGProjective;
+/**
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_add(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
+/**
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_sub(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
+/**
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_negate(x: WasmPallasGProjective): WasmPallasGProjective;
+/**
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_double(x: WasmPallasGProjective): WasmPallasGProjective;
+/**
+* @param {WasmPallasGProjective} x
+* @param {Uint8Array} y
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_scale(x: WasmPallasGProjective, y: Uint8Array): WasmPallasGProjective;
+/**
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_random(): WasmPallasGProjective;
+/**
+* @param {number} i
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_rng(i: number): WasmPallasGProjective;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_pallas_endo_base(): Uint8Array;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_pallas_endo_scalar(): Uint8Array;
+/**
+* @param {WasmPallasGProjective} x
+* @returns {WasmGPallas}
+*/
+export function caml_pallas_to_affine(x: WasmPallasGProjective): WasmGPallas;
+/**
+* @param {WasmGPallas} x
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_of_affine(x: WasmGPallas): WasmPallasGProjective;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmPallasGProjective;
+/**
+* @param {WasmGPallas} x
+* @returns {WasmGPallas}
+*/
+export function caml_pallas_affine_deep_copy(x: WasmGPallas): WasmGPallas;
+/**
+* @param {Uint32Array} lgr_comm
+* @param {WasmFqPlonkVerifierIndex} index
+* @param {WasmFqProverProof} proof
+* @returns {WasmFqOracles}
+*/
+export function fq_oracles_create(lgr_comm: Uint32Array, index: WasmFqPlonkVerifierIndex, proof: WasmFqProverProof): WasmFqOracles;
+/**
+* @returns {WasmFqOracles}
+*/
+export function fq_oracles_dummy(): WasmFqOracles;
+/**
+* @param {WasmFqProverProof} x
+* @returns {WasmFqProverProof}
+*/
+export function fq_oracles_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
+/**
+* @param {WasmPastaFpPlonkIndex} prover_index
+* @returns {string}
+*/
+export function prover_to_json(prover_index: WasmPastaFpPlonkIndex): string;
 /**
 * A row accessible from a given row, corresponds to the fact that we open all polynomials
 * at `zeta` **and** `omega * zeta`.
@@ -2888,78 +2888,6 @@ export interface InitOutput {
   readonly fp_oracles_create: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly fp_oracles_dummy: () => number;
   readonly fp_oracles_deep_copy: (a: number) => number;
-  readonly __wbg_wasmpallasgprojective_free: (a: number) => void;
-  readonly __wbg_wasmfpgatevector_free: (a: number) => void;
-  readonly __wbg_wasmfpgate_free: (a: number) => void;
-  readonly __wbg_get_wasmfpgate_typ: (a: number) => number;
-  readonly __wbg_set_wasmfpgate_typ: (a: number, b: number) => void;
-  readonly __wbg_get_wasmfpgate_wires: (a: number) => number;
-  readonly __wbg_set_wasmfpgate_wires: (a: number, b: number) => void;
-  readonly wasmfpgate_new: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_pasta_fp_plonk_gate_vector_create: () => number;
-  readonly caml_pasta_fp_plonk_gate_vector_add: (a: number, b: number) => void;
-  readonly caml_pasta_fp_plonk_gate_vector_get: (a: number, b: number) => number;
-  readonly caml_pasta_fp_plonk_gate_vector_len: (a: number) => number;
-  readonly caml_pasta_fp_plonk_gate_vector_wrap: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fp_plonk_gate_vector_digest: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fp_plonk_circuit_serialize: (a: number, b: number, c: number) => void;
-  readonly caml_pallas_one: () => number;
-  readonly caml_pallas_add: (a: number, b: number) => number;
-  readonly caml_pallas_sub: (a: number, b: number) => number;
-  readonly caml_pallas_negate: (a: number) => number;
-  readonly caml_pallas_double: (a: number) => number;
-  readonly caml_pallas_scale: (a: number, b: number, c: number) => number;
-  readonly caml_pallas_random: () => number;
-  readonly caml_pallas_rng: (a: number) => number;
-  readonly caml_pallas_endo_base: (a: number) => void;
-  readonly caml_pallas_endo_scalar: (a: number) => void;
-  readonly caml_pallas_to_affine: (a: number) => number;
-  readonly caml_pallas_of_affine: (a: number) => number;
-  readonly caml_pallas_of_affine_coordinates: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_pallas_affine_deep_copy: (a: number) => number;
-  readonly __wbg_wasmfqrandomoracles_free: (a: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_joint_combiner_chal: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_joint_combiner_chal: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_joint_combiner: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_joint_combiner: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_beta: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_beta: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_gamma: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_gamma: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_alpha_chal: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_alpha_chal: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_alpha: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_alpha: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_zeta: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_zeta: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_v: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_v: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_u: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_u: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_zeta_chal: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_zeta_chal: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_v_chal: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_v_chal: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqrandomoracles_u_chal: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqrandomoracles_u_chal: (a: number, b: number, c: number) => void;
-  readonly wasmfqrandomoracles_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number, s: number, t: number, u: number, v: number, w: number, x: number) => number;
-  readonly __wbg_wasmfqoracles_free: (a: number) => void;
-  readonly __wbg_get_wasmfqoracles_o: (a: number) => number;
-  readonly __wbg_set_wasmfqoracles_o: (a: number, b: number) => void;
-  readonly __wbg_get_wasmfqoracles_p_eval0: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqoracles_p_eval0: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqoracles_p_eval1: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqoracles_p_eval1: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqoracles_digest_before_evaluations: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqoracles_digest_before_evaluations: (a: number, b: number, c: number) => void;
-  readonly wasmfqoracles_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => number;
-  readonly wasmfqoracles_opening_prechallenges: (a: number, b: number) => void;
-  readonly wasmfqoracles_set_opening_prechallenges: (a: number, b: number, c: number) => void;
-  readonly fq_oracles_create: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly fq_oracles_dummy: () => number;
-  readonly fq_oracles_deep_copy: (a: number) => number;
-  readonly prover_to_json: (a: number, b: number) => void;
-  readonly __wbg_wasmvestagprojective_free: (a: number) => void;
   readonly __wbg_wasmvecvecfq_free: (a: number) => void;
   readonly wasmvecvecfq_create: (a: number) => number;
   readonly wasmvecvecfq_push: (a: number, b: number, c: number) => void;
@@ -3108,6 +3036,78 @@ export interface InitOutput {
   readonly poolbuilder_numThreads: (a: number) => number;
   readonly __wbg_wasmpastafpruntimetablecfg_free: (a: number) => void;
   readonly wasmvecvecfqpolycomm_create: (a: number) => number;
+  readonly __wbg_wasmpallasgprojective_free: (a: number) => void;
+  readonly __wbg_wasmfpgatevector_free: (a: number) => void;
+  readonly __wbg_wasmfpgate_free: (a: number) => void;
+  readonly __wbg_get_wasmfpgate_typ: (a: number) => number;
+  readonly __wbg_set_wasmfpgate_typ: (a: number, b: number) => void;
+  readonly __wbg_get_wasmfpgate_wires: (a: number) => number;
+  readonly __wbg_set_wasmfpgate_wires: (a: number, b: number) => void;
+  readonly wasmfpgate_new: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_pasta_fp_plonk_gate_vector_create: () => number;
+  readonly caml_pasta_fp_plonk_gate_vector_add: (a: number, b: number) => void;
+  readonly caml_pasta_fp_plonk_gate_vector_get: (a: number, b: number) => number;
+  readonly caml_pasta_fp_plonk_gate_vector_len: (a: number) => number;
+  readonly caml_pasta_fp_plonk_gate_vector_wrap: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_plonk_gate_vector_digest: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fp_plonk_circuit_serialize: (a: number, b: number, c: number) => void;
+  readonly caml_pallas_one: () => number;
+  readonly caml_pallas_add: (a: number, b: number) => number;
+  readonly caml_pallas_sub: (a: number, b: number) => number;
+  readonly caml_pallas_negate: (a: number) => number;
+  readonly caml_pallas_double: (a: number) => number;
+  readonly caml_pallas_scale: (a: number, b: number, c: number) => number;
+  readonly caml_pallas_random: () => number;
+  readonly caml_pallas_rng: (a: number) => number;
+  readonly caml_pallas_endo_base: (a: number) => void;
+  readonly caml_pallas_endo_scalar: (a: number) => void;
+  readonly caml_pallas_to_affine: (a: number) => number;
+  readonly caml_pallas_of_affine: (a: number) => number;
+  readonly caml_pallas_of_affine_coordinates: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_pallas_affine_deep_copy: (a: number) => number;
+  readonly __wbg_wasmfqrandomoracles_free: (a: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_joint_combiner_chal: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_joint_combiner_chal: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_joint_combiner: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_joint_combiner: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_beta: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_beta: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_gamma: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_gamma: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_alpha_chal: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_alpha_chal: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_alpha: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_alpha: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_zeta: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_zeta: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_v: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_v: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_u: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_u: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_zeta_chal: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_zeta_chal: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_v_chal: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_v_chal: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqrandomoracles_u_chal: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqrandomoracles_u_chal: (a: number, b: number, c: number) => void;
+  readonly wasmfqrandomoracles_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number, s: number, t: number, u: number, v: number, w: number, x: number) => number;
+  readonly __wbg_wasmfqoracles_free: (a: number) => void;
+  readonly __wbg_get_wasmfqoracles_o: (a: number) => number;
+  readonly __wbg_set_wasmfqoracles_o: (a: number, b: number) => void;
+  readonly __wbg_get_wasmfqoracles_p_eval0: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqoracles_p_eval0: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqoracles_p_eval1: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqoracles_p_eval1: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqoracles_digest_before_evaluations: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqoracles_digest_before_evaluations: (a: number, b: number, c: number) => void;
+  readonly wasmfqoracles_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => number;
+  readonly wasmfqoracles_opening_prechallenges: (a: number, b: number) => void;
+  readonly wasmfqoracles_set_opening_prechallenges: (a: number, b: number, c: number) => void;
+  readonly fq_oracles_create: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly fq_oracles_dummy: () => number;
+  readonly fq_oracles_deep_copy: (a: number) => number;
+  readonly prover_to_json: (a: number, b: number) => void;
+  readonly __wbg_wasmvestagprojective_free: (a: number) => void;
   readonly __wbg_wire_free: (a: number) => void;
   readonly __wbg_get_wire_row: (a: number) => number;
   readonly __wbg_set_wire_row: (a: number, b: number) => void;
@@ -3128,6 +3128,7 @@ export interface InitOutput {
   readonly __wbg_set_featureflags_rot: (a: number, b: number) => void;
   readonly __wbg_get_featureflags_lookup_features: (a: number) => number;
   readonly __wbg_set_featureflags_lookup_features: (a: number, b: number) => void;
+  readonly wire_create: (a: number, b: number) => number;
   readonly __wbg_lookuppatterns_free: (a: number) => void;
   readonly __wbg_get_lookuppatterns_xor: (a: number) => number;
   readonly __wbg_set_lookuppatterns_xor: (a: number, b: number) => void;
@@ -3154,7 +3155,6 @@ export interface InitOutput {
   readonly lookuppatterns_new: (a: number, b: number, c: number, d: number) => number;
   readonly lookupfeatures_new: (a: number, b: number, c: number) => number;
   readonly lookupinfo_new: (a: number, b: number, c: number) => number;
-  readonly wire_create: (a: number, b: number) => number;
   readonly memory: WebAssembly.Memory;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
