@@ -575,7 +575,7 @@ function affineDouble(
   // m = (3*x^2 + a) / 2y
   let d = inverse(2n * y, p);
   if (d === undefined) throw Error('impossible');
-  let m = mod(3n * x * x * d + a, p);
+  let m = mod((3n * x * x + a) * d, p);
   // x2 = m^2 - 2x
   let x2 = mod(m * m - 2n * x, p);
   // y2 = m*(x - x2) - y
