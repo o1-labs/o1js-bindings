@@ -28,7 +28,7 @@ export {
   projectiveToAffine,
   projectiveZero,
   projectiveAdd,
-  projectiveDouble,
+  getProjectiveDouble,
   projectiveNeg,
 };
 
@@ -195,7 +195,12 @@ function projectiveNeg({ x, y, z }: GroupProjective, p: bigint) {
   return { x, y: y === 0n ? 0n : p - y, z };
 }
 
-function projectiveAdd(g: GroupProjective, h: GroupProjective, p: bigint) {
+function projectiveAdd(
+  g: GroupProjective,
+  h: GroupProjective,
+  p: bigint,
+  a: bigint
+) {
   if (g.z === 0n) return h;
   if (h.z === 0n) return g;
   let X1 = g.x,
@@ -222,7 +227,7 @@ function projectiveAdd(g: GroupProjective, h: GroupProjective, p: bigint) {
   // H = 0 <==> x1 = X1/Z1^2 = X2/Z2^2 = x2 <==> degenerate case (Z3 would become 0)
   if (H === 0n) {
     // if S1 = S2 <==> y1 = y2, the points are equal, so we double instead
-    if (S1 === S2) return projectiveDouble(g, p);
+    if (S1 === S2) return projectiveDouble(g, p, a);
     // if S1 = -S2, the points are inverse, so return zero
     if (mod(S1 + S2, p) === 0n) return projectiveZero;
     throw Error('projectiveAdd: invalid point');
@@ -244,14 +249,18 @@ function projectiveAdd(g: GroupProjective, h: GroupProjective, p: bigint) {
   return { x: X3, y: Y3, z: Z3 };
 }
 
-function projectiveDouble(g: GroupProjective, p: bigint) {
+/**
+ * Projective doubling in Jacobian coordinates, specialized to a=0
+ *
+ * Cost: 2M + 5S
+ */
+function projectiveDoubleA0(g: GroupProjective, p: bigint) {
   if (g.z === 0n) return g;
   let X1 = g.x,
     Y1 = g.y,
     Z1 = g.z;
   if (Y1 === 0n) throw Error('projectiveDouble: unhandled case');
   // http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-0.html#doubling-dbl-2009-l
-  // !!! formula depends on a === 0 in the curve equation y^2 = x^3 + ax + b !!!
   // A = X1^2
   let A = mod(X1 * X1, p);
   // B = Y1^2
@@ -273,16 +282,74 @@ function projectiveDouble(g: GroupProjective, p: bigint) {
   return { x: X3, y: Y3, z: Z3 };
 }
 
-function projectiveSub(g: GroupProjective, h: GroupProjective, p: bigint) {
-  return projectiveAdd(g, projectiveNeg(h, p), p);
+/**
+ * Projective doubling in Jacobian coordinates, specialized to a=-3
+ *
+ * Cost: 3M + 5S
+ */
+function projectiveDoubleAminus3(g: GroupProjective, p: bigint) {
+  if (g.z === 0n) return g;
+  let X1 = g.x,
+    Y1 = g.y,
+    Z1 = g.z;
+  if (Y1 === 0n) throw Error('projectiveDouble: unhandled case');
+
+  // http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#doubling-dbl-2001-b
+  // delta = Z1^2
+  let delta = mod(Z1 * Z1, p);
+  // gamma = Y1^2
+  let gamma = mod(Y1 * Y1, p);
+  // beta = X1*gamma
+  let beta = mod(X1 * gamma, p);
+  // alpha = 3*(X1-delta)*(X1+delta)
+  let alpha = mod((X1 - delta) * (X1 + delta), p);
+  alpha = alpha + alpha + alpha;
+  // X3 = alpha^2-8*beta
+  let X3 = mod(alpha * alpha - 8n * beta, p);
+  // Z3 = (Y1+Z1)^2-gamma-delta
+  let Z3 = mod((Y1 + Z1) * (Y1 + Z1) - gamma - delta, p);
+  // Y3 = alpha*(4*beta-X3)-8*gamma^2
+  let Y3 = mod(alpha * (4n * beta - X3) - 8n * gamma * gamma, p);
+  return { x: X3, y: Y3, z: Z3 };
 }
 
-function projectiveScale(g: GroupProjective, x: bigint | boolean[], p: bigint) {
+function projectiveDouble(g: GroupProjective, p: bigint, a: bigint) {
+  if (a === 0n) return projectiveDoubleA0(g, p);
+  if (a + 3n === p) return projectiveDoubleAminus3(g, p);
+  throw Error(
+    'Projective doubling is not implemented for general curve parameter a, only a = 0 and a = -3'
+  );
+}
+
+function getProjectiveDouble(p: bigint, a: bigint) {
+  if (a === 0n) return projectiveDoubleA0;
+  if (a + 3n === p) return projectiveDoubleAminus3;
+  throw Error(
+    'Projective doubling is not implemented for general curve parameter a, only a = 0 and a = -3'
+  );
+}
+
+function projectiveSub(
+  g: GroupProjective,
+  h: GroupProjective,
+  p: bigint,
+  a: bigint
+) {
+  return projectiveAdd(g, projectiveNeg(h, p), p, a);
+}
+
+function projectiveScale(
+  g: GroupProjective,
+  x: bigint | boolean[],
+  p: bigint,
+  a: bigint
+) {
+  let double = getProjectiveDouble(p, a);
   let bits = typeof x === 'bigint' ? bigIntToBits(x) : x;
   let h = projectiveZero;
   for (let bit of bits) {
-    if (bit) h = projectiveAdd(h, g, p);
-    g = projectiveDouble(g, p);
+    if (bit) h = projectiveAdd(h, g, p, a);
+    g = double(g, p);
   }
   return h;
 }
@@ -328,20 +395,31 @@ function projectiveEqual(g: GroupProjective, h: GroupProjective, p: bigint) {
   return mod(g.y * hz3, p) === mod(h.y * gz3, p);
 }
 
-function projectiveOnCurve({ x, y, z }: GroupProjective, p: bigint, b: bigint) {
+function projectiveOnCurve(
+  { x, y, z }: GroupProjective,
+  p: bigint,
+  b: bigint,
+  a: bigint
+) {
   // substitution x -> x/z^2 and y -> y/z^3 gives
-  // the equation y^2 = x^3 + b*z^6
+  // the equation y^2 = x^3 + a*z^4 + b*z^6
   // (note: we allow a restricted set of x,y for z==0; this seems fine)
   let x3 = mod(mod(x * x, p) * x, p);
   let y2 = mod(y * y, p);
-  let z3 = mod(mod(z * z, p) * z, p);
-  let z6 = mod(z3 * z3, p);
-  return mod(y2 - x3 - b * z6, p) === 0n;
+  let z2 = mod(z * z, p);
+  let z4 = mod(z2 * z2, p);
+  let z6 = mod(z4 * z2, p);
+  return mod(y2 - x3 - a * x * z4 - b * z6, p) === 0n;
 }
 
 // checks whether the elliptic curve point g is in the subgroup defined by [order]g = 0
-function projectiveInSubgroup(g: GroupProjective, p: bigint, order: bigint) {
-  let orderTimesG = projectiveScale(g, order, p);
+function projectiveInSubgroup(
+  g: GroupProjective,
+  p: bigint,
+  order: bigint,
+  a: bigint
+) {
+  let orderTimesG = projectiveScale(g, order, p, a);
   return projectiveEqual(orderTimesG, projectiveZero, p);
 }
 
@@ -359,7 +437,7 @@ function createCurveProjective({
   endoBase,
   endoScalar,
 }: CurveParams) {
-  if (a !== 0n) throw Error('createCurveProjective only supports a = 0');
+  let double = getProjectiveDouble(p, a);
   cofactor ??= 1n;
   let hasCofactor = cofactor !== 1n;
   return {
@@ -369,6 +447,7 @@ function createCurveProjective({
     cofactor,
     zero: projectiveZero,
     one: { ...generator, z: 1n },
+    hasEndomorphism: endoBase !== undefined && endoScalar !== undefined,
     get endoBase() {
       if (endoBase === undefined)
         throw Error('`endoBase` for this curve was not provided.');
@@ -387,25 +466,25 @@ function createCurveProjective({
       return projectiveEqual(g, h, p);
     },
     isOnCurve(g: GroupProjective) {
-      return projectiveOnCurve(g, p, b);
+      return projectiveOnCurve(g, p, b, a);
     },
     isInSubgroup(g: GroupProjective) {
-      return projectiveInSubgroup(g, p, order);
+      return projectiveInSubgroup(g, p, order, a);
     },
     add(g: GroupProjective, h: GroupProjective) {
-      return projectiveAdd(g, h, p);
+      return projectiveAdd(g, h, p, a);
     },
     double(g: GroupProjective) {
-      return projectiveDouble(g, p);
+      return double(g, p);
     },
     negate(g: GroupProjective) {
       return projectiveNeg(g, p);
     },
     sub(g: GroupProjective, h: GroupProjective) {
-      return projectiveSub(g, h, p);
+      return projectiveSub(g, h, p, a);
     },
     scale(g: GroupProjective, s: bigint) {
-      return projectiveScale(g, s, p);
+      return projectiveScale(g, s, p, a);
     },
     endomorphism({ x, y, z }: GroupProjective) {
       if (endoBase === undefined)
@@ -458,7 +537,12 @@ function affineOnCurve(
   return mod(y * y - x * x2 - a * x - b, p) === 0n;
 }
 
-function affineAdd(g: GroupAffine, h: GroupAffine, p: bigint): GroupAffine {
+function affineAdd(
+  g: GroupAffine,
+  h: GroupAffine,
+  p: bigint,
+  a: bigint
+): GroupAffine {
   if (g.infinity) return h;
   if (h.infinity) return g;
 
@@ -467,7 +551,7 @@ function affineAdd(g: GroupAffine, h: GroupAffine, p: bigint): GroupAffine {
 
   if (x1 === x2) {
     // g + g --> we double
-    if (y1 === y2) return affineDouble(g, p);
+    if (y1 === y2) return affineDouble(g, p, a);
     // g - g --> return zero
     return affineZero;
   }
@@ -482,12 +566,16 @@ function affineAdd(g: GroupAffine, h: GroupAffine, p: bigint): GroupAffine {
   return { x: x3, y: y3, infinity: false };
 }
 
-function affineDouble({ x, y, infinity }: GroupAffine, p: bigint): GroupAffine {
+function affineDouble(
+  { x, y, infinity }: GroupAffine,
+  p: bigint,
+  a: bigint
+): GroupAffine {
   if (infinity) return affineZero;
-  // m = 3*x^2 / 2y
+  // m = (3*x^2 + a) / 2y
   let d = inverse(2n * y, p);
   if (d === undefined) throw Error('impossible');
-  let m = mod(3n * x * x * d, p);
+  let m = mod(3n * x * x * d + a, p);
   // x2 = m^2 - 2x
   let x2 = mod(m * m - 2n * x, p);
   // y2 = m*(x - x2) - y
@@ -500,9 +588,14 @@ function affineNegate({ x, y, infinity }: GroupAffine, p: bigint): GroupAffine {
   return { x, y: y === 0n ? 0n : p - y, infinity };
 }
 
-function affineScale(g: GroupAffine, s: bigint | boolean[], p: bigint) {
+function affineScale(
+  g: GroupAffine,
+  s: bigint | boolean[],
+  p: bigint,
+  a: bigint
+) {
   let gProj = projectiveFromAffine(g);
-  let sgProj = projectiveScale(gProj, s, p);
+  let sgProj = projectiveScale(gProj, s, p, a);
   return projectiveToAffine(sgProj, p);
 }
 
@@ -530,14 +623,12 @@ function createCurveAffine({
   endoScalar,
   endoBase,
 }: CurveParams) {
-  // TODO: lift this limitation by using other formulas (in projectiveScale) for a != 0
-  if (a !== 0n) throw Error('createCurveAffine only supports a = 0');
   let hasCofactor = cofactor !== undefined && cofactor !== 1n;
 
   const Field = createField(p);
   const Scalar = createField(order);
   const one = { ...generator, infinity: false };
-  const Endo = Endomorphism(name, Field, Scalar, one, endoScalar, endoBase);
+  const Endo = Endomorphism(Field, Scalar, one, a, endoScalar, endoBase);
 
   return {
     name,
@@ -593,22 +684,22 @@ function createCurveAffine({
       return affineOnCurve(g, p, a, b);
     },
     isInSubgroup(g: GroupAffine) {
-      return projectiveInSubgroup(projectiveFromAffine(g), p, order);
+      return projectiveInSubgroup(projectiveFromAffine(g), p, order, a);
     },
     add(g: GroupAffine, h: GroupAffine) {
-      return affineAdd(g, h, p);
+      return affineAdd(g, h, p, a);
     },
     double(g: GroupAffine) {
-      return affineDouble(g, p);
+      return affineDouble(g, p, a);
     },
     negate(g: GroupAffine) {
       return affineNegate(g, p);
     },
     sub(g: GroupAffine, h: GroupAffine) {
-      return affineAdd(g, affineNegate(h, p), p);
+      return affineAdd(g, affineNegate(h, p), p, a);
     },
     scale(g: GroupAffine, s: bigint | boolean[]) {
-      return affineScale(g, s, p);
+      return affineScale(g, s, p, a);
     },
   };
 }
