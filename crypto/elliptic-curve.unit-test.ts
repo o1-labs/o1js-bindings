@@ -1,15 +1,29 @@
-import { Pallas, Vesta } from './elliptic-curve.js';
+import {
+  createCurveAffine,
+  createCurveProjective,
+  Pallas,
+  Vesta,
+} from './elliptic-curve.js';
 import { Fp, Fq } from './finite-field.js';
 import assert from 'node:assert/strict';
 import { test, Random } from '../../lib/testing/property.js';
+import { CurveParams } from './elliptic-curve-examples.js';
 
 for (let [G, Field, Scalar] of [
   [Pallas, Fp, Fq] as const,
   [Vesta, Fq, Fp] as const,
+  curveWithFields(CurveParams.Secp256k1),
+  curveWithFields(CurveParams.Secp256r1),
 ]) {
   // endomorphism constants
-  assert.equal(Field.power(G.endoBase, 3n), 1n, 'cube root in base field');
-  assert.equal(Scalar.power(G.endoScalar, 3n), 1n, 'cube root in scalar field');
+  if (G.hasEndomorphism) {
+    assert.equal(Field.power(G.endoBase, 3n), 1n, 'cube root in base field');
+    assert.equal(
+      Scalar.power(G.endoScalar, 3n),
+      1n,
+      'cube root in scalar field'
+    );
+  }
 
   let randomScalar = Random(Scalar.random);
   let randomField = Random(Field.random);
@@ -34,17 +48,20 @@ for (let [G, Field, Scalar] of [
     (X, Y, Z, x, y, f) => {
       // check on curve
       assert(G.isOnCurve(X) && G.isOnCurve(Y) && G.isOnCurve(Z), 'on curve');
-      // can't be on curve because b=5 is a non-square
-      assert(!Field.isSquare(G.b));
-      assert(
-        !G.isOnCurve({ x: 0n, y, z: 1n }),
-        'x=0 => y^2 = b is not on curve'
-      );
-      // can't be on curve because the implied equation is f^6 = f^6 + b
-      assert(
-        !G.isOnCurve({ x: Field.power(f, 2n), y: Field.power(f, 3n), z: 1n }),
-        'x^3 = y^2 is not on curve'
-      );
+
+      if (G.a === 0n) {
+        // can't be on curve because b=5 is a non-square
+        assert(!Field.isSquare(G.b));
+        assert(
+          !G.isOnCurve({ x: 0n, y, z: 1n }),
+          'x=0 => y^2 = b is not on curve'
+        );
+        // can't be on curve because the implied equation is f^6 = f^6 + b
+        assert(
+          !G.isOnCurve({ x: Field.power(f, 2n), y: Field.power(f, 3n), z: 1n }),
+          'x^3 = y^2 is not on curve'
+        );
+      }
 
       // equal
       assert(G.equal(X, X), 'equal');
@@ -102,10 +119,12 @@ for (let [G, Field, Scalar] of [
       );
 
       // endomorphism
-      assert(
-        G.equal(G.endomorphism(X), G.scale(X, G.endoScalar)),
-        'efficient endomorphism'
-      );
+      if (G.hasEndomorphism) {
+        assert(
+          G.equal(G.endomorphism(X), G.scale(X, G.endoScalar)),
+          'efficient endomorphism'
+        );
+      }
 
       // subgroup
       assert(G.isInSubgroup(X), 'subgroup check');
@@ -119,9 +138,29 @@ for (let [G, Field, Scalar] of [
       let { x: xa, y: ya } = affineX;
       assert(
         G.equal(X, G.zero) ||
-          Field.square(ya) === Field.add(Field.power(xa, 3n), G.b),
+          Field.square(ya) ===
+            Field.add(Field.add(Field.power(xa, 3n), Field.mul(G.a, xa)), G.b),
         'affine on curve (or zero)'
       );
     }
   );
+}
+
+// helper
+
+function curveWithFields(params: CurveParams) {
+  // this computes endo constants if they aren't there from the beginning
+  let Affine = createCurveAffine(params);
+
+  if (Affine.hasEndomorphism) {
+    params = {
+      ...params,
+      endoBase: Affine.Endo.base,
+      endoScalar: Affine.Endo.scalar,
+    };
+  }
+  let Projective = createCurveProjective(params);
+
+  // return Curve, Field and Scalar
+  return [Projective, Affine.Field, Affine.Scalar] as const;
 }
