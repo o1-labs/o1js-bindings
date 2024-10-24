@@ -1,11 +1,18 @@
-import { Pallas, Vesta } from './elliptic-curve.js';
+import {
+  createCurveAffine,
+  createCurveProjective,
+  Pallas,
+  Vesta,
+} from './elliptic-curve.js';
 import { Fp, Fq } from './finite-field.js';
 import assert from 'node:assert/strict';
 import { test, Random } from '../../lib/testing/property.js';
+import { CurveParams } from './elliptic-curve-examples.js';
 
 for (let [G, Field, Scalar] of [
   [Pallas, Fp, Fq] as const,
   [Vesta, Fq, Fp] as const,
+  curveWithFields(CurveParams.Secp256k1),
 ]) {
   // endomorphism constants
   assert.equal(Field.power(G.endoBase, 3n), 1n, 'cube root in base field');
@@ -124,4 +131,20 @@ for (let [G, Field, Scalar] of [
       );
     }
   );
+}
+
+// helper
+
+function curveWithFields(params: CurveParams) {
+  // this computes endo constants if they aren't there from the beginning
+  let Affine = createCurveAffine(params);
+
+  let Projective = createCurveProjective({
+    ...params,
+    endoBase: Affine.Endo.base,
+    endoScalar: Affine.Endo.scalar,
+  });
+
+  // return Curve, Field and Scalar
+  return [Projective, Affine.Field, Affine.Scalar] as const;
 }
