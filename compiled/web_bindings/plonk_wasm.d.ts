@@ -11,177 +11,177 @@ export function caml_vesta_affine_one(): WasmGVesta;
 /**
 * @returns {number}
 */
-export function caml_pasta_fq_size_in_bits(): number;
+export function caml_pasta_fp_size_in_bits(): number;
 /**
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_size(): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_add(x: Uint8Array, y: Uint8Array): Uint8Array;
+export function caml_pasta_fp_size(): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_sub(x: Uint8Array, y: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_negate(x: Uint8Array): Uint8Array;
+export function caml_pasta_fp_add(x: Uint8Array, y: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_mul(x: Uint8Array, y: Uint8Array): Uint8Array;
+export function caml_pasta_fp_sub(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fp_negate(x: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_div(x: Uint8Array, y: Uint8Array): Uint8Array;
+export function caml_pasta_fp_mul(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fp_div(x: Uint8Array, y: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array | undefined}
 */
-export function caml_pasta_fq_inv(x: Uint8Array): Uint8Array | undefined;
+export function caml_pasta_fp_inv(x: Uint8Array): Uint8Array | undefined;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_square(x: Uint8Array): Uint8Array;
+export function caml_pasta_fp_square(x: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {boolean}
 */
-export function caml_pasta_fq_is_square(x: Uint8Array): boolean;
+export function caml_pasta_fp_is_square(x: Uint8Array): boolean;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array | undefined}
 */
-export function caml_pasta_fq_sqrt(x: Uint8Array): Uint8Array | undefined;
+export function caml_pasta_fp_sqrt(x: Uint8Array): Uint8Array | undefined;
 /**
 * @param {number} i
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_of_int(i: number): Uint8Array;
+export function caml_pasta_fp_of_int(i: number): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {string}
 */
-export function caml_pasta_fq_to_string(x: Uint8Array): string;
+export function caml_pasta_fp_to_string(x: Uint8Array): string;
 /**
 * @param {string} s
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_of_string(s: string): Uint8Array;
+export function caml_pasta_fp_of_string(s: string): Uint8Array;
 /**
 * @param {Uint8Array} x
 */
-export function caml_pasta_fq_print(x: Uint8Array): void;
+export function caml_pasta_fp_print(x: Uint8Array): void;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
 * @returns {number}
 */
-export function caml_pasta_fq_compare(x: Uint8Array, y: Uint8Array): number;
+export function caml_pasta_fp_compare(x: Uint8Array, y: Uint8Array): number;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
 * @returns {boolean}
 */
-export function caml_pasta_fq_equal(x: Uint8Array, y: Uint8Array): boolean;
+export function caml_pasta_fp_equal(x: Uint8Array, y: Uint8Array): boolean;
 /**
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_random(): Uint8Array;
+export function caml_pasta_fp_random(): Uint8Array;
 /**
 * @param {number} i
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_rng(i: number): Uint8Array;
+export function caml_pasta_fp_rng(i: number): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_to_bigint(x: Uint8Array): Uint8Array;
+export function caml_pasta_fp_to_bigint(x: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_of_bigint(x: Uint8Array): Uint8Array;
+export function caml_pasta_fp_of_bigint(x: Uint8Array): Uint8Array;
 /**
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_two_adic_root_of_unity(): Uint8Array;
+export function caml_pasta_fp_two_adic_root_of_unity(): Uint8Array;
 /**
 * @param {number} log2_size
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_domain_generator(log2_size: number): Uint8Array;
+export function caml_pasta_fp_domain_generator(log2_size: number): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_to_bytes(x: Uint8Array): Uint8Array;
+export function caml_pasta_fp_to_bytes(x: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_of_bytes(x: Uint8Array): Uint8Array;
+export function caml_pasta_fp_of_bytes(x: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-export function caml_pasta_fq_deep_copy(x: Uint8Array): Uint8Array;
+export function caml_pasta_fp_deep_copy(x: Uint8Array): Uint8Array;
 /**
 * @param {number | undefined} offset
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {string} path
-* @returns {WasmFqPlonkVerifierIndex}
+* @returns {WasmFpPlonkVerifierIndex}
 */
-export function caml_pasta_fq_plonk_verifier_index_read(offset: number | undefined, srs: WasmFqSrs, path: string): WasmFqPlonkVerifierIndex;
+export function caml_pasta_fp_plonk_verifier_index_read(offset: number | undefined, srs: WasmFpSrs, path: string): WasmFpPlonkVerifierIndex;
 /**
 * @param {boolean | undefined} append
-* @param {WasmFqPlonkVerifierIndex} index
+* @param {WasmFpPlonkVerifierIndex} index
 * @param {string} path
 */
-export function caml_pasta_fq_plonk_verifier_index_write(append: boolean | undefined, index: WasmFqPlonkVerifierIndex, path: string): void;
+export function caml_pasta_fp_plonk_verifier_index_write(append: boolean | undefined, index: WasmFpPlonkVerifierIndex, path: string): void;
 /**
-* @param {WasmFqPlonkVerifierIndex} index
+* @param {WasmFpPlonkVerifierIndex} index
 * @returns {string}
 */
-export function caml_pasta_fq_plonk_verifier_index_serialize(index: WasmFqPlonkVerifierIndex): string;
+export function caml_pasta_fp_plonk_verifier_index_serialize(index: WasmFpPlonkVerifierIndex): string;
 /**
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {string} index
-* @returns {WasmFqPlonkVerifierIndex}
+* @returns {WasmFpPlonkVerifierIndex}
 */
-export function caml_pasta_fq_plonk_verifier_index_deserialize(srs: WasmFqSrs, index: string): WasmFqPlonkVerifierIndex;
+export function caml_pasta_fp_plonk_verifier_index_deserialize(srs: WasmFpSrs, index: string): WasmFpPlonkVerifierIndex;
 /**
-* @param {WasmPastaFqPlonkIndex} index
-* @returns {WasmFqPlonkVerifierIndex}
+* @param {WasmPastaFpPlonkIndex} index
+* @returns {WasmFpPlonkVerifierIndex}
 */
-export function caml_pasta_fq_plonk_verifier_index_create(index: WasmPastaFqPlonkIndex): WasmFqPlonkVerifierIndex;
+export function caml_pasta_fp_plonk_verifier_index_create(index: WasmPastaFpPlonkIndex): WasmFpPlonkVerifierIndex;
 /**
 * @param {number} log2_size
-* @returns {WasmFqShifts}
+* @returns {WasmFpShifts}
 */
-export function caml_pasta_fq_plonk_verifier_index_shifts(log2_size: number): WasmFqShifts;
+export function caml_pasta_fp_plonk_verifier_index_shifts(log2_size: number): WasmFpShifts;
 /**
-* @returns {WasmFqPlonkVerifierIndex}
+* @returns {WasmFpPlonkVerifierIndex}
 */
-export function caml_pasta_fq_plonk_verifier_index_dummy(): WasmFqPlonkVerifierIndex;
+export function caml_pasta_fp_plonk_verifier_index_dummy(): WasmFpPlonkVerifierIndex;
 /**
-* @param {WasmFqPlonkVerifierIndex} x
-* @returns {WasmFqPlonkVerifierIndex}
+* @param {WasmFpPlonkVerifierIndex} x
+* @returns {WasmFpPlonkVerifierIndex}
 */
-export function caml_pasta_fq_plonk_verifier_index_deep_copy(x: WasmFqPlonkVerifierIndex): WasmFqPlonkVerifierIndex;
+export function caml_pasta_fp_plonk_verifier_index_deep_copy(x: WasmFpPlonkVerifierIndex): WasmFpPlonkVerifierIndex;
 /**
 * @param {number} depth
 * @returns {WasmFpSrs}
@@ -436,177 +436,177 @@ export function caml_bigint_256_deep_copy(x: Uint8Array): Uint8Array;
 /**
 * @returns {number}
 */
-export function caml_pasta_fp_size_in_bits(): number;
+export function caml_pasta_fq_size_in_bits(): number;
 /**
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_size(): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fp_add(x: Uint8Array, y: Uint8Array): Uint8Array;
+export function caml_pasta_fq_size(): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_sub(x: Uint8Array, y: Uint8Array): Uint8Array;
-/**
-* @param {Uint8Array} x
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fp_negate(x: Uint8Array): Uint8Array;
+export function caml_pasta_fq_add(x: Uint8Array, y: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_mul(x: Uint8Array, y: Uint8Array): Uint8Array;
+export function caml_pasta_fq_sub(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_negate(x: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_div(x: Uint8Array, y: Uint8Array): Uint8Array;
+export function caml_pasta_fq_mul(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_div(x: Uint8Array, y: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array | undefined}
 */
-export function caml_pasta_fp_inv(x: Uint8Array): Uint8Array | undefined;
+export function caml_pasta_fq_inv(x: Uint8Array): Uint8Array | undefined;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_square(x: Uint8Array): Uint8Array;
+export function caml_pasta_fq_square(x: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {boolean}
 */
-export function caml_pasta_fp_is_square(x: Uint8Array): boolean;
+export function caml_pasta_fq_is_square(x: Uint8Array): boolean;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array | undefined}
 */
-export function caml_pasta_fp_sqrt(x: Uint8Array): Uint8Array | undefined;
+export function caml_pasta_fq_sqrt(x: Uint8Array): Uint8Array | undefined;
 /**
 * @param {number} i
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_of_int(i: number): Uint8Array;
+export function caml_pasta_fq_of_int(i: number): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {string}
 */
-export function caml_pasta_fp_to_string(x: Uint8Array): string;
+export function caml_pasta_fq_to_string(x: Uint8Array): string;
 /**
 * @param {string} s
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_of_string(s: string): Uint8Array;
+export function caml_pasta_fq_of_string(s: string): Uint8Array;
 /**
 * @param {Uint8Array} x
 */
-export function caml_pasta_fp_print(x: Uint8Array): void;
+export function caml_pasta_fq_print(x: Uint8Array): void;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
 * @returns {number}
 */
-export function caml_pasta_fp_compare(x: Uint8Array, y: Uint8Array): number;
+export function caml_pasta_fq_compare(x: Uint8Array, y: Uint8Array): number;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
 * @returns {boolean}
 */
-export function caml_pasta_fp_equal(x: Uint8Array, y: Uint8Array): boolean;
+export function caml_pasta_fq_equal(x: Uint8Array, y: Uint8Array): boolean;
 /**
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_random(): Uint8Array;
+export function caml_pasta_fq_random(): Uint8Array;
 /**
 * @param {number} i
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_rng(i: number): Uint8Array;
+export function caml_pasta_fq_rng(i: number): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_to_bigint(x: Uint8Array): Uint8Array;
+export function caml_pasta_fq_to_bigint(x: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_of_bigint(x: Uint8Array): Uint8Array;
+export function caml_pasta_fq_of_bigint(x: Uint8Array): Uint8Array;
 /**
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_two_adic_root_of_unity(): Uint8Array;
+export function caml_pasta_fq_two_adic_root_of_unity(): Uint8Array;
 /**
 * @param {number} log2_size
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_domain_generator(log2_size: number): Uint8Array;
+export function caml_pasta_fq_domain_generator(log2_size: number): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_to_bytes(x: Uint8Array): Uint8Array;
+export function caml_pasta_fq_to_bytes(x: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_of_bytes(x: Uint8Array): Uint8Array;
+export function caml_pasta_fq_of_bytes(x: Uint8Array): Uint8Array;
 /**
 * @param {Uint8Array} x
 * @returns {Uint8Array}
 */
-export function caml_pasta_fp_deep_copy(x: Uint8Array): Uint8Array;
+export function caml_pasta_fq_deep_copy(x: Uint8Array): Uint8Array;
 /**
 * @param {number | undefined} offset
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {string} path
-* @returns {WasmFpPlonkVerifierIndex}
+* @returns {WasmFqPlonkVerifierIndex}
 */
-export function caml_pasta_fp_plonk_verifier_index_read(offset: number | undefined, srs: WasmFpSrs, path: string): WasmFpPlonkVerifierIndex;
+export function caml_pasta_fq_plonk_verifier_index_read(offset: number | undefined, srs: WasmFqSrs, path: string): WasmFqPlonkVerifierIndex;
 /**
 * @param {boolean | undefined} append
-* @param {WasmFpPlonkVerifierIndex} index
+* @param {WasmFqPlonkVerifierIndex} index
 * @param {string} path
 */
-export function caml_pasta_fp_plonk_verifier_index_write(append: boolean | undefined, index: WasmFpPlonkVerifierIndex, path: string): void;
+export function caml_pasta_fq_plonk_verifier_index_write(append: boolean | undefined, index: WasmFqPlonkVerifierIndex, path: string): void;
 /**
-* @param {WasmFpPlonkVerifierIndex} index
+* @param {WasmFqPlonkVerifierIndex} index
 * @returns {string}
 */
-export function caml_pasta_fp_plonk_verifier_index_serialize(index: WasmFpPlonkVerifierIndex): string;
+export function caml_pasta_fq_plonk_verifier_index_serialize(index: WasmFqPlonkVerifierIndex): string;
 /**
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {string} index
-* @returns {WasmFpPlonkVerifierIndex}
+* @returns {WasmFqPlonkVerifierIndex}
 */
-export function caml_pasta_fp_plonk_verifier_index_deserialize(srs: WasmFpSrs, index: string): WasmFpPlonkVerifierIndex;
+export function caml_pasta_fq_plonk_verifier_index_deserialize(srs: WasmFqSrs, index: string): WasmFqPlonkVerifierIndex;
 /**
-* @param {WasmPastaFpPlonkIndex} index
-* @returns {WasmFpPlonkVerifierIndex}
+* @param {WasmPastaFqPlonkIndex} index
+* @returns {WasmFqPlonkVerifierIndex}
 */
-export function caml_pasta_fp_plonk_verifier_index_create(index: WasmPastaFpPlonkIndex): WasmFpPlonkVerifierIndex;
+export function caml_pasta_fq_plonk_verifier_index_create(index: WasmPastaFqPlonkIndex): WasmFqPlonkVerifierIndex;
 /**
 * @param {number} log2_size
-* @returns {WasmFpShifts}
+* @returns {WasmFqShifts}
 */
-export function caml_pasta_fp_plonk_verifier_index_shifts(log2_size: number): WasmFpShifts;
+export function caml_pasta_fq_plonk_verifier_index_shifts(log2_size: number): WasmFqShifts;
 /**
-* @returns {WasmFpPlonkVerifierIndex}
+* @returns {WasmFqPlonkVerifierIndex}
 */
-export function caml_pasta_fp_plonk_verifier_index_dummy(): WasmFpPlonkVerifierIndex;
+export function caml_pasta_fq_plonk_verifier_index_dummy(): WasmFqPlonkVerifierIndex;
 /**
-* @param {WasmFpPlonkVerifierIndex} x
-* @returns {WasmFpPlonkVerifierIndex}
+* @param {WasmFqPlonkVerifierIndex} x
+* @returns {WasmFqPlonkVerifierIndex}
 */
-export function caml_pasta_fp_plonk_verifier_index_deep_copy(x: WasmFpPlonkVerifierIndex): WasmFpPlonkVerifierIndex;
+export function caml_pasta_fq_plonk_verifier_index_deep_copy(x: WasmFqPlonkVerifierIndex): WasmFqPlonkVerifierIndex;
 /**
 * @returns {WasmVestaGProjective}
 */
@@ -2464,240 +2464,6 @@ export interface InitOutput {
   readonly __wbg_wasmgvesta_free: (a: number) => void;
   readonly __wbg_set_wasmgvesta_infinity: (a: number, b: number) => void;
   readonly __wbg_get_wasmgvesta_infinity: (a: number) => number;
-  readonly caml_pasta_fq_size_in_bits: () => number;
-  readonly caml_pasta_fq_size: (a: number) => void;
-  readonly caml_pasta_fq_add: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fq_sub: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fq_negate: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_mul: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fq_div: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fq_inv: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_square: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_is_square: (a: number, b: number) => number;
-  readonly caml_pasta_fq_sqrt: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_of_int: (a: number, b: number) => void;
-  readonly caml_pasta_fq_to_string: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_of_string: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_print: (a: number, b: number) => void;
-  readonly caml_pasta_fq_compare: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_pasta_fq_equal: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_pasta_fq_random: (a: number) => void;
-  readonly caml_pasta_fq_rng: (a: number, b: number) => void;
-  readonly caml_pasta_fq_to_bigint: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_of_bigint: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_two_adic_root_of_unity: (a: number) => void;
-  readonly caml_pasta_fq_domain_generator: (a: number, b: number) => void;
-  readonly caml_pasta_fq_to_bytes: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_of_bytes: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_deep_copy: (a: number, b: number, c: number) => void;
-  readonly __wbg_wasmfqdomain_free: (a: number) => void;
-  readonly __wbg_get_wasmfqdomain_log_size_of_group: (a: number) => number;
-  readonly __wbg_set_wasmfqdomain_log_size_of_group: (a: number, b: number) => void;
-  readonly __wbg_get_wasmfqdomain_group_gen: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqdomain_group_gen: (a: number, b: number, c: number) => void;
-  readonly wasmfqdomain_new: (a: number, b: number, c: number) => number;
-  readonly __wbg_wasmfqplonkverificationevals_free: (a: number) => void;
-  readonly wasmfqplonkverificationevals_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number) => number;
-  readonly wasmfqplonkverificationevals_sigma_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_set_sigma_comm: (a: number, b: number, c: number) => void;
-  readonly wasmfqplonkverificationevals_coefficients_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_set_coefficients_comm: (a: number, b: number, c: number) => void;
-  readonly wasmfqplonkverificationevals_generic_comm: (a: number) => number;
-  readonly wasmfqplonkverificationevals_set_generic_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_psm_comm: (a: number) => number;
-  readonly wasmfqplonkverificationevals_set_psm_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_complete_add_comm: (a: number) => number;
-  readonly wasmfqplonkverificationevals_set_complete_add_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_mul_comm: (a: number) => number;
-  readonly wasmfqplonkverificationevals_set_mul_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_emul_comm: (a: number) => number;
-  readonly wasmfqplonkverificationevals_set_emul_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_endomul_scalar_comm: (a: number) => number;
-  readonly wasmfqplonkverificationevals_set_endomul_scalar_comm: (a: number, b: number) => void;
-  readonly __wbg_wasmfqshifts_free: (a: number) => void;
-  readonly __wbg_get_wasmfqshifts_s1: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqshifts_s1: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqshifts_s2: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqshifts_s2: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqshifts_s3: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqshifts_s3: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqshifts_s4: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqshifts_s4: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqshifts_s5: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqshifts_s5: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqshifts_s6: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqshifts_s6: (a: number, b: number, c: number) => void;
-  readonly wasmfqshifts_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number) => number;
-  readonly __wbg_wasmfqlookupselectors_free: (a: number) => void;
-  readonly wasmfqlookupselectors_new: (a: number, b: number, c: number, d: number) => number;
-  readonly wasmfqlookupselectors_xor: (a: number) => number;
-  readonly wasmfqlookupselectors_set_xor: (a: number, b: number) => void;
-  readonly wasmfqlookupselectors_lookup: (a: number) => number;
-  readonly wasmfqlookupselectors_set_lookup: (a: number, b: number) => void;
-  readonly wasmfqlookupselectors_ffmul: (a: number) => number;
-  readonly wasmfqlookupselectors_set_ffmul: (a: number, b: number) => void;
-  readonly wasmfqlookupselectors_range_check: (a: number) => number;
-  readonly wasmfqlookupselectors_set_range_check: (a: number, b: number) => void;
-  readonly __wbg_wasmfqlookupverifierindex_free: (a: number) => void;
-  readonly __wbg_get_wasmfqlookupverifierindex_joint_lookup_used: (a: number) => number;
-  readonly __wbg_set_wasmfqlookupverifierindex_joint_lookup_used: (a: number, b: number) => void;
-  readonly wasmfqlookupverifierindex_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
-  readonly wasmfqlookupverifierindex_lookup_table: (a: number, b: number) => void;
-  readonly wasmfqlookupverifierindex_set_lookup_table: (a: number, b: number, c: number) => void;
-  readonly wasmfqlookupverifierindex_lookup_selectors: (a: number) => number;
-  readonly wasmfqlookupverifierindex_set_lookup_selectors: (a: number, b: number) => void;
-  readonly wasmfqlookupverifierindex_table_ids: (a: number) => number;
-  readonly wasmfqlookupverifierindex_set_table_ids: (a: number, b: number) => void;
-  readonly wasmfqlookupverifierindex_lookup_info: (a: number) => number;
-  readonly wasmfqlookupverifierindex_set_lookup_info: (a: number, b: number) => void;
-  readonly wasmfqlookupverifierindex_runtime_tables_selector: (a: number) => number;
-  readonly wasmfqlookupverifierindex_set_runtime_tables_selector: (a: number, b: number) => void;
-  readonly __wbg_wasmfqplonkverifierindex_free: (a: number) => void;
-  readonly __wbg_get_wasmfqplonkverifierindex_domain: (a: number) => number;
-  readonly __wbg_set_wasmfqplonkverifierindex_domain: (a: number, b: number) => void;
-  readonly __wbg_get_wasmfqplonkverifierindex_max_poly_size: (a: number) => number;
-  readonly __wbg_set_wasmfqplonkverifierindex_max_poly_size: (a: number, b: number) => void;
-  readonly __wbg_get_wasmfqplonkverifierindex_public_: (a: number) => number;
-  readonly __wbg_set_wasmfqplonkverifierindex_public_: (a: number, b: number) => void;
-  readonly __wbg_get_wasmfqplonkverifierindex_prev_challenges: (a: number) => number;
-  readonly __wbg_set_wasmfqplonkverifierindex_prev_challenges: (a: number, b: number) => void;
-  readonly __wbg_get_wasmfqplonkverifierindex_shifts: (a: number) => number;
-  readonly __wbg_set_wasmfqplonkverifierindex_shifts: (a: number, b: number) => void;
-  readonly __wbg_get_wasmfqplonkverifierindex_zk_rows: (a: number) => number;
-  readonly __wbg_set_wasmfqplonkverifierindex_zk_rows: (a: number, b: number) => void;
-  readonly wasmfqplonkverifierindex_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => number;
-  readonly wasmfqplonkverifierindex_srs: (a: number) => number;
-  readonly wasmfqplonkverifierindex_set_srs: (a: number, b: number) => void;
-  readonly wasmfqplonkverifierindex_evals: (a: number) => number;
-  readonly wasmfqplonkverifierindex_set_evals: (a: number, b: number) => void;
-  readonly wasmfqplonkverifierindex_lookup_index: (a: number) => number;
-  readonly wasmfqplonkverifierindex_set_lookup_index: (a: number, b: number) => void;
-  readonly caml_pasta_fq_plonk_verifier_index_read: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
-  readonly caml_pasta_fq_plonk_verifier_index_write: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fq_plonk_verifier_index_serialize: (a: number, b: number) => void;
-  readonly caml_pasta_fq_plonk_verifier_index_deserialize: (a: number, b: number, c: number, d: number) => void;
-  readonly caml_pasta_fq_plonk_verifier_index_create: (a: number) => number;
-  readonly caml_pasta_fq_plonk_verifier_index_shifts: (a: number) => number;
-  readonly caml_pasta_fq_plonk_verifier_index_dummy: () => number;
-  readonly caml_pasta_fq_plonk_verifier_index_deep_copy: (a: number) => number;
-  readonly wasmfqplonkverificationevals_set_range_check0_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_set_foreign_field_add_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_set_range_check1_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_set_foreign_field_mul_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_set_rot_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_range_check0_comm: (a: number) => number;
-  readonly wasmfqplonkverificationevals_foreign_field_add_comm: (a: number) => number;
-  readonly wasmfqplonkverificationevals_range_check1_comm: (a: number) => number;
-  readonly wasmfqplonkverificationevals_foreign_field_mul_comm: (a: number) => number;
-  readonly wasmfqplonkverificationevals_rot_comm: (a: number) => number;
-  readonly __wbg_get_wasmfqshifts_s0: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_set_xor_comm: (a: number, b: number) => void;
-  readonly wasmfqplonkverificationevals_xor_comm: (a: number) => number;
-  readonly __wbg_set_wasmfqshifts_s0: (a: number, b: number, c: number) => void;
-  readonly __wbg_wasmfpsrs_free: (a: number) => void;
-  readonly caml_fp_srs_create: (a: number) => number;
-  readonly caml_fp_srs_add_lagrange_basis: (a: number, b: number) => void;
-  readonly caml_fp_srs_write: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_fp_srs_read: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_fp_srs_lagrange_commitment: (a: number, b: number, c: number, d: number) => void;
-  readonly caml_fp_srs_commit_evaluations: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_fp_srs_b_poly_commitment: (a: number, b: number, c: number, d: number) => void;
-  readonly caml_fp_srs_batch_accumulator_check: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly caml_fp_srs_batch_accumulator_generate: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_fp_srs_h: (a: number) => number;
-  readonly caml_fp_srs_create_parallel: (a: number) => number;
-  readonly caml_fp_srs_get: (a: number, b: number) => void;
-  readonly caml_fp_srs_set: (a: number, b: number) => number;
-  readonly caml_fp_srs_maybe_lagrange_commitment: (a: number, b: number, c: number) => number;
-  readonly caml_fp_srs_set_lagrange_basis: (a: number, b: number, c: number, d: number) => void;
-  readonly caml_fp_srs_get_lagrange_basis: (a: number, b: number, c: number) => void;
-  readonly __wbg_wasmpastafpplonkindex_free: (a: number) => void;
-  readonly __wbg_wasmpastafplookuptable_free: (a: number) => void;
-  readonly wasmpastafplookuptable_new: (a: number, b: number) => number;
-  readonly __wbg_wasmpastafpruntimetablecfg_free: (a: number) => void;
-  readonly wasmpastafpruntimetablecfg_new: (a: number, b: number, c: number) => number;
-  readonly caml_pasta_fp_plonk_index_create: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
-  readonly caml_pasta_fp_plonk_index_max_degree: (a: number) => number;
-  readonly caml_pasta_fp_plonk_index_public_inputs: (a: number) => number;
-  readonly caml_pasta_fp_plonk_index_domain_d1_size: (a: number) => number;
-  readonly caml_pasta_fp_plonk_index_domain_d4_size: (a: number) => number;
-  readonly caml_pasta_fp_plonk_index_domain_d8_size: (a: number) => number;
-  readonly caml_pasta_fp_plonk_index_decode: (a: number, b: number, c: number, d: number) => void;
-  readonly caml_pasta_fp_plonk_index_encode: (a: number, b: number) => void;
-  readonly caml_pasta_fp_plonk_index_read: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
-  readonly caml_pasta_fp_plonk_index_write: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_pasta_fp_plonk_index_serialize: (a: number, b: number) => void;
-  readonly __wbg_wasmfqlookupcommitments_free: (a: number) => void;
-  readonly wasmfqlookupcommitments_new: (a: number, b: number, c: number, d: number) => number;
-  readonly wasmfqlookupcommitments_sorted: (a: number, b: number) => void;
-  readonly wasmfqlookupcommitments_aggreg: (a: number) => number;
-  readonly wasmfqlookupcommitments_runtime: (a: number) => number;
-  readonly wasmfqlookupcommitments_set_sorted: (a: number, b: number, c: number) => void;
-  readonly wasmfqlookupcommitments_set_aggreg: (a: number, b: number) => void;
-  readonly wasmfqlookupcommitments_set_runtime: (a: number, b: number) => void;
-  readonly __wbg_wasmfqprovercommitments_free: (a: number) => void;
-  readonly wasmfqprovercommitments_new: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly wasmfqprovercommitments_w_comm: (a: number, b: number) => void;
-  readonly wasmfqprovercommitments_z_comm: (a: number) => number;
-  readonly wasmfqprovercommitments_t_comm: (a: number) => number;
-  readonly wasmfqprovercommitments_lookup: (a: number) => number;
-  readonly wasmfqprovercommitments_set_w_comm: (a: number, b: number, c: number) => void;
-  readonly wasmfqprovercommitments_set_z_comm: (a: number, b: number) => void;
-  readonly wasmfqprovercommitments_set_t_comm: (a: number, b: number) => void;
-  readonly wasmfqprovercommitments_set_lookup: (a: number, b: number) => void;
-  readonly __wbg_wasmfqopeningproof_free: (a: number) => void;
-  readonly __wbg_get_wasmfqopeningproof_z1: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqopeningproof_z1: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_wasmfqopeningproof_z2: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqopeningproof_z2: (a: number, b: number, c: number) => void;
-  readonly wasmfqopeningproof_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => number;
-  readonly wasmfqopeningproof_lr_0: (a: number, b: number) => void;
-  readonly wasmfqopeningproof_lr_1: (a: number, b: number) => void;
-  readonly wasmfqopeningproof_delta: (a: number) => number;
-  readonly wasmfqopeningproof_sg: (a: number) => number;
-  readonly wasmfqopeningproof_set_lr_0: (a: number, b: number, c: number) => void;
-  readonly wasmfqopeningproof_set_lr_1: (a: number, b: number, c: number) => void;
-  readonly wasmfqopeningproof_set_delta: (a: number, b: number) => void;
-  readonly wasmfqopeningproof_set_sg: (a: number, b: number) => void;
-  readonly __wbg_wasmfqproverproof_free: (a: number) => void;
-  readonly __wbg_get_wasmfqproverproof_ft_eval1: (a: number, b: number) => void;
-  readonly __wbg_set_wasmfqproverproof_ft_eval1: (a: number, b: number, c: number) => void;
-  readonly wasmfqproverproof_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => number;
-  readonly wasmfqproverproof_commitments: (a: number) => number;
-  readonly wasmfqproverproof_proof: (a: number) => number;
-  readonly wasmfqproverproof_evals: (a: number) => number;
-  readonly wasmfqproverproof_public_: (a: number, b: number) => void;
-  readonly wasmfqproverproof_prev_challenges_scalars: (a: number) => number;
-  readonly wasmfqproverproof_prev_challenges_comms: (a: number, b: number) => void;
-  readonly wasmfqproverproof_set_commitments: (a: number, b: number) => void;
-  readonly wasmfqproverproof_set_proof: (a: number, b: number) => void;
-  readonly wasmfqproverproof_set_evals: (a: number, b: number) => void;
-  readonly wasmfqproverproof_set_public_: (a: number, b: number, c: number) => void;
-  readonly wasmfqproverproof_set_prev_challenges_scalars: (a: number, b: number) => void;
-  readonly wasmfqproverproof_set_prev_challenges_comms: (a: number, b: number, c: number) => void;
-  readonly wasmfqproverproof_serialize: (a: number, b: number) => void;
-  readonly __wbg_wasmfqruntimetable_free: (a: number) => void;
-  readonly wasmfqruntimetable_new: (a: number, b: number, c: number) => number;
-  readonly caml_pasta_fq_plonk_proof_create: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
-  readonly caml_pasta_fq_plonk_proof_verify: (a: number, b: number) => number;
-  readonly __wbg_wasmvecvecfqpolycomm_free: (a: number) => void;
-  readonly wasmvecvecfqpolycomm_create: (a: number) => number;
-  readonly wasmvecvecfqpolycomm_push: (a: number, b: number, c: number) => void;
-  readonly caml_pasta_fq_plonk_proof_batch_verify: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_pasta_fq_plonk_proof_dummy: () => number;
-  readonly caml_pasta_fq_plonk_proof_deep_copy: (a: number) => number;
-  readonly caml_bigint_256_of_numeral: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_bigint_256_of_decimal_string: (a: number, b: number, c: number) => void;
-  readonly caml_bigint_256_num_limbs: () => number;
-  readonly caml_bigint_256_bytes_per_limb: () => number;
-  readonly caml_bigint_256_div: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly caml_bigint_256_compare: (a: number, b: number, c: number, d: number) => number;
-  readonly caml_bigint_256_print: (a: number, b: number) => void;
-  readonly caml_bigint_256_to_string: (a: number, b: number, c: number) => void;
-  readonly caml_bigint_256_test_bit: (a: number, b: number, c: number) => number;
-  readonly caml_bigint_256_to_bytes: (a: number, b: number, c: number) => void;
-  readonly caml_bigint_256_of_bytes: (a: number, b: number, c: number) => void;
-  readonly caml_bigint_256_deep_copy: (a: number, b: number, c: number) => void;
   readonly caml_pasta_fp_size_in_bits: () => number;
   readonly caml_pasta_fp_size: (a: number) => void;
   readonly caml_pasta_fp_add: (a: number, b: number, c: number, d: number, e: number) => void;
@@ -2828,6 +2594,240 @@ export interface InitOutput {
   readonly wasmfpplonkverificationevals_set_xor_comm: (a: number, b: number) => void;
   readonly wasmfpplonkverificationevals_xor_comm: (a: number) => number;
   readonly __wbg_set_wasmfpshifts_s0: (a: number, b: number, c: number) => void;
+  readonly __wbg_wasmfpsrs_free: (a: number) => void;
+  readonly caml_fp_srs_create: (a: number) => number;
+  readonly caml_fp_srs_add_lagrange_basis: (a: number, b: number) => void;
+  readonly caml_fp_srs_write: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_fp_srs_read: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_fp_srs_lagrange_commitment: (a: number, b: number, c: number, d: number) => void;
+  readonly caml_fp_srs_commit_evaluations: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_fp_srs_b_poly_commitment: (a: number, b: number, c: number, d: number) => void;
+  readonly caml_fp_srs_batch_accumulator_check: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly caml_fp_srs_batch_accumulator_generate: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_fp_srs_h: (a: number) => number;
+  readonly caml_fp_srs_create_parallel: (a: number) => number;
+  readonly caml_fp_srs_get: (a: number, b: number) => void;
+  readonly caml_fp_srs_set: (a: number, b: number) => number;
+  readonly caml_fp_srs_maybe_lagrange_commitment: (a: number, b: number, c: number) => number;
+  readonly caml_fp_srs_set_lagrange_basis: (a: number, b: number, c: number, d: number) => void;
+  readonly caml_fp_srs_get_lagrange_basis: (a: number, b: number, c: number) => void;
+  readonly __wbg_wasmpastafpplonkindex_free: (a: number) => void;
+  readonly __wbg_wasmpastafplookuptable_free: (a: number) => void;
+  readonly wasmpastafplookuptable_new: (a: number, b: number) => number;
+  readonly __wbg_wasmpastafpruntimetablecfg_free: (a: number) => void;
+  readonly wasmpastafpruntimetablecfg_new: (a: number, b: number, c: number) => number;
+  readonly caml_pasta_fp_plonk_index_create: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
+  readonly caml_pasta_fp_plonk_index_max_degree: (a: number) => number;
+  readonly caml_pasta_fp_plonk_index_public_inputs: (a: number) => number;
+  readonly caml_pasta_fp_plonk_index_domain_d1_size: (a: number) => number;
+  readonly caml_pasta_fp_plonk_index_domain_d4_size: (a: number) => number;
+  readonly caml_pasta_fp_plonk_index_domain_d8_size: (a: number) => number;
+  readonly caml_pasta_fp_plonk_index_decode: (a: number, b: number, c: number, d: number) => void;
+  readonly caml_pasta_fp_plonk_index_encode: (a: number, b: number) => void;
+  readonly caml_pasta_fp_plonk_index_read: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
+  readonly caml_pasta_fp_plonk_index_write: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fp_plonk_index_serialize: (a: number, b: number) => void;
+  readonly __wbg_wasmfqlookupcommitments_free: (a: number) => void;
+  readonly wasmfqlookupcommitments_new: (a: number, b: number, c: number, d: number) => number;
+  readonly wasmfqlookupcommitments_sorted: (a: number, b: number) => void;
+  readonly wasmfqlookupcommitments_aggreg: (a: number) => number;
+  readonly wasmfqlookupcommitments_runtime: (a: number) => number;
+  readonly wasmfqlookupcommitments_set_sorted: (a: number, b: number, c: number) => void;
+  readonly wasmfqlookupcommitments_set_aggreg: (a: number, b: number) => void;
+  readonly wasmfqlookupcommitments_set_runtime: (a: number, b: number) => void;
+  readonly __wbg_wasmfqprovercommitments_free: (a: number) => void;
+  readonly wasmfqprovercommitments_new: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly wasmfqprovercommitments_w_comm: (a: number, b: number) => void;
+  readonly wasmfqprovercommitments_z_comm: (a: number) => number;
+  readonly wasmfqprovercommitments_t_comm: (a: number) => number;
+  readonly wasmfqprovercommitments_lookup: (a: number) => number;
+  readonly wasmfqprovercommitments_set_w_comm: (a: number, b: number, c: number) => void;
+  readonly wasmfqprovercommitments_set_z_comm: (a: number, b: number) => void;
+  readonly wasmfqprovercommitments_set_t_comm: (a: number, b: number) => void;
+  readonly wasmfqprovercommitments_set_lookup: (a: number, b: number) => void;
+  readonly __wbg_wasmfqopeningproof_free: (a: number) => void;
+  readonly __wbg_get_wasmfqopeningproof_z1: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqopeningproof_z1: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqopeningproof_z2: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqopeningproof_z2: (a: number, b: number, c: number) => void;
+  readonly wasmfqopeningproof_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => number;
+  readonly wasmfqopeningproof_lr_0: (a: number, b: number) => void;
+  readonly wasmfqopeningproof_lr_1: (a: number, b: number) => void;
+  readonly wasmfqopeningproof_delta: (a: number) => number;
+  readonly wasmfqopeningproof_sg: (a: number) => number;
+  readonly wasmfqopeningproof_set_lr_0: (a: number, b: number, c: number) => void;
+  readonly wasmfqopeningproof_set_lr_1: (a: number, b: number, c: number) => void;
+  readonly wasmfqopeningproof_set_delta: (a: number, b: number) => void;
+  readonly wasmfqopeningproof_set_sg: (a: number, b: number) => void;
+  readonly __wbg_wasmfqproverproof_free: (a: number) => void;
+  readonly __wbg_get_wasmfqproverproof_ft_eval1: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqproverproof_ft_eval1: (a: number, b: number, c: number) => void;
+  readonly wasmfqproverproof_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => number;
+  readonly wasmfqproverproof_commitments: (a: number) => number;
+  readonly wasmfqproverproof_proof: (a: number) => number;
+  readonly wasmfqproverproof_evals: (a: number) => number;
+  readonly wasmfqproverproof_public_: (a: number, b: number) => void;
+  readonly wasmfqproverproof_prev_challenges_scalars: (a: number) => number;
+  readonly wasmfqproverproof_prev_challenges_comms: (a: number, b: number) => void;
+  readonly wasmfqproverproof_set_commitments: (a: number, b: number) => void;
+  readonly wasmfqproverproof_set_proof: (a: number, b: number) => void;
+  readonly wasmfqproverproof_set_evals: (a: number, b: number) => void;
+  readonly wasmfqproverproof_set_public_: (a: number, b: number, c: number) => void;
+  readonly wasmfqproverproof_set_prev_challenges_scalars: (a: number, b: number) => void;
+  readonly wasmfqproverproof_set_prev_challenges_comms: (a: number, b: number, c: number) => void;
+  readonly wasmfqproverproof_serialize: (a: number, b: number) => void;
+  readonly __wbg_wasmfqruntimetable_free: (a: number) => void;
+  readonly wasmfqruntimetable_new: (a: number, b: number, c: number) => number;
+  readonly caml_pasta_fq_plonk_proof_create: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
+  readonly caml_pasta_fq_plonk_proof_verify: (a: number, b: number) => number;
+  readonly __wbg_wasmvecvecfqpolycomm_free: (a: number) => void;
+  readonly wasmvecvecfqpolycomm_create: (a: number) => number;
+  readonly wasmvecvecfqpolycomm_push: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_plonk_proof_batch_verify: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_pasta_fq_plonk_proof_dummy: () => number;
+  readonly caml_pasta_fq_plonk_proof_deep_copy: (a: number) => number;
+  readonly caml_bigint_256_of_numeral: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_bigint_256_of_decimal_string: (a: number, b: number, c: number) => void;
+  readonly caml_bigint_256_num_limbs: () => number;
+  readonly caml_bigint_256_bytes_per_limb: () => number;
+  readonly caml_bigint_256_div: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_bigint_256_compare: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_bigint_256_print: (a: number, b: number) => void;
+  readonly caml_bigint_256_to_string: (a: number, b: number, c: number) => void;
+  readonly caml_bigint_256_test_bit: (a: number, b: number, c: number) => number;
+  readonly caml_bigint_256_to_bytes: (a: number, b: number, c: number) => void;
+  readonly caml_bigint_256_of_bytes: (a: number, b: number, c: number) => void;
+  readonly caml_bigint_256_deep_copy: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_size_in_bits: () => number;
+  readonly caml_pasta_fq_size: (a: number) => void;
+  readonly caml_pasta_fq_add: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fq_sub: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fq_negate: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_mul: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fq_div: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fq_inv: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_square: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_is_square: (a: number, b: number) => number;
+  readonly caml_pasta_fq_sqrt: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_of_int: (a: number, b: number) => void;
+  readonly caml_pasta_fq_to_string: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_of_string: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_print: (a: number, b: number) => void;
+  readonly caml_pasta_fq_compare: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_pasta_fq_equal: (a: number, b: number, c: number, d: number) => number;
+  readonly caml_pasta_fq_random: (a: number) => void;
+  readonly caml_pasta_fq_rng: (a: number, b: number) => void;
+  readonly caml_pasta_fq_to_bigint: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_of_bigint: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_two_adic_root_of_unity: (a: number) => void;
+  readonly caml_pasta_fq_domain_generator: (a: number, b: number) => void;
+  readonly caml_pasta_fq_to_bytes: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_of_bytes: (a: number, b: number, c: number) => void;
+  readonly caml_pasta_fq_deep_copy: (a: number, b: number, c: number) => void;
+  readonly __wbg_wasmfqdomain_free: (a: number) => void;
+  readonly __wbg_get_wasmfqdomain_log_size_of_group: (a: number) => number;
+  readonly __wbg_set_wasmfqdomain_log_size_of_group: (a: number, b: number) => void;
+  readonly __wbg_get_wasmfqdomain_group_gen: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqdomain_group_gen: (a: number, b: number, c: number) => void;
+  readonly wasmfqdomain_new: (a: number, b: number, c: number) => number;
+  readonly __wbg_wasmfqplonkverificationevals_free: (a: number) => void;
+  readonly wasmfqplonkverificationevals_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number) => number;
+  readonly wasmfqplonkverificationevals_sigma_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_set_sigma_comm: (a: number, b: number, c: number) => void;
+  readonly wasmfqplonkverificationevals_coefficients_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_set_coefficients_comm: (a: number, b: number, c: number) => void;
+  readonly wasmfqplonkverificationevals_generic_comm: (a: number) => number;
+  readonly wasmfqplonkverificationevals_set_generic_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_psm_comm: (a: number) => number;
+  readonly wasmfqplonkverificationevals_set_psm_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_complete_add_comm: (a: number) => number;
+  readonly wasmfqplonkverificationevals_set_complete_add_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_mul_comm: (a: number) => number;
+  readonly wasmfqplonkverificationevals_set_mul_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_emul_comm: (a: number) => number;
+  readonly wasmfqplonkverificationevals_set_emul_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_endomul_scalar_comm: (a: number) => number;
+  readonly wasmfqplonkverificationevals_set_endomul_scalar_comm: (a: number, b: number) => void;
+  readonly __wbg_wasmfqshifts_free: (a: number) => void;
+  readonly __wbg_get_wasmfqshifts_s1: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqshifts_s1: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqshifts_s2: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqshifts_s2: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqshifts_s3: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqshifts_s3: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqshifts_s4: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqshifts_s4: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqshifts_s5: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqshifts_s5: (a: number, b: number, c: number) => void;
+  readonly __wbg_get_wasmfqshifts_s6: (a: number, b: number) => void;
+  readonly __wbg_set_wasmfqshifts_s6: (a: number, b: number, c: number) => void;
+  readonly wasmfqshifts_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number) => number;
+  readonly __wbg_wasmfqlookupselectors_free: (a: number) => void;
+  readonly wasmfqlookupselectors_new: (a: number, b: number, c: number, d: number) => number;
+  readonly wasmfqlookupselectors_xor: (a: number) => number;
+  readonly wasmfqlookupselectors_set_xor: (a: number, b: number) => void;
+  readonly wasmfqlookupselectors_lookup: (a: number) => number;
+  readonly wasmfqlookupselectors_set_lookup: (a: number, b: number) => void;
+  readonly wasmfqlookupselectors_ffmul: (a: number) => number;
+  readonly wasmfqlookupselectors_set_ffmul: (a: number, b: number) => void;
+  readonly wasmfqlookupselectors_range_check: (a: number) => number;
+  readonly wasmfqlookupselectors_set_range_check: (a: number, b: number) => void;
+  readonly __wbg_wasmfqlookupverifierindex_free: (a: number) => void;
+  readonly __wbg_get_wasmfqlookupverifierindex_joint_lookup_used: (a: number) => number;
+  readonly __wbg_set_wasmfqlookupverifierindex_joint_lookup_used: (a: number, b: number) => void;
+  readonly wasmfqlookupverifierindex_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
+  readonly wasmfqlookupverifierindex_lookup_table: (a: number, b: number) => void;
+  readonly wasmfqlookupverifierindex_set_lookup_table: (a: number, b: number, c: number) => void;
+  readonly wasmfqlookupverifierindex_lookup_selectors: (a: number) => number;
+  readonly wasmfqlookupverifierindex_set_lookup_selectors: (a: number, b: number) => void;
+  readonly wasmfqlookupverifierindex_table_ids: (a: number) => number;
+  readonly wasmfqlookupverifierindex_set_table_ids: (a: number, b: number) => void;
+  readonly wasmfqlookupverifierindex_lookup_info: (a: number) => number;
+  readonly wasmfqlookupverifierindex_set_lookup_info: (a: number, b: number) => void;
+  readonly wasmfqlookupverifierindex_runtime_tables_selector: (a: number) => number;
+  readonly wasmfqlookupverifierindex_set_runtime_tables_selector: (a: number, b: number) => void;
+  readonly __wbg_wasmfqplonkverifierindex_free: (a: number) => void;
+  readonly __wbg_get_wasmfqplonkverifierindex_domain: (a: number) => number;
+  readonly __wbg_set_wasmfqplonkverifierindex_domain: (a: number, b: number) => void;
+  readonly __wbg_get_wasmfqplonkverifierindex_max_poly_size: (a: number) => number;
+  readonly __wbg_set_wasmfqplonkverifierindex_max_poly_size: (a: number, b: number) => void;
+  readonly __wbg_get_wasmfqplonkverifierindex_public_: (a: number) => number;
+  readonly __wbg_set_wasmfqplonkverifierindex_public_: (a: number, b: number) => void;
+  readonly __wbg_get_wasmfqplonkverifierindex_prev_challenges: (a: number) => number;
+  readonly __wbg_set_wasmfqplonkverifierindex_prev_challenges: (a: number, b: number) => void;
+  readonly __wbg_get_wasmfqplonkverifierindex_shifts: (a: number) => number;
+  readonly __wbg_set_wasmfqplonkverifierindex_shifts: (a: number, b: number) => void;
+  readonly __wbg_get_wasmfqplonkverifierindex_zk_rows: (a: number) => number;
+  readonly __wbg_set_wasmfqplonkverifierindex_zk_rows: (a: number, b: number) => void;
+  readonly wasmfqplonkverifierindex_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => number;
+  readonly wasmfqplonkverifierindex_srs: (a: number) => number;
+  readonly wasmfqplonkverifierindex_set_srs: (a: number, b: number) => void;
+  readonly wasmfqplonkverifierindex_evals: (a: number) => number;
+  readonly wasmfqplonkverifierindex_set_evals: (a: number, b: number) => void;
+  readonly wasmfqplonkverifierindex_lookup_index: (a: number) => number;
+  readonly wasmfqplonkverifierindex_set_lookup_index: (a: number, b: number) => void;
+  readonly caml_pasta_fq_plonk_verifier_index_read: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
+  readonly caml_pasta_fq_plonk_verifier_index_write: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_pasta_fq_plonk_verifier_index_serialize: (a: number, b: number) => void;
+  readonly caml_pasta_fq_plonk_verifier_index_deserialize: (a: number, b: number, c: number, d: number) => void;
+  readonly caml_pasta_fq_plonk_verifier_index_create: (a: number) => number;
+  readonly caml_pasta_fq_plonk_verifier_index_shifts: (a: number) => number;
+  readonly caml_pasta_fq_plonk_verifier_index_dummy: () => number;
+  readonly caml_pasta_fq_plonk_verifier_index_deep_copy: (a: number) => number;
+  readonly wasmfqplonkverificationevals_set_range_check0_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_set_foreign_field_add_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_set_range_check1_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_set_foreign_field_mul_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_set_rot_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_range_check0_comm: (a: number) => number;
+  readonly wasmfqplonkverificationevals_foreign_field_add_comm: (a: number) => number;
+  readonly wasmfqplonkverificationevals_range_check1_comm: (a: number) => number;
+  readonly wasmfqplonkverificationevals_foreign_field_mul_comm: (a: number) => number;
+  readonly wasmfqplonkverificationevals_rot_comm: (a: number) => number;
+  readonly __wbg_get_wasmfqshifts_s0: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_set_xor_comm: (a: number, b: number) => void;
+  readonly wasmfqplonkverificationevals_xor_comm: (a: number) => number;
+  readonly __wbg_set_wasmfqshifts_s0: (a: number, b: number, c: number) => void;
   readonly __wbg_wasmvecvecfq_free: (a: number) => void;
   readonly wasmvecvecfq_create: (a: number) => number;
   readonly wasmvecvecfq_push: (a: number, b: number, c: number) => void;
@@ -3113,9 +3113,22 @@ export interface InitOutput {
   readonly __wbg_set_wire_row: (a: number, b: number) => void;
   readonly __wbg_get_wire_col: (a: number) => number;
   readonly __wbg_set_wire_col: (a: number, b: number) => void;
-  readonly lookuppatterns_new: (a: number, b: number, c: number, d: number) => number;
-  readonly lookupfeatures_new: (a: number, b: number, c: number) => number;
-  readonly lookupinfo_new: (a: number, b: number, c: number) => number;
+  readonly __wbg_featureflags_free: (a: number) => void;
+  readonly __wbg_get_featureflags_range_check0: (a: number) => number;
+  readonly __wbg_set_featureflags_range_check0: (a: number, b: number) => void;
+  readonly __wbg_get_featureflags_range_check1: (a: number) => number;
+  readonly __wbg_set_featureflags_range_check1: (a: number, b: number) => void;
+  readonly __wbg_get_featureflags_foreign_field_add: (a: number) => number;
+  readonly __wbg_set_featureflags_foreign_field_add: (a: number, b: number) => void;
+  readonly __wbg_get_featureflags_foreign_field_mul: (a: number) => number;
+  readonly __wbg_set_featureflags_foreign_field_mul: (a: number, b: number) => void;
+  readonly __wbg_get_featureflags_xor: (a: number) => number;
+  readonly __wbg_set_featureflags_xor: (a: number, b: number) => void;
+  readonly __wbg_get_featureflags_rot: (a: number) => number;
+  readonly __wbg_set_featureflags_rot: (a: number, b: number) => void;
+  readonly __wbg_get_featureflags_lookup_features: (a: number) => number;
+  readonly __wbg_set_featureflags_lookup_features: (a: number, b: number) => void;
+  readonly wire_create: (a: number, b: number) => number;
   readonly __wbg_lookuppatterns_free: (a: number) => void;
   readonly __wbg_get_lookuppatterns_xor: (a: number) => number;
   readonly __wbg_set_lookuppatterns_xor: (a: number, b: number) => void;
@@ -3139,22 +3152,9 @@ export interface InitOutput {
   readonly __wbg_set_lookupinfo_max_joint_size: (a: number, b: number) => void;
   readonly __wbg_get_lookupinfo_features: (a: number) => number;
   readonly __wbg_set_lookupinfo_features: (a: number, b: number) => void;
-  readonly __wbg_featureflags_free: (a: number) => void;
-  readonly __wbg_get_featureflags_range_check0: (a: number) => number;
-  readonly __wbg_set_featureflags_range_check0: (a: number, b: number) => void;
-  readonly __wbg_get_featureflags_range_check1: (a: number) => number;
-  readonly __wbg_set_featureflags_range_check1: (a: number, b: number) => void;
-  readonly __wbg_get_featureflags_foreign_field_add: (a: number) => number;
-  readonly __wbg_set_featureflags_foreign_field_add: (a: number, b: number) => void;
-  readonly __wbg_get_featureflags_foreign_field_mul: (a: number) => number;
-  readonly __wbg_set_featureflags_foreign_field_mul: (a: number, b: number) => void;
-  readonly __wbg_get_featureflags_xor: (a: number) => number;
-  readonly __wbg_set_featureflags_xor: (a: number, b: number) => void;
-  readonly __wbg_get_featureflags_rot: (a: number) => number;
-  readonly __wbg_set_featureflags_rot: (a: number, b: number) => void;
-  readonly __wbg_get_featureflags_lookup_features: (a: number) => number;
-  readonly __wbg_set_featureflags_lookup_features: (a: number, b: number) => void;
-  readonly wire_create: (a: number, b: number) => number;
+  readonly lookuppatterns_new: (a: number, b: number, c: number, d: number) => number;
+  readonly lookupfeatures_new: (a: number, b: number, c: number) => number;
+  readonly lookupinfo_new: (a: number, b: number, c: number) => number;
   readonly memory: WebAssembly.Memory;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
