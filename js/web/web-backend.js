@@ -135,6 +135,8 @@ function overrideBindings(plonk_wasm, worker) {
   let spec = workerSpec(plonk_wasm);
   for (let key in spec) {
     plonk_wasm[key] = (...args) => {
+      if (spec[key].disabled)
+        throw Error(`Wasm method '${key}' is disabled on the web.`);
       let u32_ptr = wasm.create_zero_u32_ptr();
       worker.postMessage({
         type: 'run',
