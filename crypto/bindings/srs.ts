@@ -77,7 +77,8 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
   let setSrs = wasm[`caml_${f}_srs_set`];
 
   let maybeLagrangeCommitment = wasm[`caml_${f}_srs_maybe_lagrange_commitment`];
-  let lagrangeCommitment = wasm[`caml_${f}_srs_lagrange_commitment`];
+  let lagrangeCommitment = (srs: WasmFpSrs, domain_size: number, i: number) =>
+    wasm[`caml_${f}_srs_lagrange_commitment`](srs, domain_size, i);
   let setLagrangeBasis = wasm[`caml_${f}_srs_set_lagrange_basis`];
   let getLagrangeBasis = (srs: WasmSrs, n: number) =>
     wasm[`caml_${f}_srs_get_lagrange_basis`](srs, n);
@@ -158,14 +159,16 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
 
           if (didRead !== true) {
             // not in cache
-            let wasmComms = getLagrangeBasis(srs, domainSize);
-
             if (cache.canWrite) {
+              // TODO: this code path will throw on the web since `caml_${f}_srs_get_lagrange_basis` is not properly implemented
+              // using a writable cache in the browser seems to be fairly uncommon though, so it's at least an 80/20 solution
+              let wasmComms = getLagrangeBasis(srs, domainSize);
               let mlComms = conversion[f].polyCommsFromRust(wasmComms);
               let comms = polyCommsToJSON(mlComms);
               let bytes = new TextEncoder().encode(JSON.stringify(comms));
-
               writeCache(cache, header, bytes);
+            } else {
+              lagrangeCommitment(srs, domainSize, i);
             }
           }
 

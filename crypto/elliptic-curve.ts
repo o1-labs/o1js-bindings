@@ -402,7 +402,7 @@ function projectiveOnCurve(
   a: bigint
 ) {
   // substitution x -> x/z^2 and y -> y/z^3 gives
-  // the equation y^2 = x^3 + a*z^4 + b*z^6
+  // the equation y^2 = x^3 + a*x*z^4 + b*z^6
   // (note: we allow a restricted set of x,y for z==0; this seems fine)
   let x3 = mod(mod(x * x, p) * x, p);
   let y2 = mod(y * y, p);
