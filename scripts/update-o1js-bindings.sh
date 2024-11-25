@@ -39,7 +39,10 @@ then
   chmod -R 666 "$WEB_BINDINGS"/*
 else
   cp -r $PREBUILT_KIMCHI_BINDINGS_JS_WEB $WEB_BINDINGS
-  cp -r $PREBUILT_KIMCHI_BINDINGS_JS_NODE_JS $WEB_BINDINGS
+  cp -r $PREBUILT_KIMCHI_BINDINGS_JS_NODE_JS $NODE_BINDINGS
+  dune b $DUNE_PATH/o1js_web.bc.js
+  cp $BUILD_PATH/o1js_web*.js $WEB_BINDINGS/
+  cp $BUILD_PATH/o1js_node.bc.* $NODE_BINDINGS/
 fi
 
 # better error messages
