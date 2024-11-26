@@ -28,7 +28,7 @@ npm run build
 
 # 2. web build
 
-if [ -z $PREBUILT_KIMCHI_BINDINGS_JS_WEB ]
+if [ -z $PREBUILT_KIMCHI_BINDINGS_JS_WEB ] || [ -z $PREBUILT_KIMCHI_BINDINGS_JS_NODE_JS ]
 then
   cp "$BUILD_PATH/o1js_node.bc.map" "_build/o1js_node.bc.map"
   dune b $DUNE_PATH/o1js_web.bc.js
@@ -38,11 +38,19 @@ then
   cp $BUILD_PATH/o1js_web*.js $WEB_BINDINGS/
   chmod -R 666 "$WEB_BINDINGS"/*
 else
-  cp -r $PREBUILT_KIMCHI_BINDINGS_JS_WEB $WEB_BINDINGS
-  cp -r $PREBUILT_KIMCHI_BINDINGS_JS_NODE_JS $NODE_BINDINGS
+  mkdir -p $WEB_BINDINGS
+  cp $PREBUILT_KIMCHI_BINDINGS_JS_WEB/*.js \
+     $PREBUILT_KIMCHI_BINDINGS_JS_WEB/*.ts \
+     $PREBUILT_KIMCHI_BINDINGS_JS_WEB/*.wasm \
+     $WEB_BINDINGS
+  mkdir -p $NODE_BINDINGS
+  cp $PREBUILT_KIMCHI_BINDINGS_JS_NODE_JS/*.js \
+     $PREBUILT_KIMCHI_BINDINGS_JS_NODE_JS/*.ts \
+     $PREBUILT_KIMCHI_BINDINGS_JS_NODE_JS/*.wasm \
+     $NODE_BINDINGS
+  rm $NODE_BINDINGS/plonk_wasm.js \
+     $NODE_BINDINGS/plonk_wasm.d.ts
   dune b $DUNE_PATH/o1js_web.bc.js
-  cp $BUILD_PATH/o1js_web*.js $WEB_BINDINGS/
-  cp $BUILD_PATH/o1js_node.bc.* $NODE_BINDINGS/
 fi
 
 # better error messages
