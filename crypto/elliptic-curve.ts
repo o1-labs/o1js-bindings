@@ -30,6 +30,7 @@ export {
   projectiveAdd,
   getProjectiveDouble,
   projectiveNeg,
+  TwistedCurveParams,
 };
 
 // TODO: constants, like generator points and cube roots for endomorphisms, should be drawn from
@@ -703,3 +704,34 @@ function createCurveAffine({
     },
   };
 }
+
+/**
+ * Parameters defining an elliptic curve in twisted Edwards form
+ * ax^2 + y^2 = 1 + dx^2y^2
+ */
+type TwistedCurveParams = {
+  /**
+   * Human-friendly name for the curve
+   */
+  name: string;
+  /**
+   * Base field modulus
+   */
+  modulus: bigint;
+  /**
+   * Scalar field modulus = group order
+   */
+  order: bigint;
+  /**
+   * Generator point
+   */
+  generator: { x: bigint; y: bigint };
+  /**
+   * The `a` parameter in the curve equation ax^2 + y^2 = 1 + dx^2y^2
+   */
+  a: bigint;
+  /**
+   * The `d` parameter in the curve equation ax^2 + y^2 = 1 + dx^2y^2
+   */
+  d: bigint;
+};

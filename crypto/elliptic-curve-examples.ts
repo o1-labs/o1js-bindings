@@ -1,7 +1,12 @@
-import { CurveParams, Pallas, Vesta } from './elliptic-curve.js';
+import {
+  CurveParams,
+  Pallas,
+  Vesta,
+  TwistedCurveParams,
+} from './elliptic-curve.js';
 import { exampleFields } from './finite-field-examples.js';
 
-export { CurveParams };
+export { CurveParams, TwistedCurveParams };
 
 const secp256k1Params: CurveParams = {
   name: 'secp256k1',
@@ -54,4 +59,20 @@ const CurveParams = {
   Secp256r1: secp256r1Params,
   Pallas: pallasParams,
   Vesta: vestaParams,
+};
+
+const ed25519Params: TwistedCurveParams = {
+  name: 'Ed25519',
+  modulus: exampleFields.f25519.modulus, // 2^255 - 19
+  order: 0x1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3edn, //2^252 + 27742317777372353535851937790883648493,
+  generator: {
+    x: 0x216936d3cd6e53fec0a4e231fdd6dc5c692cc7609525a7b2c9562d608f25d51an,
+    y: 0x6666666666666666666666666666666666666666666666666666666666666658n, // 4/5 mod p
+  },
+  a: 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffecn, // -1 mod p
+  d: 0x2dfc9311d490018c7338bf8688861767ff8ff5b2bebe27548a14b235eca6874an, // 121665/121666 mod p
+};
+
+const TwistedCurveParams = {
+  Ed25519: ed25519Params,
 };
