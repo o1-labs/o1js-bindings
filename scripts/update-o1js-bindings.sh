@@ -13,6 +13,7 @@ WEB_BINDINGS="src/bindings/compiled/web_bindings"
 # 1. node build
 
 $DIR_PATH/build-o1js-node-artifacts.sh
+cp src/bindings/compiled/_node_bindings/plonk_wasm.d.cts $NODE_BINDINGS/plonk_wasm.d.cts
 node src/build/copy-to-dist.js
 
 chmod -R 777 "$NODE_BINDINGS"
@@ -22,12 +23,18 @@ cp "$BINDINGS_PATH"/o1js_node.bc.cjs "$NODE_BINDINGS"/o1js_node.bc.cjs
 cp "$BINDINGS_PATH"/o1js_node.bc.map "$NODE_BINDINGS"/o1js_node.bc.map
 cp "$BINDINGS_PATH"/plonk_wasm* "$NODE_BINDINGS"/
 
+
 sed -i 's/plonk_wasm.js/plonk_wasm.cjs/' "$NODE_BINDINGS"/o1js_node.bc.cjs
 
-npm run build
+if [ -z $JUST_BINDINGS ]
+then
+  npm run build
+fi
 
 # 2. web build
 
+# Normally these variables are not defined
+# But the nix build uses them
 if [ -z $PREBUILT_KIMCHI_BINDINGS_JS_WEB ] || [ -z $PREBUILT_KIMCHI_BINDINGS_JS_NODE_JS ]
 then
   cp "$BUILD_PATH/o1js_node.bc.map" "_build/o1js_node.bc.map"
@@ -51,7 +58,10 @@ else
   rm $NODE_BINDINGS/plonk_wasm.js \
      $NODE_BINDINGS/plonk_wasm.d.ts
   dune b $DUNE_PATH/o1js_web.bc.js
+  cp $BUILD_PATH/o1js_web*.js $WEB_BINDINGS/
 fi
+
+echo BREAKPT-58
 
 # better error messages
 # `s` is the jsoo representation of the error message string, and `s.c` is the actual JS string
@@ -68,11 +78,14 @@ pushd $WEB_BINDINGS
   mv o1js_web.bc.min.js o1js_web.bc.js
 popd
 
-npm run build:web
+if [ -z $JUST_BINDINGS ]
+then
+  npm run build:web
+fi
 
 # 3. update MINA_COMMIT file in o1js
 
-if [ $CHEK_MINA_COMMIT ]
+if [ -z $SKIP_MINA_COMMIT ]
 then
 MINA_COMMIT=$(git -C src/mina rev-parse HEAD)
 echo "The mina commit used to generate the backends for node and web is" "$MINA_COMMIT" \
