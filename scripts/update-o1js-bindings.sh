@@ -23,7 +23,6 @@ cp "$BINDINGS_PATH"/o1js_node.bc.cjs "$NODE_BINDINGS"/o1js_node.bc.cjs
 cp "$BINDINGS_PATH"/o1js_node.bc.map "$NODE_BINDINGS"/o1js_node.bc.map
 cp "$BINDINGS_PATH"/plonk_wasm* "$NODE_BINDINGS"/
 
-
 sed -i 's/plonk_wasm.js/plonk_wasm.cjs/' "$NODE_BINDINGS"/o1js_node.bc.cjs
 
 if [ -z $JUST_BINDINGS ]
@@ -60,8 +59,6 @@ else
   dune b $DUNE_PATH/o1js_web.bc.js
   cp $BUILD_PATH/o1js_web*.js $WEB_BINDINGS/
 fi
-
-echo BREAKPT-58
 
 # better error messages
 # `s` is the jsoo representation of the error message string, and `s.c` is the actual JS string
