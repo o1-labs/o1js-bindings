@@ -545,6 +545,16 @@ let nat_modules_list : (module Pickles_types.Nat.Intf) list =
   ; (module N18)
   ; (module N19)
   ; (module N20)
+  ; (module N21)
+  ; (module N22)
+  ; (module N23)
+  ; (module N24)
+  ; (module N25)
+  ; (module N26)
+  ; (module N27)
+  ; (module N28)
+  ; (module N29)
+  ; (module N30)
   ]
 
 let nat_add_modules_list : (module Pickles_types.Nat.Add.Intf) list =
@@ -570,6 +580,16 @@ let nat_add_modules_list : (module Pickles_types.Nat.Add.Intf) list =
   ; (module N18)
   ; (module N19)
   ; (module N20)
+  ; (module N21)
+  ; (module N22)
+  ; (module N23)
+  ; (module N24)
+  ; (module N25)
+  ; (module N26)
+  ; (module N27)
+  ; (module N28)
+  ; (module N29)
+  ; (module N30)
   ]
 
 let nat_module (i : int) : (module Pickles_types.Nat.Intf) =
