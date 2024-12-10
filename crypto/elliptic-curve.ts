@@ -1046,7 +1046,7 @@ function createCurveTwisted({
       return twistedAdd(g, twistedNegate(h, p), p, a, d);
     },
     scale(g: GroupTwisted, s: bigint | boolean[]) {
-      return twistedScale(g, s, p, a);
+      return twistedScale(g, s, p, a, d);
     },
   };
 }
