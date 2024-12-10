@@ -735,6 +735,12 @@ type TwistedCurveParams = {
    */
   order: bigint;
   /**
+   * Cofactor = size of EC / order
+   *
+   * This can be left undefined if the cofactor is 1.
+   */
+  cofactor?: bigint;
+  /**
    * Generator point
    */
   generator: { x: bigint; y: bigint };
@@ -746,6 +752,8 @@ type TwistedCurveParams = {
    * The `d` parameter in the curve equation ax^2 + y^2 = 1 + dx^2y^2
    */
   d: bigint;
+  endoBase?: bigint;
+  endoScalar?: bigint;
 };
 
 function twistedOnCurve(
@@ -973,13 +981,17 @@ function createCurveTwisted({
   name,
   modulus: p,
   order,
+  cofactor,
   generator,
   a,
   d,
 }: TwistedCurveParams) {
+  let hasCofactor = cofactor !== undefined && cofactor !== 1n;
+
   const Field = createField(p);
   const Scalar = createField(order);
   const one = { ...generator, infinity: false };
+  const Endo = undefined; // for Ed25519
 
   assert(a !== 0n, 'a must not be zero');
   assert(d !== 0n, 'd must not be zero');
@@ -999,10 +1011,18 @@ function createCurveTwisted({
     modulus: p,
     order,
     a,
-    b,
+    d,
+    cofactor,
+    hasCofactor,
 
     zero: twistedZero,
     one,
+
+    hasEndomorphism: Endo !== undefined,
+    get Endo() {
+      if (Endo === undefined) throw Error(`no endomorphism defined on ${name}`);
+      return Endo;
+    },
 
     from(g: { x: bigint; y: bigint }): GroupTwisted {
       if (g.x === 0n && g.y === 1n) return twistedZero;
