@@ -798,7 +798,7 @@ function twistedAdd(
   let ax1x2 = mod(a * x1x2, p);
 
   let x3Num = mod(x1y2 + y1x2, p);
-  let y3Num = mod(y1y2 + ax1x2, p);
+  let y3Num = mod(y1y2 - ax1x2, p);
 
   let dx1x2y1y2 = mod(d * x1x2 * y1y2, p);
 
