@@ -9,7 +9,7 @@ import {
   q,
 } from './finite-field.js';
 import { Endomorphism } from './elliptic-curve-endomorphism.js';
-import assert from 'assert';
+import { assert } from '../../lib/util/errors.js';
 export {
   Pallas,
   PallasAffine,
@@ -803,10 +803,12 @@ function twistedAdd(
   let dx1x2y1y2 = mod(d * x1x2 * y1y2, p);
 
   let x3Denom = inverse(mod(1n + dx1x2y1y2, p), p);
-  if (x3Denom === undefined) throw Error('impossible');
+  if (x3Denom === undefined)
+    throw Error('X denominator used in twisted addition is 0');
 
   let y3Denom = inverse(mod(1n - dx1x2y1y2, p), p);
-  if (y3Denom === undefined) throw Error('impossible');
+  if (y3Denom === undefined)
+    throw Error('Y denominator used in twisted addition is 0');
 
   let x3 = mod(x3Num * x3Denom, p);
   let y3 = mod(y3Num * y3Denom, p);
