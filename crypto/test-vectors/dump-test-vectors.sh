@@ -2,9 +2,12 @@
 
 set -e
 
+#Allows nix to provide the binary from a derivation
+EXPORT_TEST_VECTORS=${EXPORT_TEST_VECTORS:="cargo run -p export_test_vectors --"}
+
 pushd ../../../mina/src/lib/crypto/proof-systems/poseidon/export_test_vectors
-  cargo run -p export_test_vectors -- hex kimchi ../../../../../../../bindings/crypto/test-vectors/testVectors.json
-  cargo run -p export_test_vectors -- hex legacy ../../../../../../../bindings/crypto/test-vectors/testVectorsLegacy.json
+  $EXPORT_TEST_VECTORS hex kimchi ../../../../../../../bindings/crypto/test-vectors/testVectors.json
+  $EXPORT_TEST_VECTORS hex legacy ../../../../../../../bindings/crypto/test-vectors/testVectorsLegacy.json
 popd
 
 echo "// @gen this file is generated - don't edit it directly" > $1 
