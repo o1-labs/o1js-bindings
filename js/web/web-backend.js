@@ -6,7 +6,7 @@ import {
   waitForMessage,
 } from './worker-helpers.js';
 import o1jsWebSrc from 'string:../../../web_bindings/o1js_web.bc.js';
-import { workers } from '../../../lib/proof-system/workers.js';
+import { WithThreadPool, workers } from '../../../lib/proof-system/workers.js';
 
 export { initializeBindings, withThreadPool, wasm };
 
@@ -53,7 +53,7 @@ async function initializeBindings() {
   });
 }
 
-async function withThreadPool(run) {
+async function initThreadPool() {
   if (workerPromise === undefined)
     throw Error('need to initialize worker first');
   let worker = await workerPromise;
@@ -62,14 +62,16 @@ async function withThreadPool(run) {
     workers.numWorkers ?? (navigator.hardwareConcurrency ?? 1) - 1
   );
   await workerCall(worker, 'initThreadPool', numWorkers);
-  let result;
-  try {
-    result = await run();
-  } finally {
-    await workerCall(worker, 'exitThreadPool');
-  }
-  return result;
 }
+
+async function exitThreadPool() {
+  if (workerPromise === undefined)
+    throw Error('need to initialize worker first');
+  let worker = await workerPromise;
+  await workerCall(worker, 'exitThreadPool');
+}
+
+const withThreadPool = WithThreadPool({ initThreadPool, exitThreadPool });
 
 async function mainWorker() {
   const wasm = plonkWasm();
