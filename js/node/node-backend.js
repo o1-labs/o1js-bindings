@@ -2,7 +2,7 @@ import { isMainThread, parentPort, workerData, Worker } from 'worker_threads';
 import os from 'os';
 import wasm_ from '../../compiled/_node_bindings/plonk_wasm.cjs';
 import { fileURLToPath } from 'url';
-import { workers } from '../../../lib/proof-system/workers.js';
+import { WithThreadPool, workers } from '../../../lib/proof-system/workers.js';
 let url = import.meta.url;
 let filename = url !== undefined ? fileURLToPath(url) : __filename;
 
@@ -26,59 +26,7 @@ if (!isMainThread) {
 }
 
 // state machine to enable calling multiple functions that need a thread pool at once
-let state = 'none'; // 'initializing', 'running', 'exiting'
-let isNeededBy = 0;
-let initializingPromise, exitingPromise;
-
-async function withThreadPool(run) {
-  isNeededBy++;
-  // none, exiting -> initializing
-  switch (state) {
-    case 'none':
-      initializingPromise = initThreadPool();
-      state = 'initializing';
-      break;
-    case 'initializing':
-    case 'running':
-      break;
-    case 'exiting':
-      initializingPromise = exitingPromise.then(initThreadPool);
-      state = 'initializing';
-      break;
-  }
-  // initializing -> running
-  await initializingPromise;
-  initializingPromise = undefined;
-  state = 'running';
-
-  let result;
-  try {
-    result = await run();
-  } finally {
-    // running -> exiting IF we don't need to run longer
-    isNeededBy--;
-    switch (state) {
-      case 'none':
-      case 'initializing':
-      case 'exiting':
-        console.error('bug in thread pool state machine');
-        break;
-      case 'running':
-        if (isNeededBy < 1) {
-          exitingPromise = exitThreadPool();
-          state = 'exiting';
-          // exiting -> none IF we didn't move exiting -> initializing
-          await exitingPromise;
-          if (state === 'exiting') {
-            exitingPromise = undefined;
-            state = 'none';
-          }
-        }
-        break;
-    }
-  }
-  return result;
-}
+const withThreadPool = WithThreadPool({ initThreadPool, exitThreadPool });
 
 async function initThreadPool() {
   if (!isMainThread) return;
