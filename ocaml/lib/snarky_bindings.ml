@@ -12,7 +12,7 @@ type field = Impl.field
 
 (* light-weight wrapper around snarky-ml core *)
 
-let empty_typ : (_, _, unit, field, _) Impl.Internal_Basic.Typ.typ' =
+let empty_typ : (_, _, unit) Impl.Internal_Basic.Typ.typ' =
   { var_to_fields = (fun fields -> (fields, ()))
   ; var_of_fields = (fun (fields, _) -> fields)
   ; value_to_fields = (fun fields -> (fields, ()))
