@@ -1,13 +1,14 @@
 import {
   createCurveAffine,
   createCurveProjective,
+  createCurveTwisted,
   Pallas,
   Vesta,
 } from './elliptic-curve.js';
 import { Fp, Fq } from './finite-field.js';
 import assert from 'node:assert/strict';
 import { test, Random } from '../../lib/testing/property.js';
-import { CurveParams } from './elliptic-curve-examples.js';
+import { CurveParams, TwistedCurveParams } from './elliptic-curve-examples.js';
 
 for (let [G, Field, Scalar] of [
   [Pallas, Fp, Fq] as const,
@@ -164,3 +165,70 @@ function curveWithFields(params: CurveParams) {
   // return Curve, Field and Scalar
   return [Projective, Affine.Field, Affine.Scalar] as const;
 }
+
+
+// Twisted Edwards curve tests 
+
+const Ed25519 = createCurveTwisted(TwistedCurveParams.Ed25519);
+
+let [G, Field, Scalar] = [Ed25519, Ed25519.Field, Ed25519.Scalar] as const;
+
+const { zero, one, add, double, negate, scale, isOnCurve, equal } = Ed25519;
+
+
+  let randomScalar = Random(Scalar.random);
+  let randomField = Random(Field.random);
+  // create random points by scaling 1 with a random scalar
+  let randomPoint = Random(() => G.scale(G.one, Scalar.random()));
+  // let one / zero be sampled 20% of times each
+  randomPoint = Random.oneOf(
+    G.zero,
+    G.one,
+    randomPoint,
+    randomPoint,
+    randomPoint
+  );
+
+test(
+  randomPoint,
+  randomPoint,
+  randomPoint,
+  randomScalar,
+  randomScalar,
+  randomField,
+  (X, Y, Z, x, y) => {
+    // check on curve
+    assert(isOnCurve(X) && isOnCurve(Y) && isOnCurve(Z), 'on curve');
+
+    // equal
+    assert(equal(X, X), 'equal');
+    assert(!equal(X, add(X, X)) || equal(X, zero), 'not equal to double of itself (or zero)');
+    assert(!equal(X, negate(X)) || equal(X, zero), 'not equal to negation of itself (or zero)');
+    assert(!equal(X, Y) || X == Y, 'not equal (random points)');
+
+    // algebraic laws - addition
+    assert(equal(add(X, Y), add(Y, X)), 'commutative');
+    assert(equal(add(X, add(Y, Z)), add(add(X, Y), Z)), 'associative');
+    assert(equal(add(X, zero), X), 'identity');
+    assert(equal(add(X, negate(X)), zero), 'inverse');
+
+    // addition does doubling
+    assert(equal(add(X, X), double(X)), 'double');
+
+    // scaling by small factors
+    assert(equal(scale(X, 0n), zero), 'scale by 0');
+    assert(equal(scale(X, 1n), X), 'scale by 1');
+    assert(equal(scale(X, 2n), add(X, X)), 'scale by 2');
+    assert(equal(scale(X, 3n), add(X, add(X, X))), 'scale by 3');
+    assert(equal(scale(X, 4n), double(double(X))), 'scale by 4');
+
+    // algebraic laws - scaling
+    assert(equal(scale(X, Scalar.add(x, y)), add(scale(X, x), scale(X, y))), 'distributive');
+    assert(equal(scale(X, Scalar.negate(x)), negate(scale(X, x))), 'distributive (negation)');
+    assert(equal(scale(X, Scalar.mul(x, y)), scale(scale(X, x), y)), 'scale / multiply is associative');
+
+    // subgroup
+    assert(G.isInSubgroup(X), 'subgroup check');
+    
+  }
+);
