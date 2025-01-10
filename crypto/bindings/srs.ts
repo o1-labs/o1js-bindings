@@ -79,6 +79,8 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
   let maybeLagrangeCommitment = wasm[`caml_${f}_srs_maybe_lagrange_commitment`];
   let lagrangeCommitment = (srs: WasmFpSrs, domain_size: number, i: number) =>
     wasm[`caml_${f}_srs_lagrange_commitment`](srs, domain_size, i);
+  let lagrangeCommitmentsWholeDomain = (srs: WasmSrs, domain_size: number) =>
+    wasm[`caml_${f}_srs_lagrange_commitments_whole_domain`](srs, domain_size);
   let setLagrangeBasis = wasm[`caml_${f}_srs_set_lagrange_basis`];
   let getLagrangeBasis = (srs: WasmSrs, n: number) =>
     wasm[`caml_${f}_srs_get_lagrange_basis`](srs, n);
@@ -179,6 +181,15 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
         }
       }
       return conversion[f].polyCommFromRust(commitment);
+    },
+
+    /**
+     * Returns the Lagrange basis commitments for the whole domain
+     */
+    lagrangeCommitmentsWholeDomain(srs: WasmSrs, domainSize: number) {
+      let wasmComms = lagrangeCommitmentsWholeDomain(srs, domainSize);
+      let mlComms = conversion[f].polyCommsFromRust(wasmComms);
+      return mlComms;
     },
 
     /**
