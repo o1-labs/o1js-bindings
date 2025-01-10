@@ -60,7 +60,7 @@ module Run = struct
   let enter_as_prover size = Impl.as_prover_manual size |> Staged.unstage
 
   module State = struct
-    let alloc_var state = Backend.Run_state.alloc_var state
+    let alloc_var state = Backend.Run_state.alloc_var state ()
 
     let store_field_elt state x = Backend.Run_state.store_field_elt state x
 

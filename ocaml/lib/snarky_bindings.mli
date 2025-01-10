@@ -27,7 +27,7 @@ val snarky :
           (int -> field array option -> Field.t array) Js.readonly_prop
       ; state :
           < allocVar :
-              (Backend.Run_state.t -> unit -> field Snarky_backendless.Cvar.t)
+              (Backend.Run_state.t -> field Snarky_backendless.Cvar.t )
               Js.readonly_prop
           ; storeFieldElt :
               ( Backend.Run_state.t -> field -> field Snarky_backendless.Cvar.t )
