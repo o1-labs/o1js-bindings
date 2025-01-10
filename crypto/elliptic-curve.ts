@@ -782,11 +782,11 @@ function twistedAdd(
   let { x: x1, y: y1 } = g;
   let { x: x2, y: y2 } = h;
 
-  if (x1 === x2) {
-    // g + g --> we double
-    if (y1 === y2) return twistedDouble(g, p, d);
+  if (y1 === y2) {
+    // g + g --> double
+    if (x1 === x2) return twistedDouble(g, p, a, d);
     // g - g --> return zero
-    return affineZero;
+    if (x1 === mod(p - x2, p)) return twistedZero;
   }
 
   // x3 = (x1 * y2 + y1 * x2) / (1 + d * x1 * x2 * y1 * y2)
@@ -816,17 +816,24 @@ function twistedAdd(
   return { x: x3, y: y3, infinity: false };
 }
 
-function twistedDouble(g: GroupTwisted, p: bigint, d: bigint): GroupTwisted {
+function twistedDouble(
+  g: GroupTwisted,
+  p: bigint,
+  a: bigint,
+  d: bigint
+): GroupTwisted {
   let { x: x1, y: y1 } = g;
 
+  if (g.infinity) return twistedZero;
+
   // x3 = 2*x1*y1 / (1 + d * x1^2 * y1^2)
-  // y3 = (y1^2 - x1^2) / (1 - d * x1^2 * y1^2)
+  // y3 = (y1^2 - a * x1^2) / (1 - d * x1^2 * y1^2)
   let x1x1 = x1 * x1;
   let y1y1 = y1 * y1;
   let x1y1 = x1 * y1;
 
   let x3Num = mod(2n * x1y1, p);
-  let y3Num = mod(y1y1 - x1x1, p);
+  let y3Num = mod(y1y1 - a * x1x1, p);
 
   let dx1x1y1y1 = mod(d * x1x1 * y1y1, p);
 
@@ -959,10 +966,13 @@ function projectiveFromTwisted({
 function projectiveToTwisted(g: GroupProjective, p: bigint): GroupTwisted {
   let z = g.z;
   if (z === 0n) {
-    // infinity
+    // degenerate case
+    return twistedZero;
+  } else if (z === 1n && g.x === 0n && g.y === 1n) {
+    // special case for the zero point
     return twistedZero;
   } else if (z === 1n) {
-    // already normalized affine form
+    // any other normalized affine form
     return { x: g.x, y: g.y, infinity: false };
   } else {
     let zinv = inverse(z, p)!; // we checked for z === 0, so inverse exists
@@ -1050,16 +1060,16 @@ function createCurveTwisted({
       }
     },
     isOnCurve(g: GroupTwisted) {
-      return twistedOnCurve(g, p, a, b);
+      return twistedOnCurve(g, p, a, d);
     },
     isInSubgroup(g: GroupAffine) {
-      return projectiveInSubgroup(projectiveFromAffine(g), p, order, a);
+      return projectiveInSubgroup(projectiveFromTwisted(g), p, order, a);
     },
     add(g: GroupTwisted, h: GroupTwisted) {
       return twistedAdd(g, h, p, a, d);
     },
     double(g: GroupTwisted) {
-      return twistedDouble(g, p, a);
+      return twistedDouble(g, p, a, d);
     },
     negate(g: GroupTwisted) {
       return twistedNegate(g, p);

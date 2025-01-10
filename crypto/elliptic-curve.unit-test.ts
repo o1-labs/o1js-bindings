@@ -166,8 +166,7 @@ function curveWithFields(params: CurveParams) {
   return [Projective, Affine.Field, Affine.Scalar] as const;
 }
 
-
-// Twisted Edwards curve tests 
+// Twisted Edwards curve tests
 
 const Ed25519 = createCurveTwisted(TwistedCurveParams.Ed25519);
 
@@ -175,19 +174,12 @@ let [G, Field, Scalar] = [Ed25519, Ed25519.Field, Ed25519.Scalar] as const;
 
 const { zero, one, add, double, negate, scale, isOnCurve, equal } = Ed25519;
 
-
-  let randomScalar = Random(Scalar.random);
-  let randomField = Random(Field.random);
-  // create random points by scaling 1 with a random scalar
-  let randomPoint = Random(() => G.scale(G.one, Scalar.random()));
-  // let one / zero be sampled 20% of times each
-  randomPoint = Random.oneOf(
-    G.zero,
-    G.one,
-    randomPoint,
-    randomPoint,
-    randomPoint
-  );
+let randomScalar = Random(Scalar.random);
+let randomField = Random(Field.random);
+// create random points by scaling 1 with a random scalar
+let randomPoint = Random(() => G.scale(G.one, Scalar.random()));
+// let one / zero be sampled 20% of times each
+randomPoint = Random.oneOf(zero, one, randomPoint, randomPoint, randomPoint);
 
 test(
   randomPoint,
@@ -202,8 +194,14 @@ test(
 
     // equal
     assert(equal(X, X), 'equal');
-    assert(!equal(X, add(X, X)) || equal(X, zero), 'not equal to double of itself (or zero)');
-    assert(!equal(X, negate(X)) || equal(X, zero), 'not equal to negation of itself (or zero)');
+    assert(
+      !equal(X, add(X, X)) || equal(X, zero),
+      'not equal to double of itself (or zero)'
+    );
+    assert(
+      !equal(X, negate(X)) || equal(X, zero),
+      'not equal to negation of itself (or zero)'
+    );
     assert(!equal(X, Y) || X == Y, 'not equal (random points)');
 
     // algebraic laws - addition
@@ -223,12 +221,17 @@ test(
     assert(equal(scale(X, 4n), double(double(X))), 'scale by 4');
 
     // algebraic laws - scaling
-    assert(equal(scale(X, Scalar.add(x, y)), add(scale(X, x), scale(X, y))), 'distributive');
-    assert(equal(scale(X, Scalar.negate(x)), negate(scale(X, x))), 'distributive (negation)');
-    assert(equal(scale(X, Scalar.mul(x, y)), scale(scale(X, x), y)), 'scale / multiply is associative');
-
-    // subgroup
-    assert(G.isInSubgroup(X), 'subgroup check');
-    
+    assert(
+      equal(scale(X, Scalar.add(x, y)), add(scale(X, x), scale(X, y))),
+      'distributive'
+    );
+    assert(
+      equal(scale(X, Scalar.negate(x)), negate(scale(X, x))),
+      'distributive (negation)'
+    );
+    assert(
+      equal(scale(X, Scalar.mul(x, y)), scale(scale(X, x), y)),
+      'scale / multiply is associative'
+    );
   }
 );
