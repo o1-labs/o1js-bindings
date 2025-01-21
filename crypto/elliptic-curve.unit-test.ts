@@ -168,11 +168,16 @@ function curveWithFields(params: CurveParams) {
 
 // Twisted Edwards curve tests
 
-const Ed25519 = createCurveTwisted(TwistedCurveParams.Ed25519);
+const Edwards25519 = createCurveTwisted(TwistedCurveParams.Edwards25519);
 
-let [G, Field, Scalar] = [Ed25519, Ed25519.Field, Ed25519.Scalar] as const;
+let [G, Field, Scalar] = [
+  Edwards25519,
+  Edwards25519.Field,
+  Edwards25519.Scalar,
+] as const;
 
-const { zero, one, add, double, negate, scale, isOnCurve, equal } = Ed25519;
+const { zero, one, add, double, negate, scale, isOnCurve, equal } =
+  Edwards25519;
 
 let randomScalar = Random(Scalar.random);
 let randomField = Random(Field.random);
