@@ -63,7 +63,7 @@ const CurveParams = {
 
 // https://datatracker.ietf.org/doc/html/rfc8032#section-5.1
 const edwards25519Params: TwistedCurveParams = {
-  name: 'Ed25519',
+  name: 'Edwards25519',
   modulus: exampleFields.f25519.modulus, // 2^255 - 19
   order: 0x1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3edn, //2^252 + 27742317777372353535851937790883648493,
   cofactor: 8n,
