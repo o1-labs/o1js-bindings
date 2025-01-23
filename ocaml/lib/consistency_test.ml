@@ -119,7 +119,7 @@ let get_network_id_of_js_string (network : Js.js_string Js.t) =
   match Js.to_string network with
   | "mainnet" ->
       Mina_signature_kind.Mainnet
-  | "testnet" ->
+  | "testnet" | "devnet" ->
       Mina_signature_kind.Testnet
   | other ->
       Mina_signature_kind.(Other_network other)
