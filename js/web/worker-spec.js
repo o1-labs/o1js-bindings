@@ -170,12 +170,12 @@ function workerSpec(wasm) {
       res: wasm.WasmFqPolyComm,
     },
     caml_fp_srs_lagrange_commitments_whole_domain: {
-      args: [wasm.WasmFqSrs, undefined /* number */],
-      res: wasm.WasmFqPolyComm,
+      args: [wasm.WasmFpSrs, undefined /* number */],
+      res: undefined /* number */,
     },
     caml_fq_srs_lagrange_commitments_whole_domain: {
       args: [wasm.WasmFqSrs, undefined /* number */],
-      res: wasm.WasmFqPolyComm,
+      res: undefined /* number */,
     },
   };
 }
