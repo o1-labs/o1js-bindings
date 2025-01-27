@@ -1149,6 +1149,35 @@ export function caml_fp_srs_read(offset, path) {
 /**
 * @param {WasmFpSrs} srs
 * @param {number} domain_size
+* @returns {number}
+*/
+export function caml_fp_srs_lagrange_commitments_whole_domain_ptr(srs, domain_size) {
+    _assertClass(srs, WasmFpSrs);
+    const ret = wasm.caml_fp_srs_lagrange_commitments_whole_domain_ptr(srs.__wbg_ptr, domain_size);
+    return ret;
+}
+
+/**
+* @param {number} ptr
+* @returns {Uint32Array}
+*/
+export function caml_fp_srs_lagrange_commitments_whole_domain_read_from_ptr(ptr) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_fp_srs_lagrange_commitments_whole_domain_read_from_ptr(retptr, ptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU32FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 4);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+}
+
+/**
+* @param {WasmFpSrs} srs
+* @param {number} domain_size
 * @param {number} i
 * @returns {WasmFpPolyComm}
 */
@@ -1265,35 +1294,6 @@ export function caml_fp_srs_h(srs) {
     _assertClass(srs, WasmFpSrs);
     const ret = wasm.caml_fp_srs_h(srs.__wbg_ptr);
     return WasmGVesta.__wrap(ret);
-}
-
-/**
-* @param {WasmFpSrs} srs
-* @param {number} domain_size
-* @returns {number}
-*/
-export function caml_fp_srs_lagrange_commitments_whole_domain(srs, domain_size) {
-    _assertClass(srs, WasmFpSrs);
-    const ret = wasm.caml_fp_srs_lagrange_commitments_whole_domain(srs.__wbg_ptr, domain_size);
-    return ret;
-}
-
-/**
-* @param {number} pointer
-* @returns {Uint32Array}
-*/
-export function caml_fp_srs_lagrange_commitments_whole_domain_read_from_pointer(pointer) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_fp_srs_lagrange_commitments_whole_domain_read_from_pointer(retptr, pointer);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU32FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 4);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
 }
 
 /**
@@ -1667,6 +1667,35 @@ export function caml_fq_srs_read(offset, path) {
 /**
 * @param {WasmFqSrs} srs
 * @param {number} domain_size
+* @returns {number}
+*/
+export function caml_fq_srs_lagrange_commitments_whole_domain_ptr(srs, domain_size) {
+    _assertClass(srs, WasmFqSrs);
+    const ret = wasm.caml_fq_srs_lagrange_commitments_whole_domain_ptr(srs.__wbg_ptr, domain_size);
+    return ret;
+}
+
+/**
+* @param {number} ptr
+* @returns {Uint32Array}
+*/
+export function caml_fq_srs_lagrange_commitments_whole_domain_read_from_ptr(ptr) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.caml_fq_srs_lagrange_commitments_whole_domain_read_from_ptr(retptr, ptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayU32FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 4);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+}
+
+/**
+* @param {WasmFqSrs} srs
+* @param {number} domain_size
 * @param {number} i
 * @returns {WasmFqPolyComm}
 */
@@ -1783,35 +1812,6 @@ export function caml_fq_srs_h(srs) {
     _assertClass(srs, WasmFqSrs);
     const ret = wasm.caml_fq_srs_h(srs.__wbg_ptr);
     return WasmGPallas.__wrap(ret);
-}
-
-/**
-* @param {WasmFqSrs} srs
-* @param {number} domain_size
-* @returns {number}
-*/
-export function caml_fq_srs_lagrange_commitments_whole_domain(srs, domain_size) {
-    _assertClass(srs, WasmFqSrs);
-    const ret = wasm.caml_fq_srs_lagrange_commitments_whole_domain(srs.__wbg_ptr, domain_size);
-    return ret;
-}
-
-/**
-* @param {number} pointer
-* @returns {Uint32Array}
-*/
-export function caml_fq_srs_lagrange_commitments_whole_domain_read_from_pointer(pointer) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_fq_srs_lagrange_commitments_whole_domain_read_from_pointer(retptr, pointer);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayU32FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 4);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
 }
 
 /**

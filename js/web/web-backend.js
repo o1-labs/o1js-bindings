@@ -146,10 +146,7 @@ function overrideBindings(plonk_wasm, worker) {
       });
       /* Here be undefined behavior dragons. */
       let res = wasm.wait_until_non_zero(u32_ptr);
-      console.log('got result from worker', res);
       wasm.free_u32_ptr(u32_ptr);
-      console.log('freed up pointer');
-
       let res_spec = spec[key].res;
       if (res_spec && res_spec.__wrap) {
         return spec[key].res.__wrap(res);

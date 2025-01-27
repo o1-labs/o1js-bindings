@@ -79,13 +79,16 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
   let maybeLagrangeCommitment = wasm[`caml_${f}_srs_maybe_lagrange_commitment`];
   let lagrangeCommitment = (srs: WasmFpSrs, domain_size: number, i: number) =>
     wasm[`caml_${f}_srs_lagrange_commitment`](srs, domain_size, i);
-  let lagrangeCommitmentsWholeDomain = (srs: WasmSrs, domain_size: number) =>
-    wasm[`caml_${f}_srs_lagrange_commitments_whole_domain`](srs, domain_size);
+  let lagrangeCommitmentsWholeDomainPtr = (srs: WasmSrs, domain_size: number) =>
+    wasm[`caml_${f}_srs_lagrange_commitments_whole_domain_ptr`](
+      srs,
+      domain_size
+    );
   let setLagrangeBasis = wasm[`caml_${f}_srs_set_lagrange_basis`];
   let getLagrangeBasis = (srs: WasmSrs, n: number) =>
     wasm[`caml_${f}_srs_get_lagrange_basis`](srs, n);
-  let getCommitmentsWholeDomainByPointers =
-    wasm[`caml_${f}_srs_lagrange_commitments_whole_domain_read_from_pointer`];
+  let getCommitmentsWholeDomainByPtr =
+    wasm[`caml_${f}_srs_lagrange_commitments_whole_domain_read_from_ptr`];
   return {
     /**
      * returns existing stored SRS or falls back to creating a new one
@@ -188,19 +191,15 @@ function srsPerField(f: 'fp' | 'fq', wasm: Wasm, conversion: RustConversion) {
      * Returns the Lagrange basis commitments for the whole domain
      */
     lagrangeCommitmentsWholeDomain(srs: WasmSrs, domainSize: number) {
-      console.log(
-        'Calling wasm function caml_fp_srs_lagrange_commitments_whole_domain'
-      );
-      let ptr = lagrangeCommitmentsWholeDomain(srs, domainSize);
-      console.log(
-        'Returned from wasm function caml_fp_srs_lagrange_commitments_whole_domain'
-      );
-      console.log('ptr ', ptr);
-      let wasmComms = getCommitmentsWholeDomainByPointers(ptr);
-      console.log('wasmComms ', wasmComms);
+      // instead of getting the entire commitment directly (which works for nodejs/servers), we get a pointer to the commitment
+      // and then read the commitment from the pointer
+      // this is because the web worker implementation currently does not support returning UintXArray's directly
+      // hence we return a pointer from wasm, funnel it through the web worker
+      // and then read the commitment from the pointer in the main thread (where UintXArray's are supported)
+      // see https://github.com/o1-labs/o1js-bindings/blob/09e17b45e0c2ca2b51cd9ed756106e17ca1cf36d/js/web/worker-spec.js#L110-L115
+      let ptr = lagrangeCommitmentsWholeDomainPtr(srs, domainSize);
+      let wasmComms = getCommitmentsWholeDomainByPtr(ptr);
       let mlComms = conversion[f].polyCommsFromRust(wasmComms);
-      console.log('mlComms ', mlComms);
-
       return mlComms;
     },
 

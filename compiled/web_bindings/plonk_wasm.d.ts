@@ -277,6 +277,17 @@ export function caml_fp_srs_read(offset: number | undefined, path: string): Wasm
 /**
 * @param {WasmFpSrs} srs
 * @param {number} domain_size
+* @returns {number}
+*/
+export function caml_fp_srs_lagrange_commitments_whole_domain_ptr(srs: WasmFpSrs, domain_size: number): number;
+/**
+* @param {number} ptr
+* @returns {Uint32Array}
+*/
+export function caml_fp_srs_lagrange_commitments_whole_domain_read_from_ptr(ptr: number): Uint32Array;
+/**
+* @param {WasmFpSrs} srs
+* @param {number} domain_size
 * @param {number} i
 * @returns {WasmFpPolyComm}
 */
@@ -313,17 +324,6 @@ export function caml_fp_srs_batch_accumulator_generate(srs: WasmFpSrs, comms: nu
 * @returns {WasmGVesta}
 */
 export function caml_fp_srs_h(srs: WasmFpSrs): WasmGVesta;
-/**
-* @param {WasmFpSrs} srs
-* @param {number} domain_size
-* @returns {number}
-*/
-export function caml_fp_srs_lagrange_commitments_whole_domain(srs: WasmFpSrs, domain_size: number): number;
-/**
-* @param {number} pointer
-* @returns {Uint32Array}
-*/
-export function caml_fp_srs_lagrange_commitments_whole_domain_read_from_pointer(pointer: number): Uint32Array;
 /**
 * @param {number} depth
 * @returns {WasmFpSrs}
@@ -460,6 +460,17 @@ export function caml_fq_srs_read(offset: number | undefined, path: string): Wasm
 /**
 * @param {WasmFqSrs} srs
 * @param {number} domain_size
+* @returns {number}
+*/
+export function caml_fq_srs_lagrange_commitments_whole_domain_ptr(srs: WasmFqSrs, domain_size: number): number;
+/**
+* @param {number} ptr
+* @returns {Uint32Array}
+*/
+export function caml_fq_srs_lagrange_commitments_whole_domain_read_from_ptr(ptr: number): Uint32Array;
+/**
+* @param {WasmFqSrs} srs
+* @param {number} domain_size
 * @param {number} i
 * @returns {WasmFqPolyComm}
 */
@@ -496,17 +507,6 @@ export function caml_fq_srs_batch_accumulator_generate(srs: WasmFqSrs, comms: nu
 * @returns {WasmGPallas}
 */
 export function caml_fq_srs_h(srs: WasmFqSrs): WasmGPallas;
-/**
-* @param {WasmFqSrs} srs
-* @param {number} domain_size
-* @returns {number}
-*/
-export function caml_fq_srs_lagrange_commitments_whole_domain(srs: WasmFqSrs, domain_size: number): number;
-/**
-* @param {number} pointer
-* @returns {Uint32Array}
-*/
-export function caml_fq_srs_lagrange_commitments_whole_domain_read_from_pointer(pointer: number): Uint32Array;
 /**
 * @param {number} depth
 * @returns {WasmFqSrs}
@@ -2658,14 +2658,14 @@ export interface InitOutput {
   readonly caml_fp_srs_add_lagrange_basis: (a: number, b: number) => void;
   readonly caml_fp_srs_write: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly caml_fp_srs_read: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_fp_srs_lagrange_commitments_whole_domain_ptr: (a: number, b: number) => number;
+  readonly caml_fp_srs_lagrange_commitments_whole_domain_read_from_ptr: (a: number, b: number) => void;
   readonly caml_fp_srs_lagrange_commitment: (a: number, b: number, c: number, d: number) => void;
   readonly caml_fp_srs_commit_evaluations: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly caml_fp_srs_b_poly_commitment: (a: number, b: number, c: number, d: number) => void;
   readonly caml_fp_srs_batch_accumulator_check: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly caml_fp_srs_batch_accumulator_generate: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly caml_fp_srs_h: (a: number) => number;
-  readonly caml_fp_srs_lagrange_commitments_whole_domain: (a: number, b: number) => number;
-  readonly caml_fp_srs_lagrange_commitments_whole_domain_read_from_pointer: (a: number, b: number) => void;
   readonly caml_fp_srs_create_parallel: (a: number) => number;
   readonly caml_fp_srs_get: (a: number, b: number) => void;
   readonly caml_fp_srs_set: (a: number, b: number) => number;
@@ -2705,14 +2705,14 @@ export interface InitOutput {
   readonly caml_fq_srs_add_lagrange_basis: (a: number, b: number) => void;
   readonly caml_fq_srs_write: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly caml_fq_srs_read: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly caml_fq_srs_lagrange_commitments_whole_domain_ptr: (a: number, b: number) => number;
+  readonly caml_fq_srs_lagrange_commitments_whole_domain_read_from_ptr: (a: number, b: number) => void;
   readonly caml_fq_srs_lagrange_commitment: (a: number, b: number, c: number, d: number) => void;
   readonly caml_fq_srs_commit_evaluations: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly caml_fq_srs_b_poly_commitment: (a: number, b: number, c: number, d: number) => void;
   readonly caml_fq_srs_batch_accumulator_check: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly caml_fq_srs_batch_accumulator_generate: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly caml_fq_srs_h: (a: number) => number;
-  readonly caml_fq_srs_lagrange_commitments_whole_domain: (a: number, b: number) => number;
-  readonly caml_fq_srs_lagrange_commitments_whole_domain_read_from_pointer: (a: number, b: number) => void;
   readonly caml_fq_srs_create_parallel: (a: number) => number;
   readonly caml_fq_srs_get: (a: number, b: number) => void;
   readonly caml_fq_srs_set: (a: number, b: number) => number;
