@@ -30,6 +30,10 @@ let exampleFields = {
   f25519: createField(p25519),
   secp256k1: createField(pSecp256k1),
   secq256k1: createField(pSecq256k1),
+  secp256r1:
+    createField(
+      0xffffffff00000001000000000000000000000000ffffffffffffffffffffffffn
+    ),
   bls12_377_base: createField(pBls12_377),
   bls12_377_scalar: createField(qBls12_377),
   bls12_381_base: createField(pBls12_381),

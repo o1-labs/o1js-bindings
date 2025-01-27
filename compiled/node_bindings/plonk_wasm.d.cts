@@ -277,9 +277,14 @@ export function caml_fq_srs_read(offset: number | undefined, path: string): Wasm
 /**
 * @param {WasmFqSrs} srs
 * @param {number} domain_size
+* @returns {number}
+*/
+export function caml_fq_srs_lagrange_commitments_whole_domain_ptr(srs: WasmFqSrs, domain_size: number): number;
+/**
+* @param {number} ptr
 * @returns {Uint32Array}
 */
-export function caml_fq_srs_lagrange_commitments_whole_domain(srs: WasmFqSrs, domain_size: number): Uint32Array;
+export function caml_fq_srs_lagrange_commitments_whole_domain_read_from_ptr(ptr: number): Uint32Array;
 /**
 * @param {WasmFqSrs} srs
 * @param {number} domain_size
@@ -448,14 +453,6 @@ export function caml_pasta_fq_plonk_proof_dummy(): WasmFqProverProof;
 */
 export function caml_pasta_fq_plonk_proof_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
 /**
-* @returns {WasmGPallas}
-*/
-export function caml_pallas_affine_one(): WasmGPallas;
-/**
-* @returns {WasmGVesta}
-*/
-export function caml_vesta_affine_one(): WasmGVesta;
-/**
 * @returns {WasmFpGateVector}
 */
 export function caml_pasta_fp_plonk_gate_vector_create(): WasmFpGateVector;
@@ -518,9 +515,14 @@ export function caml_fp_srs_read(offset: number | undefined, path: string): Wasm
 /**
 * @param {WasmFpSrs} srs
 * @param {number} domain_size
+* @returns {number}
+*/
+export function caml_fp_srs_lagrange_commitments_whole_domain_ptr(srs: WasmFpSrs, domain_size: number): number;
+/**
+* @param {number} ptr
 * @returns {Uint32Array}
 */
-export function caml_fp_srs_lagrange_commitments_whole_domain(srs: WasmFpSrs, domain_size: number): Uint32Array;
+export function caml_fp_srs_lagrange_commitments_whole_domain_read_from_ptr(ptr: number): Uint32Array;
 /**
 * @param {WasmFpSrs} srs
 * @param {number} domain_size
@@ -698,6 +700,14 @@ export function caml_pasta_fp_poseidon_block_cipher(state: Uint8Array): Uint8Arr
 * @returns {Uint8Array}
 */
 export function caml_pasta_fq_poseidon_block_cipher(state: Uint8Array): Uint8Array;
+/**
+* @returns {WasmGPallas}
+*/
+export function caml_pallas_affine_one(): WasmGPallas;
+/**
+* @returns {WasmGVesta}
+*/
+export function caml_vesta_affine_one(): WasmGVesta;
 /**
 * @returns {number}
 */
