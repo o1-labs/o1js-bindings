@@ -275,6 +275,14 @@ export function caml_fq_srs_write(append: boolean | undefined, srs: WasmFqSrs, p
 */
 export function caml_fq_srs_read(offset: number | undefined, path: string): WasmFqSrs | undefined;
 /**
+* This is same as _lagrange_commitments, but returns the result for every
+* i <= domain_size.
+* @param {WasmFqSrs} srs
+* @param {number} domain_size
+* @returns {Uint32Array}
+*/
+export function caml_fq_srs_lagrange_commitments_whole_domain(srs: WasmFqSrs, domain_size: number): Uint32Array;
+/**
 * @param {WasmFqSrs} srs
 * @param {number} domain_size
 * @returns {number}
@@ -422,6 +430,145 @@ export function caml_pasta_fq_plonk_index_write(append: boolean | undefined, ind
 * @returns {string}
 */
 export function caml_pasta_fq_plonk_index_serialize(index: WasmPastaFqPlonkIndex): string;
+/**
+* @param {string} name
+*/
+export function greet(name: string): void;
+/**
+* @param {string} s
+*/
+export function console_log(s: string): void;
+/**
+* @returns {number}
+*/
+export function create_zero_u32_ptr(): number;
+/**
+* @param {number} ptr
+*/
+export function free_u32_ptr(ptr: number): void;
+/**
+* @param {number} ptr
+* @param {number} arg
+*/
+export function set_u32_ptr(ptr: number, arg: number): void;
+/**
+* @param {number} ptr
+* @returns {number}
+*/
+export function wait_until_non_zero(ptr: number): number;
+/**
+* @returns {WasmFqGateVector}
+*/
+export function caml_pasta_fq_plonk_gate_vector_create(): WasmFqGateVector;
+/**
+* @param {WasmFqGateVector} v
+* @param {WasmFqGate} gate
+*/
+export function caml_pasta_fq_plonk_gate_vector_add(v: WasmFqGateVector, gate: WasmFqGate): void;
+/**
+* @param {WasmFqGateVector} v
+* @param {number} i
+* @returns {WasmFqGate}
+*/
+export function caml_pasta_fq_plonk_gate_vector_get(v: WasmFqGateVector, i: number): WasmFqGate;
+/**
+* @param {WasmFqGateVector} v
+* @returns {number}
+*/
+export function caml_pasta_fq_plonk_gate_vector_len(v: WasmFqGateVector): number;
+/**
+* @param {WasmFqGateVector} v
+* @param {Wire} t
+* @param {Wire} h
+*/
+export function caml_pasta_fq_plonk_gate_vector_wrap(v: WasmFqGateVector, t: Wire, h: Wire): void;
+/**
+* @param {number} public_input_size
+* @param {WasmFqGateVector} v
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_plonk_gate_vector_digest(public_input_size: number, v: WasmFqGateVector): Uint8Array;
+/**
+* @param {number} public_input_size
+* @param {WasmFqGateVector} v
+* @returns {string}
+*/
+export function caml_pasta_fq_plonk_circuit_serialize(public_input_size: number, v: WasmFqGateVector): string;
+/**
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_one(): WasmVestaGProjective;
+/**
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_add(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
+/**
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_sub(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
+/**
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_negate(x: WasmVestaGProjective): WasmVestaGProjective;
+/**
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_double(x: WasmVestaGProjective): WasmVestaGProjective;
+/**
+* @param {WasmVestaGProjective} x
+* @param {Uint8Array} y
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_scale(x: WasmVestaGProjective, y: Uint8Array): WasmVestaGProjective;
+/**
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_random(): WasmVestaGProjective;
+/**
+* @param {number} i
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_rng(i: number): WasmVestaGProjective;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_vesta_endo_base(): Uint8Array;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_vesta_endo_scalar(): Uint8Array;
+/**
+* @param {WasmVestaGProjective} x
+* @returns {WasmGVesta}
+*/
+export function caml_vesta_to_affine(x: WasmVestaGProjective): WasmGVesta;
+/**
+* @param {WasmGVesta} x
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_of_affine(x: WasmGVesta): WasmVestaGProjective;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {WasmVestaGProjective}
+*/
+export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmVestaGProjective;
+/**
+* @param {WasmGVesta} x
+* @returns {WasmGVesta}
+*/
+export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
+/**
+* @param {WasmPastaFpPlonkIndex} prover_index
+* @returns {string}
+*/
+export function prover_to_json(prover_index: WasmPastaFpPlonkIndex): string;
 /**
 * @param {WasmPastaFqPlonkIndex} index
 * @param {WasmVecVecFq} witness
@@ -651,145 +798,6 @@ export function fq_oracles_dummy(): WasmFqOracles;
 */
 export function fq_oracles_deep_copy(x: WasmFqProverProof): WasmFqProverProof;
 /**
-* @param {string} name
-*/
-export function greet(name: string): void;
-/**
-* @param {string} s
-*/
-export function console_log(s: string): void;
-/**
-* @returns {number}
-*/
-export function create_zero_u32_ptr(): number;
-/**
-* @param {number} ptr
-*/
-export function free_u32_ptr(ptr: number): void;
-/**
-* @param {number} ptr
-* @param {number} arg
-*/
-export function set_u32_ptr(ptr: number, arg: number): void;
-/**
-* @param {number} ptr
-* @returns {number}
-*/
-export function wait_until_non_zero(ptr: number): number;
-/**
-* @returns {WasmFqGateVector}
-*/
-export function caml_pasta_fq_plonk_gate_vector_create(): WasmFqGateVector;
-/**
-* @param {WasmFqGateVector} v
-* @param {WasmFqGate} gate
-*/
-export function caml_pasta_fq_plonk_gate_vector_add(v: WasmFqGateVector, gate: WasmFqGate): void;
-/**
-* @param {WasmFqGateVector} v
-* @param {number} i
-* @returns {WasmFqGate}
-*/
-export function caml_pasta_fq_plonk_gate_vector_get(v: WasmFqGateVector, i: number): WasmFqGate;
-/**
-* @param {WasmFqGateVector} v
-* @returns {number}
-*/
-export function caml_pasta_fq_plonk_gate_vector_len(v: WasmFqGateVector): number;
-/**
-* @param {WasmFqGateVector} v
-* @param {Wire} t
-* @param {Wire} h
-*/
-export function caml_pasta_fq_plonk_gate_vector_wrap(v: WasmFqGateVector, t: Wire, h: Wire): void;
-/**
-* @param {number} public_input_size
-* @param {WasmFqGateVector} v
-* @returns {Uint8Array}
-*/
-export function caml_pasta_fq_plonk_gate_vector_digest(public_input_size: number, v: WasmFqGateVector): Uint8Array;
-/**
-* @param {number} public_input_size
-* @param {WasmFqGateVector} v
-* @returns {string}
-*/
-export function caml_pasta_fq_plonk_circuit_serialize(public_input_size: number, v: WasmFqGateVector): string;
-/**
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_one(): WasmVestaGProjective;
-/**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_add(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
-/**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_sub(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
-/**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_negate(x: WasmVestaGProjective): WasmVestaGProjective;
-/**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_double(x: WasmVestaGProjective): WasmVestaGProjective;
-/**
-* @param {WasmVestaGProjective} x
-* @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_scale(x: WasmVestaGProjective, y: Uint8Array): WasmVestaGProjective;
-/**
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_random(): WasmVestaGProjective;
-/**
-* @param {number} i
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_rng(i: number): WasmVestaGProjective;
-/**
-* @returns {Uint8Array}
-*/
-export function caml_vesta_endo_base(): Uint8Array;
-/**
-* @returns {Uint8Array}
-*/
-export function caml_vesta_endo_scalar(): Uint8Array;
-/**
-* @param {WasmVestaGProjective} x
-* @returns {WasmGVesta}
-*/
-export function caml_vesta_to_affine(x: WasmVestaGProjective): WasmGVesta;
-/**
-* @param {WasmGVesta} x
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_of_affine(x: WasmGVesta): WasmVestaGProjective;
-/**
-* @param {Uint8Array} x
-* @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
-*/
-export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmVestaGProjective;
-/**
-* @param {WasmGVesta} x
-* @returns {WasmGVesta}
-*/
-export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
-/**
-* @param {WasmPastaFpPlonkIndex} prover_index
-* @returns {string}
-*/
-export function prover_to_json(prover_index: WasmPastaFpPlonkIndex): string;
-/**
 * @returns {WasmFpGateVector}
 */
 export function caml_pasta_fp_plonk_gate_vector_create(): WasmFpGateVector;
@@ -849,6 +857,14 @@ export function caml_fp_srs_write(append: boolean | undefined, srs: WasmFpSrs, p
 * @returns {WasmFpSrs | undefined}
 */
 export function caml_fp_srs_read(offset: number | undefined, path: string): WasmFpSrs | undefined;
+/**
+* This is same as _lagrange_commitments, but returns the result for every
+* i <= domain_size.
+* @param {WasmFpSrs} srs
+* @param {number} domain_size
+* @returns {Uint32Array}
+*/
+export function caml_fp_srs_lagrange_commitments_whole_domain(srs: WasmFpSrs, domain_size: number): Uint32Array;
 /**
 * @param {WasmFpSrs} srs
 * @param {number} domain_size
