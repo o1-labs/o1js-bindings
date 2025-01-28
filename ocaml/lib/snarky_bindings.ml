@@ -12,7 +12,7 @@ type field = Impl.field
 
 (* light-weight wrapper around snarky-ml core *)
 
-let empty_typ : (_, _, unit, field, _) Impl.Internal_Basic.Typ.typ' =
+let empty_typ : (_, _, unit) Impl.Internal_Basic.Typ.typ' =
   { var_to_fields = (fun fields -> (fields, ()))
   ; var_of_fields = (fun (fields, _) -> fields)
   ; value_to_fields = (fun fields -> (fields, ()))
@@ -60,17 +60,18 @@ module Run = struct
   let enter_as_prover size = Impl.as_prover_manual size |> Staged.unstage
 
   module State = struct
-    let alloc_var state = Run_state.alloc_var state ()
+    let alloc_var state = Backend.Run_state.alloc_var state ()
 
-    let store_field_elt state x = Run_state.store_field_elt state x
+    let store_field_elt state x = Backend.Run_state.store_field_elt state x
 
-    let as_prover state = Run_state.as_prover state
+    let as_prover state = Backend.Run_state.as_prover state
 
-    let set_as_prover state b = Run_state.set_as_prover state b
+    let set_as_prover state b = Backend.Run_state.set_as_prover state b
 
-    let has_witness state = Run_state.has_witness state
+    let has_witness state = Backend.Run_state.has_witness state
 
-    let get_variable_value state i = Run_state.get_variable_value state i
+    let get_variable_value state i =
+      Backend.Run_state.get_variable_value state i
   end
 end
 
@@ -124,13 +125,7 @@ module Field' = struct
 end
 
 let add_gate (label : string) gate =
-  Impl.with_label label (fun () ->
-      Impl.assert_
-        { annotation = None
-        ; basic =
-            Kimchi_backend_common.Plonk_constraint_system.Plonk_constraint.T
-              gate
-        } )
+  Impl.with_label label (fun () -> Impl.assert_ gate)
 
 module Gates = struct
   let zero in1 in2 out =

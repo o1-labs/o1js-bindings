@@ -105,11 +105,20 @@ function workerSpec(wasm) {
       res: wasm.WasmFqSrs,
     },
     caml_fp_srs_get_lagrange_basis: {
+      disabled: true,
       args: [wasm.WasmFpSrs, undefined /* number */],
+      // TODO: returning a UintXArray does not work:
+      // the worker wrapper excepts the return value to be a number
+      // that can be stored in a single u32.
+      // A UintXArray is coerced into a 0 pointer, which doesn't trigger `wait_until_non_zero()`,
+      // which means the main worker just keeps spinning waiting for a response.
+      // A proper solution would be to wrap the return value in a pointer!
       res: undefined /* UintXArray */,
     },
     caml_fq_srs_get_lagrange_basis: {
+      disabled: true,
       args: [wasm.WasmFqSrs, undefined /* number */],
+      // TODO: returning a UintXArray does not work, see above
       res: undefined /* UintXArray */,
     },
     caml_fp_srs_b_poly_commitment: {
@@ -159,6 +168,14 @@ function workerSpec(wasm) {
     caml_fq_srs_lagrange_commitment: {
       args: [wasm.WasmFqSrs, undefined /* number */, undefined /* number */],
       res: wasm.WasmFqPolyComm,
+    },
+    caml_fp_srs_lagrange_commitments_whole_domain: {
+      args: [wasm.WasmFpSrs, undefined /* number */],
+      res: undefined /* number, ptr */,
+    },
+    caml_fq_srs_lagrange_commitments_whole_domain: {
+      args: [wasm.WasmFqSrs, undefined /* number */],
+      res: undefined /* number, ptr */,
     },
   };
 }

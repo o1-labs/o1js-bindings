@@ -21,12 +21,15 @@ module Statement : sig
   end
 end
 
+type proof = (Pickles_types.Nat.N0.n, Pickles_types.Nat.N0.n) Pickles.Proof.t
+
 type pickles_rule_js =
   < identifier : Js.js_string Js.t Js.prop
   ; main :
       (   Public_input.t
        -> < publicOutput : Public_input.t Js.prop
           ; previousStatements : Statement.t array Js.prop
+          ; previousProofs : proof array Js.prop
           ; shouldVerify : Boolean.var array Js.prop >
           Js.t
           Promise_js_helpers.js_promise )
@@ -41,8 +44,6 @@ type pickles_rule_js =
 module Cache : sig
   type js_storable
 end
-
-type proof = (Pickles_types.Nat.N0.n, Pickles_types.Nat.N0.n) Pickles.Proof.t
 
 module Proof0 : sig
   type t = (Pickles_types.Nat.N0.n, Pickles_types.Nat.N0.n) Pickles.Proof.t
