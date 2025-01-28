@@ -289,7 +289,7 @@ module Choices = struct
               , proof_must_verify :: should_verifys
               , _tag :: tags ) ->
                 let proof =
-                  Impl.exists (Impl.Typ.Internal.ref ()) ~compute:(fun () ->
+                  Impl.exists (Impl.Typ.prover_value ()) ~compute:(fun () ->
                       Array.get js_result##.previousProofs i
                       |> unsafe_coerce_proof )
                 in
