@@ -84,13 +84,7 @@ function createDerivers<Field>(): {
     );
   }
 
-  function provable<A>(
-    typeObj: A,
-    /**
-     * @deprecated
-     */
-    options?: { isPure?: boolean } // TODO: remove this option, it has no effect
-  ): InferredProvable<A, Field> {
+  function provable<A>(typeObj: A): InferredProvable<A, Field> {
     type T = InferProvable<A, Field>;
     type V = InferValue<A>;
     type J = InferJson<A>;
@@ -252,6 +246,28 @@ function createDerivers<Field>(): {
       return Object.keys(typeObj).forEach((k) => check(typeObj[k], obj[k]));
     }
 
+    function toCanonical(typeObj: NestedProvable<Field>, value: any): any {
+      if (isPrimitive(typeObj)) return value;
+
+      if (!complexTypes.has(typeof typeObj))
+        throw Error(`provable: unsupported type "${typeObj}"`);
+
+      if (hasProvable(typeObj))
+        return typeObj.provable.toCanonical?.(value) ?? value;
+
+      if (Array.isArray(typeObj)) {
+        return typeObj.forEach((t, i) => toCanonical(t, value[i]));
+      }
+
+      if (isProvable(typeObj)) return typeObj.toCanonical?.(value) ?? value;
+
+      return Object.fromEntries(
+        Object.keys(typeObj).map((k) => {
+          return [k, toCanonical(typeObj[k], value[k])];
+        })
+      );
+    }
+
     const toValue = createMap('toValue');
     const fromValue = createMap('fromValue');
 
@@ -263,19 +279,23 @@ function createDerivers<Field>(): {
 
     type S = InferSignable<A, Field>;
 
+    const type = typeObj as NestedProvable<Field>;
+
     return {
-      sizeInFields: () => sizeInFields(typeObj as NestedProvable<Field>),
-      toFields: (obj: T) => toFields(typeObj as NestedProvable<Field>, obj),
-      toAuxiliary: (obj?: T) =>
-        toAuxiliary(typeObj as NestedProvable<Field>, obj),
+      sizeInFields: () => sizeInFields(type),
+      toFields: (obj: T) => toFields(type, obj),
+      toAuxiliary: (obj?: T) => toAuxiliary(type, obj),
       fromFields: (fields: Field[], aux: any[]) =>
-        fromFields(typeObj as NestedProvable<Field>, fields, aux) as T,
-      check: (obj: T) => check(typeObj as NestedProvable<Field>, obj),
+        fromFields(type, fields, aux) as T,
+      check: (obj: T) => check(type, obj),
       toValue(x) {
-        return toValue(typeObj, x);
+        return toValue(type, x);
       },
       fromValue(v) {
-        return fromValue(typeObj, v);
+        return fromValue(type, v);
+      },
+      toCanonical(x) {
+        return toCanonical(type, x);
       },
       toInput: (obj: T) => toInput(obj as S),
       toJSON: (obj: T) => toJSON(obj as S) satisfies J,

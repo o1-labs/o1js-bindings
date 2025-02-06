@@ -5,7 +5,7 @@ import {
   GroupProjective,
   affineScale,
   projectiveAdd,
-  projectiveDouble,
+  getProjectiveDouble,
   projectiveFromAffine,
   projectiveNeg,
   projectiveToAffine,
@@ -25,10 +25,10 @@ export {
  * Define methods leveraging a curve endomorphism
  */
 function Endomorphism(
-  name: string,
   Field: FiniteField,
   Scalar: FiniteField,
   generator: GroupAffine,
+  a: bigint,
   endoScalar?: bigint,
   endoBase?: bigint
 ) {
@@ -37,10 +37,10 @@ function Endomorphism(
       ({ endoScalar, endoBase } = computeEndoConstants(
         Field,
         Scalar,
-        generator
+        generator,
+        a
       ));
     } catch (e: any) {
-      console.log(`Warning: no endomorphism for ${name}`, e?.message);
       return undefined;
     }
   }
@@ -62,7 +62,7 @@ function Endomorphism(
     },
 
     scaleProjective(g: GroupProjective, s: bigint) {
-      return glvScaleProjective(g, s, Field.modulus, endoBase_, glvData);
+      return glvScaleProjective(g, s, Field.modulus, a, endoBase_, glvData);
     },
     scale(g: GroupAffine, s: bigint) {
       let gProj = projectiveFromAffine(g);
@@ -70,6 +70,7 @@ function Endomorphism(
         gProj,
         s,
         Field.modulus,
+        a,
         endoBase_,
         glvData
       );
@@ -154,10 +155,12 @@ function glvScaleProjective(
   g: GroupProjective,
   s: bigint,
   p: bigint,
+  a: bigint,
   endoBase: bigint,
   data: GlvData
 ) {
   let endoG = endomorphismProjective(g, endoBase, p);
+  let double = getProjectiveDouble(p, a);
 
   let [s0, s1] = decompose(s, data);
   let S0 = bigIntToBits(s0.abs);
@@ -168,10 +171,10 @@ function glvScaleProjective(
   let h = projectiveZero;
 
   for (let i = data.maxBits - 1; i >= 0; i--) {
-    if (S0[i]) h = projectiveAdd(h, g, p);
-    if (S1[i]) h = projectiveAdd(h, endoG, p);
+    if (S0[i]) h = projectiveAdd(h, g, p, a);
+    if (S1[i]) h = projectiveAdd(h, endoG, p, a);
     if (i === 0) break;
-    h = projectiveDouble(h, p);
+    h = double(h, p);
   }
 
   return h;
@@ -185,7 +188,8 @@ function glvScaleProjective(
 function computeEndoConstants(
   Field: FiniteField,
   Scalar: FiniteField,
-  G: GroupAffine
+  G: GroupAffine,
+  a: bigint
 ) {
   let p = Field.modulus;
   let q = Scalar.modulus;
@@ -207,7 +211,7 @@ function computeEndoConstants(
   assert(lambda !== 1n, 'lambda is not 1');
 
   // compute beta such that lambda * (x, y) = (beta * x, y) (endo base)
-  let lambdaG = affineScale(G, lambda, p);
+  let lambdaG = affineScale(G, lambda, p, a);
   assert(lambdaG.y === G.y, 'multiplication by lambda is a cheap endomorphism');
 
   let beta = Field.div(lambdaG.x, G.x);
@@ -217,8 +221,8 @@ function computeEndoConstants(
 
   // confirm endomorphism at random point
   // TODO would be nice to have some theory instead of this heuristic
-  let R = affineScale(G, Scalar.random(), p);
-  let lambdaR = affineScale(R, lambda, p);
+  let R = affineScale(G, Scalar.random(), p, a);
+  let lambdaR = affineScale(R, lambda, p, a);
   assert(lambdaR.x === Field.mul(beta, R.x), 'confirm endomorphism');
   assert(lambdaR.y === R.y, 'confirm endomorphism');
 

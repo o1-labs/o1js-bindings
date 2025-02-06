@@ -154,21 +154,6 @@ type ZkappCommand = {
           actionState: Field | null;
           provedState: Bool | null;
           isNew: Bool | null;
-          permissions: {
-            editState: AuthRequired | null;
-            access: AuthRequired | null;
-            send: AuthRequired | null;
-            receive: AuthRequired | null;
-            setDelegate: AuthRequired | null;
-            setPermissions: AuthRequired | null;
-            setVerificationKey: AuthRequired | null;
-            setZkappUri: AuthRequired | null;
-            editActionState: AuthRequired | null;
-            setTokenSymbol: AuthRequired | null;
-            incrementNonce: AuthRequired | null;
-            setVotingFor: AuthRequired | null;
-            setTiming: AuthRequired | null;
-          };
         };
         validWhile: {
           lower: UInt32;
@@ -311,21 +296,6 @@ type AccountUpdate = {
         actionState: Field | null;
         provedState: Bool | null;
         isNew: Bool | null;
-        permissions: {
-          editState: AuthRequired | null;
-          access: AuthRequired | null;
-          send: AuthRequired | null;
-          receive: AuthRequired | null;
-          setDelegate: AuthRequired | null;
-          setPermissions: AuthRequired | null;
-          setVerificationKey: AuthRequired | null;
-          setZkappUri: AuthRequired | null;
-          editActionState: AuthRequired | null;
-          setTokenSymbol: AuthRequired | null;
-          incrementNonce: AuthRequired | null;
-          setVotingFor: AuthRequired | null;
-          setTiming: AuthRequired | null;
-        };
       };
       validWhile: {
         lower: UInt32;

@@ -119,7 +119,7 @@ let get_network_id_of_js_string (network : Js.js_string Js.t) =
   match Js.to_string network with
   | "mainnet" ->
       Mina_signature_kind.Mainnet
-  | "testnet" ->
+  | "testnet" | "devnet" ->
       Mina_signature_kind.Testnet
   | other ->
       Mina_signature_kind.(Other_network other)
@@ -145,9 +145,8 @@ end
 
 module To_fields = struct
   (* helper function to check whether the fields we produce from JS are correct *)
-  let fields_of_json
-      (typ : ('var, 'value, Field.Constant.t, 'tmp) Impl.Internal_Basic.Typ.typ)
-      of_json (json : Js.js_string Js.t) : Impl.field array =
+  let fields_of_json (typ : ('var, 'value) Impl.Internal_Basic.Typ.typ) of_json
+      (json : Js.js_string Js.t) : Impl.field array =
     let json = json |> Js.to_string |> Yojson.Safe.from_string in
     let value = of_json json in
     let (Typ typ) = typ in
