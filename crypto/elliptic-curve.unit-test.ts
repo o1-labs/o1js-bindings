@@ -186,6 +186,7 @@ const {
   isOnCurve,
   isInPrimeSubgroup,
   equal,
+  isZero,
 } = Edwards25519;
 
 let randomScalar = Random(Scalar.random);
@@ -208,9 +209,6 @@ test(
 
     // check bad point not on curve
     assert(!isOnCurve({ x: 1n, y: 1n }), 'bad point not on curve');
-
-    // check on curve but not in subgroup
-    assert(!isInPrimeSubgroup({ x: 0n, y: 1n }), 'point not in prime subgroup');
 
     // equal
     assert(equal(X, X), 'equal');
@@ -253,5 +251,24 @@ test(
       equal(scale(X, Scalar.mul(x, y)), scale(scale(X, x), y)),
       'scale / multiply is associative'
     );
+
+    // subgroup
+    assert(!isInPrimeSubgroup({ x: 0n, y: 1n }), 'point not in prime subgroup');
+
+    // modular reduction
+
+    assert(
+      isOnCurve({ x: X.x + G.order, y: X.y }),
+      'larger x coordinates on curve'
+    );
+    assert(
+      isOnCurve({ x: X.x, y: X.y + G.order }),
+      'larger y coordinates on curve'
+    );
+    assert(
+      isOnCurve({ x: X.x + G.order, y: X.y + G.order }),
+      'larger x,y coordinates on curve'
+    );
+    assert(isZero({ x: 0n, y: 1n + G.order }), 'augmented zero is identity');
   }
 );
