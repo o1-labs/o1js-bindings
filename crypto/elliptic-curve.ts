@@ -16,14 +16,14 @@ export {
   Vesta,
   CurveParams,
   GroupAffine,
-  GroupTwisted,
+  GroupAffineTwisted,
   GroupProjective,
   GroupMapPallas,
   createCurveProjective,
   createCurveAffine,
-  createCurveTwisted,
+  createAffineTwistedCurve,
   CurveAffine,
-  CurveTwisted,
+  AffineTwistedCurve,
   ProjectiveCurve,
   affineAdd,
   affineDouble,
@@ -35,10 +35,10 @@ export {
   getProjectiveDouble,
   projectiveNeg,
   TwistedCurveParams,
-  twistedAdd,
-  twistedDouble,
-  twistedScale,
-  projectiveZeroTwisted,
+  affineTwistedAdd,
+  affineTwistedDouble,
+  affineTwistedScale,
+  projectiveTwistedZero,
 };
 
 // TODO: constants, like generator points and cube roots for endomorphisms, should be drawn from
@@ -64,16 +64,21 @@ const pallasEndoScalar =
 const b = 5n;
 const a = 0n;
 
-const projectiveZero = { x: 1n, y: 1n, z: 0n };
-const projectiveZeroTwisted = { x: 0n, y: 1n, z: 1n };
+// NOTE: technically, twisted curves do not have a point at infinity. Instead,
+// the identity is interchangeably called the zero point.
 
 type GroupProjective = { x: bigint; y: bigint; z: bigint };
 type PointAtInfinity = { x: bigint; y: bigint; infinity: true };
 type FinitePoint = { x: bigint; y: bigint; infinity: false };
 type GroupAffine = PointAtInfinity | FinitePoint;
-type GroupTwisted = PointAtInfinity | FinitePoint;
+type GroupAffineTwisted = { x: bigint; y: bigint };
 
-const twistedZero: PointAtInfinity = { x: 0n, y: 1n, infinity: true };
+const projectiveZero = { x: 1n, y: 1n, z: 0n };
+const projectiveTwistedZero = { x: 0n, y: 1n, z: 1n };
+const affineTwistedZero: GroupAffineTwisted = {
+  x: 0n,
+  y: 1n,
+};
 
 /**
  * Parameters defining an elliptic curve in short Weierstraß form
@@ -718,7 +723,7 @@ function createCurveAffine({
 }
 
 /**
- * Parameters defining an elliptic curve in twisted Edwards form
+ * Parameters defining an elliptic curve in twisted Edwards form with affine coordinates
  * ax^2 + y^2 = 1 + dx^2y^2
  */
 type TwistedCurveParams = {
@@ -756,37 +761,38 @@ type TwistedCurveParams = {
   endoScalar?: bigint;
 };
 
-function twistedOnCurve(
-  { x, y, infinity }: GroupTwisted,
+function affineTwistedOnCurve(
+  g: GroupAffineTwisted,
   p: bigint,
   a: bigint,
   d: bigint
 ) {
-  if (infinity) return true;
+  if (g === affineTwistedZero) return true;
   // a * x^2 + y^2 = 1 + d * x^2 * y^2
+  const { x, y } = g;
   let x2 = mod(x * x, p);
   let y2 = mod(y * y, p);
   return mod(a * x2 + y2 - 1n - d * x2 * y2, p) === 0n;
 }
 
-function twistedAdd(
-  g: GroupTwisted,
-  h: GroupTwisted,
+function affineTwistedAdd(
+  g: GroupAffineTwisted,
+  h: GroupAffineTwisted,
   p: bigint,
   a: bigint,
   d: bigint
-): GroupTwisted {
-  if (g.infinity) return h;
-  if (h.infinity) return g;
+): GroupAffineTwisted {
+  if (g === affineTwistedZero) return h;
+  if (h === affineTwistedZero) return g;
 
   let { x: x1, y: y1 } = g;
   let { x: x2, y: y2 } = h;
 
   if (y1 === y2) {
     // g + g --> double
-    if (x1 === x2) return twistedDouble(g, p, a, d);
+    if (x1 === x2) return affineTwistedDouble(g, p, a, d);
     // g - g --> return zero
-    if (x1 === mod(p - x2, p)) return twistedZero;
+    if (x1 === mod(p - x2, p)) return affineTwistedZero;
   }
 
   // x3 = (x1 * y2 + y1 * x2) / (1 + d * x1 * x2 * y1 * y2)
@@ -813,18 +819,18 @@ function twistedAdd(
   let x3 = mod(x3Num * x3Denom, p);
   let y3 = mod(y3Num * y3Denom, p);
 
-  return { x: x3, y: y3, infinity: false };
+  return { x: x3, y: y3 };
 }
 
-function twistedDouble(
-  g: GroupTwisted,
+function affineTwistedDouble(
+  g: GroupAffineTwisted,
   p: bigint,
   a: bigint,
   d: bigint
-): GroupTwisted {
+): GroupAffineTwisted {
   let { x: x1, y: y1 } = g;
 
-  if (g.infinity) return twistedZero;
+  if (g == affineTwistedZero) return g;
 
   // x3 = 2*x1*y1 / (1 + d * x1^2 * y1^2)
   // y3 = (y1^2 - a * x1^2) / (1 - d * x1^2 * y1^2)
@@ -845,32 +851,32 @@ function twistedDouble(
   let x3 = mod(x3Num * x3Den, p);
   let y3 = mod(y3Num * y3Den, p);
 
-  return { x: x3, y: y3, infinity: false };
+  return { x: x3, y: y3 };
 }
 
-function twistedNegate(
-  { x, y, infinity }: GroupTwisted,
+function affineTwistedNegate(
+  g: GroupAffineTwisted,
   p: bigint
-): GroupTwisted {
-  if (infinity) return twistedZero;
-  return { x: x === 0n ? 0n : p - x, y, infinity };
+): GroupAffineTwisted {
+  if (g == affineTwistedZero) return g;
+  return { x: g.x === 0n ? 0n : p - g.x, y: g.y };
 }
 
-function twistedScale(
-  g: GroupAffine,
+function affineTwistedScale(
+  g: GroupAffineTwisted,
   s: bigint | boolean[],
   p: bigint,
   a: bigint,
   d: bigint
 ) {
-  let gProj = projectiveFromTwisted(g);
-  let sgProj = projectiveScaleTwisted(gProj, s, p, a, d);
-  return projectiveToTwisted(sgProj, p);
+  let gProj = projectiveFromAffineTwisted(g);
+  let sgProj = projectiveTwistedScale(gProj, s, p, a, d);
+  return projectiveToAffineTwisted(sgProj, p);
 }
 
 // https://www.hyperelliptic.org/EFD/g1p/auto-twisted-projective.html
 // https://eprint.iacr.org/2008/013.pdf Section 6
-function projectiveAddTwisted(
+function projectiveTwistedAdd(
   g: GroupProjective,
   h: GroupProjective,
   p: bigint,
@@ -904,7 +910,7 @@ function projectiveAddTwisted(
 
 // https://www.hyperelliptic.org/EFD/g1p/auto-twisted-projective.html
 // https://eprint.iacr.org/2008/013.pdf Section 6
-function projectiveDoubleTwisted(
+function projectiveTwistedDouble(
   g: GroupProjective,
   p: bigint,
   a: bigint
@@ -933,7 +939,7 @@ function projectiveDoubleTwisted(
   };
 }
 
-function projectiveScaleTwisted(
+function projectiveTwistedScale(
   g: GroupProjective,
   x: bigint | boolean[],
   p: bigint,
@@ -941,55 +947,57 @@ function projectiveScaleTwisted(
   d: bigint
 ) {
   let bits = typeof x === 'bigint' ? bigIntToBits(x) : x;
-  let h = projectiveZeroTwisted;
+  let h = projectiveTwistedZero;
   for (let bit of bits) {
-    if (bit) h = projectiveAddTwisted(h, g, p, a, d);
-    g = projectiveDoubleTwisted(g, p, a);
+    if (bit) h = projectiveTwistedAdd(h, g, p, a, d);
+    g = projectiveTwistedDouble(g, p, a);
   }
   return h;
 }
 
-function projectiveFromTwisted({
-  x,
-  y,
-  infinity,
-}: GroupTwisted): GroupProjective {
-  if (infinity) return projectiveZeroTwisted;
-  return { x, y, z: 1n };
+function projectiveFromAffineTwisted(g: GroupAffineTwisted): GroupProjective {
+  if (g === affineTwistedZero) return projectiveTwistedZero;
+  return { x: g.x, y: g.y, z: 1n };
 }
 
-// The twisted curve with equation
+// The affine twisted curve with equation
 // a * x^2 + y^2 = 1 + d * x^2 * y^2
 // in projective coordinates is represented as
 // a * X^2 * Z^2 + Y^2 Z^2 = Z^4 + d * X^2 * Y^2
 // where x = X/Z, y = Y/Z, and Z ≠ 0
-function projectiveToTwisted(g: GroupProjective, p: bigint): GroupTwisted {
+function projectiveToAffineTwisted(
+  g: GroupProjective,
+  p: bigint
+): GroupAffineTwisted {
   let z = g.z;
   if (z === 0n) {
     // degenerate case
-    return twistedZero;
+    return affineTwistedZero;
   } else if (z === 1n && g.x === 0n && g.y === 1n) {
     // special case for the zero point
-    return twistedZero;
+    return affineTwistedZero;
   } else if (z === 1n) {
     // any other normalized affine form
-    return { x: g.x, y: g.y, infinity: false };
+    return { x: g.x, y: g.y };
   } else {
     let zinv = inverse(z, p)!; // we checked for z === 0, so inverse exists
     // x/z
     let x = mod(g.x * zinv, p);
     // y/z
     let y = mod(g.y * zinv, p);
-    return { x: x, y: y, infinity: false };
+    return { x, y };
   }
 }
 
-type CurveTwisted = ReturnType<typeof createCurveTwisted>;
+type AffineTwistedCurve = ReturnType<typeof createAffineTwistedCurve>;
 
-// Creates twisted Edwards curves in the form
-// a * x^2 + y^2 = 1 + d * x^2 * y^2
-// with a ≠ 0, d ≠ 0 and a ≠ d
-function createCurveTwisted({
+/** Creates twisted Edwards curves in affine cordinates of the form
+ * a * x^2 + y^2 = 1 + d * x^2 * y^2
+ * with a ≠ 0, d ≠ 0 and a ≠ d
+ *
+ * Warning: must be used only for curves without endomorphism, like edwards25519
+ */
+function createAffineTwistedCurve({
   name,
   modulus: p,
   order,
@@ -1003,7 +1011,7 @@ function createCurveTwisted({
   const Field = createField(p);
   const Scalar = createField(order);
   const one = { ...generator, infinity: false };
-  const Endo = undefined; // for Ed25519
+  const Endo = undefined; // for edwards25519
 
   assert(a !== 0n, 'a must not be zero');
   assert(d !== 0n, 'd must not be zero');
@@ -1027,7 +1035,7 @@ function createCurveTwisted({
     cofactor,
     hasCofactor,
 
-    zero: twistedZero,
+    zero: affineTwistedZero,
     one,
 
     hasEndomorphism: Endo !== undefined,
@@ -1036,49 +1044,41 @@ function createCurveTwisted({
       return Endo;
     },
 
-    from(g: { x: bigint; y: bigint }): GroupTwisted {
-      if (g.x === 0n && g.y === 1n) return twistedZero;
-      return { ...g, infinity: false };
+    // Obtain a point from its affine representation, included the zero point
+    from(g: { x: bigint; y: bigint }): GroupAffineTwisted {
+      if (g === affineTwistedZero) return affineTwistedZero;
+      return { ...g };
     },
 
-    fromNonzero(g: { x: bigint; y: bigint }): GroupTwisted {
-      if (g.x === 0n && g.y === 1n) {
-        throw Error(
-          'fromNonzero: got (0, 1), which is reserved for the zero point'
-        );
-      }
-      return { ...g, infinity: false };
-    },
-
-    equal(g: GroupTwisted, h: GroupTwisted) {
-      if (g.infinity && h.infinity) {
+    equal(g: GroupAffineTwisted, h: GroupAffineTwisted) {
+      if (g === affineTwistedZero && h === affineTwistedZero) {
         return true;
-      } else if (g.infinity || h.infinity) {
+      } else if (g === affineTwistedZero || h === affineTwistedZero) {
         return false;
       } else {
         return mod(g.x - h.x, p) === 0n && mod(g.y - h.y, p) === 0n;
       }
     },
-    isOnCurve(g: GroupTwisted) {
-      return twistedOnCurve(g, p, a, d);
+    isOnCurve(g: GroupAffineTwisted) {
+      return affineTwistedOnCurve(g, p, a, d);
     },
     isInSubgroup(g: GroupAffine) {
-      return projectiveInSubgroup(projectiveFromTwisted(g), p, order, a);
+      return projectiveInSubgroup(projectiveFromAffineTwisted(g), p, order, a);
     },
-    add(g: GroupTwisted, h: GroupTwisted) {
-      return twistedAdd(g, h, p, a, d);
+    add(g: GroupAffineTwisted, h: GroupAffineTwisted) {
+      return affineTwistedAdd(g, h, p, a, d);
     },
-    double(g: GroupTwisted) {
-      return twistedDouble(g, p, a, d);
+    double(g: GroupAffineTwisted) {
+      return affineTwistedDouble(g, p, a, d);
     },
-    negate(g: GroupTwisted) {
-      return twistedNegate(g, p);
+    negate(g: GroupAffineTwisted) {
+      return affineTwistedNegate(g, p);
     },
-    sub(g: GroupTwisted, h: GroupTwisted) {
-      return twistedAdd(g, twistedNegate(h, p), p, a, d);
+    sub(g: GroupAffineTwisted, h: GroupAffineTwisted) {
+      return affineTwistedAdd(g, affineTwistedNegate(h, p), p, a, d);
     },
-    scale(g: GroupTwisted, s: bigint | boolean[]) {
-      return twistedScale(g, s, p, a, d);
+    scale(g: GroupAffineTwisted, s: bigint | boolean[]) {
+      return affineTwistedScale(g, s, p, a, d);
     },
   };
 }
