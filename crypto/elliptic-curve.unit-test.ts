@@ -176,8 +176,17 @@ let [G, Field, Scalar] = [
   Edwards25519.Scalar,
 ] as const;
 
-const { zero, one, add, double, negate, scale, isOnCurve, equal } =
-  Edwards25519;
+const {
+  zero,
+  one,
+  add,
+  double,
+  negate,
+  scale,
+  isOnCurve,
+  isInPrimeSubgroup,
+  equal,
+} = Edwards25519;
 
 let randomScalar = Random(Scalar.random);
 let randomField = Random(Field.random);
@@ -196,6 +205,12 @@ test(
   (X, Y, Z, x, y) => {
     // check on curve
     assert(isOnCurve(X) && isOnCurve(Y) && isOnCurve(Z), 'on curve');
+
+    // check bad point not on curve
+    assert(!isOnCurve({ x: 1n, y: 1n }), 'bad point not on curve');
+
+    // check on curve but not in subgroup
+    assert(!isInPrimeSubgroup({ x: 0n, y: 1n }), 'point not in prime subgroup');
 
     // equal
     assert(equal(X, X), 'equal');

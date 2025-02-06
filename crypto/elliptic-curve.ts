@@ -1069,7 +1069,7 @@ function createAffineTwistedCurve({
     isOnCurve(g: GroupAffineTwisted) {
       return affineTwistedOnCurve(g, p, a, d);
     },
-    isInPrimeSubgroup(g: GroupAffine) {
+    isInPrimeSubgroup(g: GroupAffineTwisted) {
       let orderTimesG = affineTwistedScale(g, order, p, a, d);
       return !affineTwistedIsZero(orderTimesG, p);
     },
