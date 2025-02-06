@@ -1,7 +1,7 @@
 import {
   createCurveAffine,
   createCurveProjective,
-  createCurveTwisted,
+  createAffineTwistedCurve,
   Pallas,
   Vesta,
 } from './elliptic-curve.js';
@@ -168,7 +168,7 @@ function curveWithFields(params: CurveParams) {
 
 // Twisted Edwards curve tests
 
-const Edwards25519 = createCurveTwisted(TwistedCurveParams.Edwards25519);
+const Edwards25519 = createAffineTwistedCurve(TwistedCurveParams.Edwards25519);
 
 let [G, Field, Scalar] = [
   Edwards25519,
