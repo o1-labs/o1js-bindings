@@ -184,7 +184,7 @@ const {
   negate,
   scale,
   isOnCurve,
-  isInPrimeSubgroup,
+  isInSubgroup,
   equal,
   isZero,
 } = Edwards25519;
@@ -253,7 +253,7 @@ test(
     );
 
     // subgroup
-    assert(!isInPrimeSubgroup({ x: 0n, y: 1n }), 'point not in prime subgroup');
+    assert(!isInSubgroup({ x: 0n, y: 1n }), 'point not in prime subgroup');
 
     // modular reduction
 
