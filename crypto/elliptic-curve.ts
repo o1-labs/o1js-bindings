@@ -1071,14 +1071,7 @@ function createAffineTwistedCurve({
       return affineTwistedOnCurve(g, p, a, d);
     },
     isInSubgroup(g: GroupAffineTwisted) {
-      let scaled = affineTwistedScale(
-        g,
-        cofactor !== undefined ? cofactor : 1n,
-        p,
-        a,
-        d
-      );
-      return !affineTwistedIsZero(scaled, p);
+      return affineTwistedIsZero(affineTwistedScale(g, order, p, a, d), p);
     },
     add(g: GroupAffineTwisted, h: GroupAffineTwisted) {
       return affineTwistedAdd(g, h, p, a, d);

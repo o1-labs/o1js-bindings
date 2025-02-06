@@ -2,6 +2,7 @@ import {
   createCurveAffine,
   createCurveProjective,
   createAffineTwistedCurve,
+  GroupAffineTwisted,
   Pallas,
   Vesta,
 } from './elliptic-curve.js';
@@ -257,7 +258,12 @@ test(
     );
 
     // subgroup
-    assert(!isInSubgroup({ x: 0n, y: 1n }), 'point not in prime subgroup');
+    let pointOrder8: GroupAffineTwisted = { x: 33554441n, y: 33812324n };
+    assert(
+      isOnCurve(pointOrder8) && isInSubgroup(pointOrder8),
+      'point on curve not in subgroup'
+    );
+    assert(equal(scale(pointOrder8, 8n), zero), 'point has order 8');
 
     assert(equal(scale(X, G.order), zero), 'scaling by order gives identity');
 
