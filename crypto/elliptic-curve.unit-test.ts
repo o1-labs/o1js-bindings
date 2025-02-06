@@ -222,6 +222,10 @@ test(
     );
     assert(!equal(X, Y) || X == Y, 'not equal (random points)');
 
+    // negate
+    assert(equal(negate(negate(X)), X), 'negate twice is identity');
+    assert(equal(negate(zero), zero), 'negate zero is zero');
+
     // algebraic laws - addition
     assert(equal(add(X, Y), add(Y, X)), 'commutative');
     assert(equal(add(X, add(Y, Z)), add(add(X, Y), Z)), 'associative');
@@ -254,6 +258,8 @@ test(
 
     // subgroup
     assert(!isInSubgroup({ x: 0n, y: 1n }), 'point not in prime subgroup');
+
+    assert(equal(scale(X, G.order), zero), 'scaling by order gives identity');
 
     // modular reduction
 

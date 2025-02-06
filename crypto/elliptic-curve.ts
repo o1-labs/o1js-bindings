@@ -38,6 +38,7 @@ export {
   affineTwistedAdd,
   affineTwistedDouble,
   affineTwistedScale,
+  affineTwistedZero,
   projectiveTwistedZero,
 };
 
