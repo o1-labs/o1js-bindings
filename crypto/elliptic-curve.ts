@@ -996,6 +996,23 @@ function affineTwistedIsZero(g: GroupAffineTwisted, p: bigint): boolean {
   return g.x === 0n % p && g.y === 1n % p;
 }
 
+// auxiliary function to compute modular exponentiation
+function modPow(base: bigint, exp: bigint, mod: bigint) {
+  let result = 1n;
+  base = base % mod; // Reduce base initially
+
+  while (exp > 0n) {
+    if (exp % 2n === 1n) {
+      // If exponent is odd, multiply result
+      result = (result * base) % mod;
+    }
+    base = (base * base) % mod; // Square the base
+    exp = exp / 2n; // Halve the exponent
+  }
+
+  return result;
+}
+
 /** Creates twisted Edwards curves in affine cordinates of the form
  * a * x^2 + y^2 = 1 + d * x^2 * y^2
  * with a ≠ 0, d ≠ 0 and a ≠ d
@@ -1022,7 +1039,7 @@ function createAffineTwistedCurve({
   assert(d !== 0n, 'd must not be zero');
   assert(a !== d, 'a must not be equal to d');
   // Euler's criterion: d is square iff d^((p - 1) / 2) = 1 mod p
-  assert(d ** ((p - 1n) / 2n) % p != 1n, 'd must not be a square');
+  assert(modPow(d, (p - 1n) / 2n, p) != 1n, 'd must not be a square');
 
   return {
     name,
