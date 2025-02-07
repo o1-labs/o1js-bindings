@@ -73,3 +73,5 @@ sed -i 's/function raise(t){throw caml_call1(to_exn$0,t)}/function raise(t){thro
 chmod 777 "$BINDINGS_PATH"/*
 node "src/build/fix-wasm-bindings-node.js" "$BINDINGS_PATH/plonk_wasm.cjs"
 
+# Build and copy the Native pipeline
+dune b $DUNE_PATH/o1js_native.bc.js || exit 1
