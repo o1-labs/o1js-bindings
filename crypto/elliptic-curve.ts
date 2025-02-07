@@ -996,7 +996,7 @@ function affineTwistedIsZero(g: GroupAffineTwisted, p: bigint): boolean {
   return g.x === 0n % p && g.y === 1n % p;
 }
 
-// auxiliary function to compute modular exponentiation
+// auxiliary function to compute modular exponentiation (runs in O(log(exp)))
 function modPow(base: bigint, exp: bigint, mod: bigint) {
   let result = 1n;
   base = base % mod; // Reduce base initially
