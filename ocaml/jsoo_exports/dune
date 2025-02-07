@@ -76,7 +76,7 @@
   (link_flags --source-map)
   (javascript_files overrides.js))
  (libraries o1js_bindings.lib bindings_js.native_backend)
- (link_deps )
+ (link_deps plonk_native.node)
  (instrumentation
   (backend bisect_ppx))
  (forbidden_libraries async core re2 ctypes)
