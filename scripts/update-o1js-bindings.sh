@@ -23,7 +23,7 @@ BINDINGS_PATH=dist/node/bindings/compiled/_node_bindings
 cp "$BINDINGS_PATH"/o1js_node.bc.cjs "$NODE_BINDINGS"/o1js_node.bc.cjs
 cp "$BINDINGS_PATH"/o1js_node.bc.map "$NODE_BINDINGS"/o1js_node.bc.map
 cp "$BINDINGS_PATH"/plonk_wasm* "$NODE_BINDINGS"/
-# cp "$BINDINGS_PATH"/index.node "$NODE_BINDINGS"/ 
+cp "$BINDINGS_PATH"/index.node "$NODE_BINDINGS"/ 
 
 
 sed -i 's/plonk_wasm.js/plonk_wasm.cjs/' "$NODE_BINDINGS"/o1js_node.bc.cjs
@@ -42,10 +42,10 @@ cp "$NATIVE_BINDINGS_PATH"/o1js_native.bc.map "$NATIVE_BINDINGS"/o1js_native.bc.
 cp "$NATIVE_BINDINGS_PATH"/plonk_native.node "$NATIVE_BINDINGS"/
 
 # add npm run build:native script 
-# if [ -z $JUST_BINDINGS ]
-# then
-#   npm run build:web
-# fi
+if [ -z $JUST_BINDINGS ]
+then
+  npm run build:native
+fi
 
 # 3. web build
 
