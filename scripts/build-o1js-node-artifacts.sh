@@ -75,3 +75,14 @@ node "src/build/fix-wasm-bindings-node.js" "$BINDINGS_PATH/plonk_wasm.cjs"
 
 # Build and copy the Native pipeline
 dune b $DUNE_PATH/o1js_native.bc.js || exit 1
+
+if [ -f "$BUILD_PATH/o1js_native.bc.js" ]; then
+  echo "found o1js_native.bc.js"
+  if [ -f "$BUILD_PATH/o1js_native.bc.map" ]; then
+    echo "found o1js_native.bc.map, saving at a tmp location because dune will delete it"
+    cp "$BUILD_PATH/o1js_native.bc.map" _build/o1js_native.bc.map
+  else
+    echo "did not find o1js_native.bc.map, deleting o1js_native.bc.js to force calling jsoo again"
+    rm -f "$BUILD_PATH/o1js_native.bc.js"
+  fi
+fi
