@@ -1032,7 +1032,7 @@ function createAffineTwistedCurve({
 
   const Field = createField(p);
   const Scalar = createField(order);
-  const one = { ...generator, infinity: false };
+  const one = { ...generator };
   const Endo = undefined; // for edwards25519
 
   assert(a !== 0n, 'a must not be zero');
