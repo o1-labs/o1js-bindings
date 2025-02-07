@@ -65,6 +65,25 @@
   (pps ppx_version js_of_ocaml-ppx)))
 
 (executable
+ (name o1js_native)
+ (modules o1js_native)
+ (modes js)
+ (flags (-g))
+ (link_flags
+  (-noautolink -g))
+ (js_of_ocaml
+  (flags +toplevel.js +dynlink.js --pretty --source-map)
+  (link_flags --source-map)
+  (javascript_files overrides.js))
+ (libraries o1js_bindings.lib bindings_js.native_backend)
+ (link_deps )
+ (instrumentation
+  (backend bisect_ppx))
+ (forbidden_libraries async core re2 ctypes)
+ (preprocess
+  (pps ppx_version js_of_ocaml-ppx)))  
+
+(executable
  (name o1js_web)
  (modules o1js_web)
  (modes js)
