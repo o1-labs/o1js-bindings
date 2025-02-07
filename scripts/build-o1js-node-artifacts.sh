@@ -86,3 +86,17 @@ if [ -f "$BUILD_PATH/o1js_native.bc.js" ]; then
     rm -f "$BUILD_PATH/o1js_native.bc.js"
   fi
 fi
+
+# Copy Native artifacts to _native_bindings
+
+NATIVE_BINDINGS_PATH=src/bindings/compiled/_native_bindings/
+mkdir -p "$NATIVE_BINDINGS_PATH"
+chmod -R 777 "$NATIVE_BINDINGS_PATH"
+
+# cp _build/default/$KIMCHI_BINDINGS/js/native/plonk_native* "$NATIVE_BINDINGS_PATH"
+
+cp "$BUILD_PATH/o1js_native"*.js "$NATIVE_BINDINGS_PATH"
+cp "src/bindings/compiled/native_bindings/o1js_native.bc.d.cts" "$NATIVE_BINDINGS_PATH/"
+cp "_build/o1js_native.bc.map" "$NATIVE_BINDINGS_PATH/o1js_native.bc.map"
+
+mv -f "$NATIVE_BINDINGS_PATH/o1js_native.bc.js" "$NATIVE_BINDINGS_PATH/o1js_native.bc.cjs"
