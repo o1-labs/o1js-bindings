@@ -8,6 +8,7 @@ BUILD_PATH="_build/default/$DUNE_PATH"
 DIR_PATH=$(dirname "$0")
 KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
 NODE_BINDINGS="src/bindings/compiled/node_bindings"
+NATIVE_BINDINGS="src/bindings/compiled/native_bindings"
 WEB_BINDINGS="src/bindings/compiled/web_bindings"
 
 # 1. node build
@@ -22,6 +23,8 @@ BINDINGS_PATH=dist/node/bindings/compiled/_node_bindings
 cp "$BINDINGS_PATH"/o1js_node.bc.cjs "$NODE_BINDINGS"/o1js_node.bc.cjs
 cp "$BINDINGS_PATH"/o1js_node.bc.map "$NODE_BINDINGS"/o1js_node.bc.map
 cp "$BINDINGS_PATH"/plonk_wasm* "$NODE_BINDINGS"/
+# cp "$BINDINGS_PATH"/index.node "$NODE_BINDINGS"/ 
+
 
 sed -i 's/plonk_wasm.js/plonk_wasm.cjs/' "$NODE_BINDINGS"/o1js_node.bc.cjs
 
@@ -30,7 +33,21 @@ then
   npm run build
 fi
 
-# 2. web build
+# 2. native build
+chmod -R 777 "$NATIVE_BINDINGS"
+
+NATIVE_BINDINGS_PATH=dist/node/bindings/compiled/_native_bindings
+cp "$NATIVE_BINDINGS_PATH"/o1js_native.bc.cjs "$NATIVE_BINDINGS"/o1js_native.bc.cjs
+cp "$NATIVE_BINDINGS_PATH"/o1js_native.bc.map "$NATIVE_BINDINGS"/o1js_native.bc.map
+cp "$NATIVE_BINDINGS_PATH"/plonk_native.node "$NATIVE_BINDINGS"/
+
+# add npm run build:native script 
+# if [ -z $JUST_BINDINGS ]
+# then
+#   npm run build:web
+# fi
+
+# 3. web build
 
 # Normally these variables are not defined
 # But the nix build uses them
