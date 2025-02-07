@@ -45,6 +45,12 @@
    (run cp %{env:PREBUILT_KIMCHI_BINDINGS_JS_WEB=n}/plonk_wasm_bg.wasm web_plonk_wasm_bg.wasm)
    )))
 
+ (rule
+ (targets plonk_native.node)
+ (deps ../../../mina/src/lib/crypto/kimchi_bindings/js/native/plonk_native.node)
+ (action
+  (copy ../../../mina/src/lib/crypto/kimchi_bindings/js/native/plonk_native.node plonk_native.node)))  
+
 (executable
  (name o1js_node)
  (modules o1js_node)
