@@ -4,6 +4,7 @@ import {
   UInt32,
   UInt64,
   Sign,
+  Int64,
 } from '../../mina-signer/src/field-bigint.js';
 import { PublicKey } from '../../mina-signer/src/curve-bigint.js';
 import { derivedLeafTypesSignable } from './derived-leaves.js';
@@ -14,7 +15,6 @@ import {
   packToFields,
 } from '../../mina-signer/src/poseidon-bigint.js';
 import { mocks, protocolVersions } from '../crypto/constants.js';
-import { signable } from '../../mina-signer/src/derivers-bigint.js';
 
 export {
   PublicKey,
@@ -90,5 +90,5 @@ const TransactionVersion = {
   empty: () => UInt32(protocolVersions.txnVersion),
 };
 
-type BalanceChange = { magnitude: UInt64; sgn: Sign };
-const BalanceChange = signable({ magnitude: UInt64, sgn: Sign });
+type BalanceChange = Int64;
+const BalanceChange = Int64;
