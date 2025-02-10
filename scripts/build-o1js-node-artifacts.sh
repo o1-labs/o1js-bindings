@@ -94,7 +94,7 @@ NATIVE_BINDINGS_PATH=src/bindings/compiled/_native_bindings/
 mkdir -p "$NATIVE_BINDINGS_PATH"
 chmod -R 777 "$NATIVE_BINDINGS_PATH"
 
-# cp _build/default/$KIMCHI_BINDINGS/js/native/plonk_native* "$NATIVE_BINDINGS_PATH"
+cp _build/default/$KIMCHI_BINDINGS/js/native/plonk_native* "$NATIVE_BINDINGS_PATH"
 
 cp "$BUILD_PATH/o1js_native"*.js "$NATIVE_BINDINGS_PATH"
 cp "src/bindings/compiled/native_bindings/o1js_native.bc.d.cts" "$NATIVE_BINDINGS_PATH/"
