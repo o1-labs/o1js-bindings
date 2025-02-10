@@ -74,6 +74,7 @@ chmod 777 "$BINDINGS_PATH"/*
 node "src/build/fix-wasm-bindings-node.js" "$BINDINGS_PATH/plonk_wasm.cjs"
 
 # Build and copy the Native pipeline
+dune b $KIMCHI_BINDINGS/js/native \
 dune b $DUNE_PATH/o1js_native.bc.js || exit 1
 
 if [ -f "$BUILD_PATH/o1js_native.bc.js" ]; then
