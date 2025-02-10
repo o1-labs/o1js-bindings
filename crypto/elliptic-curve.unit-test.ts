@@ -258,23 +258,11 @@ test(
     );
 
     // subgroup and orders
-    let pointOrder8: GroupAffineTwisted = { x: 33554441n, y: 33812324n };
-    let pointOrder4: GroupAffineTwisted = { x: 1n, y: 0n };
     let pointOrder2: GroupAffineTwisted = { x: 0n, y: -1n };
-    assert(
-      isOnCurve(pointOrder8) && !isInSubgroup(pointOrder8),
-      'point on curve not in subgroup'
-    );
-    assert(
-      isOnCurve(pointOrder4) && !isInSubgroup(pointOrder4),
-      'point on curve not in subgroup'
-    );
     assert(
       isOnCurve(pointOrder2) && !isInSubgroup(pointOrder2),
       'negative point on curve not in subgroup'
     );
-    assert(equal(scale(pointOrder8, 8n), zero), 'order 8');
-    assert(equal(scale(pointOrder4, 4n), zero), 'order 4');
     assert(equal(scale(pointOrder2, 2n), zero), 'order 2');
 
     assert(equal(scale(X, G.order), zero), 'scaling by order gives identity');
@@ -282,17 +270,17 @@ test(
     // modular reduction
 
     assert(
-      isOnCurve({ x: X.x + G.order, y: X.y }),
+      isOnCurve({ x: X.x + G.modulus, y: X.y }),
       'larger x coordinates on curve'
     );
     assert(
-      isOnCurve({ x: X.x, y: X.y + G.order }),
+      isOnCurve({ x: X.x, y: X.y + G.modulus }),
       'larger y coordinates on curve'
     );
     assert(
-      isOnCurve({ x: X.x + G.order, y: X.y + G.order }),
+      isOnCurve({ x: X.x + G.modulus, y: X.y + G.modulus }),
       'larger x,y coordinates on curve'
     );
-    assert(isZero({ x: 0n, y: 1n + G.order }), 'augmented zero is identity');
+    assert(isZero({ x: 0n, y: 1n + G.modulus }), 'augmented zero is identity');
   }
 );

@@ -993,7 +993,7 @@ function projectiveToAffineTwisted(
 type AffineTwistedCurve = ReturnType<typeof createAffineTwistedCurve>;
 
 function affineTwistedIsZero(g: GroupAffineTwisted, p: bigint): boolean {
-  return g.x === 0n % p && g.y === 1n % p;
+  return mod(g.x, p) === 0n && mod(g.y, p) === 1n;
 }
 
 // auxiliary function to compute modular exponentiation (runs in O(log(exp)))
