@@ -8,7 +8,7 @@ BUILD_PATH="_build/default/$DUNE_PATH"
 DIR_PATH=$(dirname "$0")
 KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
 NODE_BINDINGS="src/bindings/compiled/node_bindings"
-NATIVE_BINDINGS="src/bindings/compiled/native_bindings"
+NATIVE_BINDINGS="src/bindings/compiled/node_bindings/native"
 WEB_BINDINGS="src/bindings/compiled/web_bindings"
 
 # 1. node build
@@ -33,19 +33,20 @@ then
   npm run build
 fi
 
-# 2. native build
+# # 2. native build
 chmod -R 777 "$NATIVE_BINDINGS"
 
-NATIVE_BINDINGS_PATH=dist/node/bindings/compiled/_native_bindings
-cp "$NATIVE_BINDINGS_PATH"/o1js_native.bc.cjs "$NATIVE_BINDINGS"/o1js_native.bc.cjs
-cp "$NATIVE_BINDINGS_PATH"/o1js_native.bc.map "$NATIVE_BINDINGS"/o1js_native.bc.map
-cp "$NATIVE_BINDINGS_PATH"/plonk_native.node "$NATIVE_BINDINGS"/
+NATIVE_BINDINGS_PATH=dist/node/bindings/compiled/_node_bindings/native
 
-# add npm run build:native script 
-if [ -z $JUST_BINDINGS ]
-then
-  npm run build:native
-fi
+# cp "$NATIVE_BINDINGS_PATH"/o1js_native.bc.cjs "$NATIVE_BINDINGS"/o1js_native.bc.cjs
+# cp "$NATIVE_BINDINGS_PATH"/o1js_native.bc.map "$NATIVE_BINDINGS"/o1js_native.bc.map
+# cp "$NATIVE_BINDINGS_PATH"/plonk_native.node "$NATIVE_BINDINGS"/
+
+# # add npm run build:native script 
+# if [ -z $JUST_BINDINGS ]
+# then
+#   npm run build:native
+# fi
 
 # 3. web build
 
