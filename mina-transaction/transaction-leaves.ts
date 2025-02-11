@@ -89,8 +89,15 @@ type MayUseToken = {
   inheritFromParent: Bool;
 };
 const MayUseToken = {
-  ...provable({
-    parentsOwnToken: Bool,
-    inheritFromParent: Bool,
-  }),
+  ...provable({ parentsOwnToken: Bool, inheritFromParent: Bool }),
+
+  check: ({ parentsOwnToken, inheritFromParent }: MayUseToken) => {
+    Bool.check(parentsOwnToken);
+    Bool.check(inheritFromParent);
+    parentsOwnToken
+      .and(inheritFromParent)
+      .assertFalse(
+        'MayUseToken: parentsOwnToken and inheritFromParent cannot both be true'
+      );
+  },
 };

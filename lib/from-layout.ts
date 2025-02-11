@@ -349,6 +349,13 @@ function ProvableFromLayout<
       check(value: T): void {
         check(typeData, value);
       },
+      // TODO implement properly
+      // currently, the implementation below is fine because `provableFromLayout()`
+      // is not used on any non-canonical types, so returning the element itself is correct.
+      // (we do need an implementation though and can't just throw an error)
+      toCanonical(value: T): T {
+        return value;
+      },
       toInput(value: T): HashInput {
         return toInput(typeData, value);
       },
