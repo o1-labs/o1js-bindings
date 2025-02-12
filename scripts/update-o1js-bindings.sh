@@ -39,12 +39,6 @@ chmod -R 777 "$NATIVE_BINDINGS"
 NATIVE_BINDINGS_PATH=dist/node/bindings/compiled/_node_bindings/native
 cp "$NATIVE_BINDINGS_PATH"/plonk_native.node "$NATIVE_BINDINGS"/
 
-# # add npm run build:native script 
-# if [ -z $JUST_BINDINGS ]
-# then
-#   npm run build:native
-# fi
-
 # 3. web build
 
 # Normally these variables are not defined
