@@ -45,11 +45,11 @@
    (run cp %{env:PREBUILT_KIMCHI_BINDINGS_JS_WEB=n}/plonk_wasm_bg.wasm web_plonk_wasm_bg.wasm)
    )))
 
- (rule
- (targets plonk_native.node)
- (deps ../../../mina/src/lib/crypto/kimchi_bindings/js/native/plonk_native.node)
- (action
-  (copy ../../../mina/src/lib/crypto/kimchi_bindings/js/native/plonk_native.node plonk_native.node)))  
+;  (rule
+;  (targets plonk_native.node)
+;  (deps ../../../mina/src/lib/crypto/kimchi_bindings/js/native/plonk_native.node)
+;  (action
+;   (copy ../../../mina/src/lib/crypto/kimchi_bindings/js/native/plonk_native.node plonk_native.node)))  
 
 (executable
  (name o1js_node)
@@ -70,23 +70,24 @@
  (preprocess
   (pps ppx_version js_of_ocaml-ppx)))
 
-(executable
- (name o1js_native)
- (modules o1js_native)
- (modes js)
- (flags (-g))
- (link_flags
-  (-noautolink -g))
- (js_of_ocaml
-  (flags +toplevel.js +dynlink.js --pretty --source-map)
-  (link_flags --source-map)
-  (javascript_files overrides.js))
- (libraries o1js_bindings.lib bindings_js.native_backend)
- (instrumentation
-  (backend bisect_ppx))
- (forbidden_libraries async core re2 ctypes)
- (preprocess
-  (pps ppx_version js_of_ocaml-ppx)))  
+; (executable
+;  (name o1js_native)
+;  (modules o1js_native)
+;  (modes js)
+;  (flags (-g))
+;  (link_flags
+;   (-noautolink -g))
+;  (js_of_ocaml
+;   (flags +toplevel.js +dynlink.js --pretty --source-map)
+;   (link_flags --source-map)
+;   (javascript_files overrides.js))
+;  (libraries o1js_bindings.lib bindings_js.native_backend)
+;  (link_deps plonk_native.node)
+;  (instrumentation
+;   (backend bisect_ppx))
+;  (forbidden_libraries async core re2 ctypes)
+;  (preprocess
+;   (pps ppx_version js_of_ocaml-ppx)))  
 
 (executable
  (name o1js_web)
