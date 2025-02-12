@@ -74,30 +74,12 @@ chmod 777 "$BINDINGS_PATH"/*
 node "src/build/fix-wasm-bindings-node.js" "$BINDINGS_PATH/plonk_wasm.cjs"
 
 # Build and copy the Native pipeline
-dune b $KIMCHI_BINDINGS/js/native \
-dune b $DUNE_PATH/o1js_native.bc.js || exit 1
 
-if [ -f "$BUILD_PATH/o1js_native.bc.js" ]; then
-  echo "found o1js_native.bc.js"
-  if [ -f "$BUILD_PATH/o1js_native.bc.map" ]; then
-    echo "found o1js_native.bc.map, saving at a tmp location because dune will delete it"
-    cp "$BUILD_PATH/o1js_native.bc.map" _build/o1js_native.bc.map
-  else
-    echo "did not find o1js_native.bc.map, deleting o1js_native.bc.js to force calling jsoo again"
-    rm -f "$BUILD_PATH/o1js_native.bc.js"
-  fi
-fi
-
-# Copy Native artifacts to _native_bindings
-
-NATIVE_BINDINGS_PATH=src/bindings/compiled/_native_bindings/
+dune b $KIMCHI_BINDINGS/js/native 
+KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
+NATIVE_BINDINGS_PATH=src/bindings/compiled/_node_bindings/native/
 mkdir -p "$NATIVE_BINDINGS_PATH"
 chmod -R 777 "$NATIVE_BINDINGS_PATH"
 
-cp _build/default/$KIMCHI_BINDINGS/js/native/plonk_native* "$NATIVE_BINDINGS_PATH"
+cp "_build/default/${KIMCHI_BINDINGS}/js/native/plonk_native.node" "$NATIVE_BINDINGS_PATH"
 
-cp "$BUILD_PATH/o1js_native"*.js "$NATIVE_BINDINGS_PATH"
-cp "src/bindings/compiled/native_bindings/o1js_native.bc.d.cts" "$NATIVE_BINDINGS_PATH/"
-cp "_build/o1js_native.bc.map" "$NATIVE_BINDINGS_PATH/o1js_native.bc.map"
-
-mv -f "$NATIVE_BINDINGS_PATH/o1js_native.bc.js" "$NATIVE_BINDINGS_PATH/o1js_native.bc.cjs"
