@@ -76,7 +76,6 @@ node "src/build/fix-wasm-bindings-node.js" "$BINDINGS_PATH/plonk_wasm.cjs"
 # Build and copy the Native pipeline
 
 dune b $KIMCHI_BINDINGS/js/native 
-KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
 NATIVE_BINDINGS_PATH=src/bindings/compiled/_node_bindings/native/
 mkdir -p "$NATIVE_BINDINGS_PATH"
 chmod -R 777 "$NATIVE_BINDINGS_PATH"
