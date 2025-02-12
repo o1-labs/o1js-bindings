@@ -39,9 +39,6 @@ chmod -R 777 "$NATIVE_BINDINGS"
 NATIVE_BINDINGS_PATH=dist/node/bindings/compiled/_node_bindings/native
 cp "$NATIVE_BINDINGS_PATH"/plonk_native.node "$NATIVE_BINDINGS"/
 
-# cp "$NATIVE_BINDINGS_PATH"/o1js_native.bc.cjs "$NATIVE_BINDINGS"/o1js_native.bc.cjs
-# cp "$NATIVE_BINDINGS_PATH"/o1js_native.bc.map "$NATIVE_BINDINGS"/o1js_native.bc.map
-
 # # add npm run build:native script 
 # if [ -z $JUST_BINDINGS ]
 # then
