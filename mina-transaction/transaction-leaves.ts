@@ -2,7 +2,7 @@ import { Field, Bool } from '../../lib/provable/wrapped.js';
 import { UInt32, UInt64, Sign, Int64 } from '../../lib/provable/int.js';
 import { PublicKey } from '../../lib/provable/crypto/signature.js';
 import { derivedLeafTypes } from './derived-leaves.js';
-import { createEvents } from '../../lib/mina/events.js';
+import { createEvents } from '../../lib/mina/v1/events.js';
 import {
   Poseidon,
   HashHelpers,
