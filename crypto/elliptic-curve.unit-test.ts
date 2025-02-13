@@ -1,13 +1,15 @@
 import {
   createCurveAffine,
   createCurveProjective,
+  createAffineTwistedCurve,
+  GroupAffineTwisted,
   Pallas,
   Vesta,
 } from './elliptic-curve.js';
 import { Fp, Fq } from './finite-field.js';
 import assert from 'node:assert/strict';
 import { test, Random } from '../../lib/testing/property.js';
-import { CurveParams } from './elliptic-curve-examples.js';
+import { CurveParams, TwistedCurveParams } from './elliptic-curve-examples.js';
 
 for (let [G, Field, Scalar] of [
   [Pallas, Fp, Fq] as const,
@@ -164,3 +166,121 @@ function curveWithFields(params: CurveParams) {
   // return Curve, Field and Scalar
   return [Projective, Affine.Field, Affine.Scalar] as const;
 }
+
+// Twisted Edwards curve tests
+
+const Edwards25519 = createAffineTwistedCurve(TwistedCurveParams.Edwards25519);
+
+let [G, Field, Scalar] = [
+  Edwards25519,
+  Edwards25519.Field,
+  Edwards25519.Scalar,
+] as const;
+
+const {
+  zero,
+  one,
+  add,
+  double,
+  negate,
+  scale,
+  isOnCurve,
+  isInSubgroup,
+  equal,
+  isZero,
+} = Edwards25519;
+
+let randomScalar = Random(Scalar.random);
+let randomField = Random(Field.random);
+// create random points by scaling 1 with a random scalar
+let randomPoint = Random(() => G.scale(G.one, Scalar.random()));
+// let one / zero be sampled 20% of times each
+randomPoint = Random.oneOf(zero, one, randomPoint, randomPoint, randomPoint);
+
+test(
+  randomPoint,
+  randomPoint,
+  randomPoint,
+  randomScalar,
+  randomScalar,
+  randomField,
+  (X, Y, Z, x, y) => {
+    // check on curve
+    assert(isOnCurve(X) && isOnCurve(Y) && isOnCurve(Z), 'on curve');
+
+    // check bad point not on curve
+    assert(!isOnCurve({ x: 1n, y: 1n }), 'bad point not on curve');
+
+    // equal
+    assert(equal(X, X), 'equal');
+    assert(
+      !equal(X, add(X, X)) || equal(X, zero),
+      'not equal to double of itself (or zero)'
+    );
+    assert(
+      !equal(X, negate(X)) || equal(X, zero),
+      'not equal to negation of itself (or zero)'
+    );
+    assert(!equal(X, Y) || X == Y, 'not equal (random points)');
+
+    // negate
+    assert(equal(negate(negate(X)), X), 'negate twice is identity');
+    assert(equal(negate(zero), zero), 'negate zero is zero');
+
+    // algebraic laws - addition
+    assert(equal(add(X, Y), add(Y, X)), 'commutative');
+    assert(equal(add(X, add(Y, Z)), add(add(X, Y), Z)), 'associative');
+    assert(equal(add(X, zero), X), 'identity');
+    assert(equal(add(X, negate(X)), zero), 'inverse');
+
+    // addition does doubling
+    assert(equal(add(X, X), double(X)), 'double');
+
+    // scaling by small factors
+    assert(equal(scale(X, 0n), zero), 'scale by 0');
+    assert(equal(scale(X, 1n), X), 'scale by 1');
+    assert(equal(scale(X, 2n), add(X, X)), 'scale by 2');
+    assert(equal(scale(X, 3n), add(X, add(X, X))), 'scale by 3');
+    assert(equal(scale(X, 4n), double(double(X))), 'scale by 4');
+
+    // algebraic laws - scaling
+    assert(
+      equal(scale(X, Scalar.add(x, y)), add(scale(X, x), scale(X, y))),
+      'distributive'
+    );
+    assert(
+      equal(scale(X, Scalar.negate(x)), negate(scale(X, x))),
+      'distributive (negation)'
+    );
+    assert(
+      equal(scale(X, Scalar.mul(x, y)), scale(scale(X, x), y)),
+      'scale / multiply is associative'
+    );
+
+    // subgroup and orders
+    let pointOrder2: GroupAffineTwisted = { x: 0n, y: -1n };
+    assert(
+      isOnCurve(pointOrder2) && !isInSubgroup(pointOrder2),
+      'negative point on curve not in subgroup'
+    );
+    assert(equal(scale(pointOrder2, 2n), zero), 'order 2');
+
+    assert(equal(scale(X, G.order), zero), 'scaling by order gives identity');
+
+    // modular reduction
+
+    assert(
+      isOnCurve({ x: X.x + G.modulus, y: X.y }),
+      'larger x coordinates on curve'
+    );
+    assert(
+      isOnCurve({ x: X.x, y: X.y + G.modulus }),
+      'larger y coordinates on curve'
+    );
+    assert(
+      isOnCurve({ x: X.x + G.modulus, y: X.y + G.modulus }),
+      'larger x,y coordinates on curve'
+    );
+    assert(isZero({ x: 0n, y: 1n + G.modulus }), 'augmented zero is identity');
+  }
+);
