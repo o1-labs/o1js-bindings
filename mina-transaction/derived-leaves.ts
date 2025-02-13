@@ -15,7 +15,7 @@ import {
   stringToBytes,
 } from '../lib/binable.js';
 import { Base58, fieldEncodings } from '../../lib/util/base58.js';
-import { dataAsHash } from '../../lib/mina/events.js';
+import { dataAsHash } from '../../lib/mina/v1/events.js';
 import { HashHelpers } from '../../lib/provable/crypto/hash-generic.js';
 import { prefixes } from '../crypto/constants.js';
 
