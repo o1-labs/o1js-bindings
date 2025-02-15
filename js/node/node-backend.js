@@ -1,11 +1,13 @@
 import { isMainThread, parentPort, workerData, Worker } from 'worker_threads';
 import os from 'os';
 import wasm_ from '../../compiled/_node_bindings/plonk_wasm.cjs';
+
 import { fileURLToPath } from 'url';
 import { WithThreadPool, workers } from '../../../lib/proof-system/workers.js';
 let url = import.meta.url;
 let filename = url !== undefined ? fileURLToPath(url) : __filename;
 
+// import { native } from '../../compiled/_node_bindings/native/plonk_native';
 /**
  * @type {import("../../compiled/node_bindings/plonk_wasm.cjs")}
  */
