@@ -8,7 +8,7 @@ BUILD_PATH="_build/default/$DUNE_PATH"
 DIR_PATH=$(dirname "$0")
 KIMCHI_BINDINGS="$MINA_PATH/src/lib/crypto/kimchi_bindings"
 NODE_BINDINGS="src/bindings/compiled/node_bindings"
-NATIVE_BINDINGS="src/bindings/compiled/node_bindings/native"
+NATIVE_BINDINGS="src/bindings/compiled/node_bindings"
 WEB_BINDINGS="src/bindings/compiled/web_bindings"
 
 # 1. node build
@@ -23,7 +23,7 @@ BINDINGS_PATH=dist/node/bindings/compiled/_node_bindings
 cp "$BINDINGS_PATH"/o1js_node.bc.cjs "$NODE_BINDINGS"/o1js_node.bc.cjs
 cp "$BINDINGS_PATH"/o1js_node.bc.map "$NODE_BINDINGS"/o1js_node.bc.map
 cp "$BINDINGS_PATH"/plonk_wasm* "$NODE_BINDINGS"/
-cp "$BINDINGS_PATH"/index.node "$NODE_BINDINGS"/ 
+# cp "$BINDINGS_PATH"/index.node "$NODE_BINDINGS"/ 
 
 
 sed -i 's/plonk_wasm.js/plonk_wasm.cjs/' "$NODE_BINDINGS"/o1js_node.bc.cjs
@@ -36,7 +36,7 @@ fi
 # # 2. native build
 chmod -R 777 "$NATIVE_BINDINGS"
 
-NATIVE_BINDINGS_PATH=dist/node/bindings/compiled/_node_bindings/native
+NATIVE_BINDINGS_PATH=dist/node/bindings/compiled/_node_bindings
 cp "$NATIVE_BINDINGS_PATH"/plonk_native.node "$NATIVE_BINDINGS"/
 
 # 3. web build
