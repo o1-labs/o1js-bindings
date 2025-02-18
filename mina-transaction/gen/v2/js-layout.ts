@@ -1,5 +1,5 @@
 // @generated this file is auto-generated - don't edit it directly
-import { BindingsType } from '../v2/type.js';
+import { BindingsType } from '../../v2/type.js';
 import {
   Actions,
   AuthRequired,
@@ -17,7 +17,7 @@ import {
   UInt32,
   UInt64,
   ZkappUri,
-} from '../v2/leaves.js';
+} from '../../v2/leaves.js';
 export {
   Types,
   ZkappCommand,

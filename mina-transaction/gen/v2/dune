@@ -1,6 +1,6 @@
 (rule
  (targets
-  js-layout-v2.ts)
+  js-layout.ts)
  (mode promote)
  (enabled_if
   (<> %{env:NO_JS_BUILD=0} 1))
@@ -10,4 +10,4 @@
   ../../../../../.prettierrc.cjs
   (glob_files ../../../../../node_modules/prettier/*))
  (action
-  (run node %{script} %{data} js-layout-v2.ts)))
+  (run node %{script} %{data} js-layout.ts)))
