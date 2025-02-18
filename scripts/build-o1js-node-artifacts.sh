@@ -36,7 +36,7 @@ if [ -f "$BUILD_PATH/o1js_node.bc.map" ]; then
   cp "$BUILD_PATH/o1js_node.bc.map" "_build/o1js_node.bc.map";
 fi
 
-dune b src/bindings/mina-transaction/gen/js-layout.ts \
+dune b src/bindings/mina-transaction/gen/v1/js-layout.ts \
   src/bindings/mina-transaction/gen/js-layout-v2.ts \
   src/bindings/crypto/constants.ts \
   src/bindings/crypto/test-vectors/poseidon-kimchi.ts \

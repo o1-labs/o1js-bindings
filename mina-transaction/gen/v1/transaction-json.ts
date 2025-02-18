@@ -10,10 +10,10 @@ import {
   BalanceChange,
   Sign,
   Bool,
-} from '../v1/transaction-leaves-json.js';
+} from '../../v1/transaction-leaves-json.js';
 
 export { ZkappCommand, AccountUpdate, Account };
-export * from '../v1/transaction-leaves-json.js';
+export * from '../../v1/transaction-leaves-json.js';
 export { TypeMap };
 
 type TypeMap = {

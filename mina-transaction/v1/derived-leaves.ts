@@ -7,7 +7,7 @@ import {
   GenericSignableField,
 } from '../../lib/generic.js';
 import { createDerivers } from '../../lib/provable-generic.js';
-import * as Json from '../gen/transaction-json.js';
+import * as Json from '../gen/v1/transaction-json.js';
 import {
   bytesToBits,
   prefixToField,
