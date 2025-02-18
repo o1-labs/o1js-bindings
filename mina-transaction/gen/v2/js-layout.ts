@@ -1,5 +1,5 @@
 // @generated this file is auto-generated - don't edit it directly
-import { BindingsType } from '../../v2/type.js';
+import { BindingsType } from '../../v2/schema.js';
 import {
   Actions,
   AuthRequired,

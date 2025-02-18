@@ -1,5 +1,3 @@
-// TODO NOW: rename to Schema
-
 import * as BindingsLeaves from './leaves.js'
 import { FieldsDecoder, ProvableSerializable } from './util.js';
 import { versionBytes } from '../../crypto/constants.js';
