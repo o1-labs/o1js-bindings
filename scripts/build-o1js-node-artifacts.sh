@@ -37,7 +37,7 @@ if [ -f "$BUILD_PATH/o1js_node.bc.map" ]; then
 fi
 
 dune b src/bindings/mina-transaction/gen/v1/js-layout.ts \
-  src/bindings/mina-transaction/gen/js-layout-v2.ts \
+  src/bindings/mina-transaction/gen/v2/js-layout-v2.ts \
   src/bindings/crypto/constants.ts \
   src/bindings/crypto/test-vectors/poseidon-kimchi.ts \
 || exit 1
