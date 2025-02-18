@@ -20,7 +20,7 @@ import {
   MayUseToken,
   VerificationKeyHash,
   ReceiptChainHash,
-} from '../transaction-leaves.js';
+} from '../v1/transaction-leaves.js';
 import { GenericProvableExtended } from '../../lib/generic.js';
 import { ProvableFromLayout, GenericLayout } from '../../lib/from-layout.js';
 import * as Json from './transaction-json.js';
@@ -29,7 +29,7 @@ import { jsLayout } from './js-layout.js';
 
 export { customTypes, ZkappCommand, AccountUpdate, Account };
 export { Json };
-export * from '../transaction-leaves.js';
+export * from '../v1/transaction-leaves.js';
 export { provableFromLayout, toJSONEssential, empty, Layout, TypeMap };
 
 type TypeMap = {
