@@ -20,7 +20,7 @@ import {
   MayUseToken,
   VerificationKeyHash,
   ReceiptChainHash,
-} from '../transaction-leaves-bigint.js';
+} from '../v1/transaction-leaves-bigint.js';
 import { GenericSignable } from '../../lib/generic.js';
 import { SignableFromLayout, GenericLayout } from '../../lib/from-layout.js';
 import * as Json from './transaction-json.js';
@@ -28,7 +28,7 @@ import { jsLayout } from './js-layout.js';
 
 export { customTypes, ZkappCommand, AccountUpdate, Account };
 export { Json };
-export * from '../transaction-leaves-bigint.js';
+export * from '../v1/transaction-leaves-bigint.js';
 export { signableFromLayout, toJSONEssential, empty, Layout, TypeMap };
 
 type TypeMap = {
