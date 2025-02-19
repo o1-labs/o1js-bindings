@@ -11,7 +11,7 @@ module FunnyLittleModule = struct
 end
 
 module NativeModule = struct
-  external fp_poseidon_block_cipher : unit -> Js.js_string = "fp_poseidon_block_cipher"
+  external fp_poseidon_block_cipher_native : unit -> Js.js_string = "fp_poseidon_block_cipher_native"
 end
 
 let export =
@@ -22,5 +22,5 @@ let export =
     (* expose do_cool_thingies directly to js, but implementation is expected in Rust *)
     val runMeRust = FunnyLittleModule.do_cool_thingies
 
-    val runPoseidonCipherNative = NativeModule.fp_poseidon_block_cipher
+    val runPoseidonCipherNative = NativeModule.fp_poseidon_block_cipher_native
   end
