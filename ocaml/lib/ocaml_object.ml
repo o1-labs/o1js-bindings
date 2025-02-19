@@ -10,6 +10,10 @@ module FunnyLittleModule = struct
   external do_cool_thingies : unit -> Js.js_string = "caml_do_cool_thingies"
 end
 
+module NativeModule = struct
+  external fp_poseidon_block_cipher : unit -> Js.js_string = "fp_poseidon_block_cipher"
+end
+
 let export =
   object%js
     (* expose run_me directly to js*)
@@ -17,4 +21,6 @@ let export =
 
     (* expose do_cool_thingies directly to js, but implementation is expected in Rust *)
     val runMeRust = FunnyLittleModule.do_cool_thingies
+
+    val runPoseidonCipherNative = NativeModule.fp_poseidon_block_cipher
   end
