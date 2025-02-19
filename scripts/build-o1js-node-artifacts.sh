@@ -77,9 +77,10 @@ node "src/build/fix-wasm-bindings-node.js" "$BINDINGS_PATH/plonk_wasm.cjs"
 
 dune b $KIMCHI_BINDINGS/js/native 
 # NATIVE_BINDINGS_PATH=src/bindings/compiled/_node_bindings/
-NATIVE_BINDINGS_PATH=src/bindings/compiled/_node_bindings/native/
+NATIVE_BINDINGS_PATH=src/bindings/compiled/_node_bindings/
 mkdir -p "$NATIVE_BINDINGS_PATH"
+mkdir -p "dist/node/bindings/compiled/_node_bindings/native"
 chmod -R 777 "$NATIVE_BINDINGS_PATH"
 
 cp "_build/default/${KIMCHI_BINDINGS}/js/native/plonk_native.node" "$NATIVE_BINDINGS_PATH"
-cp "$NATIVE_BINDINGS_PATH/plonk_native.node" "dist/node/bindings/compiled/_node_bindings/native "
+cp "$NATIVE_BINDINGS_PATH/plonk_native.node" "dist/node/bindings/compiled/_node_bindings/"
