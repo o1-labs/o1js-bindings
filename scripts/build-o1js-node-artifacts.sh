@@ -80,9 +80,9 @@ dune b $KIMCHI_BINDINGS/js/native
 NATIVE_BINDINGS_PATH=src/bindings/compiled/_node_bindings/
 DIST_BINDINGS_PATH=dist/node/bindings/compiled/_node_bindings  
 mkdir -p "$NATIVE_BINDINGS_PATH"
-mkdir -p "dist/node/bindings/compiled/_node_bindings/native"
+mkdir -p "$DIST_BINDINGS_PATH/native"
 chmod -R 777 "$NATIVE_BINDINGS_PATH"
 
-chmod -R 777 "dist/node/bindings/compiled"
+chmod -R 777 "$DIST_BINDINGS_PATH"
 cp "_build/default/${KIMCHI_BINDINGS}/js/native/plonk_native.node" "$NATIVE_BINDINGS_PATH"
-cp "$NATIVE_BINDINGS_PATH/plonk_native.node" "dist/node/bindings/compiled/_node_bindings/"
+cp "$NATIVE_BINDINGS_PATH/plonk_native.node" "$DIST_BINDINGS_PATH"
