@@ -11,7 +11,9 @@ module FunnyLittleModule = struct
 end
 
 module NativeModule = struct
-  external fp_poseidon_block_cipher_native : unit -> Js.js_string = "fp_poseidon_block_cipher_native"
+  external fp_poseidon_block_cipher_native
+    : Js.js_array Js.t -> Js.js_array Js.t
+    = "fp_poseidon_block_cipher_native"
 end
 
 let export =
