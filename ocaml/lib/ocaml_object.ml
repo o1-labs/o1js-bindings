@@ -12,7 +12,7 @@ end
 
 module NativeModule = struct
   external fp_poseidon_block_cipher_native
-    : Js.js_array Js.t -> Js.js_array Js.t
+    : Js.Unsafe.any Js.js_array Js.t -> Js.Unsafe.any Js.js_array Js.t
     = "fp_poseidon_block_cipher_native"
 end
 
