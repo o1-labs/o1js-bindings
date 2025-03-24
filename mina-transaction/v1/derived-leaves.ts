@@ -5,19 +5,19 @@ import {
   GenericSignable,
   GenericSignableBool,
   GenericSignableField,
-} from '../lib/generic.js';
-import { createDerivers } from '../lib/provable-generic.js';
-import * as Json from './gen/transaction-json.js';
+} from '../../lib/generic.js';
+import { createDerivers } from '../../lib/provable-generic.js';
+import * as Json from '../gen/v1/transaction-json.js';
 import {
   bytesToBits,
   prefixToField,
   stringLengthInBytes,
   stringToBytes,
-} from '../lib/binable.js';
-import { Base58, fieldEncodings } from '../../lib/util/base58.js';
-import { dataAsHash } from '../../lib/mina/v1/events.js';
-import { HashHelpers } from '../../lib/provable/crypto/hash-generic.js';
-import { prefixes } from '../crypto/constants.js';
+} from '../../lib/binable.js';
+import { Base58, fieldEncodings } from '../../../lib/util/base58.js';
+import { dataAsHash } from '../../../lib/mina/v1/events.js';
+import { HashHelpers } from '../../../lib/provable/crypto/hash-generic.js';
+import { prefixes } from '../../crypto/constants.js';
 
 export { derivedLeafTypes, derivedLeafTypesSignable, tokenSymbolLength };
 
