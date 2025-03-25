@@ -65,7 +65,8 @@ val pickles :
        -> < publicInputSize : int Js.prop
           ; publicOutputSize : int Js.prop
           ; storable : Cache.js_storable Js.optdef_prop
-          ; overrideWrapDomain : int Js.optdef_prop >
+          ; overrideWrapDomain : int Js.optdef_prop 
+          ; chunks : int Js.prop >
           Js.t
        -> < getVerificationKey :
               (   unit
