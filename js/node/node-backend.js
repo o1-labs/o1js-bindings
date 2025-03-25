@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { WithThreadPool, workers } from '../../../lib/proof-system/workers.js';
 let url = import.meta.url;
 let filename = url !== undefined ? fileURLToPath(url) : __filename;
-
+// 
 /**
  * @type {import("../../compiled/node_bindings/plonk_wasm.cjs")}
  */
