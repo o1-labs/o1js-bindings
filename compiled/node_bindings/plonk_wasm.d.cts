@@ -714,75 +714,75 @@ export function caml_pasta_fp_plonk_verifier_index_deep_copy(x: WasmFpPlonkVerif
 */
 export function prover_to_json(prover_index: WasmPastaFpPlonkIndex): string;
 /**
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_one(): WasmVestaGProjective;
+export function caml_pallas_one(): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_add(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
+export function caml_pallas_add(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_sub(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
+export function caml_pallas_sub(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_negate(x: WasmVestaGProjective): WasmVestaGProjective;
+export function caml_pallas_negate(x: WasmPallasGProjective): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_double(x: WasmVestaGProjective): WasmVestaGProjective;
+export function caml_pallas_double(x: WasmPallasGProjective): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
+* @param {WasmPallasGProjective} x
 * @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_scale(x: WasmVestaGProjective, y: Uint8Array): WasmVestaGProjective;
+export function caml_pallas_scale(x: WasmPallasGProjective, y: Uint8Array): WasmPallasGProjective;
 /**
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_random(): WasmVestaGProjective;
+export function caml_pallas_random(): WasmPallasGProjective;
 /**
 * @param {number} i
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_rng(i: number): WasmVestaGProjective;
+export function caml_pallas_rng(i: number): WasmPallasGProjective;
 /**
 * @returns {Uint8Array}
 */
-export function caml_vesta_endo_base(): Uint8Array;
+export function caml_pallas_endo_base(): Uint8Array;
 /**
 * @returns {Uint8Array}
 */
-export function caml_vesta_endo_scalar(): Uint8Array;
+export function caml_pallas_endo_scalar(): Uint8Array;
 /**
-* @param {WasmVestaGProjective} x
-* @returns {WasmGVesta}
+* @param {WasmPallasGProjective} x
+* @returns {WasmGPallas}
 */
-export function caml_vesta_to_affine(x: WasmVestaGProjective): WasmGVesta;
+export function caml_pallas_to_affine(x: WasmPallasGProjective): WasmGPallas;
 /**
-* @param {WasmGVesta} x
-* @returns {WasmVestaGProjective}
+* @param {WasmGPallas} x
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_of_affine(x: WasmGVesta): WasmVestaGProjective;
+export function caml_pallas_of_affine(x: WasmGPallas): WasmPallasGProjective;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmVestaGProjective;
+export function caml_pallas_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmPallasGProjective;
 /**
-* @param {WasmGVesta} x
-* @returns {WasmGVesta}
+* @param {WasmGPallas} x
+* @returns {WasmGPallas}
 */
-export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
+export function caml_pallas_affine_deep_copy(x: WasmGPallas): WasmGPallas;
 /**
 * @param {Uint32Array} lgr_comm
 * @param {WasmFpPlonkVerifierIndex} index
@@ -1052,75 +1052,75 @@ export function caml_pasta_fq_plonk_verifier_index_dummy(): WasmFqPlonkVerifierI
 */
 export function caml_pasta_fq_plonk_verifier_index_deep_copy(x: WasmFqPlonkVerifierIndex): WasmFqPlonkVerifierIndex;
 /**
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_one(): WasmPallasGProjective;
+export function caml_vesta_one(): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
-* @param {WasmPallasGProjective} y
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_add(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
+export function caml_vesta_add(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
-* @param {WasmPallasGProjective} y
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_sub(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
+export function caml_vesta_sub(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_negate(x: WasmPallasGProjective): WasmPallasGProjective;
+export function caml_vesta_negate(x: WasmVestaGProjective): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_double(x: WasmPallasGProjective): WasmPallasGProjective;
+export function caml_vesta_double(x: WasmVestaGProjective): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
+* @param {WasmVestaGProjective} x
 * @param {Uint8Array} y
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_scale(x: WasmPallasGProjective, y: Uint8Array): WasmPallasGProjective;
+export function caml_vesta_scale(x: WasmVestaGProjective, y: Uint8Array): WasmVestaGProjective;
 /**
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_random(): WasmPallasGProjective;
+export function caml_vesta_random(): WasmVestaGProjective;
 /**
 * @param {number} i
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_rng(i: number): WasmPallasGProjective;
+export function caml_vesta_rng(i: number): WasmVestaGProjective;
 /**
 * @returns {Uint8Array}
 */
-export function caml_pallas_endo_base(): Uint8Array;
+export function caml_vesta_endo_base(): Uint8Array;
 /**
 * @returns {Uint8Array}
 */
-export function caml_pallas_endo_scalar(): Uint8Array;
+export function caml_vesta_endo_scalar(): Uint8Array;
 /**
-* @param {WasmPallasGProjective} x
-* @returns {WasmGPallas}
+* @param {WasmVestaGProjective} x
+* @returns {WasmGVesta}
 */
-export function caml_pallas_to_affine(x: WasmPallasGProjective): WasmGPallas;
+export function caml_vesta_to_affine(x: WasmVestaGProjective): WasmGVesta;
 /**
-* @param {WasmGPallas} x
-* @returns {WasmPallasGProjective}
+* @param {WasmGVesta} x
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_of_affine(x: WasmGPallas): WasmPallasGProjective;
+export function caml_vesta_of_affine(x: WasmGVesta): WasmVestaGProjective;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmPallasGProjective;
+export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmVestaGProjective;
 /**
-* @param {WasmGPallas} x
-* @returns {WasmGPallas}
+* @param {WasmGVesta} x
+* @returns {WasmGVesta}
 */
-export function caml_pallas_affine_deep_copy(x: WasmGPallas): WasmGPallas;
+export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
 /**
 * A row accessible from a given row, corresponds to the fact that we open all polynomials
 * at `zeta` **and** `omega * zeta`.
