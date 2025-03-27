@@ -318,110 +318,110 @@ export function caml_pasta_fq_plonk_gate_vector_digest(public_input_size: number
 export function caml_pasta_fq_plonk_circuit_serialize(public_input_size: number, v: WasmFqGateVector): string;
 /**
 * @param {number} depth
-* @returns {WasmFqSrs}
+* @returns {WasmFpSrs}
 */
-export function caml_fq_srs_create(depth: number): WasmFqSrs;
+export function caml_fp_srs_create(depth: number): WasmFpSrs;
 /**
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {number} log2_size
 */
-export function caml_fq_srs_add_lagrange_basis(srs: WasmFqSrs, log2_size: number): void;
+export function caml_fp_srs_add_lagrange_basis(srs: WasmFpSrs, log2_size: number): void;
 /**
 * @param {boolean | undefined} append
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {string} path
 */
-export function caml_fq_srs_write(append: boolean | undefined, srs: WasmFqSrs, path: string): void;
+export function caml_fp_srs_write(append: boolean | undefined, srs: WasmFpSrs, path: string): void;
 /**
 * @param {number | undefined} offset
 * @param {string} path
-* @returns {WasmFqSrs | undefined}
+* @returns {WasmFpSrs | undefined}
 */
-export function caml_fq_srs_read(offset: number | undefined, path: string): WasmFqSrs | undefined;
+export function caml_fp_srs_read(offset: number | undefined, path: string): WasmFpSrs | undefined;
 /**
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {number} domain_size
 * @returns {number}
 */
-export function caml_fq_srs_lagrange_commitments_whole_domain_ptr(srs: WasmFqSrs, domain_size: number): number;
+export function caml_fp_srs_lagrange_commitments_whole_domain_ptr(srs: WasmFpSrs, domain_size: number): number;
 /**
 * @param {number} ptr
 * @returns {Uint32Array}
 */
-export function caml_fq_srs_lagrange_commitments_whole_domain_read_from_ptr(ptr: number): Uint32Array;
+export function caml_fp_srs_lagrange_commitments_whole_domain_read_from_ptr(ptr: number): Uint32Array;
 /**
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {number} domain_size
 * @param {number} i
-* @returns {WasmFqPolyComm}
+* @returns {WasmFpPolyComm}
 */
-export function caml_fq_srs_lagrange_commitment(srs: WasmFqSrs, domain_size: number, i: number): WasmFqPolyComm;
+export function caml_fp_srs_lagrange_commitment(srs: WasmFpSrs, domain_size: number, i: number): WasmFpPolyComm;
 /**
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {number} domain_size
 * @param {Uint8Array} evals
-* @returns {WasmFqPolyComm}
+* @returns {WasmFpPolyComm}
 */
-export function caml_fq_srs_commit_evaluations(srs: WasmFqSrs, domain_size: number, evals: Uint8Array): WasmFqPolyComm;
+export function caml_fp_srs_commit_evaluations(srs: WasmFpSrs, domain_size: number, evals: Uint8Array): WasmFpPolyComm;
 /**
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {Uint8Array} chals
-* @returns {WasmFqPolyComm}
+* @returns {WasmFpPolyComm}
 */
-export function caml_fq_srs_b_poly_commitment(srs: WasmFqSrs, chals: Uint8Array): WasmFqPolyComm;
+export function caml_fp_srs_b_poly_commitment(srs: WasmFpSrs, chals: Uint8Array): WasmFpPolyComm;
 /**
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {Uint32Array} comms
 * @param {Uint8Array} chals
 * @returns {boolean}
 */
-export function caml_fq_srs_batch_accumulator_check(srs: WasmFqSrs, comms: Uint32Array, chals: Uint8Array): boolean;
+export function caml_fp_srs_batch_accumulator_check(srs: WasmFpSrs, comms: Uint32Array, chals: Uint8Array): boolean;
 /**
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {number} comms
 * @param {Uint8Array} chals
 * @returns {Uint32Array}
 */
-export function caml_fq_srs_batch_accumulator_generate(srs: WasmFqSrs, comms: number, chals: Uint8Array): Uint32Array;
+export function caml_fp_srs_batch_accumulator_generate(srs: WasmFpSrs, comms: number, chals: Uint8Array): Uint32Array;
 /**
-* @param {WasmFqSrs} srs
-* @returns {WasmGPallas}
+* @param {WasmFpSrs} srs
+* @returns {WasmGVesta}
 */
-export function caml_fq_srs_h(srs: WasmFqSrs): WasmGPallas;
+export function caml_fp_srs_h(srs: WasmFpSrs): WasmGVesta;
 /**
 * @param {number} depth
-* @returns {WasmFqSrs}
+* @returns {WasmFpSrs}
 */
-export function caml_fq_srs_create_parallel(depth: number): WasmFqSrs;
+export function caml_fp_srs_create_parallel(depth: number): WasmFpSrs;
 /**
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @returns {Uint32Array}
 */
-export function caml_fq_srs_get(srs: WasmFqSrs): Uint32Array;
+export function caml_fp_srs_get(srs: WasmFpSrs): Uint32Array;
 /**
 * @param {Uint32Array} h_and_gs
-* @returns {WasmFqSrs}
+* @returns {WasmFpSrs}
 */
-export function caml_fq_srs_set(h_and_gs: Uint32Array): WasmFqSrs;
+export function caml_fp_srs_set(h_and_gs: Uint32Array): WasmFpSrs;
 /**
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {number} domain_size
 * @param {number} i
-* @returns {WasmFqPolyComm | undefined}
+* @returns {WasmFpPolyComm | undefined}
 */
-export function caml_fq_srs_maybe_lagrange_commitment(srs: WasmFqSrs, domain_size: number, i: number): WasmFqPolyComm | undefined;
+export function caml_fp_srs_maybe_lagrange_commitment(srs: WasmFpSrs, domain_size: number, i: number): WasmFpPolyComm | undefined;
 /**
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {number} domain_size
 * @param {Uint32Array} input_bases
 */
-export function caml_fq_srs_set_lagrange_basis(srs: WasmFqSrs, domain_size: number, input_bases: Uint32Array): void;
+export function caml_fp_srs_set_lagrange_basis(srs: WasmFpSrs, domain_size: number, input_bases: Uint32Array): void;
 /**
-* @param {WasmFqSrs} srs
+* @param {WasmFpSrs} srs
 * @param {number} domain_size
 * @returns {Uint32Array}
 */
-export function caml_fq_srs_get_lagrange_basis(srs: WasmFqSrs, domain_size: number): Uint32Array;
+export function caml_fp_srs_get_lagrange_basis(srs: WasmFpSrs, domain_size: number): Uint32Array;
 /**
 * @param {Uint32Array} lgr_comm
 * @param {WasmFpPlonkVerifierIndex} index
@@ -731,181 +731,181 @@ export function caml_bigint_256_of_bytes(x: Uint8Array): Uint8Array;
 */
 export function caml_bigint_256_deep_copy(x: Uint8Array): Uint8Array;
 /**
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_one(): WasmPallasGProjective;
+export function caml_vesta_one(): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
-* @param {WasmPallasGProjective} y
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_add(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
+export function caml_vesta_add(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
-* @param {WasmPallasGProjective} y
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_sub(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
+export function caml_vesta_sub(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_negate(x: WasmPallasGProjective): WasmPallasGProjective;
+export function caml_vesta_negate(x: WasmVestaGProjective): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_double(x: WasmPallasGProjective): WasmPallasGProjective;
+export function caml_vesta_double(x: WasmVestaGProjective): WasmVestaGProjective;
 /**
-* @param {WasmPallasGProjective} x
+* @param {WasmVestaGProjective} x
 * @param {Uint8Array} y
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_scale(x: WasmPallasGProjective, y: Uint8Array): WasmPallasGProjective;
+export function caml_vesta_scale(x: WasmVestaGProjective, y: Uint8Array): WasmVestaGProjective;
 /**
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_random(): WasmPallasGProjective;
+export function caml_vesta_random(): WasmVestaGProjective;
 /**
 * @param {number} i
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_rng(i: number): WasmPallasGProjective;
+export function caml_vesta_rng(i: number): WasmVestaGProjective;
 /**
 * @returns {Uint8Array}
 */
-export function caml_pallas_endo_base(): Uint8Array;
+export function caml_vesta_endo_base(): Uint8Array;
 /**
 * @returns {Uint8Array}
 */
-export function caml_pallas_endo_scalar(): Uint8Array;
+export function caml_vesta_endo_scalar(): Uint8Array;
 /**
-* @param {WasmPallasGProjective} x
-* @returns {WasmGPallas}
+* @param {WasmVestaGProjective} x
+* @returns {WasmGVesta}
 */
-export function caml_pallas_to_affine(x: WasmPallasGProjective): WasmGPallas;
+export function caml_vesta_to_affine(x: WasmVestaGProjective): WasmGVesta;
 /**
-* @param {WasmGPallas} x
-* @returns {WasmPallasGProjective}
+* @param {WasmGVesta} x
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_of_affine(x: WasmGPallas): WasmPallasGProjective;
+export function caml_vesta_of_affine(x: WasmGVesta): WasmVestaGProjective;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmPallasGProjective;
+export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmVestaGProjective;
 /**
-* @param {WasmGPallas} x
-* @returns {WasmGPallas}
+* @param {WasmGVesta} x
+* @returns {WasmGVesta}
 */
-export function caml_pallas_affine_deep_copy(x: WasmGPallas): WasmGPallas;
+export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
 /**
 * @param {number} depth
-* @returns {WasmFpSrs}
+* @returns {WasmFqSrs}
 */
-export function caml_fp_srs_create(depth: number): WasmFpSrs;
+export function caml_fq_srs_create(depth: number): WasmFqSrs;
 /**
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {number} log2_size
 */
-export function caml_fp_srs_add_lagrange_basis(srs: WasmFpSrs, log2_size: number): void;
+export function caml_fq_srs_add_lagrange_basis(srs: WasmFqSrs, log2_size: number): void;
 /**
 * @param {boolean | undefined} append
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {string} path
 */
-export function caml_fp_srs_write(append: boolean | undefined, srs: WasmFpSrs, path: string): void;
+export function caml_fq_srs_write(append: boolean | undefined, srs: WasmFqSrs, path: string): void;
 /**
 * @param {number | undefined} offset
 * @param {string} path
-* @returns {WasmFpSrs | undefined}
+* @returns {WasmFqSrs | undefined}
 */
-export function caml_fp_srs_read(offset: number | undefined, path: string): WasmFpSrs | undefined;
+export function caml_fq_srs_read(offset: number | undefined, path: string): WasmFqSrs | undefined;
 /**
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {number} domain_size
 * @returns {number}
 */
-export function caml_fp_srs_lagrange_commitments_whole_domain_ptr(srs: WasmFpSrs, domain_size: number): number;
+export function caml_fq_srs_lagrange_commitments_whole_domain_ptr(srs: WasmFqSrs, domain_size: number): number;
 /**
 * @param {number} ptr
 * @returns {Uint32Array}
 */
-export function caml_fp_srs_lagrange_commitments_whole_domain_read_from_ptr(ptr: number): Uint32Array;
+export function caml_fq_srs_lagrange_commitments_whole_domain_read_from_ptr(ptr: number): Uint32Array;
 /**
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {number} domain_size
 * @param {number} i
-* @returns {WasmFpPolyComm}
+* @returns {WasmFqPolyComm}
 */
-export function caml_fp_srs_lagrange_commitment(srs: WasmFpSrs, domain_size: number, i: number): WasmFpPolyComm;
+export function caml_fq_srs_lagrange_commitment(srs: WasmFqSrs, domain_size: number, i: number): WasmFqPolyComm;
 /**
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {number} domain_size
 * @param {Uint8Array} evals
-* @returns {WasmFpPolyComm}
+* @returns {WasmFqPolyComm}
 */
-export function caml_fp_srs_commit_evaluations(srs: WasmFpSrs, domain_size: number, evals: Uint8Array): WasmFpPolyComm;
+export function caml_fq_srs_commit_evaluations(srs: WasmFqSrs, domain_size: number, evals: Uint8Array): WasmFqPolyComm;
 /**
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {Uint8Array} chals
-* @returns {WasmFpPolyComm}
+* @returns {WasmFqPolyComm}
 */
-export function caml_fp_srs_b_poly_commitment(srs: WasmFpSrs, chals: Uint8Array): WasmFpPolyComm;
+export function caml_fq_srs_b_poly_commitment(srs: WasmFqSrs, chals: Uint8Array): WasmFqPolyComm;
 /**
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {Uint32Array} comms
 * @param {Uint8Array} chals
 * @returns {boolean}
 */
-export function caml_fp_srs_batch_accumulator_check(srs: WasmFpSrs, comms: Uint32Array, chals: Uint8Array): boolean;
+export function caml_fq_srs_batch_accumulator_check(srs: WasmFqSrs, comms: Uint32Array, chals: Uint8Array): boolean;
 /**
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {number} comms
 * @param {Uint8Array} chals
 * @returns {Uint32Array}
 */
-export function caml_fp_srs_batch_accumulator_generate(srs: WasmFpSrs, comms: number, chals: Uint8Array): Uint32Array;
+export function caml_fq_srs_batch_accumulator_generate(srs: WasmFqSrs, comms: number, chals: Uint8Array): Uint32Array;
 /**
-* @param {WasmFpSrs} srs
-* @returns {WasmGVesta}
+* @param {WasmFqSrs} srs
+* @returns {WasmGPallas}
 */
-export function caml_fp_srs_h(srs: WasmFpSrs): WasmGVesta;
+export function caml_fq_srs_h(srs: WasmFqSrs): WasmGPallas;
 /**
 * @param {number} depth
-* @returns {WasmFpSrs}
+* @returns {WasmFqSrs}
 */
-export function caml_fp_srs_create_parallel(depth: number): WasmFpSrs;
+export function caml_fq_srs_create_parallel(depth: number): WasmFqSrs;
 /**
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @returns {Uint32Array}
 */
-export function caml_fp_srs_get(srs: WasmFpSrs): Uint32Array;
+export function caml_fq_srs_get(srs: WasmFqSrs): Uint32Array;
 /**
 * @param {Uint32Array} h_and_gs
-* @returns {WasmFpSrs}
+* @returns {WasmFqSrs}
 */
-export function caml_fp_srs_set(h_and_gs: Uint32Array): WasmFpSrs;
+export function caml_fq_srs_set(h_and_gs: Uint32Array): WasmFqSrs;
 /**
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {number} domain_size
 * @param {number} i
-* @returns {WasmFpPolyComm | undefined}
+* @returns {WasmFqPolyComm | undefined}
 */
-export function caml_fp_srs_maybe_lagrange_commitment(srs: WasmFpSrs, domain_size: number, i: number): WasmFpPolyComm | undefined;
+export function caml_fq_srs_maybe_lagrange_commitment(srs: WasmFqSrs, domain_size: number, i: number): WasmFqPolyComm | undefined;
 /**
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {number} domain_size
 * @param {Uint32Array} input_bases
 */
-export function caml_fp_srs_set_lagrange_basis(srs: WasmFpSrs, domain_size: number, input_bases: Uint32Array): void;
+export function caml_fq_srs_set_lagrange_basis(srs: WasmFqSrs, domain_size: number, input_bases: Uint32Array): void;
 /**
-* @param {WasmFpSrs} srs
+* @param {WasmFqSrs} srs
 * @param {number} domain_size
 * @returns {Uint32Array}
 */
-export function caml_fp_srs_get_lagrange_basis(srs: WasmFpSrs, domain_size: number): Uint32Array;
+export function caml_fq_srs_get_lagrange_basis(srs: WasmFqSrs, domain_size: number): Uint32Array;
 /**
 * @returns {number}
 */
@@ -1052,75 +1052,75 @@ export function exitThreadPool(): Promise<any>;
 */
 export function wbg_rayon_start_worker(receiver: number): void;
 /**
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_one(): WasmVestaGProjective;
+export function caml_pallas_one(): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_add(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
+export function caml_pallas_add(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_sub(x: WasmVestaGProjective, y: WasmVestaGProjective): WasmVestaGProjective;
+export function caml_pallas_sub(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_negate(x: WasmVestaGProjective): WasmVestaGProjective;
+export function caml_pallas_negate(x: WasmPallasGProjective): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_double(x: WasmVestaGProjective): WasmVestaGProjective;
+export function caml_pallas_double(x: WasmPallasGProjective): WasmPallasGProjective;
 /**
-* @param {WasmVestaGProjective} x
+* @param {WasmPallasGProjective} x
 * @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_scale(x: WasmVestaGProjective, y: Uint8Array): WasmVestaGProjective;
+export function caml_pallas_scale(x: WasmPallasGProjective, y: Uint8Array): WasmPallasGProjective;
 /**
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_random(): WasmVestaGProjective;
+export function caml_pallas_random(): WasmPallasGProjective;
 /**
 * @param {number} i
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_rng(i: number): WasmVestaGProjective;
+export function caml_pallas_rng(i: number): WasmPallasGProjective;
 /**
 * @returns {Uint8Array}
 */
-export function caml_vesta_endo_base(): Uint8Array;
+export function caml_pallas_endo_base(): Uint8Array;
 /**
 * @returns {Uint8Array}
 */
-export function caml_vesta_endo_scalar(): Uint8Array;
+export function caml_pallas_endo_scalar(): Uint8Array;
 /**
-* @param {WasmVestaGProjective} x
-* @returns {WasmGVesta}
+* @param {WasmPallasGProjective} x
+* @returns {WasmGPallas}
 */
-export function caml_vesta_to_affine(x: WasmVestaGProjective): WasmGVesta;
+export function caml_pallas_to_affine(x: WasmPallasGProjective): WasmGPallas;
 /**
-* @param {WasmGVesta} x
-* @returns {WasmVestaGProjective}
+* @param {WasmGPallas} x
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_of_affine(x: WasmGVesta): WasmVestaGProjective;
+export function caml_pallas_of_affine(x: WasmGPallas): WasmPallasGProjective;
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmVestaGProjective;
+export function caml_pallas_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmPallasGProjective;
 /**
-* @param {WasmGVesta} x
-* @returns {WasmGVesta}
+* @param {WasmGPallas} x
+* @returns {WasmGPallas}
 */
-export function caml_vesta_affine_deep_copy(x: WasmGVesta): WasmGVesta;
+export function caml_pallas_affine_deep_copy(x: WasmGPallas): WasmGPallas;
 /**
 * A row accessible from a given row, corresponds to the fact that we open all polynomials
 * at `zeta` **and** `omega * zeta`.
