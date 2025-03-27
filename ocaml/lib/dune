@@ -27,6 +27,7 @@
   kimchi_pasta.basic
   kimchi_pasta.constraint_system
   kimchi_backend_common
+  kimchi_bindings.pasta_fp_poseidon
   kimchi_bindings
   kimchi_types
   pasta_bindings
