@@ -25,7 +25,22 @@ let empty_typ : (_, _, unit) Impl.Internal_Basic.Typ.typ' =
 let typ (size_in_field_elements : int) : (Field.t array, field array) Typ.t =
   Typ { empty_typ with size_in_field_elements }
 
+module PoseidonRust = struct
+  type t = Kimchi_bindings.FieldVectors.Fp.t
+
+  external block_cipher : t -> Kimchi_bindings.FieldVectors.Fp.t -> unit
+    = "caml_pasta_fp_poseidon_block_cipher_new"
+end
+
 module Run = struct
+  let run_block_cipher (s : field array) =
+    let () = print_endline "hello from ocaml" in
+    let params = Kimchi_bindings.FieldVectors.Fp.create () in
+    let v = Kimchi_bindings.FieldVectors.Fp.create () in
+    Array.iter s ~f:(Kimchi_bindings.FieldVectors.Fp.emplace_back v) ;
+    PoseidonRust.block_cipher params v ;
+    Array.init (Array.length s) ~f:(Kimchi_bindings.FieldVectors.Fp.get v)
+
   let exists (size_in_fields : int) (compute : unit -> Field.Constant.t array) =
     Impl.exists (typ size_in_fields) ~compute
 
@@ -474,6 +489,8 @@ let snarky =
         method exists = exists
 
         method existsOne = exists_one
+
+        val poseidonBlockCipher = run_block_cipher
 
         val inProver = in_prover
 

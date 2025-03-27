@@ -13,7 +13,8 @@ end
 
 val snarky :
   < run :
-      < exists : (int -> (unit -> field array) -> Field.t array) Js.meth
+      < poseidonBlockCipher : (field array -> field array) Js.readonly_prop
+      ; exists : (int -> (unit -> field array) -> Field.t array) Js.meth
       ; existsOne : ((unit -> field) -> Field.t) Js.meth
       ; inProver : (unit -> bool) Js.readonly_prop
       ; asProver : ((unit -> unit) -> unit) Js.meth
