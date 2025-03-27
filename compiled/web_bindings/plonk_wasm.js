@@ -2436,94 +2436,94 @@ export function caml_bigint_256_deep_copy(x) {
 }
 
 /**
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_one() {
-    const ret = wasm.caml_vesta_one();
-    return WasmVestaGProjective.__wrap(ret);
+export function caml_pallas_one() {
+    const ret = wasm.caml_pallas_one();
+    return WasmPallasGProjective.__wrap(ret);
 }
 
 /**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_add(x, y) {
-    _assertClass(x, WasmVestaGProjective);
-    _assertClass(y, WasmVestaGProjective);
-    const ret = wasm.caml_vesta_add(x.__wbg_ptr, y.__wbg_ptr);
-    return WasmVestaGProjective.__wrap(ret);
+export function caml_pallas_add(x, y) {
+    _assertClass(x, WasmPallasGProjective);
+    _assertClass(y, WasmPallasGProjective);
+    const ret = wasm.caml_pallas_add(x.__wbg_ptr, y.__wbg_ptr);
+    return WasmPallasGProjective.__wrap(ret);
 }
 
 /**
-* @param {WasmVestaGProjective} x
-* @param {WasmVestaGProjective} y
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_sub(x, y) {
-    _assertClass(x, WasmVestaGProjective);
-    _assertClass(y, WasmVestaGProjective);
-    const ret = wasm.caml_vesta_sub(x.__wbg_ptr, y.__wbg_ptr);
-    return WasmVestaGProjective.__wrap(ret);
+export function caml_pallas_sub(x, y) {
+    _assertClass(x, WasmPallasGProjective);
+    _assertClass(y, WasmPallasGProjective);
+    const ret = wasm.caml_pallas_sub(x.__wbg_ptr, y.__wbg_ptr);
+    return WasmPallasGProjective.__wrap(ret);
 }
 
 /**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_negate(x) {
-    _assertClass(x, WasmVestaGProjective);
-    const ret = wasm.caml_vesta_negate(x.__wbg_ptr);
-    return WasmVestaGProjective.__wrap(ret);
+export function caml_pallas_negate(x) {
+    _assertClass(x, WasmPallasGProjective);
+    const ret = wasm.caml_pallas_negate(x.__wbg_ptr);
+    return WasmPallasGProjective.__wrap(ret);
 }
 
 /**
-* @param {WasmVestaGProjective} x
-* @returns {WasmVestaGProjective}
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_double(x) {
-    _assertClass(x, WasmVestaGProjective);
-    const ret = wasm.caml_vesta_double(x.__wbg_ptr);
-    return WasmVestaGProjective.__wrap(ret);
+export function caml_pallas_double(x) {
+    _assertClass(x, WasmPallasGProjective);
+    const ret = wasm.caml_pallas_double(x.__wbg_ptr);
+    return WasmPallasGProjective.__wrap(ret);
 }
 
 /**
-* @param {WasmVestaGProjective} x
+* @param {WasmPallasGProjective} x
 * @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_scale(x, y) {
-    _assertClass(x, WasmVestaGProjective);
+export function caml_pallas_scale(x, y) {
+    _assertClass(x, WasmPallasGProjective);
     const ptr0 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_vesta_scale(x.__wbg_ptr, ptr0, len0);
-    return WasmVestaGProjective.__wrap(ret);
+    const ret = wasm.caml_pallas_scale(x.__wbg_ptr, ptr0, len0);
+    return WasmPallasGProjective.__wrap(ret);
 }
 
 /**
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_random() {
-    const ret = wasm.caml_vesta_random();
-    return WasmVestaGProjective.__wrap(ret);
+export function caml_pallas_random() {
+    const ret = wasm.caml_pallas_random();
+    return WasmPallasGProjective.__wrap(ret);
 }
 
 /**
 * @param {number} i
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_rng(i) {
-    const ret = wasm.caml_vesta_rng(i);
-    return WasmVestaGProjective.__wrap(ret);
+export function caml_pallas_rng(i) {
+    const ret = wasm.caml_pallas_rng(i);
+    return WasmPallasGProjective.__wrap(ret);
 }
 
 /**
 * @returns {Uint8Array}
 */
-export function caml_vesta_endo_base() {
+export function caml_pallas_endo_base() {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_vesta_endo_base(retptr);
+        wasm.caml_pallas_endo_base(retptr);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         var v1 = getArrayU8FromWasm0(r0, r1).slice();
@@ -2537,10 +2537,10 @@ export function caml_vesta_endo_base() {
 /**
 * @returns {Uint8Array}
 */
-export function caml_vesta_endo_scalar() {
+export function caml_pallas_endo_scalar() {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_vesta_endo_scalar(retptr);
+        wasm.caml_pallas_endo_scalar(retptr);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         var v1 = getArrayU8FromWasm0(r0, r1).slice();
@@ -2552,49 +2552,49 @@ export function caml_vesta_endo_scalar() {
 }
 
 /**
-* @param {WasmVestaGProjective} x
-* @returns {WasmGVesta}
+* @param {WasmPallasGProjective} x
+* @returns {WasmGPallas}
 */
-export function caml_vesta_to_affine(x) {
-    _assertClass(x, WasmVestaGProjective);
-    const ret = wasm.caml_vesta_to_affine(x.__wbg_ptr);
-    return WasmGVesta.__wrap(ret);
+export function caml_pallas_to_affine(x) {
+    _assertClass(x, WasmPallasGProjective);
+    const ret = wasm.caml_pallas_to_affine(x.__wbg_ptr);
+    return WasmGPallas.__wrap(ret);
 }
 
 /**
-* @param {WasmGVesta} x
-* @returns {WasmVestaGProjective}
+* @param {WasmGPallas} x
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_of_affine(x) {
-    _assertClass(x, WasmGVesta);
+export function caml_pallas_of_affine(x) {
+    _assertClass(x, WasmGPallas);
     var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.caml_vesta_of_affine(ptr0);
-    return WasmVestaGProjective.__wrap(ret);
+    const ret = wasm.caml_pallas_of_affine(ptr0);
+    return WasmPallasGProjective.__wrap(ret);
 }
 
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
-* @returns {WasmVestaGProjective}
+* @returns {WasmPallasGProjective}
 */
-export function caml_vesta_of_affine_coordinates(x, y) {
+export function caml_pallas_of_affine_coordinates(x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
     const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_vesta_of_affine_coordinates(ptr0, len0, ptr1, len1);
-    return WasmVestaGProjective.__wrap(ret);
+    const ret = wasm.caml_pallas_of_affine_coordinates(ptr0, len0, ptr1, len1);
+    return WasmPallasGProjective.__wrap(ret);
 }
 
 /**
-* @param {WasmGVesta} x
-* @returns {WasmGVesta}
+* @param {WasmGPallas} x
+* @returns {WasmGPallas}
 */
-export function caml_vesta_affine_deep_copy(x) {
-    _assertClass(x, WasmGVesta);
+export function caml_pallas_affine_deep_copy(x) {
+    _assertClass(x, WasmGPallas);
     var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.caml_vesta_affine_deep_copy(ptr0);
-    return WasmGVesta.__wrap(ret);
+    const ret = wasm.caml_pallas_affine_deep_copy(ptr0);
+    return WasmGPallas.__wrap(ret);
 }
 
 /**
@@ -3410,94 +3410,94 @@ export function wbg_rayon_start_worker(receiver) {
 }
 
 /**
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_one() {
-    const ret = wasm.caml_pallas_one();
-    return WasmPallasGProjective.__wrap(ret);
+export function caml_vesta_one() {
+    const ret = wasm.caml_vesta_one();
+    return WasmVestaGProjective.__wrap(ret);
 }
 
 /**
-* @param {WasmPallasGProjective} x
-* @param {WasmPallasGProjective} y
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_add(x, y) {
-    _assertClass(x, WasmPallasGProjective);
-    _assertClass(y, WasmPallasGProjective);
-    const ret = wasm.caml_pallas_add(x.__wbg_ptr, y.__wbg_ptr);
-    return WasmPallasGProjective.__wrap(ret);
+export function caml_vesta_add(x, y) {
+    _assertClass(x, WasmVestaGProjective);
+    _assertClass(y, WasmVestaGProjective);
+    const ret = wasm.caml_vesta_add(x.__wbg_ptr, y.__wbg_ptr);
+    return WasmVestaGProjective.__wrap(ret);
 }
 
 /**
-* @param {WasmPallasGProjective} x
-* @param {WasmPallasGProjective} y
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @param {WasmVestaGProjective} y
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_sub(x, y) {
-    _assertClass(x, WasmPallasGProjective);
-    _assertClass(y, WasmPallasGProjective);
-    const ret = wasm.caml_pallas_sub(x.__wbg_ptr, y.__wbg_ptr);
-    return WasmPallasGProjective.__wrap(ret);
+export function caml_vesta_sub(x, y) {
+    _assertClass(x, WasmVestaGProjective);
+    _assertClass(y, WasmVestaGProjective);
+    const ret = wasm.caml_vesta_sub(x.__wbg_ptr, y.__wbg_ptr);
+    return WasmVestaGProjective.__wrap(ret);
 }
 
 /**
-* @param {WasmPallasGProjective} x
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_negate(x) {
-    _assertClass(x, WasmPallasGProjective);
-    const ret = wasm.caml_pallas_negate(x.__wbg_ptr);
-    return WasmPallasGProjective.__wrap(ret);
+export function caml_vesta_negate(x) {
+    _assertClass(x, WasmVestaGProjective);
+    const ret = wasm.caml_vesta_negate(x.__wbg_ptr);
+    return WasmVestaGProjective.__wrap(ret);
 }
 
 /**
-* @param {WasmPallasGProjective} x
-* @returns {WasmPallasGProjective}
+* @param {WasmVestaGProjective} x
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_double(x) {
-    _assertClass(x, WasmPallasGProjective);
-    const ret = wasm.caml_pallas_double(x.__wbg_ptr);
-    return WasmPallasGProjective.__wrap(ret);
+export function caml_vesta_double(x) {
+    _assertClass(x, WasmVestaGProjective);
+    const ret = wasm.caml_vesta_double(x.__wbg_ptr);
+    return WasmVestaGProjective.__wrap(ret);
 }
 
 /**
-* @param {WasmPallasGProjective} x
+* @param {WasmVestaGProjective} x
 * @param {Uint8Array} y
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_scale(x, y) {
-    _assertClass(x, WasmPallasGProjective);
+export function caml_vesta_scale(x, y) {
+    _assertClass(x, WasmVestaGProjective);
     const ptr0 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_pallas_scale(x.__wbg_ptr, ptr0, len0);
-    return WasmPallasGProjective.__wrap(ret);
+    const ret = wasm.caml_vesta_scale(x.__wbg_ptr, ptr0, len0);
+    return WasmVestaGProjective.__wrap(ret);
 }
 
 /**
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_random() {
-    const ret = wasm.caml_pallas_random();
-    return WasmPallasGProjective.__wrap(ret);
+export function caml_vesta_random() {
+    const ret = wasm.caml_vesta_random();
+    return WasmVestaGProjective.__wrap(ret);
 }
 
 /**
 * @param {number} i
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_rng(i) {
-    const ret = wasm.caml_pallas_rng(i);
-    return WasmPallasGProjective.__wrap(ret);
+export function caml_vesta_rng(i) {
+    const ret = wasm.caml_vesta_rng(i);
+    return WasmVestaGProjective.__wrap(ret);
 }
 
 /**
 * @returns {Uint8Array}
 */
-export function caml_pallas_endo_base() {
+export function caml_vesta_endo_base() {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pallas_endo_base(retptr);
+        wasm.caml_vesta_endo_base(retptr);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         var v1 = getArrayU8FromWasm0(r0, r1).slice();
@@ -3511,10 +3511,10 @@ export function caml_pallas_endo_base() {
 /**
 * @returns {Uint8Array}
 */
-export function caml_pallas_endo_scalar() {
+export function caml_vesta_endo_scalar() {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.caml_pallas_endo_scalar(retptr);
+        wasm.caml_vesta_endo_scalar(retptr);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         var v1 = getArrayU8FromWasm0(r0, r1).slice();
@@ -3526,49 +3526,49 @@ export function caml_pallas_endo_scalar() {
 }
 
 /**
-* @param {WasmPallasGProjective} x
-* @returns {WasmGPallas}
+* @param {WasmVestaGProjective} x
+* @returns {WasmGVesta}
 */
-export function caml_pallas_to_affine(x) {
-    _assertClass(x, WasmPallasGProjective);
-    const ret = wasm.caml_pallas_to_affine(x.__wbg_ptr);
-    return WasmGPallas.__wrap(ret);
+export function caml_vesta_to_affine(x) {
+    _assertClass(x, WasmVestaGProjective);
+    const ret = wasm.caml_vesta_to_affine(x.__wbg_ptr);
+    return WasmGVesta.__wrap(ret);
 }
 
 /**
-* @param {WasmGPallas} x
-* @returns {WasmPallasGProjective}
+* @param {WasmGVesta} x
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_of_affine(x) {
-    _assertClass(x, WasmGPallas);
+export function caml_vesta_of_affine(x) {
+    _assertClass(x, WasmGVesta);
     var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.caml_pallas_of_affine(ptr0);
-    return WasmPallasGProjective.__wrap(ret);
+    const ret = wasm.caml_vesta_of_affine(ptr0);
+    return WasmVestaGProjective.__wrap(ret);
 }
 
 /**
 * @param {Uint8Array} x
 * @param {Uint8Array} y
-* @returns {WasmPallasGProjective}
+* @returns {WasmVestaGProjective}
 */
-export function caml_pallas_of_affine_coordinates(x, y) {
+export function caml_vesta_of_affine_coordinates(x, y) {
     const ptr0 = passArray8ToWasm0(x, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(y, wasm.__wbindgen_malloc);
     const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.caml_pallas_of_affine_coordinates(ptr0, len0, ptr1, len1);
-    return WasmPallasGProjective.__wrap(ret);
+    const ret = wasm.caml_vesta_of_affine_coordinates(ptr0, len0, ptr1, len1);
+    return WasmVestaGProjective.__wrap(ret);
 }
 
 /**
-* @param {WasmGPallas} x
-* @returns {WasmGPallas}
+* @param {WasmGVesta} x
+* @returns {WasmGVesta}
 */
-export function caml_pallas_affine_deep_copy(x) {
-    _assertClass(x, WasmGPallas);
+export function caml_vesta_affine_deep_copy(x) {
+    _assertClass(x, WasmGVesta);
     var ptr0 = x.__destroy_into_raw();
-    const ret = wasm.caml_pallas_affine_deep_copy(ptr0);
-    return WasmGPallas.__wrap(ret);
+    const ret = wasm.caml_vesta_affine_deep_copy(ptr0);
+    return WasmGVesta.__wrap(ret);
 }
 
 function handleError(f, args) {
