@@ -4,7 +4,7 @@ set -e
 
 MINA_PATH="src/mina"
 
-BUILT=$(cat src/bindings/MINA_COMMIT | sed 's/.* //')
+BUILT=$(sed 's/.* //' src/bindings/"${MINA_COMMIT}")
 
 pushd "${MINA_PATH}"
   MINA_COMMIT=$(git rev-parse HEAD)
