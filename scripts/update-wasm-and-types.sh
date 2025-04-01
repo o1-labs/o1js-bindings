@@ -13,15 +13,15 @@ NODE_BINDINGS="src/bindings/compiled/node_bindings"
 export DUNE_USE_DEFAULT_LINKER="y"
 
 # change to mina directory
-dune b $KIMCHI_BINDINGS/js/node_js
+dune b "${KIMCHI_BINDINGS}"/js/node_js
 
-chmod 777 "$_NODE_BINDINGS"/*
+chmod 777 "${_NODE_BINDINGS}"/*
 
-cp _build/default/$KIMCHI_BINDINGS/js/node_js/plonk_wasm* "$_NODE_BINDINGS"/
-mv -f $_NODE_BINDINGS/plonk_wasm.js $_NODE_BINDINGS/plonk_wasm.cjs
-mv -f $_NODE_BINDINGS/plonk_wasm.d.ts $_NODE_BINDINGS/plonk_wasm.d.cts
+cp _build/default/"${KIMCHI_BINDINGS}"/js/node_js/plonk_wasm* "$_NODE_BINDINGS"/
+mv -f "${_NODE_BINDINGS}"/plonk_wasm.js "${_NODE_BINDINGS}"/plonk_wasm.cjs
+mv -f "${_NODE_BINDINGS}"/plonk_wasm.d.ts "${_NODE_BINDINGS}"/plonk_wasm.d.cts
 
-chmod 777 "$_NODE_BINDINGS"/*
-node "src/build/fix-wasm-bindings-node.js" "$_NODE_BINDINGS/plonk_wasm.cjs"
+chmod 777 "${_NODE_BINDINGS}"/*
+node src/build/fix-wasm-bindings-node.js "${_NODE_BINDINGS}"/plonk_wasm.cjs
 
-cp $_NODE_BINDINGS/plonk_wasm.d.cts $NODE_BINDINGS/
+cp "${_NODE_BINDINGS}"/plonk_wasm.d.cts "${NODE_BINDINGS}"/
