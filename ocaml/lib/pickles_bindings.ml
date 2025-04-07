@@ -364,6 +364,8 @@ module Choices = struct
            , 'auxiliary_value )
            t
 
+  (* Convert each rule given in js_rules as JS object into their corresponding
+     OCaml type counterparty *)
   let of_js ~public_input_size ~public_output_size js_rules =
     let rec get_rules (Choices rules) index :
         ( _
