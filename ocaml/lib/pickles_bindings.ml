@@ -341,7 +341,8 @@ module Choices = struct
        t =
     | Choices :
         (   self:('var, 'value, 'width, 'height) Pickles.Tag.t
-         -> ( 'prev_vars
+         -> ( _
+            , 'prev_vars
             , 'prev_values
             , 'widths
             , 'heights
@@ -351,7 +352,7 @@ module Choices = struct
             , 'ret_value
             , 'auxiliary_var
             , 'auxiliary_value )
-            H4_6.T(Pickles.Inductive_rule.Promise).t )
+            H4_6_with_length.T(Pickles.Inductive_rule.Promise).t )
         -> ( 'var
            , 'value
            , 'width
@@ -385,7 +386,8 @@ module Choices = struct
           Inductive_rule.create ~public_input_size ~public_output_size
             (Array.get js_rules index)
         in
-        let rules ~self : _ H4_6.T(Pickles.Inductive_rule.Promise).t =
+        let rules ~self : _ H4_6_with_length.T(Pickles.Inductive_rule.Promise).t
+            =
           rule ~self :: rules ~self
         in
         get_rules (Choices rules) (index - 1)
@@ -647,7 +649,6 @@ let pickles_compile (choices : pickles_rule_js array)
            , public_input_typ public_output_size ) )
       ~auxiliary_typ:Typ.unit
       ~max_proofs_verified:(module Max_proofs_verified)
-      ~branches:(module Branches)
       ~name ~choices ()
   in
 
