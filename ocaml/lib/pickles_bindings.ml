@@ -98,10 +98,15 @@ module Choices = struct
   open Pickles_types
   open Hlist
 
+  module Tag = struct
+    type ('var, 'value, 'width) t =
+      Tag : ('var, 'value, 'width, 'height) Pickles.Tag.t -> ('var, 'value, 'width) t
+  end
+
   module Prevs = struct
     type ('var, 'value, 'width, 'height) t =
       | Prevs :
-          (   self:('var, 'value, 'width, 'height) Pickles.Tag.t
+          (   self:('var, 'value, 'width) Tag.t
            -> ('prev_var, 'prev_values, 'widths, 'heights) H4.T(Pickles.Tag).t
           )
           -> ('var, 'value, 'width, 'height) t
@@ -126,6 +131,7 @@ module Choices = struct
           end in
           let open Types in
           let to_tag ~self tag : (var, value, width, height) Pickles.Tag.t =
+            let Tag.Tag self = self in
             (* The magic here isn't ideal, but it's safe enough if we immediately
                hide it behind [Types].
             *)
@@ -152,7 +158,7 @@ module Choices = struct
          , 'auxiliary_value )
          t =
       | Rule :
-          (   self:('var, 'value, 'width, 'height) Pickles.Tag.t
+          (   self:('var, 'value, 'width) Tag.t
            -> ( 'prev_vars
               , 'prev_values
               , 'widths
@@ -260,7 +266,7 @@ module Choices = struct
       let (Prevs prevs) = Prevs.of_rule rule in
 
       (* this is called after `picklesRuleFromFunction()` and finishes the circuit *)
-      let finish_circuit prevs self (js_result : pickles_rule_js_return) :
+      let finish_circuit prevs (Tag.Tag self) (js_result : pickles_rule_js_return) :
           _ Pickles.Inductive_rule.main_return =
         (* convert js rule output to pickles rule output *)
         let public_output = js_result##.publicOutput in
@@ -301,7 +307,7 @@ module Choices = struct
         { previous_proof_statements; public_output; auxiliary_output = () }
       in
 
-      let rule ~(self : (Statement.t, Statement.Constant.t, _, _) Pickles.Tag.t)
+      let rule ~(self : (Statement.t, Statement.Constant.t, _) Tag.t)
           : _ Pickles.Inductive_rule.Promise.t =
         let prevs = prevs ~self in
 
@@ -340,7 +346,7 @@ module Choices = struct
        , 'auxiliary_value )
        t =
     | Choices :
-        (   self:('var, 'value, 'width, 'height) Pickles.Tag.t
+        (   self:('var, 'value, 'width) Tag.t
          -> ( _
             , 'prev_vars
             , 'prev_values
@@ -631,6 +637,7 @@ let pickles_compile (choices : pickles_rule_js array)
   let (Choices choices) =
     Choices.of_js ~public_input_size ~public_output_size choices
   in
+  let choices ~self = choices ~self:(Choices.Tag.Tag self) in
 
   (* parse caching configuration *)
   let storables =
