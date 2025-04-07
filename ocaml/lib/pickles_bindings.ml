@@ -638,15 +638,15 @@ let pickles_compile (choices : pickles_rule_js array)
 
   (* call into Pickles *)
   let tag, _cache, p, provers =
-    Pickles.compile_promise () ?override_wrap_domain ~choices
+    Pickles.compile_promise ?cache ?storables ?override_wrap_domain
       ~public_input:
         (Input_and_output
            ( public_input_typ public_input_size
            , public_input_typ public_output_size ) )
       ~auxiliary_typ:Typ.unit
-      ~branches:(module Branches)
       ~max_proofs_verified:(module Max_proofs_verified)
-      ~name ?storables ?cache
+      ~branches:(module Branches)
+      ~name ~choices ()
   in
 
   (* translate returned prover and verify functions to JS *)
