@@ -13,15 +13,36 @@ export function console_log(s: string): void;
 */
 export function create_zero_u32_ptr(): number;
 /**
+* Free a pointer. This method is exported in the WebAssembly module to be used
+* on the JavaScript side, see `web-backend.js`.
+*
+* # Safety
+*
+* See
+* `<https://rust-lang.github.io/rust-clippy/master/index.html#not_unsafe_ptr_arg_deref>`
 * @param {number} ptr
 */
 export function free_u32_ptr(ptr: number): void;
 /**
+* Set the value of a pointer. This method is exported in the WebAssembly
+* module to be used on the JavaScript side, see `web-backend.js`.
+*
+* # Safety
+*
+* See
+* `<https://rust-lang.github.io/rust-clippy/master/index.html#not_unsafe_ptr_arg_deref>`
 * @param {number} ptr
 * @param {number} arg
 */
 export function set_u32_ptr(ptr: number, arg: number): void;
 /**
+* This method is exported in the WebAssembly to be used on the JavaScript
+* side, see `web-backend.js`.
+*
+* # Safety
+*
+* See
+* `<https://rust-lang.github.io/rust-clippy/master/index.html#not_unsafe_ptr_arg_deref>`
 * @param {number} ptr
 * @returns {number}
 */
