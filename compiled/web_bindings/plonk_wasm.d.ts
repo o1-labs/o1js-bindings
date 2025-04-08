@@ -106,6 +106,12 @@ export function caml_fp_srs_read(offset: number | undefined, path: string): Wasm
 */
 export function caml_fp_srs_lagrange_commitments_whole_domain_ptr(srs: WasmFpSrs, domain_size: number): number;
 /**
+* Reads the lagrange commitments from a raw pointer.
+*
+* # Safety
+*
+* This function is unsafe because it might dereference a
+* raw pointer.
 * @param {number} ptr
 * @returns {Uint32Array}
 */
@@ -212,6 +218,12 @@ export function caml_fq_srs_read(offset: number | undefined, path: string): Wasm
 */
 export function caml_fq_srs_lagrange_commitments_whole_domain_ptr(srs: WasmFqSrs, domain_size: number): number;
 /**
+* Reads the lagrange commitments from a raw pointer.
+*
+* # Safety
+*
+* This function is unsafe because it might dereference a
+* raw pointer.
 * @param {number} ptr
 * @returns {Uint32Array}
 */

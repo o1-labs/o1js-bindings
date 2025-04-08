@@ -450,6 +450,12 @@ function getArrayU32FromWasm0(ptr, len) {
     return getUint32Memory0().subarray(ptr / 4, ptr / 4 + len);
 }
 /**
+* Reads the lagrange commitments from a raw pointer.
+*
+* # Safety
+*
+* This function is unsafe because it might dereference a
+* raw pointer.
 * @param {number} ptr
 * @returns {Uint32Array}
 */
@@ -752,6 +758,12 @@ export function caml_fq_srs_lagrange_commitments_whole_domain_ptr(srs, domain_si
 }
 
 /**
+* Reads the lagrange commitments from a raw pointer.
+*
+* # Safety
+*
+* This function is unsafe because it might dereference a
+* raw pointer.
 * @param {number} ptr
 * @returns {Uint32Array}
 */
