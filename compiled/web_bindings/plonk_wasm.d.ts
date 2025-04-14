@@ -1121,14 +1121,6 @@ export function caml_pasta_fp_plonk_verifier_index_dummy(): WasmFpPlonkVerifierI
 */
 export function caml_pasta_fp_plonk_verifier_index_deep_copy(x: WasmFpPlonkVerifierIndex): WasmFpPlonkVerifierIndex;
 /**
-* A row accessible from a given row, corresponds to the fact that we open all polynomials
-* at `zeta` **and** `omega * zeta`.
-*/
-export enum CurrOrNext {
-  Curr = 0,
-  Next = 1,
-}
-/**
 * The different types of gates the system supports.
 * Note that all the gates are mutually exclusive:
 * they cannot be used at the same time on single row.
@@ -1181,6 +1173,14 @@ export enum GateType {
   ForeignFieldMul = 15,
   Xor16 = 16,
   Rot64 = 17,
+}
+/**
+* A row accessible from a given row, corresponds to the fact that we open all polynomials
+* at `zeta` **and** `omega * zeta`.
+*/
+export enum CurrOrNext {
+  Curr = 0,
+  Next = 1,
 }
 /**
 * Flags for optional features in the constraint system
