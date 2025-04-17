@@ -13,15 +13,36 @@ export function console_log(s: string): void;
 */
 export function create_zero_u32_ptr(): number;
 /**
+* Free a pointer. This method is exported in the WebAssembly module to be used
+* on the JavaScript side, see `web-backend.js`.
+*
+* # Safety
+*
+* See
+* `<https://rust-lang.github.io/rust-clippy/master/index.html#not_unsafe_ptr_arg_deref>`
 * @param {number} ptr
 */
 export function free_u32_ptr(ptr: number): void;
 /**
+* Set the value of a pointer. This method is exported in the WebAssembly
+* module to be used on the JavaScript side, see `web-backend.js`.
+*
+* # Safety
+*
+* See
+* `<https://rust-lang.github.io/rust-clippy/master/index.html#not_unsafe_ptr_arg_deref>`
 * @param {number} ptr
 * @param {number} arg
 */
 export function set_u32_ptr(ptr: number, arg: number): void;
 /**
+* This method is exported in the WebAssembly to be used on the JavaScript
+* side, see `web-backend.js`.
+*
+* # Safety
+*
+* See
+* `<https://rust-lang.github.io/rust-clippy/master/index.html#not_unsafe_ptr_arg_deref>`
 * @param {number} ptr
 * @returns {number}
 */
@@ -69,6 +90,12 @@ export function caml_fp_srs_read(offset: number | undefined, path: string): Wasm
 */
 export function caml_fp_srs_lagrange_commitments_whole_domain_ptr(srs: WasmFpSrs, domain_size: number): number;
 /**
+* Reads the lagrange commitments from a raw pointer.
+*
+* # Safety
+*
+* This function is unsafe because it might dereference a
+* raw pointer.
 * @param {number} ptr
 * @returns {Uint32Array}
 */
@@ -175,6 +202,12 @@ export function caml_fq_srs_read(offset: number | undefined, path: string): Wasm
 */
 export function caml_fq_srs_lagrange_commitments_whole_domain_ptr(srs: WasmFqSrs, domain_size: number): number;
 /**
+* Reads the lagrange commitments from a raw pointer.
+*
+* # Safety
+*
+* This function is unsafe because it might dereference a
+* raw pointer.
 * @param {number} ptr
 * @returns {Uint32Array}
 */
@@ -465,6 +498,119 @@ export function caml_bigint_256_of_bytes(x: Uint8Array): Uint8Array;
 * @returns {Uint8Array}
 */
 export function caml_bigint_256_deep_copy(x: Uint8Array): Uint8Array;
+/**
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_one(): WasmPallasGProjective;
+/**
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_add(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
+/**
+* @param {WasmPallasGProjective} x
+* @param {WasmPallasGProjective} y
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_sub(x: WasmPallasGProjective, y: WasmPallasGProjective): WasmPallasGProjective;
+/**
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_negate(x: WasmPallasGProjective): WasmPallasGProjective;
+/**
+* @param {WasmPallasGProjective} x
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_double(x: WasmPallasGProjective): WasmPallasGProjective;
+/**
+* @param {WasmPallasGProjective} x
+* @param {Uint8Array} y
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_scale(x: WasmPallasGProjective, y: Uint8Array): WasmPallasGProjective;
+/**
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_random(): WasmPallasGProjective;
+/**
+* @param {number} i
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_rng(i: number): WasmPallasGProjective;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_pallas_endo_base(): Uint8Array;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_pallas_endo_scalar(): Uint8Array;
+/**
+* @param {WasmPallasGProjective} x
+* @returns {WasmGPallas}
+*/
+export function caml_pallas_to_affine(x: WasmPallasGProjective): WasmGPallas;
+/**
+* @param {WasmGPallas} x
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_of_affine(x: WasmGPallas): WasmPallasGProjective;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {WasmPallasGProjective}
+*/
+export function caml_pallas_of_affine_coordinates(x: Uint8Array, y: Uint8Array): WasmPallasGProjective;
+/**
+* @param {WasmGPallas} x
+* @returns {WasmGPallas}
+*/
+export function caml_pallas_affine_deep_copy(x: WasmGPallas): WasmGPallas;
+/**
+* @param {number | undefined} offset
+* @param {WasmFpSrs} srs
+* @param {string} path
+* @returns {WasmFpPlonkVerifierIndex}
+*/
+export function caml_pasta_fp_plonk_verifier_index_read(offset: number | undefined, srs: WasmFpSrs, path: string): WasmFpPlonkVerifierIndex;
+/**
+* @param {boolean | undefined} append
+* @param {WasmFpPlonkVerifierIndex} index
+* @param {string} path
+*/
+export function caml_pasta_fp_plonk_verifier_index_write(append: boolean | undefined, index: WasmFpPlonkVerifierIndex, path: string): void;
+/**
+* @param {WasmFpPlonkVerifierIndex} index
+* @returns {string}
+*/
+export function caml_pasta_fp_plonk_verifier_index_serialize(index: WasmFpPlonkVerifierIndex): string;
+/**
+* @param {WasmFpSrs} srs
+* @param {string} index
+* @returns {WasmFpPlonkVerifierIndex}
+*/
+export function caml_pasta_fp_plonk_verifier_index_deserialize(srs: WasmFpSrs, index: string): WasmFpPlonkVerifierIndex;
+/**
+* @param {WasmPastaFpPlonkIndex} index
+* @returns {WasmFpPlonkVerifierIndex}
+*/
+export function caml_pasta_fp_plonk_verifier_index_create(index: WasmPastaFpPlonkIndex): WasmFpPlonkVerifierIndex;
+/**
+* @param {number} log2_size
+* @returns {WasmFpShifts}
+*/
+export function caml_pasta_fp_plonk_verifier_index_shifts(log2_size: number): WasmFpShifts;
+/**
+* @returns {WasmFpPlonkVerifierIndex}
+*/
+export function caml_pasta_fp_plonk_verifier_index_dummy(): WasmFpPlonkVerifierIndex;
+/**
+* @param {WasmFpPlonkVerifierIndex} x
+* @returns {WasmFpPlonkVerifierIndex}
+*/
+export function caml_pasta_fp_plonk_verifier_index_deep_copy(x: WasmFpPlonkVerifierIndex): WasmFpPlonkVerifierIndex;
 /**
 * @returns {number}
 */
@@ -1121,6 +1267,137 @@ export function caml_pasta_fp_plonk_verifier_index_dummy(): WasmFpPlonkVerifierI
 * @returns {WasmFpPlonkVerifierIndex}
 */
 export function caml_pasta_fp_plonk_verifier_index_deep_copy(x: WasmFpPlonkVerifierIndex): WasmFpPlonkVerifierIndex;
+/**
+* @returns {number}
+*/
+export function caml_pasta_fq_size_in_bits(): number;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_size(): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_add(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_sub(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_negate(x: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_mul(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_div(x: Uint8Array, y: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array | undefined}
+*/
+export function caml_pasta_fq_inv(x: Uint8Array): Uint8Array | undefined;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_square(x: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {boolean}
+*/
+export function caml_pasta_fq_is_square(x: Uint8Array): boolean;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array | undefined}
+*/
+export function caml_pasta_fq_sqrt(x: Uint8Array): Uint8Array | undefined;
+/**
+* @param {number} i
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_of_int(i: number): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {string}
+*/
+export function caml_pasta_fq_to_string(x: Uint8Array): string;
+/**
+* @param {string} s
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_of_string(s: string): Uint8Array;
+/**
+* @param {Uint8Array} x
+*/
+export function caml_pasta_fq_print(x: Uint8Array): void;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {number}
+*/
+export function caml_pasta_fq_compare(x: Uint8Array, y: Uint8Array): number;
+/**
+* @param {Uint8Array} x
+* @param {Uint8Array} y
+* @returns {boolean}
+*/
+export function caml_pasta_fq_equal(x: Uint8Array, y: Uint8Array): boolean;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_random(): Uint8Array;
+/**
+* @param {number} i
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_rng(i: number): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_to_bigint(x: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_of_bigint(x: Uint8Array): Uint8Array;
+/**
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_two_adic_root_of_unity(): Uint8Array;
+/**
+* @param {number} log2_size
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_domain_generator(log2_size: number): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_to_bytes(x: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_of_bytes(x: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} x
+* @returns {Uint8Array}
+*/
+export function caml_pasta_fq_deep_copy(x: Uint8Array): Uint8Array;
 /**
 * A row accessible from a given row, corresponds to the fact that we open all polynomials
 * at `zeta` **and** `omega * zeta`.
