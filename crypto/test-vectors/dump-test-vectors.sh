@@ -5,7 +5,7 @@ set -e
 #Allows nix to provide the binary from a derivation
 EXPORT_TEST_VECTORS=${EXPORT_TEST_VECTORS:="cargo run -p export_test_vectors --"}
 
-pushd ../../../mina/src/lib/crypto/proof-systems/poseidon/export_test_vectors
+pushd ../../../mina/src/lib/crypto/proof-systems/crates/poseidon/export_test_vectors
   $EXPORT_TEST_VECTORS hex kimchi ../../../../../../../bindings/crypto/test-vectors/testVectors.json
   $EXPORT_TEST_VECTORS hex legacy ../../../../../../../bindings/crypto/test-vectors/testVectorsLegacy.json
 popd
