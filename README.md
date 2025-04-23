@@ -1,3 +1,10 @@
+# ⚠️ This repository has been archived.
+
+The contents have been moved to the main o1js repository, under the original subfolder: src/bindings.
+
+Going forward, any pull requests should be made directly to the o1js repository.
+This repository remains available solely for historical reference.
+
 # o1js bindings
 
 This repository collects code required by [o1js](https://github.com/o1-labs/o1js) to bind to lower layers of the proof system and the Mina transaction logic, which are written in Rust and OCaml.
@@ -25,7 +32,7 @@ Inside the Mina repo, you'll find the [o1js repo](https://github.com/o1-labs/o1j
 git submodule update --init --recursive
 ```
 
-Then, switch to the o1js root in `src/lib/snarkyjs`. 
+Then, switch to the o1js root in `src/lib/snarkyjs`.
 
 You use these two commands for different purposes:
 
