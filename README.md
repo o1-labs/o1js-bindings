@@ -1,6 +1,6 @@
 # ⚠️ This repository has been archived.
 
-The contents have been moved to the main o1js repository, under the original subfolder: src/bindings.
+The contents have been moved to the main o1js repository, under the original subfolder: `src/bindings`.
 
 Going forward, any pull requests should be made directly to the o1js repository.
 This repository remains available solely for historical reference.
